@@ -196,11 +196,12 @@ class ImageVersion extends CommonDBTM
     public static function matchLabels(): array
     {
         return [
+            VersionLinker::METHOD_CONTAINER         => __('Par identifiant ou nom du conteneur', 'dockerinventory'),
             VersionLinker::METHOD_DIGEST            => __('Par empreinte de l’image', 'dockerinventory'),
             VersionLinker::METHOD_LABEL             => __('Par nom du service Swarm', 'dockerinventory'),
             VersionLinker::METHOD_IMAGE             => __('Par image et tag', 'dockerinventory'),
             VersionLinker::UNMATCHED_AMBIGUOUS      => __('Plusieurs services possibles', 'dockerinventory'),
-            VersionLinker::UNMATCHED_OUTSIDE_SWARM  => __('Conteneur hors Swarm', 'dockerinventory'),
+            VersionLinker::UNMATCHED_OUTSIDE_SWARM  => __('Conteneur hors Swarm non importé', 'dockerinventory'),
             VersionLinker::UNMATCHED_NO_SERVICE     => __('Aucun service importé correspondant', 'dockerinventory'),
         ];
     }

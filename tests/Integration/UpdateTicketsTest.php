@@ -28,6 +28,7 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use GlpiPlugin\Dockerinventory\Ticket\TicketPolicy;
 use GlpiPlugin\Dockerinventory\Ticket\UpdateTickets;
 use ITILFollowup;
@@ -69,10 +70,7 @@ final class UpdateTicketsTest extends TestCase
             'api_key'     => 'ptr_fictive_cle_tickets',
         ]);
         $this->assertGreaterThan(0, $this->portainerId);
-        $fixture = json_decode(
-            (string) file_get_contents(dirname(__DIR__) . '/mock-portainer/fixture.json'),
-            true
-        );
+        $fixture = PortainerFixture::load();
         $connection = new Connection();
         $connection->getFromDB($this->portainerId);
         (new Importer(static fn (Connection $c): PortainerClient => new PortainerClient(
@@ -80,16 +78,7 @@ final class UpdateTicketsTest extends TestCase
             'ptr_fictive_cle_tickets',
             static function (string $url) use ($fixture): string {
                 $path = (string) parse_url($url, PHP_URL_PATH);
-                if ($path === '/api/endpoints' || $path === '/api/stacks') {
-                    return (string) json_encode($fixture[$path === '/api/stacks' ? 'stacks' : 'endpoints']);
-                }
-                preg_match('#^/api/endpoints/(\d+)/docker/(\w+)$#', $path, $m);
-                $endpoint = $fixture['docker'][$m[1] ?? ''] ?? ['swarm' => false];
-                if (!$endpoint['swarm']) {
-                    throw new \RuntimeException('HTTP 503 returned');
-                }
-
-                return (string) json_encode($endpoint[$m[2]]);
+                return PortainerFixture::respond($fixture, $path);
             }
         )))->import($connection);
         foreach (

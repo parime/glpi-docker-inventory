@@ -29,12 +29,16 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  * Import en lecture seule d'un serveur Portainer.
  *
  * Règles :
- * - stack Swarm => application GLPI (Appliance) : celle déjà liée, sinon une application du même
+ * - stack Swarm ou Compose (hôte Docker autonome, stack Portainer ou projet Compose déployé hors
+ *   Portainer) => application GLPI (Appliance) : celle déjà liée, sinon une application du même
  *   nom dans l'entité de la connexion, sinon une nouvelle, créée avec l'environnement choisi sur
  *   la connexion. Une application existante n'est jamais modifiée ;
- * - service => fiche du plugin (image, tag, empreinte, réplicas, ports, réseaux, noms des secrets) ;
- * - nœud => rattaché à l'ordinateur du même nom d'hôte (nom complet ou court) dans l'entité de la
- *   connexion et ses sous-entités, s'il est unique. Aucun ordinateur n'est créé ni modifié ;
+ * - service Swarm, service Compose ou conteneur hors Compose => fiche du plugin (image, tag,
+ *   empreinte, réplicas ou conteneurs, ports, réseaux, volumes et secrets par leur nom seulement,
+ *   état et politique de redémarrage des conteneurs) ;
+ * - nœud Swarm ou hôte autonome => rattaché à l'ordinateur du même nom d'hôte (nom complet ou
+ *   court) dans l'entité de la connexion et ses sous-entités, s'il est unique. Aucun ordinateur
+ *   n'est créé ni modifié ;
  * - service, stack ou nœud absent d'un environnement lu avec succès (ou d'un environnement
  *   disparu) => marqué « retiré ». Rien n'est supprimé. Un environnement en erreur ne retire rien.
  *
@@ -107,10 +111,15 @@ final class Importer
                 $tasks = $client->tasks($endpointId);
                 $networks = $client->networks($endpointId);
             } catch (PortainerException $e) {
-                if ($e->getMessage() === PortainerException::NOT_SWARM) {
-                    // Docker seul, sans Swarm : aucun service à suivre.
+                if ($e->getMessage() !== PortainerException::NOT_SWARM) {
+                    $report['errors'][] = ['endpoint' => $endpointName, 'code' => $e->getMessage()];
+                    continue;
+                }
+                // Hôte Docker autonome, sans Swarm : stacks Compose et conteneurs.
+                try {
+                    $this->importStandalone($client, $connection, $endpoint, $stacks, $report, $seen);
                     $read[] = $endpointId;
-                } else {
+                } catch (PortainerException $e) {
                     $report['errors'][] = ['endpoint' => $endpointName, 'code' => $e->getMessage()];
                 }
                 continue;
@@ -127,7 +136,15 @@ final class Importer
                 ) {
                     continue;
                 }
-                $row = $this->upsertStack($connection, $endpointId, $endpointName, $stack, $report);
+                $row = $this->upsertStack(
+                    $connection,
+                    $endpointId,
+                    $endpointName,
+                    (int) $stack['Id'],
+                    (string) $stack['Name'],
+                    PortainerMapper::KIND_SWARM,
+                    $report
+                );
                 $stackRows[(string) $stack['Name']] = $row;
                 $seen['stacks'][] = $row['id'];
                 $report['stacks']++;
@@ -173,7 +190,124 @@ final class Importer
     }
 
     /**
-     * @param array<string, mixed> $stack
+     * Environnement Docker autonome (sans Swarm) : l'hôte comme un nœud, chaque stack Compose de
+     * Portainer et chaque projet Compose vu sur les conteneurs comme une stack, chaque service
+     * Compose et chaque conteneur hors Compose comme un service. Lecture seule : informations du
+     * moteur, liste des conteneurs et des images, détail de chaque conteneur pour sa politique de
+     * redémarrage (rien d'autre n'en est lu, ni variables d'environnement ni secrets).
+     *
+     * @param array<string, mixed> $endpoint
+     * @param list<array<string, mixed>> $stacks
+     * @param Report $report
+     * @param array{services: list<int>, stacks: list<int>, nodes: list<int>} $seen
+     * @throws PortainerException Lecture impossible : rien n'est retiré dans cet environnement.
+     */
+    private function importStandalone(
+        PortainerClient $client,
+        Connection $connection,
+        array $endpoint,
+        array $stacks,
+        array &$report,
+        array &$seen
+    ): void {
+        $endpointId = (int) $endpoint['Id'];
+        $endpointName = is_scalar($endpoint['Name'] ?? null) ? (string) $endpoint['Name'] : '';
+        $info = $client->info($endpointId);
+        $images = PortainerMapper::imageIndex($client->images($endpointId));
+        $containers = [];
+        $policies = [];
+        foreach ($client->containers($endpointId) as $raw) {
+            $container = PortainerMapper::mapContainer($raw, $images);
+            if ($container === null) {
+                continue;
+            }
+            $containers[] = $container;
+            try {
+                $policies[$container['uid']] = PortainerMapper::restartPolicy(
+                    $client->container($endpointId, $container['uid'])
+                );
+            } catch (PortainerException $e) {
+                if ($e->getMessage() !== PortainerException::NOT_FOUND) {
+                    throw $e;
+                }
+                // Conteneur supprimé entre la liste et son détail : politique inconnue.
+            }
+        }
+
+        // L'hôte, rattaché à l'ordinateur du même nom comme un nœud Swarm.
+        $host = PortainerMapper::mapHost(
+            $info,
+            $endpointId,
+            (int) ($endpoint['Status'] ?? 1) === 1,
+            PortainerMapper::endpointHost(is_scalar($endpoint['URL'] ?? null) ? (string) $endpoint['URL'] : '')
+        );
+        $nodeId = $this->upsertNode($connection, $endpointId, $host, $report);
+        $seen['nodes'][] = $nodeId;
+        $report['nodes']++;
+
+        // Stacks Compose de Portainer, puis projets Compose déployés hors Portainer.
+        $stackRows = [];
+        foreach ($stacks as $stack) {
+            if (
+                (int) ($stack['EndpointId'] ?? 0) !== $endpointId
+                || (int) ($stack['Type'] ?? 0) !== PortainerMapper::STACK_TYPE_COMPOSE
+                || !is_scalar($stack['Name'] ?? null)
+                || (string) $stack['Name'] === ''
+                || (int) ($stack['Id'] ?? 0) <= 0
+            ) {
+                continue;
+            }
+            $row = $this->upsertStack(
+                $connection,
+                $endpointId,
+                $endpointName,
+                (int) $stack['Id'],
+                (string) $stack['Name'],
+                PortainerMapper::KIND_COMPOSE,
+                $report
+            );
+            // Portainer donne au projet Compose le nom de la stack, en minuscules.
+            $stackRows[strtolower((string) $stack['Name'])] = $row;
+            $seen['stacks'][] = $row['id'];
+            $report['stacks']++;
+        }
+        foreach ($containers as $container) {
+            $project = strtolower($container['project']);
+            if ($project === '' || isset($stackRows[$project])) {
+                continue;
+            }
+            $row = $this->upsertStack(
+                $connection,
+                $endpointId,
+                $endpointName,
+                0,
+                $container['project'],
+                PortainerMapper::KIND_COMPOSE,
+                $report
+            );
+            $stackRows[$project] = $row;
+            $seen['stacks'][] = $row['id'];
+            $report['stacks']++;
+        }
+
+        foreach (PortainerMapper::groupContainers($endpointId, $containers, $policies) as $service) {
+            $stackRow = $stackRows[strtolower($service['stack_name'])] ?? ['id' => 0, 'appliances_id' => 0];
+            $serviceId = $this->upsertService($connection, $endpointId, $endpointName, $service, $stackRow);
+            $running = $service['running_replicas'];
+            $this->replacePlacement(
+                $serviceId,
+                $running > 0 ? [$host['node_uid'] => $running] : [],
+                [$host['node_uid'] => $nodeId]
+            );
+            $seen['services'][] = $serviceId;
+            $report['services']++;
+        }
+    }
+
+    /**
+     * Stack Swarm ou Compose gérée par Portainer (identifiant de stack), ou projet Compose déployé
+     * hors Portainer (identifiant 0 : environnement et nom du projet).
+     *
      * @param Report $report
      * @return array{id: int, appliances_id: int}
      */
@@ -181,18 +315,19 @@ final class Importer
         Connection $connection,
         int $endpointId,
         string $endpointName,
-        array $stack,
+        int $stackUid,
+        string $name,
+        string $kind,
         array &$report
     ): array {
         global $DB;
 
         $table = 'glpi_plugin_dockerinventory_stacks';
-        $where = [
-            'plugin_dockerinventory_connections_id' => (int) $connection->getID(),
-            'stack_uid'                             => (int) $stack['Id'],
-        ];
+        $where = ['plugin_dockerinventory_connections_id' => (int) $connection->getID(), 'stack_uid' => $stackUid];
+        if ($stackUid === 0) {
+            $where += ['endpoint_uid' => $endpointId, 'compose_project' => $name];
+        }
         $existing = $DB->request(['FROM' => $table, 'WHERE' => $where, 'LIMIT' => 1])->current();
-        $name = (string) $stack['Name'];
         $applianceId = $this->ensureAppliance(
             $connection,
             $name,
@@ -201,7 +336,8 @@ final class Importer
             $report
         );
         $values = [
-            'endpoint_uid'   => $endpointId,
+            'endpoint_uid'  => $endpointId,
+            'kind'          => $kind,
             'name'          => $name,
             'appliances_id' => $applianceId,
             'is_retired'    => 0,
@@ -339,7 +475,7 @@ final class Importer
     }
 
     /**
-     * @param array<string, mixed> $service Valeurs de PortainerMapper::mapService().
+     * @param array<string, mixed> $service Valeurs de PortainerMapper::mapService() ou groupContainers().
      * @param array{id: int, appliances_id: int} $stackRow
      */
     private function upsertService(
@@ -374,6 +510,12 @@ final class Importer
             'ports'            => $service['ports'],
             'networks'         => $service['networks'],
             'secrets'          => $service['secrets'],
+            'kind'             => $service['kind'] ?? PortainerMapper::KIND_SWARM,
+            'volumes'          => $service['volumes'] ?? '',
+            'state'            => $service['state'] ?? '',
+            'restart_policy'   => $service['restart_policy'] ?? '',
+            'container_uids'   => $service['container_uids'] ?? '',
+            'container_names'  => $service['container_names'] ?? '',
             'is_retired'       => 0,
             'date_retired'     => null,
             'last_seen'        => $this->now,

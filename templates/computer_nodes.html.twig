@@ -13,11 +13,12 @@
  # -------------------------------------------------------------------------
  #}
 
-{# Onglet « Services du nœud » d'un ordinateur : nœud(s) Swarm rattachés et leurs services. #}
+{# Onglet « Services du nœud » d'un ordinateur : nœud(s) Swarm ou hôte Docker autonome rattachés, et
+   leurs services. #}
 {% if nodes is empty %}
     <div class="alert alert-info">
         <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
-        {{ __("Cet ordinateur n'est rattaché à aucun nœud Docker Swarm.", 'dockerinventory') }}
+        {{ __("Cet ordinateur n'est rattaché à aucun nœud Swarm ni hôte Docker.", 'dockerinventory') }}
         {{ __("Le rattachement se fait à l'import Portainer, par nom d'hôte.", 'dockerinventory') }}
     </div>
 {% endif %}
@@ -27,7 +28,15 @@
             <h3 class="card-title mb-0">
                 <i class="ti ti-server me-2" aria-hidden="true"></i>{{ node.hostname }}
             </h3>
-            <span class="badge {{ node.role == 'manager' ? 'bg-purple' : 'bg-blue' }} text-white">{{ node.role }}</span>
+            {% if node.role == 'standalone' %}
+                <span class="badge bg-teal text-white">
+                    <i class="ti ti-box me-1" aria-hidden="true"></i>{{ __('Hôte Docker autonome', 'dockerinventory') }}
+                </span>
+            {% else %}
+                <span class="badge {{ node.role == 'manager' ? 'bg-purple' : 'bg-blue' }} text-white">
+                    {{ node.role }}
+                </span>
+            {% endif %}
             {% set state_class = node.state == 'ready' ? 'bg-success' : 'bg-danger' %}
             <span class="badge {{ state_class }} text-white">{{ node.state }}</span>
             {% if node.availability and node.availability != 'active' %}
@@ -49,7 +58,11 @@
         </div>
         {% if node.services is empty %}
             <div class="card-body pt-0 text-muted">
-                {{ __('Aucune tâche de service en cours sur ce nœud.', 'dockerinventory') }}
+                {% if node.role == 'standalone' %}
+                    {{ __('Aucun conteneur en cours sur cet hôte.', 'dockerinventory') }}
+                {% else %}
+                    {{ __('Aucune tâche de service en cours sur ce nœud.', 'dockerinventory') }}
+                {% endif %}
             </div>
         {% else %}
             <div class="table-responsive">

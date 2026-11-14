@@ -17,6 +17,8 @@ FIXTURE = sys.argv[1]
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 9000
 API_KEY = os.environ.get('MOCK_API_KEY', '')
 DOCKER = re.compile(r'^/api/endpoints/(\d+)/docker/(services|nodes|tasks|networks)$')
+# Hôte Docker autonome : informations, conteneurs, images, détail d'un conteneur.
+STANDALONE = re.compile(r'^/api/endpoints/(\d+)/docker/(info|containers/json|images/json|containers/([0-9a-f]+)/json)$')
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -51,6 +53,18 @@ class Handler(BaseHTTPRequestHandler):
             if not endpoint.get('swarm', False):
                 return self.reply(503, {'message': 'This node is not a swarm manager.'})
             return self.reply(200, endpoint[match.group(2)])
+        match = STANDALONE.match(path)
+        if match:
+            endpoint = data['docker'].get(match.group(1))
+            if endpoint is None:
+                return self.reply(404, {'message': 'Unable to find an environment'})
+            if match.group(3):
+                detail = endpoint.get('inspect', {}).get(match.group(3))
+                if detail is None:
+                    return self.reply(404, {'message': 'No such container'})
+                return self.reply(200, detail)
+            key = match.group(2).split('/')[0]
+            return self.reply(200, endpoint.get(key, {} if key == 'info' else []))
         return self.reply(404, {'message': 'Not found'})
 
 

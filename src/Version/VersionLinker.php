@@ -22,10 +22,13 @@ namespace GlpiPlugin\Dockerinventory\Version;
 use GlpiPlugin\Dockerinventory\Wud\WudMapper;
 
 /**
- * Rattachement des conteneurs vus par WUD aux services Swarm importés de Portainer, puis une ligne
- * de version par service. Fonctions pures, sans GLPI.
+ * Rattachement des conteneurs vus par WUD aux services importés de Portainer (services Swarm,
+ * services Compose et conteneurs des hôtes autonomes), puis une ligne de version par service.
+ * Fonctions pures, sans GLPI.
  *
  * Ordre de rattachement d'un conteneur :
+ * 0. identifiant ou nom du conteneur, connus pour les services des hôtes autonomes (un conteneur
+ *    Swarm n'est pas lu un par un : ses services n'en ont pas) ;
  * 1. empreinte de l'image identique à celle du service (épinglée par Swarm) ;
  * 2. nom du service Swarm porté par le conteneur (étiquette com.docker.swarm.service.name, ou nom de
  *    tâche « service.emplacement.tâche ») ;
@@ -34,10 +37,12 @@ use GlpiPlugin\Dockerinventory\Wud\WudMapper;
  * reste plusieurs, le conteneur n'est rattaché à aucun (« ambigu ») plutôt qu'au mauvais.
  *
  * @phpstan-import-type WudContainer from WudMapper
- * @phpstan-type LinkService array{id: int, name: string, image: string, tag: string, digest: string}
+ * @phpstan-type LinkService array{id: int, name: string, image: string, tag: string, digest: string,
+ *     container_uids?: list<string>, container_names?: list<string>}
  */
 final class VersionLinker
 {
+    public const METHOD_CONTAINER = 'container';
     public const METHOD_DIGEST = 'digest';
     public const METHOD_LABEL = 'label';
     public const METHOD_IMAGE = 'image';
@@ -47,7 +52,7 @@ final class VersionLinker
     public const UNMATCHED_NO_SERVICE = 'no_service';
 
     /** Méthodes de la plus sûre à la moins sûre. */
-    private const METHODS = [self::METHOD_DIGEST, self::METHOD_LABEL, self::METHOD_IMAGE];
+    private const METHODS = [self::METHOD_CONTAINER, self::METHOD_DIGEST, self::METHOD_LABEL, self::METHOD_IMAGE];
 
     /**
      * @param list<WudContainer> $containers
@@ -90,6 +95,11 @@ final class VersionLinker
     private static function match(array $container, array $services): array
     {
         $ambiguous = false;
+        $byContainer = array_filter(
+            $services,
+            static fn (array $s): bool => in_array($container['uid'], $s['container_uids'] ?? [], true)
+                || in_array($container['name'], $s['container_names'] ?? [], true)
+        );
         $byDigest = $container['digest'] === '' ? [] : array_filter(
             $services,
             static fn (array $s): bool => $s['digest'] !== '' && $s['digest'] === $container['digest']
@@ -109,6 +119,7 @@ final class VersionLinker
         );
 
         $steps = [
+            self::METHOD_CONTAINER => [$byContainer, [$byDigest, $byImageTag]],
             self::METHOD_DIGEST => [$byDigest, [$byName, $byImageTag]],
             self::METHOD_LABEL  => [$byName, [$byImage, $byImageTag]],
             self::METHOD_IMAGE  => [$byImageTag, []],

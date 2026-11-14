@@ -154,6 +154,40 @@ final class VersionLinkerTest extends TestCase
         $this->assertSame([1], array_keys(VersionLinker::link([$container], $services)['linked']));
     }
 
+    public function testComposeContainersAreLinkedByContainerIdOrName(): void
+    {
+        $services = self::services();
+        // Services de l'hôte autonome : conteneurs connus par leur identifiant et leur nom.
+        $services[] = ['id' => 101, 'name' => 'adminer', 'image' => 'adminer', 'tag' => '4.8.1', 'digest' => '',
+            'container_uids' => ['0a000000000000000000000000000000000000000000000000000000000000a0'],
+            'container_names' => ['outils-recette-adminer-1']];
+        $services[] = ['id' => 102, 'name' => 'sauvegarde-nocturne',
+            'image' => 'registry.exemple.test:5000/outils/sauvegarde', 'tag' => '0.17.1', 'digest' => '',
+            'container_uids' => [], 'container_names' => ['sauvegarde-nocturne']];
+
+        $result = VersionLinker::link(self::containers(), $services);
+
+        $this->assertSame('container', $result['linked'][101][0]['method'] ?? null);
+        $this->assertSame('container', $result['linked'][102][0]['method'] ?? null);
+        $this->assertSame([], $result['unmatched']);
+        $row = VersionLinker::summarize($services[7], $result['linked'][101]);
+        $this->assertSame('patch', $row['gap']);
+        $this->assertSame('4.8.4', $row['latest_tag']);
+        $this->assertSame('container', $row['match_method']);
+
+        // Même nom de conteneur sur deux hôtes : départagé par l'image et le tag, sinon ambigu.
+        $twin = $services[8];
+        $twin['id'] = 103;
+        $twin['tag'] = '0.16.0';
+        $linked = VersionLinker::link(self::containers(), [...$services, $twin])['linked'];
+        $this->assertArrayHasKey(102, $linked);
+        $this->assertArrayNotHasKey(103, $linked);
+        $twin['tag'] = '0.17.1';
+        $result = VersionLinker::link(self::containers(), [...$services, $twin]);
+        $this->assertArrayNotHasKey(102, $result['linked']);
+        $this->assertSame(['sauvegarde-nocturne' => 'ambiguous'], array_column($result['unmatched'], 'reason', 'name'));
+    }
+
     public function testShortDigest(): void
     {
         $this->assertSame('1f1e1d1c1b1a', VersionLinker::shortDigest('sha256:1f1e1d1c1b1a1918'));

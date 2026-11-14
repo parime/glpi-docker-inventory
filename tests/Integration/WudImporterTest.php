@@ -26,6 +26,7 @@ use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudImporter;
 use PHPUnit\Framework\TestCase;
@@ -60,10 +61,7 @@ final class WudImporterTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->portainer = json_decode(
-            (string) file_get_contents(dirname(__DIR__) . '/mock-portainer/fixture.json'),
-            true
-        );
+        $this->portainer = PortainerFixture::load();
         $this->wud = json_decode((string) file_get_contents(dirname(__DIR__) . '/mock-wud/fixture.json'), true);
         $suffix = bin2hex(random_bytes(4));
         $this->entityId = (int) (new \Entity())->add(['name' => 'PHPUnit WUD ' . $suffix, 'entities_id' => 0]);
@@ -138,16 +136,7 @@ final class WudImporterTest extends TestCase
             'ptr_fictive_cle_wud',
             static function (string $url) use ($fixture): string {
                 $path = (string) parse_url($url, PHP_URL_PATH);
-                if ($path === '/api/endpoints' || $path === '/api/stacks') {
-                    return (string) json_encode($fixture[$path === '/api/stacks' ? 'stacks' : 'endpoints']);
-                }
-                preg_match('#^/api/endpoints/(\d+)/docker/(\w+)$#', $path, $m);
-                $endpoint = $fixture['docker'][$m[1] ?? ''] ?? ['swarm' => false];
-                if (!$endpoint['swarm']) {
-                    throw new \RuntimeException('HTTP 503 returned');
-                }
-
-                return (string) json_encode($endpoint[$m[2]]);
+                return PortainerFixture::respond($fixture, $path);
             }
         )))->import($this->connection($this->portainerId));
     }
@@ -234,8 +223,9 @@ final class WudImporterTest extends TestCase
         $this->assertSame(Connection::STATUS_OK, $report['status'], (string) json_encode($report));
         $this->assertSame('8.1.1', $report['wud_version']);
         $this->assertSame(12, $report['containers']);
-        $this->assertSame(7, $report['services']);
-        $this->assertSame(2, $report['unmatched']);
+        // 7 services Swarm, le service Compose adminer et le conteneur autonome sauvegarde-nocturne (#25).
+        $this->assertSame(9, $report['services']);
+        $this->assertSame(0, $report['unmatched']);
         $this->assertSame(1, $report['out_of_sync']);
         $this->assertSame(['/api/app', '/api/containers'], $this->requested);
 
@@ -258,11 +248,14 @@ final class WudImporterTest extends TestCase
         $this->assertSame($this->environmentId, (int) $web['environment_id']);
         $this->assertSame($this->entityId, (int) $web['entities_id']);
 
-        $adminer = $versions['conteneur:outils-recette-adminer-1'];
-        $this->assertSame(0, (int) $adminer['plugin_dockerinventory_services_id']);
-        $this->assertSame('outside_swarm', $adminer['match_method']);
+        // Conteneurs de l'hôte autonome : rattachés par leur identifiant.
+        $adminer = $versions['adminer'];
+        $this->assertGreaterThan(0, (int) $adminer['plugin_dockerinventory_services_id']);
+        $this->assertSame('container', $adminer['match_method']);
         $this->assertSame('patch', $adminer['gap']);
-        $this->assertSame('unknown', $versions['conteneur:sauvegarde-nocturne']['gap']);
+        $this->assertSame('4.8.4', $adminer['latest_tag']);
+        $this->assertSame('container', $versions['sauvegarde-nocturne']['match_method']);
+        $this->assertSame('unknown', $versions['sauvegarde-nocturne']['gap']);
 
         // Rapport sans le mot de passe.
         $this->assertStringNotContainsString(
@@ -290,7 +283,7 @@ final class WudImporterTest extends TestCase
                 $this->wud['containers'][$i]['image']['digest'] = $this->wud['containers'][0]['image']['digest'];
             }
         }
-        // Conteneur hors Swarm arrêté : il disparaît de WUD, et de la liste.
+        // Conteneur Compose arrêté : il disparaît de WUD, et de la liste.
         $this->wud['containers'] = array_values(array_filter(
             $this->wud['containers'],
             static fn (array $container): bool => $container['name'] !== 'outils-recette-adminer-1'
@@ -298,10 +291,10 @@ final class WudImporterTest extends TestCase
         $report = $this->importWud();
 
         $this->assertSame(0, $report['out_of_sync']);
-        $this->assertSame(1, $report['unmatched']);
+        $this->assertSame(8, $report['services']);
         $versions = $this->versions();
         $this->assertSame(0, (int) $versions['boutique_web']['is_out_of_sync']);
-        $this->assertArrayNotHasKey('conteneur:outils-recette-adminer-1', $versions);
+        $this->assertArrayNotHasKey('adminer', $versions);
     }
 
     public function testFailingWudChangesNothing(): void
@@ -330,8 +323,8 @@ final class WudImporterTest extends TestCase
 
         $report = $this->importWud();
 
-        $this->assertSame(6, $report['services']);
-        $this->assertSame(3, $report['unmatched']);
+        $this->assertSame(8, $report['services']);
+        $this->assertSame(1, $report['unmatched']);
         $this->assertSame('no_service', $this->versions()['conteneur:boutique_api.1.t04']['match_method']);
     }
 
@@ -345,21 +338,23 @@ final class WudImporterTest extends TestCase
         ));
         $names = static fn (array $row): string => $row['service']['name'];
         $all = ImageVersion::overview('', 0);
-        $this->assertCount(7, $mine($all['services']));
-        $this->assertCount(2, $mine($all['unmatched']));
+        $this->assertCount(9, $mine($all['services']));
+        $this->assertCount(0, $mine($all['unmatched']));
         $this->assertArrayHasKey($this->environmentId, $all['environments']);
 
         $major = $mine(ImageVersion::overview('major', 0)['services']);
         $this->assertSame(['boutique_db'], array_map($names, $major));
 
         $outdated = $mine(ImageVersion::overview(ImageVersion::FILTER_OUTDATED, 0)['services']);
-        $this->assertSame(['major', 'minor', 'patch', 'digest'], array_column($outdated, 'gap_code'));
+        // boutique_api et adminer (service Compose) : correctif.
+        $this->assertSame(['major', 'minor', 'patch', 'patch', 'digest'], array_column($outdated, 'gap_code'));
 
-        // Environnement des applications créées : tous les services des stacks ; outil_isole
-        // (sans stack, donc sans application) seulement avec « sans environnement ».
-        $this->assertCount(6, $mine(ImageVersion::overview('', $this->environmentId)['services']));
+        // Environnement des applications créées : tous les services des stacks (Swarm et Compose) ;
+        // outil_isole et sauvegarde-nocturne (sans stack, donc sans application) seulement avec
+        // « sans environnement ».
+        $this->assertCount(7, $mine(ImageVersion::overview('', $this->environmentId)['services']));
         $without = $mine(ImageVersion::overview('', -1)['services']);
-        $this->assertSame(['outil_isole'], array_map($names, $without));
+        $this->assertSame(['outil_isole', 'sauvegarde-nocturne'], array_map($names, $without));
         $this->assertSame([], $mine(ImageVersion::overview('', $this->environmentId)['unmatched']));
     }
 

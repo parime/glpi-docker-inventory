@@ -25,6 +25,11 @@ Objectif : pour chaque service, version déployée, dernière version disponible
 Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 et #7. Le cœur du lot
 (#2, #3, #4, #6, #8) part en version dès qu'il est fusionné ; #5 et #7 suivent.
 
+## Hôtes Docker autonomes
+
+- [#25](https://github.com/parime/glpi-docker-inventory/issues/25) Hôtes Docker autonomes et stacks
+  Compose gérés par Portainer : fait, à valider sur un vrai Portainer avec un hôte Docker autonome.
+
 ## Lot 3 : Harbor
 
 - [#9](https://github.com/parime/glpi-docker-inventory/issues/9) Projets, artefacts, analyses de

@@ -154,6 +154,8 @@ final class Installer
                 `plugin_dockerinventory_connections_id` int {$sign} NOT NULL DEFAULT '0',
                 `endpoint_uid` int NOT NULL DEFAULT '0',
                 `stack_uid` int NOT NULL DEFAULT '0',
+                `kind` varchar(16) NOT NULL DEFAULT 'swarm',
+                `compose_project` varchar(255) NOT NULL DEFAULT '',
                 `name` varchar(255) NOT NULL DEFAULT '',
                 `appliances_id` int {$sign} NOT NULL DEFAULT '0',
                 `is_retired` tinyint NOT NULL DEFAULT '0',
@@ -161,7 +163,8 @@ final class Installer
                 `date_mod` timestamp NULL DEFAULT NULL,
                 `date_creation` timestamp NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
-                UNIQUE KEY `unicity` (`plugin_dockerinventory_connections_id`, `stack_uid`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_connections_id`, `stack_uid`, `endpoint_uid`,
+                    `compose_project`),
                 KEY `appliances_id` (`appliances_id`)",
             'glpi_plugin_dockerinventory_services' => "
                 `id` int {$sign} NOT NULL AUTO_INCREMENT,
@@ -171,7 +174,8 @@ final class Installer
                 `plugin_dockerinventory_connections_id` int {$sign} NOT NULL DEFAULT '0',
                 `endpoint_uid` int NOT NULL DEFAULT '0',
                 `endpoint_name` varchar(255) NOT NULL DEFAULT '',
-                `service_uid` varchar(64) NOT NULL DEFAULT '',
+                `service_uid` varchar(255) NOT NULL DEFAULT '',
+                `kind` varchar(16) NOT NULL DEFAULT 'swarm',
                 `stack_name` varchar(255) NOT NULL DEFAULT '',
                 `plugin_dockerinventory_stacks_id` int {$sign} NOT NULL DEFAULT '0',
                 `appliances_id` int {$sign} NOT NULL DEFAULT '0',
@@ -184,6 +188,11 @@ final class Installer
                 `ports` text,
                 `networks` text,
                 `secrets` text,
+                `volumes` text,
+                `state` varchar(64) NOT NULL DEFAULT '',
+                `restart_policy` varchar(64) NOT NULL DEFAULT '',
+                `container_uids` text,
+                `container_names` text,
                 `is_retired` tinyint NOT NULL DEFAULT '0',
                 `date_retired` timestamp NULL DEFAULT NULL,
                 `last_seen` timestamp NULL DEFAULT NULL,
@@ -196,6 +205,7 @@ final class Installer
                 KEY `is_recursive` (`is_recursive`),
                 KEY `plugin_dockerinventory_stacks_id` (`plugin_dockerinventory_stacks_id`),
                 KEY `appliances_id` (`appliances_id`),
+                KEY `kind` (`kind`),
                 KEY `is_retired` (`is_retired`)",
             'glpi_plugin_dockerinventory_nodes' => "
                 `id` int {$sign} NOT NULL AUTO_INCREMENT,
@@ -322,6 +332,55 @@ final class Installer
         }
         $migration->addKey($table, 'type');
         $migration->migrationOneTable($table);
+
+        $this->migrateStandaloneHosts($migration);
+    }
+
+    /**
+     * 0.3.0 => hôtes Docker autonomes et stacks Compose (#25) : nature des stacks et des services,
+     * projet Compose sans stack Portainer, identifiants de service plus longs, état, politique de
+     * redémarrage, volumes et conteneurs des services. Les lignes existantes sont des stacks et
+     * services Swarm (valeur par défaut de `kind`).
+     */
+    private function migrateStandaloneHosts(Migration $migration): void
+    {
+        global $DB;
+
+        $stacks = 'glpi_plugin_dockerinventory_stacks';
+        if (!$DB->fieldExists($stacks, 'compose_project', false)) {
+            $migration->addField($stacks, 'kind', "varchar(16) NOT NULL DEFAULT 'swarm'", ['after' => 'stack_uid']);
+            $migration->addField($stacks, 'compose_project', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'kind']);
+            // Un projet Compose déployé hors Portainer n'a pas d'identifiant de stack (0) : la clé
+            // d'unicité comprend l'environnement et le projet.
+            $migration->dropKey($stacks, 'unicity');
+            $migration->migrationOneTable($stacks);
+            $migration->addKey(
+                $stacks,
+                ['plugin_dockerinventory_connections_id', 'stack_uid', 'endpoint_uid', 'compose_project'],
+                'unicity',
+                'UNIQUE'
+            );
+            $migration->migrationOneTable($stacks);
+        }
+
+        $services = Service::getTable();
+        $migration->changeField($services, 'service_uid', 'service_uid', "varchar(255) NOT NULL DEFAULT ''");
+        $migration->addField($services, 'kind', "varchar(16) NOT NULL DEFAULT 'swarm'", ['after' => 'service_uid']);
+        $after = 'secrets';
+        foreach (
+            [
+                'volumes'         => 'text',
+                'state'           => "varchar(64) NOT NULL DEFAULT ''",
+                'restart_policy'  => "varchar(64) NOT NULL DEFAULT ''",
+                'container_uids'  => 'text',
+                'container_names' => 'text',
+            ] as $field => $definition
+        ) {
+            $migration->addField($services, $field, $definition, ['after' => $after]);
+            $after = $field;
+        }
+        $migration->addKey($services, 'kind');
+        $migration->migrationOneTable($services);
     }
 
     /**

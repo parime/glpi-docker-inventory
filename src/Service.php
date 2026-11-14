@@ -24,10 +24,12 @@ use CommonGLPI;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Compat\Base\ServiceBase;
+use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
 use Session;
 
 /**
- * Service Docker Swarm importé depuis Portainer. Lecture seule : seul l'import écrit ces fiches,
+ * Service Docker importé depuis Portainer : service Swarm, service Compose d'un hôte autonome ou
+ * conteneur autonome hors Compose. Lecture seule : seul l'import écrit ces fiches,
  * et ne les supprime jamais (un service disparu est marqué « retiré »).
  */
 class Service extends ServiceBase
@@ -106,6 +108,10 @@ class Service extends ServiceBase
             15 => ['networks', __('Réseaux', 'dockerinventory'), 'text'],
             16 => ['secrets', __('Secrets (noms)', 'dockerinventory'), 'text'],
             17 => ['date_retired', __('Retiré le', 'dockerinventory'), 'datetime'],
+            18 => ['kind', __('Nature', 'dockerinventory'), 'specific'],
+            19 => ['state', __('État des conteneurs', 'dockerinventory'), 'string'],
+            20 => ['restart_policy', __('Politique de redémarrage', 'dockerinventory'), 'string'],
+            21 => ['volumes', __('Volumes (noms)', 'dockerinventory'), 'text'],
         ];
         $options = parent::rawSearchOptions();
         foreach ($own as $id => [$field, $name, $datatype]) {
@@ -116,7 +122,7 @@ class Service extends ServiceBase
                 'name'          => $name,
                 'datatype'      => $datatype,
                 'massiveaction' => false,
-            ];
+            ] + ($datatype === 'specific' ? ['searchtype' => ['equals', 'notequals']] : []);
         }
         $options[] = [
             'id'            => 8,
@@ -146,6 +152,54 @@ class Service extends ServiceBase
         ];
 
         return $options;
+    }
+
+    /**
+     * Libellés des natures de service (colonne `kind`).
+     *
+     * @return array<string, string>
+     */
+    public static function kindLabels(): array
+    {
+        return [
+            PortainerMapper::KIND_SWARM     => __('Service Swarm', 'dockerinventory'),
+            PortainerMapper::KIND_COMPOSE   => __('Service Compose', 'dockerinventory'),
+            PortainerMapper::KIND_CONTAINER => __('Conteneur autonome', 'dockerinventory'),
+        ];
+    }
+
+    /**
+     * @param array<string, mixed>|string $values
+     * @param array<string, mixed> $options
+     */
+    public static function getSpecificValueToDisplay($field, $values, array $options = [])
+    {
+        if ($field === 'kind') {
+            $value = is_array($values) ? (string) ($values[$field] ?? '') : (string) $values;
+
+            return htmlescape(self::kindLabels()[$value] ?? $value);
+        }
+
+        return parent::getSpecificValueToDisplay($field, $values, $options);
+    }
+
+    /**
+     * @param array<string, mixed>|string $values
+     * @param array<string, mixed> $options
+     */
+    public static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = [])
+    {
+        if ($field === 'kind') {
+            $value = is_array($values) ? (string) ($values[$field] ?? '') : (string) $values;
+
+            return \Dropdown::showFromArray(
+                (string) $name,
+                self::kindLabels(),
+                ['display' => false, 'value' => $value] + $options
+            );
+        }
+
+        return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
     public function showForm($ID, array $options = [])
@@ -219,6 +273,8 @@ class Service extends ServiceBase
         $digest = (string) ($row['digest'] ?? '');
         $replicas = $row['replicas'] ?? null;
         $running = (int) ($row['running_replicas'] ?? 0);
+        $kind = (string) ($row['kind'] ?? '') ?: PortainerMapper::KIND_SWARM;
+        $states = self::split((string) ($row['state'] ?? ''));
 
         return [
             'id'           => (int) ($row['id'] ?? 0),
@@ -236,6 +292,12 @@ class Service extends ServiceBase
             'ports'        => self::split((string) ($row['ports'] ?? '')),
             'networks'     => self::split((string) ($row['networks'] ?? '')),
             'secrets'      => self::split((string) ($row['secrets'] ?? '')),
+            'volumes'      => self::split((string) ($row['volumes'] ?? '')),
+            'kind'         => $kind,
+            'kind_label'   => self::kindLabels()[$kind] ?? $kind,
+            'is_swarm'     => $kind === PortainerMapper::KIND_SWARM,
+            'states'       => $states,
+            'restart_policy' => (string) ($row['restart_policy'] ?? ''),
             'endpoint'     => (string) ($row['endpoint_name'] ?? ''),
             'is_retired'   => (bool) ($row['is_retired'] ?? false),
             'date_retired' => (string) ($row['date_retired'] ?? ''),

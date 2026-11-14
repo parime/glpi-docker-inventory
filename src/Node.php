@@ -24,9 +24,11 @@ use CommonGLPI;
 use Computer;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
 
 /**
- * Nœud Docker Swarm, rattaché par l'import à l'ordinateur du même nom d'hôte. Pas de page
+ * Nœud Docker Swarm, ou hôte d'un environnement Docker autonome (rôle « standalone »), rattaché
+ * par l'import à l'ordinateur du même nom d'hôte. Pas de page
  * propre : il s'affiche dans l'onglet « Services du nœud » de l'ordinateur et sur la fiche des
  * services. Lisible avec le droit de lecture des services du plugin.
  */
@@ -70,6 +72,23 @@ class Node extends CommonDBTM
         foreach ($nodeIterator as $nodeRow) {
             $node = self::present($nodeRow);
             $node['services'] = [];
+            if ($nodeRow['role'] === PortainerMapper::ROLE_STANDALONE) {
+                // Hôte autonome : tous ses services, conteneurs arrêtés compris.
+                $iterator = $DB->request([
+                    'SELECT' => ['s.*', 's.running_replicas AS running_tasks'],
+                    'FROM'   => $serviceTable . ' AS s',
+                    'WHERE'  => [
+                        's.plugin_dockerinventory_connections_id' => $nodeRow['plugin_dockerinventory_connections_id'],
+                        's.endpoint_uid'                          => $nodeRow['endpoint_uid'],
+                    ] + (new DbUtils())->getEntitiesRestrictCriteria('s', '', '', true),
+                    'ORDER'  => ['s.is_retired', 's.stack_name', 's.name'],
+                ]);
+                foreach ($iterator as $row) {
+                    $node['services'][] = Service::present($row) + ['running_tasks' => (int) $row['running_tasks']];
+                }
+                $nodes[] = $node;
+                continue;
+            }
             $iterator = $DB->request([
                 'SELECT'     => ['s.*', 'sn.running_tasks'],
                 'FROM'       => 'glpi_plugin_dockerinventory_services_nodes AS sn',

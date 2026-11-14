@@ -22,9 +22,9 @@
             <th>{{ __('Service', 'dockerinventory') }}</th>
             <th>{{ __('Image et tag', 'dockerinventory') }}</th>
             <th>{{ __('Empreinte (digest)', 'dockerinventory') }}</th>
-            <th>{{ __('Réplicas', 'dockerinventory') }}</th>
+            <th>{{ __('Réplicas ou conteneurs', 'dockerinventory') }}</th>
             {% if show_tasks|default(false) %}
-                <th>{{ __('Tâches sur ce nœud', 'dockerinventory') }}</th>
+                <th>{{ __('En cours sur ce nœud', 'dockerinventory') }}</th>
             {% endif %}
             <th>{{ __('Ports publiés', 'dockerinventory') }}</th>
             <th>{{ __('Statut', 'dockerinventory') }}</th>
@@ -36,6 +36,9 @@
             <tr class="{{ service.is_retired ? 'text-muted' : '' }}">
                 <td>
                     <a href="{{ service.url }}"><i class="ti ti-brand-docker me-1"></i>{{ service.name }}</a>
+                    {% if not service.is_swarm %}
+                        {{ include('@dockerinventory/_kind_badge.html.twig', {service: service}) }}
+                    {% endif %}
                     {% if service.stack_name %}
                         <div class="small text-muted">
                             {{ __('Stack', 'dockerinventory') }} : {{ service.stack_name }}
@@ -55,6 +58,11 @@
                     <span class="badge {{ service.replicas_ok ? 'bg-success' : 'bg-warning' }} text-white">
                         {{ service.replicas }}
                     </span>
+                    {% if not service.is_swarm %}
+                        <div class="mt-1">
+                            {{ include('@dockerinventory/_state_badges.html.twig', {states: service.states}) }}
+                        </div>
+                    {% endif %}
                 </td>
                 {% if show_tasks|default(false) %}
                     <td>{{ service.running_tasks }}</td>

@@ -39,22 +39,46 @@
     {% set replicas_html %}
         {% set replicas_class = service.replicas_ok ? 'bg-success' : 'bg-warning' %}
         <span class="badge {{ replicas_class }} text-white">{{ service.replicas }}</span>
-        <span class="ms-2 text-muted">{{ __('en cours / voulus', 'dockerinventory') }}</span>
+        {% if service.is_swarm %}
+            <span class="ms-2 text-muted">{{ __('en cours / voulus', 'dockerinventory') }}</span>
+        {% else %}
+            <span class="ms-2 text-muted">{{ __('conteneurs en cours / conteneurs', 'dockerinventory') }}</span>
+        {% endif %}
+    {% endset %}
+    {% set kind_html %}
+        {{ include('@dockerinventory/_kind_badge.html.twig', {service: service}) }}
+    {% endset %}
+    {% set states_html %}
+        {{ include('@dockerinventory/_state_badges.html.twig', {states: service.states}) }}
     {% endset %}
     {% set lists = {
         (__('Ports publiés', 'dockerinventory')): service.ports,
         (__('Réseaux', 'dockerinventory')): service.networks,
+        (__('Volumes (noms)', 'dockerinventory')): service.volumes,
         (__('Secrets (noms)', 'dockerinventory')): service.secrets,
     } %}
 
     {{ fields.readOnlyField('name', service.name, __('Name')) }}
     {{ fields.field('status', status_html, __('Statut', 'dockerinventory')) }}
+    {{ fields.field('kind', kind_html, __('Nature', 'dockerinventory')) }}
     {{ fields.field('appliance', appliance_html, __('Application (stack)', 'dockerinventory')) }}
     {{ fields.readOnlyField('endpoint', service.endpoint, __('Environnement Portainer', 'dockerinventory')) }}
     {{ fields.readOnlyField('image', service.image, __('Image', 'dockerinventory')) }}
     {{ fields.readOnlyField('tag', service.tag, __('Tag (version déployée)', 'dockerinventory')) }}
     {{ fields.readOnlyField('digest', service.digest ?: '-', __('Empreinte (digest)', 'dockerinventory')) }}
-    {{ fields.field('replicas', replicas_html, __('Réplicas', 'dockerinventory')) }}
+    {{ fields.field(
+        'replicas',
+        replicas_html,
+        service.is_swarm ? __('Réplicas', 'dockerinventory') : __('Conteneurs', 'dockerinventory')
+    ) }}
+    {% if not service.is_swarm %}
+        {{ fields.field('states', states_html, __('État des conteneurs', 'dockerinventory')) }}
+        {{ fields.readOnlyField(
+            'restart_policy',
+            service.restart_policy ?: '-',
+            __('Politique de redémarrage', 'dockerinventory')
+        ) }}
+    {% endif %}
     {% for label, values in lists %}
         {% set list_html %}
             {% for value in values %}
@@ -71,17 +95,30 @@
         __('Vu la dernière fois', 'dockerinventory')
     ) }}
 
-    {{ fields.smallTitle(__('Nœuds', 'dockerinventory'), 'ti ti-server') }}
+    {{ fields.smallTitle(
+        service.is_swarm ? __('Nœuds', 'dockerinventory') : __('Hôte Docker', 'dockerinventory'),
+        'ti ti-server'
+    ) }}
     <div class="col-12 mb-3">
         {% if nodes is empty %}
-            <p class="text-muted">{{ __('Aucune tâche en cours connue pour ce service.', 'dockerinventory') }}</p>
+            <p class="text-muted">
+                {% if service.is_swarm %}
+                    {{ __('Aucune tâche en cours connue pour ce service.', 'dockerinventory') }}
+                {% else %}
+                    {{ __('Aucun conteneur en cours pour ce service.', 'dockerinventory') }}
+                {% endif %}
+            </p>
         {% else %}
             <table class="table table-sm table-hover">
                 <thead>
                     <tr>
                         <th>{{ __("Nom d'hôte", 'dockerinventory') }}</th>
                         <th>{{ __('Ordinateur', 'dockerinventory') }}</th>
-                        <th>{{ __('Tâches en cours', 'dockerinventory') }}</th>
+                        <th>
+                            {{ service.is_swarm
+                                ? __('Tâches en cours', 'dockerinventory')
+                                : __('Conteneurs en cours', 'dockerinventory') }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody>

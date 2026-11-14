@@ -28,6 +28,7 @@ use GlpiPlugin\Dockerinventory\Registry\RegistryClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryException;
 use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use PHPUnit\Framework\TestCase;
 
@@ -162,25 +163,13 @@ final class RegistryImporterTest extends TestCase
 
     private function importPortainer(): void
     {
-        $fixture = json_decode(
-            (string) file_get_contents(dirname(__DIR__) . '/mock-portainer/fixture.json'),
-            true
-        );
+        $fixture = PortainerFixture::load();
         (new Importer(static fn (Connection $c): PortainerClient => new PortainerClient(
             'https://portainer.exemple.test:9443',
             'ptr_fictive_cle_registres',
             static function (string $url) use ($fixture): string {
                 $path = (string) parse_url($url, PHP_URL_PATH);
-                if ($path === '/api/endpoints' || $path === '/api/stacks') {
-                    return (string) json_encode($fixture[$path === '/api/stacks' ? 'stacks' : 'endpoints']);
-                }
-                preg_match('#^/api/endpoints/(\d+)/docker/(\w+)$#', $path, $m);
-                $endpoint = $fixture['docker'][$m[1] ?? ''] ?? ['swarm' => false];
-                if (!$endpoint['swarm']) {
-                    throw new \RuntimeException('HTTP 503 returned');
-                }
-
-                return (string) json_encode($endpoint[$m[2]]);
+                return PortainerFixture::respond($fixture, $path);
             }
         )))->import($this->connection($this->portainerId));
     }
@@ -292,8 +281,9 @@ final class RegistryImporterTest extends TestCase
 
         $rows = $this->versions();
         $this->assertSame(
-            ['boutique_api', 'boutique_cache', 'boutique_db', 'boutique_web', 'outil_isole', 'supervision_agent',
-                'supervision_grafana'],
+            // Services Swarm et services de l'hôte autonome (#25).
+            ['adminer', 'boutique_api', 'boutique_cache', 'boutique_db', 'boutique_web', 'courrier', 'db', 'indexeur',
+                'outil_isole', 'sauvegarde-nocturne', 'supervision_agent', 'supervision_grafana', 'wiki'],
             array_keys($rows)
         );
         $expected = [
@@ -328,7 +318,8 @@ final class RegistryImporterTest extends TestCase
         $this->assertContains('harbor /v2/boutique/api/tags/list', $this->requested);
         $harbor = $this->connection($this->harborId);
         $this->assertSame(Connection::STATUS_OK, (int) $harbor->fields['last_import_status']);
-        $this->assertSame(1, json_decode((string) $harbor->fields['last_import_report'], true)['services']);
+        // boutique_api et les 4 services de l'hôte autonome dont l'image est sur ce registre (#25).
+        $this->assertSame(5, json_decode((string) $harbor->fields['last_import_report'], true)['services']);
 
         // Idempotence : même nombre de lignes, mêmes identifiants.
         $ids = array_column($rows, 'id');

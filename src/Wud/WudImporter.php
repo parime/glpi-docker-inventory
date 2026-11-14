@@ -32,8 +32,9 @@ use GlpiPlugin\Dockerinventory\Version\VersionLinker;
  *
  * Règles :
  * - WUD est seulement lu (GET /api/app, GET /api/containers) ; son calcul de l'écart est repris ;
- * - chaque conteneur est rattaché à un service Swarm actif de l'entité de la connexion (ou de ses
- *   sous-entités) : par empreinte, puis par nom du service, puis par image et tag ;
+ * - chaque conteneur est rattaché à un service actif de l'entité de la connexion (ou de ses
+ *   sous-entités) : par identifiant ou nom du conteneur (hôtes autonomes), puis par empreinte, puis
+ *   par nom du service Swarm, puis par image et tag ;
  * - une ligne par service, une ligne par conteneur sans service (listé à part) ;
  * - seules les tables du plugin sont écrites ; les lignes de cette connexion qui ne correspondent
  *   plus à rien sont supprimées (données recalculées, comme la répartition des tâches) ;
@@ -161,7 +162,7 @@ final class WudImporter
      * Services actifs de l'entité de la connexion et de ses sous-entités.
      *
      * @return array<int, array{id: int, name: string, image: string, tag: string, digest: string,
-     *     entities_id: int, is_recursive: int}>
+     *     container_uids: list<string>, container_names: list<string>, entities_id: int, is_recursive: int}>
      */
     private function candidateServices(Connection $connection): array
     {
@@ -170,7 +171,10 @@ final class WudImporter
         $entities = (new DbUtils())->getSonsOf('glpi_entities', (int) $connection->fields['entities_id']);
         $services = [];
         $iterator = $DB->request([
-            'SELECT' => ['id', 'name', 'image', 'tag', 'digest', 'entities_id', 'is_recursive'],
+            'SELECT' => [
+                'id', 'name', 'image', 'tag', 'digest', 'container_uids', 'container_names', 'entities_id',
+                'is_recursive',
+            ],
             'FROM'   => Service::getTable(),
             'WHERE'  => ['is_retired' => 0, 'entities_id' => array_values($entities)],
             'ORDER'  => 'id',
@@ -182,12 +186,23 @@ final class WudImporter
                 'image'        => (string) $row['image'],
                 'tag'          => (string) $row['tag'],
                 'digest'       => (string) $row['digest'],
+                // Conteneurs des services des hôtes autonomes (vides pour un service Swarm).
+                'container_uids'  => self::split((string) $row['container_uids']),
+                'container_names' => self::split((string) $row['container_names']),
                 'entities_id'  => (int) $row['entities_id'],
                 'is_recursive' => (int) $row['is_recursive'],
             ];
         }
 
         return $services;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function split(string $value): array
+    {
+        return $value === '' ? [] : explode(', ', $value);
     }
 
     /**

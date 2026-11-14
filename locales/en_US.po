@@ -27,13 +27,13 @@ msgstr "Image and tag"
 msgid "Empreinte (digest)"
 msgstr "Digest"
 
-#: templates/_service_rows.html.twig templates/service_form.html.twig
-msgid "Réplicas"
-msgstr "Replicas"
+#: templates/_service_rows.html.twig
+msgid "Réplicas ou conteneurs"
+msgstr "Replicas or containers"
 
 #: templates/_service_rows.html.twig
-msgid "Tâches sur ce nœud"
-msgstr "Tasks on this node"
+msgid "En cours sur ce nœud"
+msgstr "Running on this node"
 
 #: templates/_service_rows.html.twig templates/service_form.html.twig src/Service.php
 msgid "Ports publiés"
@@ -50,6 +50,14 @@ msgstr "Last seen"
 #: templates/_service_rows.html.twig templates/_version_rows.html.twig templates/ticket_content.html.twig src/ImageVersion.php src/Service.php
 msgid "Stack"
 msgstr "Stack"
+
+#: templates/_state_badges.html.twig
+msgid "En cours"
+msgstr "Running"
+
+#: templates/_state_badges.html.twig
+msgid "Arrêté"
+msgstr "Stopped"
 
 #: templates/_status_badge.html.twig templates/_version_rows.html.twig templates/computer_nodes.html.twig src/Service.php
 msgid "Retiré"
@@ -112,8 +120,8 @@ msgid "Erreur WUD"
 msgstr "WUD error"
 
 #: templates/appliance_services.html.twig
-msgid "Services Docker Swarm de cette stack"
-msgstr "Docker Swarm services of this stack"
+msgid "Services Docker de cette stack"
+msgstr "Docker services of this stack"
 
 #: templates/appliance_services.html.twig
 msgid "Aucun service importé pour cette application."
@@ -132,12 +140,16 @@ msgid "Un service disparu est marqué « Retiré », jamais supprimé."
 msgstr "A service that disappears is marked “Retired”, never deleted."
 
 #: templates/computer_nodes.html.twig
-msgid "Cet ordinateur n'est rattaché à aucun nœud Docker Swarm."
-msgstr "This computer is not linked to any Docker Swarm node."
+msgid "Cet ordinateur n'est rattaché à aucun nœud Swarm ni hôte Docker."
+msgstr "This computer is not linked to any Swarm node or Docker host."
 
 #: templates/computer_nodes.html.twig
 msgid "Le rattachement se fait à l'import Portainer, par nom d'hôte."
 msgstr "Nodes are linked during the Portainer import, by host name."
+
+#: templates/computer_nodes.html.twig
+msgid "Hôte Docker autonome"
+msgstr "Standalone Docker host"
 
 #: templates/computer_nodes.html.twig
 msgid "Version de Docker"
@@ -146,6 +158,10 @@ msgstr "Docker version"
 #: templates/computer_nodes.html.twig src/Connection.php
 msgid "Adresse"
 msgstr "Address"
+
+#: templates/computer_nodes.html.twig
+msgid "Aucun conteneur en cours sur cet hôte."
+msgstr "No running container on this host."
 
 #: templates/computer_nodes.html.twig
 msgid "Aucune tâche de service en cours sur ce nœud."
@@ -179,9 +195,9 @@ msgstr "Services"
 msgid "Retirés à cet import"
 msgstr "Retired by this import"
 
-#: templates/connection_actions.html.twig templates/service_form.html.twig
-msgid "Nœuds"
-msgstr "Nodes"
+#: templates/connection_actions.html.twig
+msgid "Nœuds Swarm et hôtes Docker"
+msgstr "Swarm nodes and Docker hosts"
 
 #: templates/connection_actions.html.twig
 msgid "rattachés à un ordinateur"
@@ -404,8 +420,8 @@ msgid "Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos p
 msgstr "Without WUD, Docker Hub is read directly; Harbor serves the images of your projects."
 
 #: templates/connection_type_choice.html.twig
-msgid "Stacks, services Docker Swarm et nœuds : ce qui tourne, et où."
-msgstr "Stacks, Docker Swarm services and nodes: what runs, and where."
+msgid "Stacks Swarm et Compose, services, conteneurs et hôtes : ce qui tourne, et où."
+msgstr "Swarm and Compose stacks, services, containers and hosts: what runs, and where."
 
 #: templates/connection_type_choice.html.twig
 msgid "Version déployée et dernière version disponible de chaque image."
@@ -483,13 +499,25 @@ msgstr "No stack"
 msgid "en cours / voulus"
 msgstr "running / desired"
 
+#: templates/service_form.html.twig
+msgid "conteneurs en cours / conteneurs"
+msgstr "running containers / containers"
+
 #: templates/service_form.html.twig src/Service.php
 msgid "Réseaux"
 msgstr "Networks"
 
 #: templates/service_form.html.twig src/Service.php
+msgid "Volumes (noms)"
+msgstr "Volumes (names)"
+
+#: templates/service_form.html.twig src/Service.php
 msgid "Secrets (noms)"
 msgstr "Secrets (names)"
+
+#: templates/service_form.html.twig src/Service.php
+msgid "Nature"
+msgstr "Kind"
 
 #: templates/service_form.html.twig
 msgid "Application (stack)"
@@ -504,8 +532,36 @@ msgid "Tag (version déployée)"
 msgstr "Tag (deployed version)"
 
 #: templates/service_form.html.twig
+msgid "Réplicas"
+msgstr "Replicas"
+
+#: templates/service_form.html.twig
+msgid "Conteneurs"
+msgstr "Containers"
+
+#: templates/service_form.html.twig src/Service.php
+msgid "État des conteneurs"
+msgstr "Container state"
+
+#: templates/service_form.html.twig src/Service.php
+msgid "Politique de redémarrage"
+msgstr "Restart policy"
+
+#: templates/service_form.html.twig
+msgid "Nœuds"
+msgstr "Nodes"
+
+#: templates/service_form.html.twig
+msgid "Hôte Docker"
+msgstr "Docker host"
+
+#: templates/service_form.html.twig
 msgid "Aucune tâche en cours connue pour ce service."
 msgstr "No running task known for this service."
+
+#: templates/service_form.html.twig
+msgid "Aucun conteneur en cours pour ce service."
+msgstr "No running container for this service."
 
 #: templates/service_form.html.twig
 msgid "Nom d'hôte"
@@ -518,6 +574,10 @@ msgstr "Computer"
 #: templates/service_form.html.twig
 msgid "Tâches en cours"
 msgstr "Running tasks"
+
+#: templates/service_form.html.twig
+msgid "Conteneurs en cours"
+msgstr "Running containers"
 
 #: templates/service_form.html.twig
 msgid "Non rattaché"
@@ -700,8 +760,8 @@ msgid "Aucun service ne correspond à ces filtres."
 msgstr "No service matches these filters."
 
 #: templates/versions.html.twig
-msgid "Conteneurs sans service Swarm"
-msgstr "Containers without a Swarm service"
+msgid "Conteneurs sans service importé"
+msgstr "Containers without an imported service"
 
 #: templates/versions.html.twig
 msgid "Conteneurs suivis par WUD qui ne correspondent à aucun service importé de Portainer."
@@ -794,8 +854,8 @@ msgstr "Failed: %s"
 
 #: src/Connection.php
 #, php-format
-msgid "Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds."
-msgstr "Import finished (%1$s): %2$d stacks, %3$d services, %4$d retired, %5$d nodes."
+msgid "Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds ou hôtes."
+msgstr "Import finished (%1$s): %2$d stacks, %3$d services, %4$d retired, %5$d nodes or hosts."
 
 #: src/Connection.php
 #, php-format
@@ -956,8 +1016,8 @@ msgid "Lecture des versions des images depuis What's Up Docker"
 msgstr "Reading image versions from What's Up Docker"
 
 #: src/Connection.php
-msgid "Import des stacks et services Docker Swarm depuis Portainer"
-msgstr "Import Docker Swarm stacks and services from Portainer"
+msgid "Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
+msgstr "Import of Docker stacks and services (Swarm and Compose) from Portainer"
 
 #: src/Connection.php
 #, php-format
@@ -966,8 +1026,8 @@ msgstr "%1$s: %2$s (%3$d containers, %4$d services tracked, %5$d without service
 
 #: src/Connection.php
 #, php-format
-msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds)"
-msgstr "%1$s: %2$s (%3$d services, %4$d retired, %5$d nodes)"
+msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
+msgstr "%1$s: %2$s (%3$d services, %4$d retired, %5$d nodes or hosts)"
 
 #: src/ImageVersion.php
 msgid "Version d'image"
@@ -1038,6 +1098,10 @@ msgid "Aucune version plus récente connue."
 msgstr "No newer version known."
 
 #: src/ImageVersion.php
+msgid "Par identifiant ou nom du conteneur"
+msgstr "By container ID or name"
+
+#: src/ImageVersion.php
 msgid "Par empreinte de l’image"
 msgstr "By image digest"
 
@@ -1054,8 +1118,8 @@ msgid "Plusieurs services possibles"
 msgstr "Several possible services"
 
 #: src/ImageVersion.php
-msgid "Conteneur hors Swarm"
-msgstr "Container outside Swarm"
+msgid "Conteneur hors Swarm non importé"
+msgstr "Non-Swarm container not imported"
 
 #: src/ImageVersion.php
 msgid "Aucun service importé correspondant"
@@ -1117,6 +1181,18 @@ msgstr "Running replicas"
 #: src/Service.php
 msgid "Retiré le"
 msgstr "Retired on"
+
+#: src/Service.php
+msgid "Service Swarm"
+msgstr "Swarm service"
+
+#: src/Service.php
+msgid "Service Compose"
+msgstr "Compose service"
+
+#: src/Service.php
+msgid "Conteneur autonome"
+msgstr "Standalone container"
 
 #: src/Service.php
 #, php-format

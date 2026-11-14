@@ -4,7 +4,8 @@
 
 GLPI plugin that gives a **read-only** view of containerised applications:
 
-- **Portainer**: Docker Swarm stacks and services, cluster nodes;
+- **Portainer**: Docker Swarm stacks and services, cluster nodes; standalone Docker hosts, their
+  Compose stacks and their containers;
 - **What's Up Docker (WUD)**: deployed version and latest available version of each image;
 - **Harbor**: projects, repositories, artifacts and vulnerability scan overview of the images.
 
@@ -31,7 +32,7 @@ replicas or version.
 
 | Source | Import | In GLPI |
 | --- | --- | --- |
-| Portainer | Stacks, services (image, tag, digest, replicas, published ports, networks, secret names), nodes | Stack = native Appliance (impact analysis); Service form; nodes linked to inventoried computers |
+| Portainer | Swarm and Compose stacks, Swarm services, Compose services and standalone containers (image, tag, digest, replicas or containers, state, restart policy, published ports, networks, named volumes, secret names), Swarm nodes and standalone hosts | Stack = native Appliance (impact analysis); Service form; nodes and hosts linked to inventoried computers |
 | WUD | Watched containers: local tag and digest, latest version, kind of gap | Deployed version, latest version, gap (patch, minor, major, digest only, not trackable) per service; containers without a service listed separately |
 | Registries (without WUD) | Docker Hub and Harbor v2 API | Same version table, computed by the plugin |
 | Harbor | Projects, repositories, artifacts, vulnerability scan overview | Vulnerabilities per image, images outside the managed registry flagged |
@@ -72,7 +73,21 @@ What you get:
 
 - *Assets > Container services*: every service, with image, tag, digest, replicas, status;
 - on each **Appliance** created for a stack, the "Services" tab;
-- on each **computer** whose name matches a Swarm node, the "Node services" tab.
+- on each **computer** whose name matches a Swarm node or a standalone Docker host, the "Node
+  services" tab.
+
+**Standalone Docker hosts and Compose stacks** ([#25](https://github.com/parime/glpi-docker-inventory/issues/25)):
+one connection can mix Swarm and non-Swarm Docker environments. For the latter, the import reads
+the host (name, Docker version), its containers (stopped ones included) and its images, read-only:
+
+- each Portainer Compose stack, and each Compose project deployed outside Portainer (container
+  label `com.docker.compose.project`), becomes an Appliance, like a Swarm stack;
+- each Compose service (one or more containers) and each container outside Compose becomes a
+  service, of kind "Compose service" or "Standalone container": image, tag, digest, container
+  state, restart policy, published ports, networks, volumes and secrets by name only. Environment
+  variable values and secret contents are never read nor stored;
+- the host is linked to the computer with the same name, like a Swarm node;
+- a vanished container or project is marked "retired", never deleted.
 
 What the plugin writes **outside its own tables**: only the one-time creation of a stack's
 Appliance when no appliance with that name exists in the connection's entity. An existing
@@ -86,8 +101,9 @@ update right.
 latest published version of each one. The plugin reads that result **without changing anything in
 WUD** (no trigger, no update) and links it to the services imported from Portainer.
 
-1. **Import Portainer first**: containers seen by WUD are linked to the imported Swarm services (by
-   image digest, then by Swarm service name, then by image and tag).
+1. **Import Portainer first**: containers seen by WUD are linked to the imported services (by
+   container ID or name for standalone hosts, then by image digest, then by Swarm service name,
+   then by image and tag).
 2. **In GLPI**, *Setup > Docker connections*: "Add", choose **What's Up Docker**, enter the WUD
    address (`https://wud.exemple.test:3000`) and, if WUD requires authentication, the user and
    password (encrypted with the GLPI key, never shown again). "Test the connection" shows the WUD
@@ -109,7 +125,7 @@ Reading rules:
   digest tells whether the image changed;
 - several containers of one service give a single row; replicas in different versions (update in
   progress or stuck) are flagged;
-- a container without a matching service (outside Swarm, or several possible services) is not
+- a container without a matching service (host missing from Portainer, or several possible services) is not
   ignored: it is listed separately with the reason.
 
 > The mapping of the WUD API (`/api/containers`, `/api/app`) follows the public WUD 8.x

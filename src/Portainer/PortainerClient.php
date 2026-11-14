@@ -107,11 +107,88 @@ final class PortainerClient
     }
 
     /**
+     * Informations du moteur Docker d'un environnement autonome : nom d'hôte, version, identifiant.
+     *
+     * @return array<string, mixed>
+     */
+    public function info(int $endpointId): array
+    {
+        return $this->getObject(sprintf('/api/endpoints/%d/docker/info', $endpointId));
+    }
+
+    /**
+     * Conteneurs d'un hôte Docker autonome, arrêtés compris. La liste de l'API Docker ne contient
+     * pas les variables d'environnement.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function containers(int $endpointId): array
+    {
+        return $this->getList(sprintf('/api/endpoints/%d/docker/containers/json', $endpointId), ['all' => 1]);
+    }
+
+    /**
+     * Images de l'hôte : empreintes du dépôt (RepoDigests) des images des conteneurs.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function images(int $endpointId): array
+    {
+        return $this->getList(sprintf('/api/endpoints/%d/docker/images/json', $endpointId));
+    }
+
+    /**
+     * Détail d'un conteneur, pour sa politique de redémarrage seulement (absente de la liste). La
+     * réponse de Docker contient aussi les variables d'environnement : PortainerMapper ne lit que
+     * HostConfig.RestartPolicy, rien d'autre n'est gardé.
+     *
+     * @return array<string, mixed>
+     */
+    public function container(int $endpointId, string $containerId): array
+    {
+        return $this->getObject(sprintf(
+            '/api/endpoints/%d/docker/containers/%s/json',
+            $endpointId,
+            rawurlencode($containerId)
+        ));
+    }
+
+    /**
      * @param array<string, scalar> $query
      * @return list<array<string, mixed>>
      * @throws PortainerException
      */
     private function getList(string $path, array $query = []): array
+    {
+        $data = $this->get($path, $query);
+        if (!array_is_list($data)) {
+            throw new PortainerException(PortainerException::UNEXPECTED);
+        }
+
+        return array_values(array_filter($data, 'is_array'));
+    }
+
+    /**
+     * @return array<string, mixed>
+     * @throws PortainerException
+     */
+    private function getObject(string $path): array
+    {
+        $data = $this->get($path, []);
+        if ($data !== [] && array_is_list($data)) {
+            throw new PortainerException(PortainerException::UNEXPECTED);
+        }
+
+        /** @var array<string, mixed> $data */
+        return $data;
+    }
+
+    /**
+     * @param array<string, scalar> $query
+     * @return array<mixed>
+     * @throws PortainerException
+     */
+    private function get(string $path, array $query): array
     {
         try {
             $body = ($this->transport)($this->baseUrl . $path, $query, [
@@ -122,10 +199,10 @@ final class PortainerClient
             throw PortainerException::fromThrowable($e);
         }
         $data = json_decode($body, true);
-        if (!is_array($data) || !array_is_list($data)) {
+        if (!is_array($data)) {
             throw new PortainerException(PortainerException::UNEXPECTED);
         }
 
-        return array_values(array_filter($data, 'is_array'));
+        return $data;
     }
 }
