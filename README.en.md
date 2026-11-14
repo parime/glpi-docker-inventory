@@ -13,9 +13,9 @@ It answers "what is running, in which version, is it up to date, is it vulnerabl
 cannot do on its own: its "Virtualization" tab lists isolated containers, with no stack, service,
 replicas or version.
 
-> **Status**: version 0.2.0 released (batch 1: Portainer; core of batch 2: What's Up Docker). The
-> registry fallback without WUD (Docker Hub, Harbor) and the update tickets above thresholds are
-> ready for the next release; Harbor (batch 3) follows. See [ROADMAP.md](ROADMAP.md).
+> **Status**: version 0.4.0 released: Portainer (Swarm and standalone Docker hosts with their
+> Compose stacks), image versions from What's Up Docker or registries (Docker Hub, Harbor), update
+> tickets above thresholds. Harbor (batch 3) follows. See [ROADMAP.md](ROADMAP.md).
 
 ## Principles
 
