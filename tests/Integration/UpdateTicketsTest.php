@@ -28,10 +28,10 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use GlpiPlugin\Dockerinventory\Ticket\TicketPolicy;
 use GlpiPlugin\Dockerinventory\Ticket\UpdateTickets;
 use ITILFollowup;
-use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use PHPUnit\Framework\TestCase;
 use Ticket;
 

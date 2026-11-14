@@ -5,7 +5,24 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Hôtes Docker autonomes et stacks Compose gérés par Portainer
+  ([#25](https://github.com/parime/glpi-docker-inventory/issues/25)), en lecture seule, dans la même
+  connexion que les environnements Swarm : hôte rattaché à l'ordinateur du même nom (onglet
+  « Services du nœud », conteneurs arrêtés compris) ; stacks Compose de Portainer et projets
+  Compose déployés hors Portainer en Applications ; services Compose et conteneurs hors Compose en
+  services (nature, image, tag, empreinte, état des conteneurs, politique de redémarrage, ports,
+  réseaux, volumes et secrets par leur nom, jamais les valeurs des variables d'environnement) ;
+  conteneur ou projet disparu « retiré », jamais supprimé. Les conteneurs vus par WUD sont
+  rattachés à ces services par leur identifiant ou leur nom : même tableau des versions, même
+  repli par les registres et mêmes tickets de mise à jour que les services Swarm. Faux Portainer
+  complété (hôte `docker-recette-01.exemple.test`). Mise à jour automatique depuis la 0.3.0.
+
 ### Changed
+
+- Conteneurs WUD non rattachés : « Conteneurs sans service importé » (au lieu de « sans service
+  Swarm ») ; libellés des onglets et du compte rendu d'import étendus aux hôtes autonomes.
 
 - Fichiers de citation et d'attribution : `CITATION.cff`, `NOTICE`, `AGENTS.md` (consignes de licence
   pour les assistants de code) et section « Réutilisation et citation » des README.

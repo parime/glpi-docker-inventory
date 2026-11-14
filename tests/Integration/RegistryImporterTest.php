@@ -28,8 +28,8 @@ use GlpiPlugin\Dockerinventory\Registry\RegistryClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryException;
 use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Service;
-use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
+use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use PHPUnit\Framework\TestCase;
 
 /**

@@ -438,7 +438,8 @@ final class ImporterTest extends TestCase
     public function testContainerRemovedDuringImportKeepsTheOthers(): void
     {
         // Conteneur supprimé entre la liste et son détail (404) : politique inconnue, import réussi.
-        unset($this->fixture['docker']['2']['inspect']['0b000000000000000000000000000000000000000000000000000000000000b0']);
+        $backup = '0b000000000000000000000000000000000000000000000000000000000000b0';
+        unset($this->fixture['docker']['2']['inspect'][$backup]);
 
         $report = $this->importer()->import($this->connection());
 

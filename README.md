@@ -4,7 +4,8 @@
 
 Plugin GLPI qui donne une vue sur les applications en conteneurs, **en lecture seule** :
 
-- **Portainer** : stacks et services Docker Swarm, nœuds du cluster ;
+- **Portainer** : stacks et services Docker Swarm, nœuds du cluster ; hôtes Docker autonomes, leurs
+  stacks Compose et leurs conteneurs ;
 - **What's Up Docker (WUD)** : version déployée et dernière version disponible de chaque image ;
 - **Harbor** : projets, dépôts, artefacts et résumé d'analyse de vulnérabilités des images.
 
@@ -31,7 +32,7 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 
 | Source | Import | Dans GLPI |
 | --- | --- | --- |
-| Portainer | Stacks, services (image, tag, empreinte, réplicas, ports publiés, réseaux, noms des secrets), nœuds | Stack = Application native (analyse d'impact) ; fiche Service ; nœuds rattachés aux ordinateurs inventoriés |
+| Portainer | Stacks Swarm et Compose, services Swarm, services Compose et conteneurs autonomes (image, tag, empreinte, réplicas ou conteneurs, état, politique de redémarrage, ports publiés, réseaux, volumes nommés, noms des secrets), nœuds Swarm et hôtes autonomes | Stack = Application native (analyse d'impact) ; fiche Service ; nœuds et hôtes rattachés aux ordinateurs inventoriés |
 | WUD | Conteneurs suivis : tag et empreinte locaux, dernière version, type d'écart | Version déployée, dernière version, écart (correctif, mineure, majeure, empreinte seule, non suivable) par service ; conteneurs sans service listés à part |
 | Registres (sans WUD) | Docker Hub et API v2 de Harbor | Même tableau des versions, calculé par le plugin |
 | Harbor | Projets, dépôts, artefacts, résumé d'analyse de vulnérabilités | Vulnérabilités par image, images hors registre maîtrisé signalées |
@@ -72,7 +73,23 @@ Ce qui apparaît :
 
 - *Parc > Services de conteneurs* : tous les services, avec image, tag, empreinte, réplicas, état ;
 - sur chaque **Application** créée pour une stack, l'onglet « Services » ;
-- sur chaque **ordinateur** dont le nom correspond à un nœud du Swarm, l'onglet « Services du nœud ».
+- sur chaque **ordinateur** dont le nom correspond à un nœud du Swarm ou à un hôte Docker autonome,
+  l'onglet « Services du nœud ».
+
+**Hôtes Docker autonomes et stacks Compose** ([#25](https://github.com/parime/glpi-docker-inventory/issues/25)) :
+une même connexion peut mêler environnements Swarm et environnements Docker sans Swarm. Pour ces
+derniers, l'import lit l'hôte (nom, version de Docker), ses conteneurs (arrêtés compris) et ses
+images, toujours en lecture seule :
+
+- chaque stack Compose de Portainer, et chaque projet Compose déployé hors Portainer (étiquette
+  `com.docker.compose.project` des conteneurs), devient une Application, comme une stack Swarm ;
+- chaque service Compose (un ou plusieurs conteneurs) et chaque conteneur hors Compose devient un
+  service, de nature « Service Compose » ou « Conteneur autonome » : image, tag, empreinte, état
+  des conteneurs, politique de redémarrage, ports publiés, réseaux, volumes et secrets par leur
+  nom seulement. Les valeurs des variables d'environnement et le contenu des secrets ne sont
+  jamais lus ni enregistrés ;
+- l'hôte est rattaché à l'ordinateur du même nom, comme un nœud Swarm ;
+- un conteneur ou un projet disparu est marqué « retiré », jamais supprimé.
 
 Ce que le plugin écrit **hors de ses propres tables** : uniquement la création, une fois, de
 l'Application d'une stack quand aucune application de ce nom n'existe dans l'entité de la
@@ -87,8 +104,9 @@ connaît, pour chacune, la dernière version publiée. Le plugin lit ce résulta
 dans WUD** (aucun déclencheur, aucune mise à jour) et le rattache aux services importés de
 Portainer.
 
-1. **Importer d'abord Portainer** : les conteneurs vus par WUD sont rattachés aux services Swarm
-   importés (par l'empreinte de l'image, puis par le nom du service Swarm, puis par image et tag).
+1. **Importer d'abord Portainer** : les conteneurs vus par WUD sont rattachés aux services
+   importés (par l'identifiant ou le nom du conteneur pour les hôtes autonomes, puis par
+   l'empreinte de l'image, puis par le nom du service Swarm, puis par image et tag).
 2. **Dans GLPI**, *Configuration > Connexions Docker* : « Ajouter », choisir **What's Up Docker**,
    saisir l'adresse de WUD (`https://wud.exemple.test:3000`) et, si WUD demande une
    authentification, l'utilisateur et le mot de passe (chiffré avec la clé de GLPI, jamais
@@ -112,7 +130,7 @@ Règles de lecture :
   l'empreinte dit si l'image a changé ;
 - plusieurs conteneurs d'un même service donnent une seule ligne ; des réplicas dans des versions
   différentes (mise à jour en cours ou bloquée) sont signalés ;
-- un conteneur sans service correspondant (hors Swarm, ou plusieurs services possibles) n'est pas
+- un conteneur sans service correspondant (hôte absent de Portainer, ou plusieurs services possibles) n'est pas
   ignoré : il est listé à part avec la raison.
 
 > La correspondance avec l'API de WUD (`/api/containers`, `/api/app`) suit la documentation

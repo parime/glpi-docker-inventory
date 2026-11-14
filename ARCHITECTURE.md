@@ -30,15 +30,19 @@ dockerinventory/
 │   │                          mot de passe chiffré (GLPIKey), utilisateur WUD ou compte robot Harbor, hôte
 │   │                          du registre (Harbor), environnement des applications créées, dernier compte
 │   │                          rendu ; tâches automatiques horaires
-│   ├── Importer.php           import Portainer : stacks, services, nœuds, tâches en cours, retraits
+│   ├── Importer.php           import Portainer : stacks, services, nœuds, tâches en cours, retraits ;
+│   │                          hôtes autonomes : stacks et projets Compose, conteneurs, hôte
 │   ├── ImageVersion.php       version d'image d'un service (ou d'un conteneur sans service) ; onglet
 │   │                          « Versions » des services et des applications, page et recherche
-│   ├── Service.php            service Swarm (lecture seule) ; onglet « Services » des applications
-│   ├── Node.php               nœud Swarm ; onglet « Services du nœud » des ordinateurs
+│   ├── Service.php            service Swarm, service Compose ou conteneur autonome (lecture seule) ;
+│   │                          onglet « Services » des applications
+│   ├── Node.php               nœud Swarm ou hôte autonome ; onglet « Services du nœud » des ordinateurs
 │   ├── Profile.php            onglet « Inventaire Docker » des profils (droit plugin_dockerinventory_service)
 │   ├── Portainer/
 │   │   ├── PortainerClient.php     lecture seule : /api/endpoints, /api/stacks, /docker/{services,
-│   │   │                           nodes,tasks,networks}, en-tête X-API-Key, transport injectable
+│   │   │                           nodes,tasks,networks} ; hôtes autonomes : /docker/{info,
+│   │   │                           containers/json,images/json,containers/<id>/json} ; en-tête
+│   │   │                           X-API-Key, transport injectable
 │   │   ├── PortainerContext.php    contexte réseau (réseaux privés autorisés sous GLPI 12)
 │   │   ├── PortainerException.php  codes d'erreur stables, jamais le texte d'origine ni la clé
 │   │   ├── PortainerMapper.php     réponse Docker → valeurs enregistrées (fonctions pures)
@@ -85,9 +89,9 @@ dockerinventory/
 | Table | Contenu |
 | --- | --- |
 | `glpi_plugin_dockerinventory_connections` | Connexion Portainer, WUD ou Harbor (`type`) : URL, clé ou mot de passe chiffré, utilisateur (WUD) ou compte robot (Harbor), hôte du registre dans les images (Harbor), HTTP autorisé ou non, entité, environnement des applications créées (Portainer), dernier import et son compte rendu |
-| `glpi_plugin_dockerinventory_stacks` | Stack Swarm de Portainer ↔ Application GLPI, état « retiré » |
-| `glpi_plugin_dockerinventory_services` | Service Swarm : stack, Application, image, tag, empreinte, réplicas voulus et en cours, ports, réseaux, noms des secrets, état « retiré » |
-| `glpi_plugin_dockerinventory_nodes` | Nœud Swarm : nom d'hôte, rôle, état, version de Docker, ordinateur GLPI rattaché |
+| `glpi_plugin_dockerinventory_stacks` | Stack Swarm ou Compose de Portainer (`stack_uid`), ou projet Compose hors Portainer (`stack_uid` 0, `compose_project`) ↔ Application GLPI, nature (`kind`), état « retiré » |
+| `glpi_plugin_dockerinventory_services` | Service Swarm, service Compose ou conteneur autonome (`kind`) : stack, Application, image, tag, empreinte, réplicas voulus et en cours (conteneurs et conteneurs en cours hors Swarm), ports, réseaux, volumes et secrets par leur nom, état des conteneurs, politique de redémarrage, identifiants et noms des conteneurs (rattachement WUD), état « retiré » |
+| `glpi_plugin_dockerinventory_nodes` | Nœud Swarm ou hôte autonome (rôle `standalone`) : nom d'hôte, rôle, état, version de Docker, ordinateur GLPI rattaché |
 | `glpi_plugin_dockerinventory_services_nodes` | Tâches en cours d'un service sur chaque nœud (recalculé à chaque import) |
 | `glpi_plugin_dockerinventory_imageversions` | Une ligne par service suivi (ou par conteneur sans service, `plugin_dockerinventory_services_id` = 0) et par connexion WUD : conteneurs, image et registre, tag et empreinte déployés, dernière version, écart, réplicas désynchronisés, méthode de rattachement (ou raison de l'absence), source (`wud` ou `registry`), raison d'une version non vérifiée, date de vérification. Recalculée à chaque lecture de WUD ; repli sans WUD : une ligne par service, connexion Harbor ou 0 (Docker Hub, registre inconnu) |
 | `glpi_plugin_dockerinventory_tickets` | Ticket de mise à jour suivi pour chaque service (un seul) et la situation qu'il décrit : écart, version déployée, dernière version (dernier ticket ou suivi) |
@@ -100,8 +104,15 @@ dockerinventory/
   navigateur, absente de l'API REST de GLPI (`$undisclosedFields`), des journaux et des messages.
 - HTTPS obligatoire, sauf case « Autoriser HTTP » ; aucune redirection suivie (la clé ne part
   jamais vers un autre serveur).
-- Environnements lus : types Docker (local, agent, agent Edge). Un environnement Docker sans Swarm
-  n'a aucun service ; Kubernetes et Azure sont ignorés.
+- Environnements lus : types Docker (local, agent, agent Edge) ; Kubernetes et Azure sont ignorés.
+  Un environnement dont l'API Swarm répond « pas un manager Swarm » (503) est lu comme un hôte
+  autonome (#25) : `/docker/info` (hôte), `/docker/containers/json?all=1`, `/docker/images/json`
+  (empreintes du dépôt) et, pour chaque conteneur, `/docker/containers/<id>/json`, dont seul
+  `HostConfig.RestartPolicy` est lu (jamais `Config.Env`). Stacks Portainer de type Compose (2) et
+  projets Compose des conteneurs (`com.docker.compose.project`) → Applications ; un service par
+  service Compose (projet et `com.docker.compose.service`), un par conteneur hors Compose ; secrets
+  Compose = noms des montages `/run/secrets/<nom>` ; conteneurs de tâches Swarm ignorés. Un
+  conteneur disparu entre la liste et son détail (404) n'empêche pas l'import.
 - Stack Swarm → Application (Appliance) : celle déjà liée, sinon une application du même nom dans
   l'entité de la connexion, sinon une nouvelle. **C'est la seule écriture hors des tables du
   plugin.** Une application existante n'est jamais modifiée ; l'environnement (production,
@@ -130,11 +141,11 @@ dockerinventory/
   donne pas. Tag mobile (`latest`, `stable`...) ou non versionné : « non suivable », quelle que soit
   l'empreinte. Pas encore de résultat (ou erreur de registre) : « non vérifié ».
 - Rattachement au service (services actifs de l'entité de la connexion WUD et de ses sous-entités) :
-  par l'empreinte de l'image (celle que Swarm épingle), puis par le nom du service Swarm
+  par l'identifiant ou le nom du conteneur (services des hôtes autonomes, #25), puis par l'empreinte de l'image (celle que Swarm épingle), puis par le nom du service Swarm
   (`com.docker.swarm.service.name`, ou nom de tâche `service.emplacement.tâche`), puis par image et
   tag. À chaque étape, plusieurs services possibles sont départagés par les critères suivants ;
   s'il en reste plusieurs, le conteneur est listé « plusieurs services possibles » plutôt que
-  rattaché au mauvais. Conteneurs Compose : « hors Swarm ».
+  rattaché au mauvais. Conteneur Compose d'un hôte absent de Portainer : « hors Swarm non importé ».
 - Une ligne par service : le conteneur qui correspond au service (même empreinte, sinon même tag)
   donne les valeurs ; des conteneurs dans des versions différentes sont signalés « réplicas
   désynchronisés » avec le détail.

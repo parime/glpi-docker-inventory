@@ -479,7 +479,10 @@ class Connection extends ConnectionBase
         }
 
         return sprintf(
-            __('Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds ou hôtes.', 'dockerinventory'),
+            __(
+                'Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds ou hôtes.',
+                'dockerinventory'
+            ),
             self::statusLabel((int) $report['status']),
             (int) ($report['stacks'] ?? 0),
             (int) ($report['services'] ?? 0),
@@ -729,7 +732,10 @@ class Connection extends ConnectionBase
             return ['description' => __("Lecture des versions des images depuis What's Up Docker", 'dockerinventory')];
         }
 
-        return ['description' => __('Import des stacks et services Docker (Swarm et Compose) depuis Portainer', 'dockerinventory')];
+        return ['description' => __(
+            'Import des stacks et services Docker (Swarm et Compose) depuis Portainer',
+            'dockerinventory'
+        )];
     }
 
     /**

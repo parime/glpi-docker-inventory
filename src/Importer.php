@@ -36,8 +36,9 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  * - service Swarm, service Compose ou conteneur hors Compose => fiche du plugin (image, tag,
  *   empreinte, réplicas ou conteneurs, ports, réseaux, volumes et secrets par leur nom seulement,
  *   état et politique de redémarrage des conteneurs) ;
- * - nœud Swarm ou hôte autonome => rattaché à l'ordinateur du même nom d'hôte (nom complet ou court) dans l'entité de la
- *   connexion et ses sous-entités, s'il est unique. Aucun ordinateur n'est créé ni modifié ;
+ * - nœud Swarm ou hôte autonome => rattaché à l'ordinateur du même nom d'hôte (nom complet ou
+ *   court) dans l'entité de la connexion et ses sous-entités, s'il est unique. Aucun ordinateur
+ *   n'est créé ni modifié ;
  * - service, stack ou nœud absent d'un environnement lu avec succès (ou d'un environnement
  *   disparu) => marqué « retiré ». Rien n'est supprimé. Un environnement en erreur ne retire rien.
  *
