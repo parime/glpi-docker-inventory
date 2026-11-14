@@ -281,8 +281,9 @@ final class RegistryImporterTest extends TestCase
 
         $rows = $this->versions();
         $this->assertSame(
-            ['boutique_api', 'boutique_cache', 'boutique_db', 'boutique_web', 'outil_isole', 'supervision_agent',
-                'supervision_grafana'],
+            // Services Swarm et services de l'hôte autonome (#25).
+            ['adminer', 'boutique_api', 'boutique_cache', 'boutique_db', 'boutique_web', 'courrier', 'db', 'indexeur',
+                'outil_isole', 'sauvegarde-nocturne', 'supervision_agent', 'supervision_grafana', 'wiki'],
             array_keys($rows)
         );
         $expected = [
@@ -317,7 +318,8 @@ final class RegistryImporterTest extends TestCase
         $this->assertContains('harbor /v2/boutique/api/tags/list', $this->requested);
         $harbor = $this->connection($this->harborId);
         $this->assertSame(Connection::STATUS_OK, (int) $harbor->fields['last_import_status']);
-        $this->assertSame(1, json_decode((string) $harbor->fields['last_import_report'], true)['services']);
+        // boutique_api et les 4 services de l'hôte autonome dont l'image est sur ce registre (#25).
+        $this->assertSame(5, json_decode((string) $harbor->fields['last_import_report'], true)['services']);
 
         // Idempotence : même nombre de lignes, mêmes identifiants.
         $ids = array_column($rows, 'id');

@@ -64,7 +64,7 @@ final class ImporterTest extends TestCase
         $this->assertGreaterThan(0, $this->entityId);
         $this->environmentId = (int) (new ApplianceEnvironment())->add(['name' => 'Production PHPUnit ' . $suffix]);
         $computer = new Computer();
-        foreach (['swarm-node-01', 'swarm-node-02.exemple.test'] as $name) {
+        foreach (['swarm-node-01', 'swarm-node-02.exemple.test', 'docker-recette-01'] as $name) {
             $this->computerIds[] = (int) $computer->add(['name' => $name, 'entities_id' => $this->entityId]);
         }
         $connection = new Connection();
@@ -183,11 +183,12 @@ final class ImporterTest extends TestCase
         $report = $this->importer()->import($this->connection());
 
         $this->assertSame(Connection::STATUS_OK, $report['status'], json_encode($report) ?: '');
-        $this->assertSame(2, $report['stacks']);
-        $this->assertSame(7, $report['services']);
-        $this->assertSame(3, $report['nodes']);
-        $this->assertSame(2, $report['linked_nodes']);
-        $this->assertSame(2, $report['appliances_created']);
+        // Swarm : 2 stacks, 7 services, 3 nœuds ; hôte autonome : 2 stacks Compose, 6 services, l'hôte.
+        $this->assertSame(4, $report['stacks']);
+        $this->assertSame(13, $report['services']);
+        $this->assertSame(4, $report['nodes']);
+        $this->assertSame(3, $report['linked_nodes']);
+        $this->assertSame(4, $report['appliances_created']);
         // Environnement Kubernetes jamais lu, environnement Docker seul sans erreur.
         $this->assertNotContains('/api/endpoints/3/docker/services', $this->requested);
 
@@ -218,7 +219,7 @@ final class ImporterTest extends TestCase
         $this->assertSame(0, $nodes['swarm-node-03.exemple.test']);
 
         $report = json_decode((string) $this->connection()->fields['last_import_report'], true);
-        $this->assertSame(7, $report['services']);
+        $this->assertSame(13, $report['services']);
         $this->assertStringNotContainsString(self::KEY, (string) $this->connection()->fields['last_import_report']);
     }
 
@@ -298,12 +299,152 @@ final class ImporterTest extends TestCase
 
         $report = $this->importer()->import($this->connection());
 
-        $this->assertSame(1, $report['linked_nodes']);
+        // swarm-node-02 et l'hôte autonome docker-recette-01 restent rattachés.
+        $this->assertSame(2, $report['linked_nodes']);
         $node = current((new Node())->find([
             'plugin_dockerinventory_connections_id' => $this->connectionId,
             'hostname'                              => 'swarm-node-01.exemple.test',
         ]));
         $this->assertSame(0, (int) $node['computers_id']);
+    }
+
+    public function testStandaloneHostImportsComposeStacksAndContainers(): void
+    {
+        $report = $this->importer()->import($this->connection());
+        $this->assertSame(Connection::STATUS_OK, $report['status'], json_encode($report) ?: '');
+
+        // Lecture seule de l'hôte autonome : informations, conteneurs, images, détail des conteneurs.
+        $standalone = array_values(array_filter(
+            $this->requested,
+            static fn (string $path): bool => str_starts_with($path, '/api/endpoints/2/')
+        ));
+        $this->assertSame('/api/endpoints/2/docker/services', $standalone[0]);
+        $this->assertContains('/api/endpoints/2/docker/info', $standalone);
+        $this->assertContains('/api/endpoints/2/docker/containers/json', $standalone);
+        $this->assertContains('/api/endpoints/2/docker/images/json', $standalone);
+        $this->assertCount(7, preg_grep('#^/api/endpoints/2/docker/containers/[0-9a-f]+/json$#', $standalone) ?: []);
+
+        $stacks = [];
+        foreach (
+            (new \DbUtils())->getAllDataFromTable(
+                'glpi_plugin_dockerinventory_stacks',
+                ['plugin_dockerinventory_connections_id' => $this->connectionId, 'endpoint_uid' => 2]
+            ) as $row
+        ) {
+            $stacks[$row['name']] = $row;
+        }
+        ksort($stacks);
+        $this->assertSame(['outils-recette', 'wiki-interne'], array_keys($stacks));
+        // Stack Compose de Portainer (identifiant 13), projet Compose déployé hors Portainer (0).
+        $this->assertSame(13, (int) $stacks['outils-recette']['stack_uid']);
+        $this->assertSame(0, (int) $stacks['wiki-interne']['stack_uid']);
+        $this->assertSame('wiki-interne', $stacks['wiki-interne']['compose_project']);
+        $this->assertSame('compose', $stacks['wiki-interne']['kind']);
+
+        $services = $this->services();
+        $wiki = $services['wiki'];
+        $this->assertSame('compose', $wiki['kind']);
+        $this->assertSame('wiki-interne', $wiki['stack_name']);
+        $this->assertSame((int) $stacks['wiki-interne']['appliances_id'], (int) $wiki['appliances_id']);
+        $this->assertSame('registry.exemple.test:5000/outils/wiki', $wiki['image']);
+        $this->assertSame('3.2.0', $wiki['tag']);
+        $this->assertSame('sha256:' . str_repeat('d', 64), $wiki['digest']);
+        $this->assertSame('running', $wiki['state']);
+        $this->assertSame('always', $wiki['restart_policy']);
+        $this->assertSame('127.0.0.1:3000:3000/tcp', $wiki['ports']);
+        $this->assertSame('proxy, wiki-interne_default', $wiki['networks']);
+        $this->assertSame('wiki-interne_pages', $wiki['volumes']);
+        $this->assertSame('wiki_db_password', $wiki['secrets']);
+        $this->assertSame('docker-recette', $wiki['endpoint_name']);
+        $this->assertSame('exited', $services['courrier']['state']);
+        $this->assertSame(0, (int) $services['courrier']['running_replicas']);
+        $this->assertSame('container', $services['sauvegarde-nocturne']['kind']);
+        $this->assertSame(0, (int) $services['sauvegarde-nocturne']['appliances_id']);
+
+        $appliance = new Appliance();
+        $this->assertTrue($appliance->getFromDB((int) $wiki['appliances_id']));
+        $this->assertSame('wiki-interne', $appliance->fields['name']);
+
+        // Aucune valeur de variable d'environnement, aucun chemin de secret dans la base.
+        $encoded = (string) json_encode($services);
+        $this->assertStringNotContainsString('ne-doit-jamais-etre-importe', $encoded);
+        $this->assertStringNotContainsString('/srv/wiki-interne/secrets', $encoded);
+
+        // L'hôte : un nœud « standalone » rattaché à l'ordinateur docker-recette-01.
+        $host = current((new Node())->find([
+            'plugin_dockerinventory_connections_id' => $this->connectionId,
+            'endpoint_uid'                          => 2,
+        ]));
+        $this->assertIsArray($host);
+        $this->assertSame('docker-recette-01.exemple.test', $host['hostname']);
+        $this->assertSame('standalone', $host['role']);
+        $this->assertSame('27.3.1', $host['engine_version']);
+        $this->assertSame($this->computerIds[2], (int) $host['computers_id']);
+        // Un conteneur en cours pour 5 services ; le service arrêté (courrier) n'est sur aucun nœud.
+        $this->assertSame(5, countElementsInTable(
+            'glpi_plugin_dockerinventory_services_nodes',
+            ['plugin_dockerinventory_nodes_id' => (int) $host['id'], 'running_tasks' => 1]
+        ));
+    }
+
+    public function testVanishedComposeProjectIsRetiredNeverDeletedAndComesBack(): void
+    {
+        $this->importer()->import($this->connection());
+        $saved = $this->fixture['docker']['2']['containers'];
+        $this->fixture['docker']['2']['containers'] = array_values(array_filter(
+            $saved,
+            static fn (array $container): bool
+                => ($container['Labels']['com.docker.compose.project'] ?? '') !== 'wiki-interne'
+        ));
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_OK, $report['status']);
+        $this->assertSame(3, $report['retired']);
+        $services = $this->services();
+        foreach (['wiki', 'db', 'indexeur'] as $name) {
+            $this->assertSame(1, (int) $services[$name]['is_retired'], $name);
+            $this->assertNotNull($services[$name]['date_retired']);
+        }
+        $this->assertSame(0, (int) $services['adminer']['is_retired']);
+        $stack = current((new \DbUtils())->getAllDataFromTable('glpi_plugin_dockerinventory_stacks', [
+            'plugin_dockerinventory_connections_id' => $this->connectionId,
+            'compose_project'                       => 'wiki-interne',
+        ]));
+        $this->assertSame(1, (int) $stack['is_retired']);
+        // L'application reste : jamais supprimée par l'import.
+        $this->assertTrue((new Appliance())->getFromDB((int) $stack['appliances_id']));
+
+        $this->fixture['docker']['2']['containers'] = $saved;
+        $this->importer()->import($this->connection());
+        $this->assertSame(0, (int) $this->services()['wiki']['is_retired']);
+        $this->assertSame($services['wiki']['id'], $this->services()['wiki']['id']);
+    }
+
+    public function testFailingStandaloneHostRetiresNothing(): void
+    {
+        $this->importer()->import($this->connection());
+        $this->fixture['docker']['2']['containers'] = [];
+        $this->failingPath = '/api/endpoints/2/docker/containers/json';
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_PARTIAL, $report['status']);
+        $this->assertSame([['endpoint' => 'docker-recette', 'code' => 'unreachable']], $report['errors']);
+        $this->assertSame(0, $report['retired']);
+        $this->assertSame(0, (int) $this->services()['wiki']['is_retired']);
+    }
+
+    public function testContainerRemovedDuringImportKeepsTheOthers(): void
+    {
+        // Conteneur supprimé entre la liste et son détail (404) : politique inconnue, import réussi.
+        unset($this->fixture['docker']['2']['inspect']['0b000000000000000000000000000000000000000000000000000000000000b0']);
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_OK, $report['status']);
+        $this->assertSame('', $this->services()['sauvegarde-nocturne']['restart_policy']);
+        $this->assertSame('always', $this->services()['wiki']['restart_policy']);
     }
 
     public function testUnauthorizedKeyFailsWithoutChange(): void

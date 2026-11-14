@@ -347,7 +347,7 @@ final class Installer
         global $DB;
 
         $stacks = 'glpi_plugin_dockerinventory_stacks';
-        if (!$DB->fieldExists($stacks, 'compose_project')) {
+        if (!$DB->fieldExists($stacks, 'compose_project', false)) {
             $migration->addField($stacks, 'kind', "varchar(16) NOT NULL DEFAULT 'swarm'", ['after' => 'stack_uid']);
             $migration->addField($stacks, 'compose_project', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'kind']);
             // Un projet Compose déployé hors Portainer n'a pas d'identifiant de stack (0) : la clé
