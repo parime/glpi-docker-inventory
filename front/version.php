@@ -18,6 +18,10 @@
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ImageVersion;
+use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
+use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
+use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
+use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 
@@ -29,7 +33,15 @@ if ($gap !== ImageVersion::FILTER_OUTDATED && !in_array($gap, VersionComparator:
     $gap = '';
 }
 $environment = (int) ($_GET['environment'] ?? 0);
-$data = ImageVersion::overview($gap, $environment);
+$eol = (string) ($_GET['eol'] ?? '');
+if ($eol !== ImageVersion::FILTER_EOL_WATCH && !in_array($eol, CycleMatcher::STATUSES, true)) {
+    $eol = '';
+}
+$eolEnabled = Settings::enabled();
+if (!$eolEnabled) {
+    $eol = '';
+}
+$data = ImageVersion::overview($gap, $environment, $eol);
 
 Html::header(ImageVersion::getTypeName(2), '', 'assets', ImageVersion::class);
 TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', [
@@ -48,5 +60,14 @@ TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', 
     'connection_form_url' => Connection::getFormURL(),
     'can_configure'  => Connection::canView(),
     'connection_url' => Connection::getSearchURL(),
+    'eol_enabled'    => $eolEnabled,
+    'eol'            => $eol,
+    'eol_counts'     => $data['eol_counts'],
+    'eol_statuses'   => LifecycleProduct::statusInfos(),
+    'eol_watch'      => ImageVersion::FILTER_EOL_WATCH,
+    'eol_source'     => LifecycleChecker::current()->sourceState(),
+    'eol_errors'     => LifecycleProduct::errorLabels(),
+    'lifecycle_url'  => LifecycleProduct::getPageURL(),
+    'can_configure_lifecycle' => LifecycleProduct::canView(),
 ]);
 Html::footer();

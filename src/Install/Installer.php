@@ -24,6 +24,8 @@ use DBConnection;
 use DisplayPreference;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ImageVersion;
+use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
+use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
 use Migration;
 use ProfileRight;
@@ -46,6 +48,9 @@ final class Installer
         'glpi_plugin_dockerinventory_imageversions',
         'glpi_plugin_dockerinventory_registrytags',
         'glpi_plugin_dockerinventory_tickets',
+        'glpi_plugin_dockerinventory_lifecycleproducts',
+        'glpi_plugin_dockerinventory_lifecycles',
+        'glpi_plugin_dockerinventory_eoltickets',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -63,8 +68,12 @@ final class Installer
 
     public function install(Migration $migration): bool
     {
-        $this->createTables();
+        $created = $this->createTables();
         $this->migrate($migration);
+        if (in_array(LifecycleProduct::getTable(), $created, true)) {
+            // Correspondances image => produit fournies, une seule fois (modifiables ensuite).
+            LifecycleProduct::installDefaults();
+        }
 
         $firstInstall = countElementsInTable('glpi_profilerights', ['name' => Service::RIGHTNAME]) === 0;
         if ($firstInstall) {
@@ -87,6 +96,11 @@ final class Installer
                 'logs_lifetime' => 30,
             ]);
         }
+        // Fin de support : une fois par jour, sans effet tant que la source est désactivée.
+        CronTask::register(LifecycleProduct::class, LifecycleProduct::CRON_NAME, DAY_TIMESTAMP, [
+            'state'         => CronTask::STATE_WAITING,
+            'logs_lifetime' => 30,
+        ]);
 
         $migration->executeMigration();
 
@@ -100,6 +114,7 @@ final class Installer
         CronTask::unregister('dockerinventory');
         ProfileRight::deleteProfileRights([Service::RIGHTNAME]);
         $this->deleteCoreRowsOfPluginItemtypes();
+        Settings::delete();
 
         foreach (self::TABLES as $table) {
             $DB->dropTable($table, true);
@@ -108,7 +123,10 @@ final class Installer
         return true;
     }
 
-    private function createTables(): void
+    /**
+     * @return list<string> Tables créées par cet appel.
+     */
+    private function createTables(): array
     {
         global $DB;
 
@@ -136,6 +154,8 @@ final class Installer
                 `ticket_itilcategories_id` int {$sign} NOT NULL DEFAULT '0',
                 `ticket_groups_id` int {$sign} NOT NULL DEFAULT '0',
                 `ticket_tickettemplates_id` int {$sign} NOT NULL DEFAULT '0',
+                `ticket_eol_enabled` tinyint NOT NULL DEFAULT '0',
+                `ticket_eol_days` int NOT NULL DEFAULT '90',
                 `last_import_date` timestamp NULL DEFAULT NULL,
                 `last_import_status` tinyint NOT NULL DEFAULT '0',
                 `last_import_report` text,
@@ -296,13 +316,52 @@ final class Installer
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`),
                 KEY `tickets_id` (`tickets_id`)",
+            // Fin de support (#26) : correspondance explicite image => produit de la source.
+            'glpi_plugin_dockerinventory_lifecycleproducts' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `image` varchar(255) NOT NULL DEFAULT '',
+                `product` varchar(64) NOT NULL DEFAULT '',
+                `is_default` tinyint NOT NULL DEFAULT '0',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `image` (`image`),
+                KEY `product` (`product`)",
+            // Cache des cycles de vie d'un produit (une lecture par jour au plus) ; date_success :
+            // dernière lecture réussie (données gardées si une lecture échoue ensuite).
+            'glpi_plugin_dockerinventory_lifecycles' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `product` varchar(64) NOT NULL DEFAULT '',
+                `cycles` mediumtext,
+                `error` varchar(64) NOT NULL DEFAULT '',
+                `date_checked` timestamp NULL DEFAULT NULL,
+                `date_success` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `product` (`product`)",
+            // Ticket de fin de support suivi pour chaque service, et la branche qu'il décrit.
+            'glpi_plugin_dockerinventory_eoltickets' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `plugin_dockerinventory_services_id` int {$sign} NOT NULL DEFAULT '0',
+                `tickets_id` int {$sign} NOT NULL DEFAULT '0',
+                `product` varchar(64) NOT NULL DEFAULT '',
+                `cycle` varchar(64) NOT NULL DEFAULT '',
+                `eol` varchar(16) NOT NULL DEFAULT '',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`),
+                KEY `tickets_id` (`tickets_id`)",
         ];
 
+        $created = [];
         foreach ($definitions as $table => $columns) {
             if (!$DB->tableExists($table)) {
                 $DB->doQuery("CREATE TABLE `{$table}` ({$columns}) {$options}");
+                $created[] = $table;
             }
         }
+
+        return $created;
     }
 
     /**
@@ -324,6 +383,9 @@ final class Installer
             'ticket_itilcategories_id'  => "int {$sign} NOT NULL DEFAULT '0'",
             'ticket_groups_id'          => "int {$sign} NOT NULL DEFAULT '0'",
             'ticket_tickettemplates_id' => "int {$sign} NOT NULL DEFAULT '0'",
+            // 0.4.0 => tickets de fin de support (#26), désactivés par défaut.
+            'ticket_eol_enabled'        => "tinyint NOT NULL DEFAULT '0'",
+            'ticket_eol_days'           => "int NOT NULL DEFAULT '90'",
         ];
         $after = 'applianceenvironments_id';
         foreach ($ticketFields as $field => $definition) {

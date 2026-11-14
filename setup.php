@@ -18,6 +18,7 @@
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ImageVersion;
+use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Profile;
 use GlpiPlugin\Dockerinventory\Service;
@@ -53,12 +54,14 @@ function plugin_init_dockerinventory(): void
     Plugin::registerClass(Node::class, ['addtabon' => ['Computer']]);
     Plugin::registerClass(Profile::class, ['addtabon' => ['Profile']]);
     Plugin::registerClass(Connection::class);
+    Plugin::registerClass(LifecycleProduct::class);
 
-    // Services et versions des images dans Parc ; connexions (Portainer, WUD) dans Configuration
+    // Services et versions des images dans Parc ; connexions (Portainer, WUD, Harbor) et fin de
+    // support des images dans Configuration
     // (et depuis le nom du plugin dans Configuration > Plugins).
     $PLUGIN_HOOKS[Hooks::MENU_TOADD]['dockerinventory'] = [
         'assets' => [Service::class, ImageVersion::class],
-        'config' => [Connection::class],
+        'config' => [Connection::class, LifecycleProduct::class],
     ];
     $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['dockerinventory'] = 'front/connection.php';
 }

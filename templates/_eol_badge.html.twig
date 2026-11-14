@@ -1,0 +1,34 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Pastille de fin de support (LifecycleProduct::present()) : état, produit et branche, date ou
+   raison d'un état inconnu. `compact` : sans la ligne de détail. #}
+{% set compact = compact|default(false) %}
+<span class="badge bg-{{ eol.status.color }} text-white text-nowrap" title="{{ eol.status.help }}"
+      data-bs-toggle="tooltip">
+    <i class="{{ eol.status.icon }} me-1" aria-hidden="true"></i>{{ eol.status.label }}
+</span>
+{% if not compact %}
+    {% if eol.cycle %}
+        <div class="small text-muted mt-1 text-nowrap">{{ eol.product }} {{ eol.cycle }}</div>
+    {% elseif eol.product %}
+        <div class="small text-muted mt-1 text-nowrap">{{ eol.product }}</div>
+    {% endif %}
+    {% if eol.detail %}
+        <div class="small {{ eol.status_code == 'unknown' ? 'text-muted' : 'text-' ~ eol.status.color }}">
+            {{ eol.detail }}
+        </div>
+    {% endif %}
+{% endif %}

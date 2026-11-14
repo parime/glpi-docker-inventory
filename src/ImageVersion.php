@@ -26,6 +26,10 @@ use CommonGLPI;
 use DbUtils;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
+use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
+use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
+use GlpiPlugin\Dockerinventory\Ticket\EolTickets;
 use GlpiPlugin\Dockerinventory\Ticket\UpdateTickets;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use GlpiPlugin\Dockerinventory\Version\VersionLinker;
@@ -48,6 +52,9 @@ class ImageVersion extends CommonDBTM
 
     /** Filtre « à mettre à jour » de la page des versions : tous les écarts connus. */
     public const FILTER_OUTDATED = 'outdated';
+
+    /** Filtre de fin de support « à surveiller » : en fin de support ou bientôt. */
+    public const FILTER_EOL_WATCH = 'watch';
 
     private const OUTDATED = [
         VersionComparator::GAP_MAJOR,
@@ -379,6 +386,10 @@ class ImageVersion extends CommonDBTM
             'can_configure' => Connection::canView(),
             'connection_url' => Connection::getSearchURL(),
             'update_ticket' => self::updateTicket($item),
+            'eol_ticket'    => self::eolTicket($item),
+            'eol_enabled'   => Settings::enabled(),
+            'lifecycle_url' => LifecycleProduct::getPageURL(),
+            'can_configure_lifecycle' => LifecycleProduct::canView(),
         ]);
 
         return true;
@@ -395,6 +406,21 @@ class ImageVersion extends CommonDBTM
             return null;
         }
         $ticket = UpdateTickets::ticketFor((int) $item->getID());
+
+        return $ticket === null ? null : $ticket + ['url' => \Ticket::getFormURLWithID($ticket['id'])];
+    }
+
+    /**
+     * Ticket de fin de support d'un service (lien dans l'onglet), si l'utilisateur peut voir les tickets.
+     *
+     * @return array{id: int, name: string, status: string, is_open: bool, url: string}|null
+     */
+    private static function eolTicket(CommonGLPI $item): ?array
+    {
+        if (!$item instanceof Service || !\Ticket::canView()) {
+            return null;
+        }
+        $ticket = EolTickets::ticketFor((int) $item->getID());
 
         return $ticket === null ? null : $ticket + ['url' => \Ticket::getFormURLWithID($ticket['id'])];
     }
@@ -464,22 +490,32 @@ class ImageVersion extends CommonDBTM
     }
 
     /**
-     * Page des versions : lignes des services et des conteneurs sans service, filtrées par écart
-     * et par environnement de l'application.
+     * Page des versions : lignes des services et des conteneurs sans service, filtrées par écart,
+     * par environnement de l'application et par état du support (fin de support).
      *
      * @param string $gap Écart, FILTER_OUTDATED ou chaîne vide (tous).
      * @param int $environmentId Environnement, 0 (tous) ou -1 (sans environnement).
+     * @param string $eol État du support (CycleMatcher::STATUS_*), FILTER_EOL_WATCH ou chaîne vide (tous).
      * @return array{services: list<array<string, mixed>>, unmatched: list<array<string, mixed>>,
-     *     counts: array<string, int>, environments: array<int, string>}
+     *     counts: array<string, int>, eol_counts: array<string, int>, environments: array<int, string>}
      */
-    public static function overview(string $gap, int $environmentId): array
+    public static function overview(string $gap, int $environmentId, string $eol = ''): array
     {
-        $all = self::fetch([]);
+        $all = [];
+        foreach (self::fetch([]) as $row) {
+            $row['_eol'] = LifecycleChecker::current()->evaluate(
+                (string) $row['image'],
+                (string) $row['deployed_tag']
+            )['status'];
+            $all[] = $row;
+        }
         $counts = array_fill_keys(VersionComparator::GAPS, 0);
+        $eolCounts = array_fill_keys(CycleMatcher::STATUSES, 0);
         $environments = [];
         foreach ($all as $row) {
             if ((int) $row['plugin_dockerinventory_services_id'] > 0) {
                 $counts[(string) $row['gap']] = ($counts[(string) $row['gap']] ?? 0) + 1;
+                $eolCounts[$row['_eol']] = ($eolCounts[$row['_eol']] ?? 0) + 1;
                 if ((int) $row['environment_id'] > 0) {
                     $environments[(int) $row['environment_id']] = (string) $row['environment_name'];
                 }
@@ -491,7 +527,7 @@ class ImageVersion extends CommonDBTM
         $unmatched = [];
         foreach ($all as $row) {
             $isService = (int) $row['plugin_dockerinventory_services_id'] > 0;
-            if (!self::matchesGap((string) $row['gap'], $gap)) {
+            if (!self::matchesGap((string) $row['gap'], $gap) || !self::matchesEol($row['_eol'], $eol)) {
                 continue;
             }
             if (!$isService) {
@@ -515,8 +551,18 @@ class ImageVersion extends CommonDBTM
             'services'     => $services,
             'unmatched'    => $unmatched,
             'counts'       => $counts,
+            'eol_counts'   => $eolCounts,
             'environments' => $environments,
         ];
+    }
+
+    private static function matchesEol(string $status, string $filter): bool
+    {
+        return match ($filter) {
+            ''                     => true,
+            self::FILTER_EOL_WATCH => in_array($status, [CycleMatcher::STATUS_EOL, CycleMatcher::STATUS_SOON], true),
+            default                => $status === $filter,
+        };
     }
 
     private static function matchesGap(string $rowGap, string $filter): bool
@@ -589,6 +635,10 @@ class ImageVersion extends CommonDBTM
             'connection_name'  => (string) ($row['connection_name'] ?? ''),
             'error'            => $error,
             'date_checked'     => (string) ($row['date_checked'] ?? ''),
+            'eol'              => LifecycleProduct::present(LifecycleChecker::current()->evaluate(
+                (string) ($row['image'] ?? ''),
+                (string) ($row['deployed_tag'] ?? '')
+            )),
         ];
     }
 

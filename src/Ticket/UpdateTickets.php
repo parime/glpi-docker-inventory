@@ -257,7 +257,7 @@ final class UpdateTickets
      */
     private function createTicket(array $service, array $situation): int
     {
-        $input = $this->templateFields($service['tickettemplates_id']);
+        $input = self::templateFields($service['tickettemplates_id']);
         $input['name'] = self::title($service, $situation);
         $input['content'] = TemplateRenderer::getInstance()->render(
             '@dockerinventory/ticket_content.html.twig',
@@ -287,7 +287,7 @@ final class UpdateTickets
      *
      * @return array<string, mixed>
      */
-    private function templateFields(int $templateId): array
+    public static function templateFields(int $templateId): array
     {
         $template = new TicketTemplate();
         if ($templateId <= 0 || !$template->getFromDBWithData($templateId, false)) {

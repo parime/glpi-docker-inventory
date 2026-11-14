@@ -72,24 +72,86 @@
 
             {# Compteurs : un clic filtre sur l'écart. #}
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <a href="{{ page_url }}?environment={{ environment }}"
+                <a href="{{ page_url }}?environment={{ environment }}&eol={{ eol }}"
                    class="btn btn-sm {{ gap == '' ? 'btn-dark' : 'btn-outline-dark' }}">
                     {{ __('Tous', 'dockerinventory') }}
                 </a>
-                <a href="{{ page_url }}?gap={{ outdated }}&environment={{ environment }}"
+                <a href="{{ page_url }}?gap={{ outdated }}&environment={{ environment }}&eol={{ eol }}"
                    class="btn btn-sm {{ gap == outdated ? 'btn-danger' : 'btn-outline-danger' }}">
                     <i class="ti ti-arrow-big-up-lines me-1" aria-hidden="true"></i>
                     {{ __('À mettre à jour', 'dockerinventory') }}
                     <span class="badge bg-white text-danger ms-1">{{ outdated_count }}</span>
                 </a>
                 {% for code, info in gaps %}
-                    <a href="{{ page_url }}?gap={{ code }}&environment={{ environment }}" title="{{ info.help }}"
+                    <a href="{{ page_url }}?gap={{ code }}&environment={{ environment }}&eol={{ eol }}"
+                       title="{{ info.help }}"
                        class="btn btn-sm {{ gap == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
                         <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
                         <span class="badge bg-{{ info.color }}-lt ms-1">{{ counts[code]|default(0) }}</span>
                     </a>
                 {% endfor %}
             </div>
+
+            {# Fin de support (#26) : compteurs cliquables, ou invitation à activer la source. #}
+            {% if eol_enabled %}
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="text-muted me-1">
+                        <i class="ti ti-calendar-x me-1" aria-hidden="true"></i>
+                        {{ __('Fin de support', 'dockerinventory') }} :
+                    </span>
+                    <a href="{{ page_url }}?eol={{ eol_watch }}&gap={{ gap }}&environment={{ environment }}"
+                       class="btn btn-sm {{ eol == eol_watch ? 'btn-danger' : 'btn-outline-danger' }}">
+                        <i class="ti ti-alert-octagon me-1" aria-hidden="true"></i>
+                        {{ __('À surveiller', 'dockerinventory') }}
+                        <span class="badge bg-white text-danger ms-1">
+                            {{ eol_counts['eol']|default(0) + eol_counts['soon']|default(0) }}
+                        </span>
+                    </a>
+                    {% for code, info in eol_statuses %}
+                        <a href="{{ page_url }}?eol={{ code }}&gap={{ gap }}&environment={{ environment }}"
+                           title="{{ info.help }}"
+                           class="btn btn-sm {{ eol == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
+                            <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
+                            <span class="badge bg-{{ info.color }}-lt ms-1">{{ eol_counts[code]|default(0) }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+                <p class="small text-muted mb-3">
+                    {% if eol_source.last_success %}
+                        {{ __('Cycles de vie mis à jour le', 'dockerinventory') }}
+                        {{ eol_source.last_success|formatted_datetime }}
+                        (endoflife.date).
+                    {% else %}
+                        {{ __(
+                            'Cycles de vie pas encore lus : prochaine mise à jour par la tâche automatique.',
+                            'dockerinventory'
+                        ) }}
+                    {% endif %}
+                    {% if eol_source.errors is not empty %}
+                        <span class="text-warning">
+                            <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                            {{ __(
+                                'Dernière mise à jour incomplète : les données en cache restent utilisées.',
+                                'dockerinventory'
+                            ) }}
+                        </span>
+                    {% endif %}
+                    {% if can_configure_lifecycle %}
+                        <a href="{{ lifecycle_url }}" class="ms-1">
+                        {{ __('Réglages et correspondances', 'dockerinventory') }}</a>
+                    {% endif %}
+                </p>
+            {% elseif can_configure_lifecycle %}
+                <div class="alert alert-secondary mb-3">
+                    <i class="ti ti-calendar-x me-2" aria-hidden="true"></i>
+                    {{ __('Fin de support des images : désactivée.', 'dockerinventory') }}
+                    {{ __(
+                        'Une fois activée, chaque image indique si sa branche est encore maintenue.',
+                        'dockerinventory'
+                    ) }}
+                    <a href="{{ lifecycle_url }}" class="ms-1">{{ __('Activer', 'dockerinventory') }}</a>
+                </div>
+            {% endif %}
 
             <form method="get" action="{{ page_url }}" class="row g-2 align-items-end">
                 <div class="col-sm-4 col-lg-3">
@@ -118,11 +180,27 @@
                         </option>
                     </select>
                 </div>
+                {% if eol_enabled %}
+                    <div class="col-sm-4 col-lg-3">
+                        <label class="form-label" for="dockerinventory-eol">
+                            {{ __('Fin de support', 'dockerinventory') }}
+                        </label>
+                        <select id="dockerinventory-eol" name="eol" class="form-select">
+                            <option value="">{{ __('Tous', 'dockerinventory') }}</option>
+                            <option value="{{ eol_watch }}" {{ eol == eol_watch ? 'selected' : '' }}>
+                                {{ __('À surveiller', 'dockerinventory') }}
+                            </option>
+                            {% for code, info in eol_statuses %}
+                                <option value="{{ code }}" {{ eol == code ? 'selected' : '' }}>{{ info.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-filter me-1" aria-hidden="true"></i>{{ __('Filtrer', 'dockerinventory') }}
                     </button>
-                    {% if gap or environment %}
+                    {% if gap or environment or eol %}
                         <a href="{{ page_url }}" class="btn btn-link">{{ __('Réinitialiser', 'dockerinventory') }}</a>
                     {% endif %}
                 </div>
@@ -142,7 +220,7 @@
             {{ __('Aucun service ne correspond à ces filtres.', 'dockerinventory') }}</div>
         {% else %}
             <div class="table-responsive">
-                {{ include('@dockerinventory/_version_rows.html.twig', {rows: rows}) }}
+                {{ include('@dockerinventory/_version_rows.html.twig', {rows: rows, eol_enabled: eol_enabled}) }}
             </div>
         {% endif %}
     </div>
@@ -164,7 +242,9 @@
                 {{ __('Ils ne sont pas ignorés : leur version est suivie ici.', 'dockerinventory') }}
             </div>
             <div class="table-responsive">
-                {{ include('@dockerinventory/_version_rows.html.twig', {rows: unmatched, containers_mode: true}) }}
+                {{ include('@dockerinventory/_version_rows.html.twig', {
+                    rows: unmatched, containers_mode: true, eol_enabled: eol_enabled,
+                }) }}
             </div>
         </div>
     {% endif %}

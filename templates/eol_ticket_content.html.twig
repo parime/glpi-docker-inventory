@@ -1,0 +1,50 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Description d'un ticket de fin de support (texte enrichi du ticket). #}
+<p>
+    {{ __('La branche de l’image déployée par ce service arrive en fin de support, ou l’a dépassée.', 'dockerinventory') }}
+    {{ __('Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une branche maintenue.', 'dockerinventory') }}
+</p>
+<ul>
+    <li><strong>{{ __('Service', 'dockerinventory') }}</strong> : {{ service }}</li>
+    {% if stack %}
+        <li><strong>{{ __('Stack', 'dockerinventory') }}</strong> : {{ stack }}</li>
+    {% endif %}
+    {% if appliance %}
+        <li><strong>{{ __('Application', 'dockerinventory') }}</strong> : {{ appliance }}</li>
+    {% endif %}
+    <li><strong>{{ __('Image', 'dockerinventory') }}</strong> : {{ image }}:{{ tag }}</li>
+    <li><strong>{{ __('Branche', 'dockerinventory') }}</strong> : {{ product }} {{ cycle }}</li>
+    <li>
+        <strong>{{ __('Fin de support', 'dockerinventory') }}</strong> :
+        {% if eol == 'yes' %}
+            {{ __('atteinte (date non publiée)', 'dockerinventory') }}
+        {% else %}
+            {{ eol|formatted_date }}
+        {% endif %}
+        ({{ status.label }})
+    </li>
+</ul>
+<p>
+    <a href="{{ service_url }}">{{ __('Voir le service dans GLPI', 'dockerinventory') }}</a>
+</p>
+<p>
+    {{ __('Ticket créé par Inventaire Docker, délai choisi (jours) :', 'dockerinventory') }} {{ threshold }}.
+    {{ __(
+        'Un suivi sera ajouté si la situation change ; jamais de changement de statut, de priorité ni d’affectation.',
+        'dockerinventory'
+    ) }}
+</p>
