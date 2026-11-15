@@ -19,7 +19,9 @@ dockerinventory/
 │   ├── service.php            liste des services importés (recherche GLPI)
 │   ├── service.form.php       fiche d'un service, en lecture seule
 │   ├── version.php            « Versions des images » : compteurs, filtres, badges (Twig)
-│   └── imageversion.php       recherche GLPI sur les versions (vues enregistrées, exports)
+│   ├── imageversion.php       recherche GLPI sur les versions (vues enregistrées, exports)
+│   └── lifecycle.php          « Fin de support des images » : source, correspondances image → produit
+│                              (droit Configuration en modification)
 ├── src/
 │   ├── Compat/
 │   │   ├── GlpiVersion.php    GLPI 11 ou 12
@@ -38,6 +40,17 @@ dockerinventory/
 │   │                          onglet « Services » des applications
 │   ├── Node.php               nœud Swarm ou hôte autonome ; onglet « Services du nœud » des ordinateurs
 │   ├── Profile.php            onglet « Inventaire Docker » des profils (droit plugin_dockerinventory_service)
+│   ├── LifecycleProduct.php   correspondance image → produit (table modifiable), états du support,
+│   │                          menu Configuration, tâche automatique quotidienne `lifecyclecheck`
+│   ├── Lifecycle/             fin de support des images (#26)
+│   │   ├── LifecycleClient.php     lecture seule : GET d'un produit (API v1 d'endoflife.date ou
+│   │   │                           ancienne API), transport injectable, adresse changeable
+│   │   ├── LifecycleContext.php    contexte réseau (réseaux privés autorisés sous GLPI 12)
+│   │   ├── LifecycleException.php  codes d'erreur stables, jamais le texte d'origine
+│   │   ├── ProductMap.php          correspondances fournies, nom d'image normalisé (fonctions pures)
+│   │   ├── CycleMatcher.php        branche d'un tag, état et jours restants (fonctions pures)
+│   │   ├── LifecycleChecker.php    cache d'un jour, panne sans blocage, évaluation à l'affichage
+│   │   └── Settings.php            réglages (configuration de GLPI, désactivé par défaut)
 │   ├── Portainer/
 │   │   ├── PortainerClient.php     lecture seule : /api/endpoints, /api/stacks, /docker/{services,
 │   │   │                           nodes,tasks,networks} ; hôtes autonomes : /docker/{info,
@@ -71,7 +84,9 @@ dockerinventory/
 │   ├── Ticket/
 │   │   ├── TicketPolicy.php        seuil atteint, ticket, suivi ou rien (fonctions pures) ;
 │   │   │                           déclencheur « vulnérabilité critique » réservé au lot 3
-│   │   └── UpdateTickets.php       après chaque lecture : tickets et suivis, table de suivi
+│   │   ├── UpdateTickets.php       après chaque lecture : tickets et suivis, table de suivi
+│   │   ├── EolTicketPolicy.php     ticket de fin de support, suivi ou rien (fonctions pures)
+│   │   └── EolTickets.php          après chaque mise à jour des cycles de vie : tickets et suivis
 │   └── Harbor/                projets, dépôts, artefacts, analyses           (prévu, lot 3)
 ├── templates/                 Twig uniquement (aucun HTML dans le PHP)
 ├── locales/                   fr_FR, en_GB, de_DE, es_ES, it_IT, pl_PL, pt_BR (+ variantes régionales)
@@ -81,7 +96,9 @@ dockerinventory/
     ├── security/setup.php     jeu de données des contrôles de sécurité communs
     ├── mock-portainer/        faux Portainer (Python) et jeu de données fictif
     ├── mock-wud/              faux WUD (Python, format WUD 8.x) et jeu de données fictif
-    └── mock-registry/         faux registre (Python) : tags façon Docker Hub, /v2/.../tags/list façon Harbor
+    ├── mock-registry/         faux registre (Python) : tags façon Docker Hub, /v2/.../tags/list façon Harbor
+    └── mock-lifecycle/        fausse source des cycles de vie (Python, API v1 et ancienne API), dates
+                               relatives (+30d) et cycles fictifs
 ```
 
 ## Tables
@@ -95,6 +112,9 @@ dockerinventory/
 | `glpi_plugin_dockerinventory_services_nodes` | Tâches en cours d'un service sur chaque nœud (recalculé à chaque import) |
 | `glpi_plugin_dockerinventory_imageversions` | Une ligne par service suivi (ou par conteneur sans service, `plugin_dockerinventory_services_id` = 0) et par connexion WUD : conteneurs, image et registre, tag et empreinte déployés, dernière version, écart, réplicas désynchronisés, méthode de rattachement (ou raison de l'absence), source (`wud` ou `registry`), raison d'une version non vérifiée, date de vérification. Recalculée à chaque lecture de WUD ; repli sans WUD : une ligne par service, connexion Harbor ou 0 (Docker Hub, registre inconnu) |
 | `glpi_plugin_dockerinventory_tickets` | Ticket de mise à jour suivi pour chaque service (un seul) et la situation qu'il décrit : écart, version déployée, dernière version (dernier ticket ou suivi) |
+| `glpi_plugin_dockerinventory_lifecycleproducts` | Correspondance image normalisée → produit de la source (`is_default` : fournie à l'installation) |
+| `glpi_plugin_dockerinventory_lifecycles` | Cache des cycles de vie d'un produit : branches (JSON : nom, nom de code, fin de support, dernière version), erreur, dernier essai, dernière lecture réussie ; valable un jour |
+| `glpi_plugin_dockerinventory_eoltickets` | Ticket de fin de support suivi pour chaque service (un seul) et la branche qu'il décrit |
 | `glpi_plugin_dockerinventory_registrytags` | Cache des tags de Docker Hub : dépôt, tags et empreintes (JSON), raison d'un échec durable (introuvable), date de lecture ; valable un jour |
 
 ## Portainer (lot 1)
@@ -194,6 +214,32 @@ dockerinventory/
 - Lot 3 : `TicketPolicy::TRIGGER_VULNERABILITY` (paramètre `$signals` de `triggers()`), avec son
   propre réglage sur la connexion.
 - Désinstallation : la table de suivi est supprimée, les tickets restent (objets GLPI).
+
+## Fin de support des images (#26)
+
+- Désactivé par défaut (réglage `lifecycle_enabled` du contexte `plugin:dockerinventory` de la
+  configuration de GLPI) : tant qu'il l'est, aucun appel sortant et aucune évaluation affichée.
+- Source : [endoflife.date](https://endoflife.date), `GET /api/v1/products/<produit>/` (seul le nom du
+  produit est envoyé) ; l'ancienne API (`/api/<produit>.json`) est aussi lue. Adresse changeable par
+  la constante `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (modèle avec `{product}` : miroir, tests).
+- Produits lus : ceux des images en service (services actifs, conteneurs WUD sans service) qui ont
+  une correspondance ; au plus une lecture par produit et par jour (y compris « produit inconnu »,
+  404). Une limite (429) ou une panne arrête les appels pour la mise à jour en cours, garde les
+  cycles déjà lus (dernière lecture réussie affichée) et rend la mise à jour « partielle ».
+- Correspondance explicite, jamais devinée : image normalisée (sans tag ni empreinte, `docker.io` et
+  `library/` retirés, hôte gardé pour les autres registres) ; 33 images officielles fournies à
+  l'installation, une correspondance supprimée n'est pas rajoutée par les mises à jour suivantes.
+- Évaluation à l'affichage (`CycleMatcher`) à partir du cache : branche la plus précise qui commence
+  la version, tag moins précis suivant la branche la plus récente, nom de code ; fin de support
+  passée ou du jour : « fin de support » ; dans le seuil (90 jours par défaut) : « bientôt » ; sinon
+  « maintenue » ; sans correspondance, tag non versionné, produit inconnu, branche absente ou source
+  non lue : « inconnue », jamais « maintenue ».
+- Tickets (`EolTickets`, désactivés par défaut, réglés sur la connexion Portainer : `ticket_eol_enabled`,
+  `ticket_eol_days`) après chaque mise à jour des cycles de vie ; mêmes catégorie, groupe et modèle
+  que les tickets de mise à jour ; un ticket par service, des suivis, jamais de changement de statut.
+- Désinstallation : tables et réglages supprimés, tickets gardés.
+- Pas encore de colonne « fin de support » dans la recherche GLPI des versions (valeur calculée à
+  l'affichage) ; preuve GRC Manager (A.8.8) avec #10.
 
 ## Règles communes
 

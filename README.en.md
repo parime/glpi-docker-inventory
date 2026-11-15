@@ -35,6 +35,7 @@ replicas or version.
 | Portainer | Swarm and Compose stacks, Swarm services, Compose services and standalone containers (image, tag, digest, replicas or containers, state, restart policy, published ports, networks, named volumes, secret names), Swarm nodes and standalone hosts | Stack = native Appliance (impact analysis); Service form; nodes and hosts linked to inventoried computers |
 | WUD | Watched containers: local tag and digest, latest version, kind of gap | Deployed version, latest version, gap (patch, minor, major, digest only, not trackable) per service; containers without a service listed separately |
 | Registries (without WUD) | Docker Hub and Harbor v2 API | Same version table, computed by the plugin |
+| Lifecycles (endoflife.date, disabled by default) | End-of-support dates of the image products (explicit mapping) | End of support, soon, maintained or unknown per service; optional end-of-support tickets |
 | Harbor | Projects, repositories, artifacts, vulnerability scan overview | Vulnerabilities per image, images outside the managed registry flagged |
 
 ## Compatibility
@@ -199,6 +200,47 @@ define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
     \GlpiPlugin\Dockerinventory\Registry\RegistryContext::class,
 ]);
 ```
+
+## Usage: image end of support
+
+An image can be "up to date" within its branch while that branch is no longer maintained (for
+example a database on 13.x when branch 13 no longer receives fixes). The plugin compares the
+**deployed branch** with the end-of-support dates published by an open source,
+[endoflife.date](https://endoflife.date) (API v1, JSON over HTTPS).
+
+**Disabled by default: no outgoing call until the source is enabled.** Settings in
+*Setup > Image end of support* (configuration administrators):
+
+1. Tick "Read lifecycles (end of support)" and choose the "end of support soon" threshold (90 days
+   by default), then "Save".
+2. "Update now", or wait for the `lifecyclecheck` automatic action (once a day). Only the **product
+   name** is sent (`postgresql`, `nodejs`...), never a service, private image or host name; each
+   product is read **at most once a day** (cache).
+3. Check the **image → product mapping**: a table of 33 common official images is provided
+   (`postgres` → `postgresql`, `node` → `nodejs`, `httpd` → `apache-http-server`...), editable and
+   extendable. **Images in use without mapping** are listed with an "Add a mapping" button. The
+   product is **never guessed**: an unmapped image stays "Support unknown", never "Maintained".
+
+Display (*Image versions* page and "Versions" tab): **End of support** (red), **End of support soon**
+(orange, "in N days"), **Maintained** (green) or **Support unknown** (grey, with the reason: no
+mapping, `latest` tag, product unknown to the source, missing branch, source not read yet) badges,
+with the product, branch and date. On the versions page, clickable counters and an "End of support"
+filter (including "To watch": end of support passed or near).
+
+- Branch of a tag: the most precise one starting the version (`1.24` for `1.24.0-alpine`, `13` for
+  `13.4`); a less precise tag (`7`) follows the newest branch (`7.4`); a codename (`bookworm`,
+  `bookworm-slim`) gives the branch with that name.
+- **Offline**: if the source does not answer (outage, 429 limit), cached lifecycles are still used
+  and the date of their last update is shown; without cache, "not checked". Nothing blocks and no
+  GLPI object is changed.
+- **End-of-support tickets**, disabled by default, on the Portainer connection of the services:
+  "Create end-of-support tickets" and the **notice** (ticket when the end of support is less than N
+  days away, or passed; 90 by default). Category, group and template are those of the update
+  tickets. Same principle: one ticket per service, follow-ups when the branch changes, never a
+  duplicate nor a status change; ticket closed for a branch: no new ticket for the same branch.
+- Internal mirror of the source or tests: `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` constant (template
+  with `{product}`) in `config/local_define.php`, and the
+  `\GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext` context for a private address on GLPI 12.
 
 ## Links with the other plugins
 

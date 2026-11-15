@@ -5,6 +5,21 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Images déployées en fin de support ([#26](https://github.com/parime/glpi-docker-inventory/issues/26)) :
+  branche de chaque image comparée aux dates de fin de support publiées par
+  [endoflife.date](https://endoflife.date) (appel sortant **désactivé par défaut**, seul le nom du
+  produit est envoyé, une lecture par produit et par jour, données en cache gardées si la source
+  ne répond pas). Page *Configuration > Fin de support des images* : activation, seuil de
+  « bientôt en fin de support » (90 jours), mise à jour immédiate, correspondance image → produit
+  fournie (33 images officielles) et modifiable, images en service sans correspondance (jamais
+  devinées : « support inconnu »). Badges « fin de support », « bientôt », « maintenue »,
+  « inconnue » dans l'onglet « Versions » et la page des versions (compteurs et filtre). Tickets de
+  fin de support facultatifs sur la connexion Portainer (délai en jours, désactivés par défaut), un
+  par service avec des suivis. Action automatique quotidienne `lifecyclecheck`. Fausse source
+  `tests/mock-lifecycle` (cycles fictifs). Mise à jour automatique depuis la 0.4.0.
+
 ## [0.4.0] - 2026-11-14
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

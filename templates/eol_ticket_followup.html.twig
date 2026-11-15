@@ -1,0 +1,37 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Suivi d'un ticket de fin de support encore ouvert, quand la situation du service change. #}
+<p>
+    {% if kind == 'resolved' %}
+        <strong>{{ __('Branche maintenue', 'dockerinventory') }}</strong> :
+        {{ __('le service utilise maintenant', 'dockerinventory') }} {{ product }} {{ cycle }} ({{ status.label }}).
+    {% else %}
+        <strong>{{ __('Nouvelle situation', 'dockerinventory') }}</strong> :
+        {{ product }} {{ cycle }} ({{ status.label }}).
+    {% endif %}
+    {% if eol and eol != 'yes' %}
+        {{ __('Fin de support', 'dockerinventory') }} : {{ eol|formatted_date }}.
+    {% endif %}
+</p>
+<p>
+    {{ __('Situation précédente', 'dockerinventory') }} :
+    {{ previous.product ?: '-' }} {{ previous.cycle ?: '-' }}
+    {% if previous.eol and previous.eol != 'yes' %}({{ previous.eol|formatted_date }}){% endif %}.
+</p>
+<p>
+    {{ __('Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié.', 'dockerinventory') }}
+    <a href="{{ service_url }}">{{ __('Voir le service dans GLPI', 'dockerinventory') }}</a>
+</p>

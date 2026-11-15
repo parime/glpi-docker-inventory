@@ -17,6 +17,7 @@
    (colonne du conteneur et de la raison au lieu du service et de l'application). #}
 {% set containers_mode = containers_mode|default(false) %}
 {% set hide_appliance = hide_appliance|default(false) %}
+{% set eol_enabled = eol_enabled|default(false) %}
 {% set registry_title = __('Page du registre', 'dockerinventory') %}
 <table class="table table-hover table-sm card-table align-middle">
     <thead>
@@ -34,6 +35,9 @@
             <th>{{ __('Version déployée', 'dockerinventory') }}</th>
             <th>{{ __('Dernière version', 'dockerinventory') }}</th>
             <th>{{ __('Écart', 'dockerinventory') }}</th>
+            {% if eol_enabled %}
+                <th>{{ __('Fin de support', 'dockerinventory') }}</th>
+            {% endif %}
             <th>{{ __('Vérifié le', 'dockerinventory') }}</th>
         </tr>
     </thead>
@@ -134,6 +138,9 @@
                         </div>
                     {% endif %}
                 </td>
+                {% if eol_enabled %}
+                    <td>{{ include('@dockerinventory/_eol_badge.html.twig', {eol: row.eol}) }}</td>
+                {% endif %}
                 <td class="text-nowrap small">
                     {{ row.date_checked|formatted_datetime }}
                     <div class="text-muted">{{ row.source }}</div>

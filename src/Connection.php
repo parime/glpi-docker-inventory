@@ -378,7 +378,7 @@ class Connection extends ConnectionBase
         $isPortainer = ($isNew ? (string) ($input['type'] ?? '') : (string) ($this->fields['type'] ?? ''))
             === self::TYPE_PORTAINER;
         $ticketFields = ['ticket_enabled', 'ticket_threshold', 'ticket_itilcategories_id', 'ticket_groups_id',
-            'ticket_tickettemplates_id'];
+            'ticket_tickettemplates_id', 'ticket_eol_enabled', 'ticket_eol_days'];
         foreach ($ticketFields as $field) {
             if (!array_key_exists($field, $input)) {
                 continue;
@@ -390,6 +390,8 @@ class Connection extends ConnectionBase
                 $value = (string) $input[$field];
                 $valid = in_array($value, TicketPolicy::THRESHOLDS, true);
                 $input[$field] = $valid ? $value : TicketPolicy::THRESHOLD_MAJOR;
+            } elseif ($field === 'ticket_eol_days') {
+                $input[$field] = Lifecycle\Settings::clampDays((int) $input[$field]);
             } else {
                 $input[$field] = max(0, (int) $input[$field]);
             }

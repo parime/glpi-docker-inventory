@@ -15,7 +15,7 @@ msgstr ""
 msgid "Tag mobile : la version réelle est donnée par l’empreinte."
 msgstr "Tag mobile: la versione reale è indicata dal digest."
 
-#: templates/_service_rows.html.twig templates/_version_rows.html.twig templates/ticket_content.html.twig
+#: templates/_service_rows.html.twig templates/_version_rows.html.twig templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
 msgid "Service"
 msgstr "Servizio"
 
@@ -47,7 +47,7 @@ msgstr "Stato"
 msgid "Vu la dernière fois"
 msgstr "Visto l'ultima volta"
 
-#: templates/_service_rows.html.twig templates/_version_rows.html.twig templates/ticket_content.html.twig src/ImageVersion.php src/Service.php
+#: templates/_service_rows.html.twig templates/_version_rows.html.twig templates/eol_ticket_content.html.twig templates/ticket_content.html.twig src/ImageVersion.php src/Service.php
 msgid "Stack"
 msgstr "Stack"
 
@@ -83,7 +83,7 @@ msgstr "Perché senza servizio"
 msgid "Application et environnement"
 msgstr "Applicazione e ambiente"
 
-#: templates/_version_rows.html.twig templates/service_form.html.twig templates/ticket_content.html.twig templates/version_tab.html.twig src/ImageVersion.php src/Service.php
+#: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig templates/lifecycle.html.twig templates/service_form.html.twig templates/ticket_content.html.twig templates/version_tab.html.twig src/ImageVersion.php src/Service.php
 msgid "Image"
 msgstr "Immagine"
 
@@ -98,6 +98,10 @@ msgstr "Ultima versione"
 #: templates/_version_rows.html.twig templates/ticket_content.html.twig templates/versions.html.twig src/ImageVersion.php
 msgid "Écart"
 msgstr "Scarto"
+
+#: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig templates/eol_ticket_followup.html.twig templates/version_tab.html.twig templates/versions.html.twig src/LifecycleProduct.php
+msgid "Fin de support"
+msgstr "Fine del supporto"
 
 #: templates/_version_rows.html.twig templates/version_tab.html.twig src/ImageVersion.php
 msgid "Vérifié le"
@@ -403,6 +407,34 @@ msgstr "Vulnerabilità critica dell’immagine: con Harbor, nel lotto 3."
 msgid "Autre déclencheur"
 msgstr "Altro attivatore"
 
+#: templates/connection_form.html.twig
+msgid "Tickets de fin de support"
+msgstr "Ticket di fine supporto"
+
+#: templates/connection_form.html.twig
+msgid "Créer des tickets de fin de support"
+msgstr "Crea ticket di fine supporto"
+
+#: templates/connection_form.html.twig
+msgid "Désactivé par défaut. La source des cycles de vie doit aussi être activée."
+msgstr "Disattivato per impostazione predefinita. Anche la fonte dei cicli di vita deve essere attivata."
+
+#: templates/connection_form.html.twig
+msgid "Délai avant la fin de support (jours)"
+msgstr "Preavviso prima della fine del supporto (giorni)"
+
+#: templates/connection_form.html.twig
+msgid "Ticket quand la branche déployée arrive en fin de support dans ce délai (0 : une fois atteinte)."
+msgstr "Ticket quando il ramo distribuito raggiunge la fine del supporto entro questo periodo (0: una volta raggiunta)."
+
+#: templates/connection_form.html.twig
+msgid "Catégorie, groupe et modèle : ceux des tickets de mise à jour ci-dessus."
+msgstr "Categoria, gruppo e modello: quelli dei ticket di aggiornamento sopra."
+
+#: templates/connection_form.html.twig
+msgid "Réglages communs"
+msgstr "Impostazioni comuni"
+
 #: templates/connection_type_choice.html.twig
 msgid "Quelle source voulez-vous connecter ?"
 msgstr "Quale sorgente vuoi collegare?"
@@ -430,6 +462,58 @@ msgstr "Versione distribuita e ultima versione disponibile di ogni immagine."
 #: templates/connection_type_choice.html.twig
 msgid "Registre privé : dernières versions de vos images, sans WUD."
 msgstr "Registro privato: ultime versioni delle vostre immagini, senza WUD."
+
+#: templates/eol_ticket_content.html.twig
+msgid "La branche de l’image déployée par ce service arrive en fin de support, ou l’a dépassée."
+msgstr "Il ramo dell’immagine distribuita da questo servizio raggiunge la fine del supporto, o l’ha superata."
+
+#: templates/eol_ticket_content.html.twig
+msgid "Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une branche maintenue."
+msgstr "Non riceverà più correzioni di sicurezza: pianificare il passaggio a un ramo mantenuto."
+
+#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+msgid "Application"
+msgstr "Applicazione"
+
+#: templates/eol_ticket_content.html.twig templates/version_tab.html.twig
+msgid "Branche"
+msgstr "Ramo"
+
+#: templates/eol_ticket_content.html.twig
+msgid "atteinte (date non publiée)"
+msgstr "raggiunta (data non pubblicata)"
+
+#: templates/eol_ticket_content.html.twig templates/eol_ticket_followup.html.twig templates/ticket_content.html.twig templates/ticket_followup.html.twig
+msgid "Voir le service dans GLPI"
+msgstr "Vedi il servizio in GLPI"
+
+#: templates/eol_ticket_content.html.twig
+msgid "Ticket créé par Inventaire Docker, délai choisi (jours) :"
+msgstr "Ticket creato da Inventario Docker, preavviso scelto (giorni):"
+
+#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+msgid "Un suivi sera ajouté si la situation change ; jamais de changement de statut, de priorité ni d’affectation."
+msgstr "Verrà aggiunto un follow-up se la situazione cambia; mai modifiche di stato, priorità o assegnazione."
+
+#: templates/eol_ticket_followup.html.twig
+msgid "Branche maintenue"
+msgstr "Ramo mantenuto"
+
+#: templates/eol_ticket_followup.html.twig
+msgid "le service utilise maintenant"
+msgstr "il servizio ora usa"
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+msgid "Nouvelle situation"
+msgstr "Nuova situazione"
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+msgid "Situation précédente"
+msgstr "Situazione precedente"
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+msgid "Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié."
+msgstr "Follow-up aggiunto da Inventario Docker: lo stato del ticket non viene modificato."
 
 #: templates/harbor_actions.html.twig
 msgid "Versions depuis le registre Harbor"
@@ -482,6 +566,166 @@ msgstr "Harbor su una rete privata (GLPI 12)"
 #: templates/harbor_actions.html.twig
 msgid "Pour les registres seulement, ajouter dans config/local_define.php :"
 msgstr "Solo per i registri, aggiungere in config/local_define.php:"
+
+#: templates/lifecycle.html.twig src/LifecycleProduct.php
+msgid "Fin de support des images"
+msgstr "Fine del supporto delle immagini"
+
+#: templates/lifecycle.html.twig
+msgid "Activée"
+msgstr "Attivata"
+
+#: templates/lifecycle.html.twig
+msgid "Désactivée"
+msgstr "Disattivata"
+
+#: templates/lifecycle.html.twig templates/versions.html.twig src/ImageVersion.php
+msgid "Versions des images"
+msgstr "Versioni delle immagini"
+
+#: templates/lifecycle.html.twig
+msgid "Une image peut être à jour dans sa branche alors que cette branche ne reçoit plus de correctifs."
+msgstr "Un’immagine può essere aggiornata nel suo ramo mentre quel ramo non riceve più correzioni."
+
+#: templates/lifecycle.html.twig
+msgid "Le plugin compare la branche déployée aux dates de fin de support publiées par une source ouverte."
+msgstr "Il plugin confronta il ramo distribuito con le date di fine supporto pubblicate da una fonte aperta."
+
+#: templates/lifecycle.html.twig
+msgid "Appel sortant, désactivé par défaut : une requête par produit et par jour au plus."
+msgstr "Chiamata in uscita, disattivata per impostazione predefinita: al massimo una richiesta per prodotto al giorno."
+
+#: templates/lifecycle.html.twig
+msgid "Seul le nom du produit est envoyé (postgresql, nodejs...), jamais vos services ni vos hôtes."
+msgstr "Viene inviato solo il nome del prodotto (postgresql, nodejs...), mai i vostri servizi o host."
+
+#: templates/lifecycle.html.twig templates/ticket_content.html.twig templates/version_tab.html.twig src/ImageVersion.php
+msgid "Source"
+msgstr "Sorgente"
+
+#: templates/lifecycle.html.twig
+msgid "Lire les cycles de vie (fin de support)"
+msgstr "Leggi i cicli di vita (fine supporto)"
+
+#: templates/lifecycle.html.twig
+msgid "Signaler « bientôt en fin de support » (jours avant)"
+msgstr "Segnalare «fine supporto a breve» (giorni prima)"
+
+#: templates/lifecycle.html.twig
+msgid "Enregistrer"
+msgstr "Salva"
+
+#: templates/lifecycle.html.twig
+msgid "Dernière mise à jour"
+msgstr "Ultimo aggiornamento"
+
+#: templates/lifecycle.html.twig
+msgid "Chaque produit au plus une fois par jour."
+msgstr "Ogni prodotto al massimo una volta al giorno."
+
+#: templates/lifecycle.html.twig
+msgid "Mettre à jour maintenant"
+msgstr "Aggiorna ora"
+
+#: templates/lifecycle.html.twig
+msgid "Données en cache du"
+msgstr "Dati in cache del"
+
+#: templates/lifecycle.html.twig
+msgid "dernier essai"
+msgstr "ultimo tentativo"
+
+#: templates/lifecycle.html.twig
+msgid "Aucune donnée pour le moment."
+msgstr "Nessun dato per ora."
+
+#: templates/lifecycle.html.twig
+msgid "Cliquez sur « Mettre à jour maintenant » ou attendez la tâche automatique (une fois par jour)."
+msgstr "Fare clic su «Aggiorna ora» o attendere l’azione automatica (una volta al giorno)."
+
+#: templates/lifecycle.html.twig
+msgid "Activez la lecture des cycles de vie ci-dessus."
+msgstr "Attivare la lettura dei cicli di vita qui sopra."
+
+#: templates/lifecycle.html.twig
+msgid "Produits non lus à la dernière mise à jour (les données déjà en cache restent utilisées) :"
+msgstr "Prodotti non letti all’ultimo aggiornamento (i dati già in cache restano utilizzati):"
+
+#: templates/lifecycle.html.twig
+msgid "données du"
+msgstr "dati del"
+
+#: templates/lifecycle.html.twig
+msgid "Images en service sans correspondance"
+msgstr "Immagini in servizio senza corrispondenza"
+
+#: templates/lifecycle.html.twig
+msgid "Leur fin de support reste « inconnue » : le plugin ne devine jamais le produit d’une image."
+msgstr "La loro fine del supporto resta «sconosciuta»: il plugin non indovina mai il prodotto di un’immagine."
+
+#: templates/lifecycle.html.twig
+msgid "Ajoutez une correspondance pour celles qui ont un cycle de vie publié."
+msgstr "Aggiungere una corrispondenza per quelle con un ciclo di vita pubblicato."
+
+#: templates/lifecycle.html.twig
+msgid "Services ou conteneurs"
+msgstr "Servizi o container"
+
+#: templates/lifecycle.html.twig
+msgid "Ajouter une correspondance"
+msgstr "Aggiungi una corrispondenza"
+
+#: templates/lifecycle.html.twig
+msgid "Correspondance image → produit"
+msgstr "Corrispondenza immagine → prodotto"
+
+#: templates/lifecycle.html.twig
+msgid "Image : nom sans tag (postgres, bitnami/redis, registry.exemple.test/outils/api)."
+msgstr "Immagine: nome senza tag (postgres, bitnami/redis, registry.exemple.test/outils/api)."
+
+#: templates/lifecycle.html.twig
+msgid "Produit : son nom dans la source, en minuscules (postgresql, nodejs, apache-http-server)."
+msgstr "Prodotto: il suo nome nella fonte, in minuscolo (postgresql, nodejs, apache-http-server)."
+
+#: templates/lifecycle.html.twig
+msgid "Produit"
+msgstr "Prodotto"
+
+#: templates/lifecycle.html.twig
+msgid "En service"
+msgstr "In servizio"
+
+#: templates/lifecycle.html.twig
+msgid "Cycles de vie"
+msgstr "Cicli di vita"
+
+#: templates/lifecycle.html.twig
+msgid "Supprimer"
+msgstr "Elimina"
+
+#: templates/lifecycle.html.twig
+msgid "Nouvelle image"
+msgstr "Nuova immagine"
+
+#: templates/lifecycle.html.twig
+msgid "Produit de la nouvelle image"
+msgstr "Prodotto della nuova immagine"
+
+#: templates/lifecycle.html.twig
+msgid "Nouvelle correspondance"
+msgstr "Nuova corrispondenza"
+
+#: templates/lifecycle.html.twig
+msgid "Fournie"
+msgstr "Fornita"
+
+#: templates/lifecycle.html.twig
+msgid "Pas encore lus"
+msgstr "Non ancora letti"
+
+#: templates/lifecycle.html.twig
+msgid "Enregistrer les correspondances"
+msgstr "Salva le corrispondenze"
 
 #: templates/service_form.html.twig
 msgid "depuis le"
@@ -588,24 +832,8 @@ msgid "Une version plus récente de l’image de ce service est disponible."
 msgstr "È disponibile una versione più recente dell’immagine di questo servizio."
 
 #: templates/ticket_content.html.twig
-msgid "Application"
-msgstr "Applicazione"
-
-#: templates/ticket_content.html.twig templates/version_tab.html.twig src/ImageVersion.php
-msgid "Source"
-msgstr "Sorgente"
-
-#: templates/ticket_content.html.twig templates/ticket_followup.html.twig
-msgid "Voir le service dans GLPI"
-msgstr "Vedi il servizio in GLPI"
-
-#: templates/ticket_content.html.twig
 msgid "Ticket créé par Inventaire Docker, seuil choisi :"
 msgstr "Ticket creato da Inventario Docker, soglia scelta:"
-
-#: templates/ticket_content.html.twig
-msgid "Un suivi sera ajouté si la situation change ; jamais de changement de statut, de priorité ni d’affectation."
-msgstr "Verrà aggiunto un follow-up se la situazione cambia; mai modifiche di stato, priorità o assegnazione."
 
 #: templates/ticket_followup.html.twig
 msgid "Écart résolu"
@@ -618,18 +846,6 @@ msgstr "il servizio è aggiornato alla versione"
 #: templates/ticket_followup.html.twig
 msgid "Écart sous le seuil"
 msgstr "Scarto sotto la soglia"
-
-#: templates/ticket_followup.html.twig
-msgid "Nouvelle situation"
-msgstr "Nuova situazione"
-
-#: templates/ticket_followup.html.twig
-msgid "Situation précédente"
-msgstr "Situazione precedente"
-
-#: templates/ticket_followup.html.twig
-msgid "Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié."
-msgstr "Follow-up aggiunto da Inventario Docker: lo stato del ticket non viene modificato."
 
 #: templates/version_tab.html.twig templates/versions.html.twig
 msgid "Aucune version connue pour le moment."
@@ -658,6 +874,10 @@ msgstr "Nessuna versione nota per i servizi di questa applicazione."
 #: templates/version_tab.html.twig
 msgid "Ticket de mise à jour"
 msgstr "Ticket di aggiornamento"
+
+#: templates/version_tab.html.twig
+msgid "Ticket de fin de support"
+msgstr "Ticket di fine supporto"
 
 #: templates/version_tab.html.twig
 msgid "Version de l’image"
@@ -696,6 +916,22 @@ msgid "Rattachement"
 msgstr "Collegamento"
 
 #: templates/version_tab.html.twig
+msgid "dernière version de la branche"
+msgstr "ultima versione del ramo"
+
+#: templates/version_tab.html.twig
+msgid "Ajouter ou corriger la correspondance"
+msgstr "Aggiungi o correggi la corrispondenza"
+
+#: templates/version_tab.html.twig
+msgid "Non vérifiée : source des cycles de vie désactivée."
+msgstr "Non verificata: fonte dei cicli di vita disattivata."
+
+#: templates/version_tab.html.twig templates/versions.html.twig
+msgid "Activer"
+msgstr "Attiva"
+
+#: templates/version_tab.html.twig
 msgid "Pourquoi non vérifié"
 msgstr "Perché non verificato"
 
@@ -710,10 +946,6 @@ msgstr "Versioni lette in What’s Up Docker o nel registro dell’immagine, sen
 #: templates/version_tab.html.twig
 msgid "Voir toutes les versions des images"
 msgstr "Vedi tutte le versioni delle immagini"
-
-#: templates/versions.html.twig src/ImageVersion.php
-msgid "Versions des images"
-msgstr "Versioni delle immagini"
 
 #: templates/versions.html.twig
 msgid "Docker Hub au plus une fois par jour et par image."
@@ -738,6 +970,34 @@ msgstr "Tutti"
 #: templates/versions.html.twig
 msgid "À mettre à jour"
 msgstr "Da aggiornare"
+
+#: templates/versions.html.twig
+msgid "À surveiller"
+msgstr "Da sorvegliare"
+
+#: templates/versions.html.twig
+msgid "Cycles de vie mis à jour le"
+msgstr "Cicli di vita aggiornati il"
+
+#: templates/versions.html.twig
+msgid "Cycles de vie pas encore lus : prochaine mise à jour par la tâche automatique."
+msgstr "Cicli di vita non ancora letti: prossimo aggiornamento tramite l’azione automatica."
+
+#: templates/versions.html.twig
+msgid "Dernière mise à jour incomplète : les données en cache restent utilisées."
+msgstr "Ultimo aggiornamento incompleto: i dati in cache restano utilizzati."
+
+#: templates/versions.html.twig
+msgid "Réglages et correspondances"
+msgstr "Impostazioni e corrispondenze"
+
+#: templates/versions.html.twig
+msgid "Fin de support des images : désactivée."
+msgstr "Fine del supporto delle immagini: disattivata."
+
+#: templates/versions.html.twig
+msgid "Une fois activée, chaque image indique si sa branche est encore maintenue."
+msgstr "Una volta attivata, ogni immagine indica se il suo ramo è ancora mantenuto."
 
 #: templates/versions.html.twig
 msgid "Environnement"
@@ -822,6 +1082,14 @@ msgstr "WUD su una rete privata (GLPI 12)"
 #: templates/wud_actions.html.twig
 msgid "Pour WUD seulement, ajouter dans config/local_define.php :"
 msgstr "Solo per WUD, aggiungere in config/local_define.php:"
+
+#: front/lifecycle.php
+msgid "Réglages enregistrés."
+msgstr "Impostazioni salvate."
+
+#: front/lifecycle.php
+msgid "Correspondances enregistrées."
+msgstr "Corrispondenze salvate."
 
 #: src/Connection.php
 msgid "Connexion Docker"
@@ -1142,6 +1410,142 @@ msgstr "Versioni"
 msgid "Créée par le plugin Inventaire Docker pour la stack Portainer « %1$s » (%2$s)."
 msgstr "Creata dal plugin Docker Inventory per lo stack Portainer «%1$s» (%2$s)."
 
+#: src/LifecycleProduct.php
+msgid "Nom d’image invalide (exemples : postgres, bitnami/redis, registry.exemple.test/outils/api)."
+msgstr "Nome immagine non valido (esempi: postgres, bitnami/redis, registry.exemple.test/outils/api)."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "L’image %s a déjà une correspondance."
+msgstr "L’immagine %s ha già una corrispondenza."
+
+#: src/LifecycleProduct.php
+msgid "Produit invalide : nom de la source en minuscules (exemples : postgresql, nodejs)."
+msgstr "Prodotto non valido: nome nella fonte, in minuscolo (esempi: postgresql, nodejs)."
+
+#: src/LifecycleProduct.php
+msgid "La branche déployée ne reçoit plus de correctifs de sécurité."
+msgstr "Il ramo distribuito non riceve più correzioni di sicurezza."
+
+#: src/LifecycleProduct.php
+msgid "Bientôt en fin de support"
+msgstr "Fine del supporto a breve"
+
+#: src/LifecycleProduct.php
+msgid "Prévoir le passage à une branche encore maintenue."
+msgstr "Pianificare il passaggio a un ramo ancora mantenuto."
+
+#: src/LifecycleProduct.php
+msgid "Maintenue"
+msgstr "Mantenuto"
+
+#: src/LifecycleProduct.php
+msgid "La branche déployée reçoit encore des correctifs."
+msgstr "Il ramo distribuito riceve ancora correzioni."
+
+#: src/LifecycleProduct.php
+msgid "Support inconnu"
+msgstr "Supporto sconosciuto"
+
+#: src/LifecycleProduct.php
+msgid "Fin de support non déterminée : jamais considérée comme maintenue."
+msgstr "Fine del supporto non determinata: mai considerata mantenuta."
+
+#: src/LifecycleProduct.php
+msgid "Source des cycles de vie désactivée."
+msgstr "Fonte dei cicli di vita disattivata."
+
+#: src/LifecycleProduct.php
+msgid "Image sans correspondance avec un produit."
+msgstr "Immagine senza corrispondenza con un prodotto."
+
+#: src/LifecycleProduct.php
+msgid "Tag sans numéro de version (latest...)."
+msgstr "Tag senza numero di versione (latest...)."
+
+#: src/LifecycleProduct.php
+msgid "Cycles de vie pas encore lus (source pas encore interrogée ou injoignable)."
+msgstr "Cicli di vita non ancora letti (fonte non ancora interrogata o irraggiungibile)."
+
+#: src/LifecycleProduct.php
+msgid "Produit inconnu de la source : correspondance à corriger."
+msgstr "Prodotto sconosciuto alla fonte: corrispondenza da correggere."
+
+#: src/LifecycleProduct.php
+msgid "Branche de cette version absente de la source."
+msgstr "Ramo di questa versione assente dalla fonte."
+
+#: src/LifecycleProduct.php
+msgid "Produit inconnu de la source"
+msgstr "Prodotto sconosciuto alla fonte"
+
+#: src/LifecycleProduct.php
+msgid "Limite de requêtes atteinte"
+msgstr "Limite di richieste raggiunto"
+
+#: src/LifecycleProduct.php
+msgid "Erreur du serveur de la source"
+msgstr "Errore del server della fonte"
+
+#: src/LifecycleProduct.php
+msgid "Adresse sur un réseau privé refusée par GLPI (contexte LifecycleContext à autoriser)"
+msgstr "Indirizzo su rete privata rifiutato da GLPI (autorizzare il contesto LifecycleContext)"
+
+#: src/LifecycleProduct.php
+msgid "Réponse inattendue de la source"
+msgstr "Risposta inattesa della fonte"
+
+#: src/LifecycleProduct.php
+msgid "Source injoignable"
+msgstr "Fonte irraggiungibile"
+
+#: src/LifecycleProduct.php
+msgid "Non interrogé (erreur précédente)"
+msgstr "Non interrogato (errore precedente)"
+
+#: src/LifecycleProduct.php
+msgid "Fin de support atteinte (date non publiée)."
+msgstr "Fine del supporto raggiunta (data non pubblicata)."
+
+#: src/LifecycleProduct.php
+msgid "Aucune fin de support annoncée."
+msgstr "Nessuna fine del supporto annunciata."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "Fin de support depuis le %s."
+msgstr "Fine del supporto dal %s."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "Fin de support le %1$s (dans %2$d jour)."
+msgid_plural "Fin de support le %1$s (dans %2$d jours)."
+msgstr[0] "Fine del supporto il %1$s (tra %2$d giorno)."
+msgstr[1] "Fine del supporto il %1$s (tra %2$d giorni)."
+
+#: src/LifecycleProduct.php
+msgid "Source des cycles de vie désactivée : rien n’a été lu."
+msgstr "Fonte dei cicli di vita disattivata: nulla è stato letto."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "Cycles de vie : %1$d produits, %2$d lus, %3$d en cache, %4$d inconnus de la source, %5$d requêtes."
+msgstr "Cicli di vita: %1$d prodotti, %2$d letti, %3$d in cache, %4$d sconosciuti alla fonte, %5$d richieste."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "%d produit(s) non lu(s) : les données déjà en cache restent utilisées."
+msgstr "%d prodotto/i non letto/i: i dati già in cache restano utilizzati."
+
+#: src/LifecycleProduct.php
+#, php-format
+msgid "Tickets de fin de support : %1$d créé(s), %2$d suivi(s) ajouté(s)."
+msgstr "Ticket di fine supporto: %1$d creato/i, %2$d followup aggiunto/i."
+
+#: src/LifecycleProduct.php
+msgid "Fin de support des images : cycles de vie (une fois par jour) et tickets de fin de support"
+msgstr "Fine del supporto delle immagini: cicli di vita (una volta al giorno) e ticket di fine supporto"
+
 #: src/Node.php
 msgid "Nœuds Swarm"
 msgstr "Nodi Swarm"
@@ -1198,6 +1602,16 @@ msgstr "Container autonomo"
 #, php-format
 msgid "%d (global)"
 msgstr "%d (globale)"
+
+#: src/Ticket/EolTickets.php
+#, php-format
+msgid "Fin de support : %1$s %2$s (service %3$s)"
+msgstr "Fine del supporto: %1$s %2$s (servizio %3$s)"
+
+#: src/Ticket/EolTickets.php
+#, php-format
+msgid "Fin de support : %1$s %2$s (service %3$s de la stack %4$s)"
+msgstr "Fine del supporto: %1$s %2$s (servizio %3$s dello stack %4$s)"
 
 #: src/Ticket/UpdateTickets.php
 #, php-format

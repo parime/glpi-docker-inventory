@@ -30,6 +30,12 @@ Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 e
 - [#25](https://github.com/parime/glpi-docker-inventory/issues/25) Hôtes Docker autonomes et stacks
   Compose gérés par Portainer : fait, à valider sur un vrai Portainer avec un hôte Docker autonome.
 
+## Fin de support des images
+
+- [#26](https://github.com/parime/glpi-docker-inventory/issues/26) Images déployées en fin de
+  support : cycles de vie d'endoflife.date (désactivé par défaut), correspondance image → produit
+  modifiable, badges et filtre, tickets de fin de support. Fait ; preuve GRC Manager (A.8.8) avec #10.
+
 ## Lot 3 : Harbor
 
 - [#9](https://github.com/parime/glpi-docker-inventory/issues/9) Projets, artefacts, analyses de

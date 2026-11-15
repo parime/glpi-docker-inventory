@@ -44,6 +44,16 @@
             </div>
         </div>
     {% endif %}
+    {% if eol_ticket %}
+        <div class="alert {{ eol_ticket.is_open ? 'alert-warning' : 'alert-secondary' }} d-flex align-items-center">
+            <i class="ti ti-calendar-x me-2" aria-hidden="true"></i>
+            <div>
+                {{ __('Ticket de fin de support', 'dockerinventory') }} :
+                <a href="{{ eol_ticket.url }}">#{{ eol_ticket.id }} {{ eol_ticket.name }}</a>
+                <span class="badge bg-secondary-lt ms-1">{{ eol_ticket.status }}</span>
+            </div>
+        </div>
+    {% endif %}
     {% for row in rows %}
         <div class="card mb-3">
             <div class="card-header d-flex flex-wrap align-items-center gap-2">
@@ -52,6 +62,9 @@
                     {{ __('Version de l’image', 'dockerinventory') }}
                 </h3>
                 {{ include('@dockerinventory/_version_badge.html.twig', {gap: row.gap}) }}
+                {% if eol_enabled %}
+                    {{ include('@dockerinventory/_eol_badge.html.twig', {eol: row.eol, compact: true}) }}
+                {% endif %}
                 {% if row.is_out_of_sync %}
                     <span class="badge bg-warning text-white">
                         <i class="ti ti-arrows-split me-1" aria-hidden="true"></i>
@@ -131,6 +144,41 @@
                             </span>
                         {% endif %}
                     </dd>
+                    <dt class="col-sm-3">{{ __('Fin de support', 'dockerinventory') }}</dt>
+                    <dd class="col-sm-9">
+                        {% if eol_enabled %}
+                            {{ include('@dockerinventory/_eol_badge.html.twig', {eol: row.eol, compact: true}) }}
+                            {% if row.eol.cycle %}
+                                <span class="ms-2">
+                                    {{ __('Branche', 'dockerinventory') }} {{ row.eol.product }} {{ row.eol.cycle }}
+                                    {% if row.eol.latest %}
+                                        ({{ __('dernière version de la branche', 'dockerinventory') }} :
+                                        {{ row.eol.latest }})
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                            <div class="text-muted small">
+                                {{ row.eol.detail }}
+                                {% if row.eol.product_url %}
+                                    <a href="{{ row.eol.product_url }}" target="_blank" rel="noopener noreferrer"
+                                       class="ms-1">
+                                        <i class="ti ti-external-link me-1" aria-hidden="true"></i>endoflife.date
+                                    </a>
+                                {% endif %}
+                                {% set fixable = row.eol.reason in ['no_product', 'product_not_found'] %}
+                                {% if can_configure_lifecycle and fixable %}
+                                    <a href="{{ lifecycle_url }}" class="ms-1">
+                                    {{ __('Ajouter ou corriger la correspondance', 'dockerinventory') }}</a>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="text-muted">
+                            {{ __('Non vérifiée : source des cycles de vie désactivée.', 'dockerinventory') }}</span>
+                            {% if can_configure_lifecycle %}
+                                <a href="{{ lifecycle_url }}" class="ms-1">{{ __('Activer', 'dockerinventory') }}</a>
+                            {% endif %}
+                        {% endif %}
+                    </dd>
                     <dt class="col-sm-3">{{ __('Vérifié le', 'dockerinventory') }}</dt>
                     <dd class="col-sm-9">{{ row.date_checked|formatted_datetime }}</dd>
                     {% if row.error %}
@@ -155,7 +203,9 @@
             </h3>
         </div>
         <div class="table-responsive">
-            {{ include('@dockerinventory/_version_rows.html.twig', {rows: rows, hide_appliance: true}) }}
+            {{ include('@dockerinventory/_version_rows.html.twig', {
+                rows: rows, hide_appliance: true, eol_enabled: eol_enabled,
+            }) }}
         </div>
     </div>
 {% endif %}

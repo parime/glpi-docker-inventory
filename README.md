@@ -35,6 +35,7 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 | Portainer | Stacks Swarm et Compose, services Swarm, services Compose et conteneurs autonomes (image, tag, empreinte, réplicas ou conteneurs, état, politique de redémarrage, ports publiés, réseaux, volumes nommés, noms des secrets), nœuds Swarm et hôtes autonomes | Stack = Application native (analyse d'impact) ; fiche Service ; nœuds et hôtes rattachés aux ordinateurs inventoriés |
 | WUD | Conteneurs suivis : tag et empreinte locaux, dernière version, type d'écart | Version déployée, dernière version, écart (correctif, mineure, majeure, empreinte seule, non suivable) par service ; conteneurs sans service listés à part |
 | Registres (sans WUD) | Docker Hub et API v2 de Harbor | Même tableau des versions, calculé par le plugin |
+| Cycles de vie (endoflife.date, désactivé par défaut) | Dates de fin de support des produits des images (correspondance explicite) | Fin de support, bientôt, maintenue ou inconnue par service ; tickets de fin de support facultatifs |
 | Harbor | Projets, dépôts, artefacts, résumé d'analyse de vulnérabilités | Vulnérabilités par image, images hors registre maîtrisé signalées |
 
 ## Compatibilité
@@ -208,6 +209,50 @@ define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
     \GlpiPlugin\Dockerinventory\Registry\RegistryContext::class,
 ]);
 ```
+
+## Utilisation : fin de support des images
+
+Une image peut être « à jour » dans sa branche alors que cette branche n'est plus maintenue (par
+exemple une base de données en 13.x quand la branche 13 ne reçoit plus de correctifs). Le plugin
+compare la **branche déployée** aux dates de fin de support publiées par une source ouverte,
+[endoflife.date](https://endoflife.date) (API v1, JSON en HTTPS).
+
+**Désactivé par défaut : aucun appel sortant tant que la source n'est pas activée.** Réglages dans
+*Configuration > Fin de support des images* (administrateurs de la configuration) :
+
+1. Cocher « Lire les cycles de vie (fin de support) » et choisir le seuil de « bientôt en fin de
+   support » (90 jours par défaut), puis « Enregistrer ».
+2. « Mettre à jour maintenant », ou attendre l'action automatique `lifecyclecheck` (une fois par
+   jour). Seul le **nom du produit** est envoyé (`postgresql`, `nodejs`...), jamais un nom de service,
+   d'image privée ou d'hôte ; chaque produit est lu **au plus une fois par jour** (cache).
+3. Vérifier la **correspondance image → produit** : une table de 33 images officielles courantes
+   est fournie (`postgres` → `postgresql`, `node` → `nodejs`, `httpd` → `apache-http-server`...),
+   modifiable et complétable. Les **images en service sans correspondance** sont listées avec un
+   bouton « Ajouter une correspondance ». Le produit n'est **jamais deviné** : une image sans
+   correspondance reste « Support inconnu », jamais « Maintenue ».
+
+Affichage (page *Versions des images* et onglet « Versions ») : badge **Fin de support** (rouge),
+**Bientôt en fin de support** (orange, « dans N jours »), **Maintenue** (vert) ou **Support inconnu**
+(gris, avec la raison : pas de correspondance, tag `latest`, produit inconnu de la source, branche
+absente, source pas encore lue), avec le produit, la branche et la date. Sur la page des versions,
+compteurs cliquables et filtre « Fin de support » (dont « À surveiller » : fin de support passée ou
+proche).
+
+- Branche d'un tag : la plus précise qui commence la version (`1.24` pour `1.24.0-alpine`, `13` pour
+  `13.4`) ; un tag moins précis (`7`) suit la branche la plus récente (`7.4`) ; un nom de code
+  (`bookworm`, `bookworm-slim`) donne la branche de ce nom.
+- **Hors ligne** : si la source ne répond pas (panne, limite 429), les cycles déjà en cache restent
+  utilisés et la date de leur dernière mise à jour est affichée ; sans cache, « non vérifié ». Rien
+  n'est bloquant et aucun objet GLPI n'est modifié.
+- **Tickets de fin de support**, désactivés par défaut, sur la connexion Portainer des services :
+  « Créer des tickets de fin de support » et le **délai** (ticket quand la fin de support est dans
+  moins de N jours, ou passée ; 90 par défaut). Catégorie, groupe et modèle sont ceux des tickets de
+  mise à jour. Même principe : un ticket par service, des suivis quand la branche change, jamais de
+  doublon ni de changement de statut ; ticket clos pour une branche : pas de nouveau ticket pour la
+  même branche.
+- Miroir interne de la source ou tests : constante `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (modèle
+  avec `{product}`) dans `config/local_define.php`, et contexte
+  `\GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext` pour une adresse privée sous GLPI 12.
 
 ## Liens avec les autres plugins
 

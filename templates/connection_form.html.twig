@@ -170,5 +170,30 @@
             </span>
         {% endset %}
         {{ fields.htmlField('_ticket_vulnerability', vulnerability_html, __('Autre déclencheur', 'dockerinventory')) }}
+        {# Tickets de fin de support (#26) : mêmes catégorie, groupe et modèle de ticket. #}
+        {{ fields.largeTitle(__('Tickets de fin de support', 'dockerinventory'), 'ti ti-calendar-x') }}
+        {{ fields.dropdownYesNo('ticket_eol_enabled', item.fields['ticket_eol_enabled'] ?? 0,
+            __('Créer des tickets de fin de support', 'dockerinventory'), {
+            helper: __(
+                'Désactivé par défaut. La source des cycles de vie doit aussi être activée.',
+                'dockerinventory'
+            ),
+        }) }}
+        {{ fields.numberField('ticket_eol_days', item.fields['ticket_eol_days'] ?? 90,
+            __('Délai avant la fin de support (jours)', 'dockerinventory'), {
+            min: 0,
+            max: 3650,
+            helper: __(
+                'Ticket quand la branche déployée arrive en fin de support dans ce délai (0 : une fois atteinte).',
+                'dockerinventory'
+            ),
+        }) }}
+        {% set eol_common_html %}
+            <span class="text-muted">
+                <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
+                {{ __('Catégorie, groupe et modèle : ceux des tickets de mise à jour ci-dessus.', 'dockerinventory') }}
+            </span>
+        {% endset %}
+        {{ fields.htmlField('_ticket_eol_common', eol_common_html, __('Réglages communs', 'dockerinventory')) }}
     {% endif %}
 {% endblock %}

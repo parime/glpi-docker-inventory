@@ -1,0 +1,34 @@
+{
+  "simulate": "",
+  "products": {
+    "postgresql": [
+      {"cycle": "18", "releaseDate": "-60d", "eol": "+1800d", "latest": "18.1"},
+      {"cycle": "17", "releaseDate": "-420d", "eol": "+1400d", "latest": "17.6"},
+      {"cycle": "16", "releaseDate": "-780d", "eol": "+700d", "latest": "16.10"},
+      {"cycle": "15", "releaseDate": "-1150d", "eol": "+45d", "latest": "15.14"},
+      {"cycle": "14", "releaseDate": "-1500d", "eol": "-20d", "latest": "14.19"},
+      {"cycle": "13", "releaseDate": "-1870d", "eol": "-400d", "latest": "13.22"}
+    ],
+    "redis": [
+      {"cycle": "8.0", "releaseDate": "-30d", "eol": false, "latest": "8.0.2"},
+      {"cycle": "7.4", "releaseDate": "-400d", "eol": "+300d", "latest": "7.4.5"},
+      {"cycle": "7.2", "releaseDate": "-800d", "eol": "+20d", "latest": "7.2.10"},
+      {"cycle": "6.2", "releaseDate": "-1600d", "eol": true, "latest": "6.2.19"}
+    ],
+    "grafana": [
+      {"cycle": "12.1", "releaseDate": "-90d", "eol": "+200d", "latest": "12.1.3"},
+      {"cycle": "12.0", "releaseDate": "-180d", "eol": "+30d", "latest": "12.0.6"},
+      {"cycle": "11.2", "releaseDate": "-420d", "eol": "-60d", "latest": "11.2.9"}
+    ],
+    "nginx": [
+      {"cycle": "1.29", "releaseDate": "-100d", "eol": false, "latest": "1.29.2"},
+      {"cycle": "1.28", "releaseDate": "-200d", "eol": "+180d", "latest": "1.28.1"},
+      {"cycle": "1.26", "releaseDate": "-560d", "eol": "-190d", "latest": "1.26.3"}
+    ],
+    "debian": [
+      {"cycle": "13", "codename": "Trixie", "releaseDate": "-100d", "eol": "+1000d", "latest": "13.1"},
+      {"cycle": "12", "codename": "Bookworm", "releaseDate": "-850d", "eol": "+200d", "latest": "12.12"},
+      {"cycle": "11", "codename": "Bullseye", "releaseDate": "-1550d", "eol": "-450d", "latest": "11.11"}
+    ]
+  }
+}
