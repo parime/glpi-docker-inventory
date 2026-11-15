@@ -265,6 +265,8 @@ proche).
 
 ## Documentation
 
+Règles communes à tous les plugins de parime, à lire avant de contribuer : [charte commune des plugins](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md).
+
 - [ARCHITECTURE.md](ARCHITECTURE.md) : arborescence, classes, tests
 - [ROADMAP.md](ROADMAP.md) : lots et issues
 - [CHANGELOG.md](CHANGELOG.md)
