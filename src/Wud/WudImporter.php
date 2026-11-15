@@ -287,7 +287,9 @@ final class WudImporter
             'last_import_date'   => $this->now,
             'last_import_status' => $report['status'],
             'last_import_report' => (string) json_encode($report),
-        ], ['id' => (int) $connection->getID()]);
+        ] + Connection::successValues((int) $report['status'], $this->now), [
+            'id' => (int) $connection->getID(),
+        ]);
         $connection->getFromDB((int) $connection->getID());
     }
 }

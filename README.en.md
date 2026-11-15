@@ -310,8 +310,8 @@ the same digest. Image not scanned or failed scan: no ticket.
   retires nothing.
 - **Non-blocking errors**: an error on a repository does not stop the others ("partial" reading); a
   rate limit (429) stops the calls until the next reading, data already read stays displayed.
-- Vulnerabilities are not yet sent to the vulnerability correlation of GRC Manager: see
-  [#10](https://github.com/parime/glpi-docker-inventory/issues/10).
+- The services whose image has critical or high vulnerabilities also appear on the park
+  vulnerabilities page of GRC Manager (see "Links with the other plugins").
 
 > Written from the public documentation of the Harbor 2.x API and a fake Harbor
 > (`tests/mock-harbor`, fictitious data); **to be validated on a real Harbor 2.x**.
@@ -320,7 +320,17 @@ the same digest. Image not scanned or failed scan: no ticket.
 
 - **GRC Manager** ([glpi-iso27001-management](https://github.com/parime/glpi-iso27001-management)):
   evidence for controls A.5.9 (inventory), A.8.8 (technical vulnerabilities), A.8.9 (configuration)
-  and A.8.32 (changes); Harbor image vulnerabilities in the vulnerability correlation.
+  and A.8.32 (changes); Harbor image vulnerabilities in the vulnerability correlation
+  ([#10](https://github.com/parime/glpi-docker-inventory/issues/10)). GRC reads this evidence through
+  the **read API** `GlpiPlugin\Dockerinventory\Api\Evidence` (version 1, read only): each method
+  only returns what the user sees in this plugin (read right on the services, active entities), and
+  nothing without that right. The import dates of the connections are only given to people who can
+  see the connections ("Setup" right).
+- **Version changes**: each Portainer import records, for each service, a move to another image, to
+  another tag, or to another digest under the same tag (rebuilt image). This read-only log, never
+  purged automatically, is evidence of change management (A.8.32). Each connection also keeps the
+  **date of its last successful import** (successful, even partly; a failure or a warning does not
+  change it).
 - **Configuration GLPI Auto** ([Configuration-glpi-auto](https://github.com/parime/Configuration-glpi-auto)):
   wizard step to declare the Portainer, WUD and Harbor connections.
 

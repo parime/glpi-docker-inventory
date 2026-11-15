@@ -2189,3 +2189,12 @@ msgstr "wolumen anonimowy %s"
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr "Do sprawdzenia w Portainerze"
+
+msgid "Autre image"
+msgstr "Inny obraz"
+
+msgid "Nouveau tag"
+msgstr "Nowy tag"
+
+msgid "Image reconstruite (même tag)"
+msgstr "Przebudowany obraz (ten sam tag)"

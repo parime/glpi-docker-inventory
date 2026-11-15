@@ -24,6 +24,7 @@ use DbUtils;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
+use GlpiPlugin\Dockerinventory\Version\VersionChange;
 
 /**
  * Import en lecture seule d'un serveur Portainer.
@@ -582,15 +583,64 @@ final class Importer
             'last_seen'        => $this->now,
             'date_mod'         => $this->now,
         ];
-        $existing = $DB->request(['SELECT' => ['id'], 'FROM' => $table, 'WHERE' => $where, 'LIMIT' => 1])->current();
+        $existing = $DB->request([
+            'SELECT' => ['id', 'image', 'tag', 'digest'],
+            'FROM'   => $table,
+            'WHERE'  => $where,
+            'LIMIT'  => 1,
+        ])->current();
         if (is_array($existing)) {
             $DB->update($table, $values, ['id' => (int) $existing['id']]);
+            $this->recordVersionChange((int) $existing['id'], $where, [
+                'image'  => (string) $existing['image'],
+                'tag'    => (string) $existing['tag'],
+                'digest' => (string) $existing['digest'],
+            ], $values);
 
             return (int) $existing['id'];
         }
         $DB->insert($table, $where + $values + ['date_creation' => $this->now]);
 
         return (int) $DB->insertId();
+    }
+
+    /**
+     * Journal des changements de version (#10) : une ligne quand l'image, le tag ou l'empreinte d'un
+     * service changent d'un import à l'autre (voir VersionChange), dans l'entité du service.
+     *
+     * @param array<string, mixed> $where Connexion et identifiant Docker du service.
+     * @param array{image: string, tag: string, digest: string} $old
+     * @param array<string, mixed> $values Valeurs du service qui viennent d'être enregistrées.
+     */
+    private function recordVersionChange(int $serviceId, array $where, array $old, array $values): void
+    {
+        global $DB;
+
+        $new = [
+            'image'  => (string) $values['image'],
+            'tag'    => (string) $values['tag'],
+            'digest' => (string) $values['digest'],
+        ];
+        $kind = VersionChange::detect($old, $new);
+        if ($kind === null || !$DB->tableExists(VersionChange::TABLE)) {
+            return;
+        }
+        $DB->insert(VersionChange::TABLE, [
+            'entities_id'                           => (int) $values['entities_id'],
+            'is_recursive'                          => (int) $values['is_recursive'],
+            'plugin_dockerinventory_connections_id' => (int) $where['plugin_dockerinventory_connections_id'],
+            'plugin_dockerinventory_services_id'    => $serviceId,
+            'service_name'                          => mb_substr((string) $values['name'], 0, 255),
+            'stack_name'                            => mb_substr((string) $values['stack_name'], 0, 255),
+            'kind'                                  => $kind,
+            'old_image'                             => mb_substr($old['image'], 0, 255),
+            'new_image'                             => mb_substr($new['image'], 0, 255),
+            'old_tag'                               => mb_substr($old['tag'], 0, 255),
+            'new_tag'                               => mb_substr($new['tag'], 0, 255),
+            'old_digest'                            => mb_substr($old['digest'], 0, 255),
+            'new_digest'                            => mb_substr($new['digest'], 0, 255),
+            'date_change'                           => $this->now,
+        ]);
     }
 
     /**
@@ -672,7 +722,9 @@ final class Importer
             'last_import_date'   => $this->now,
             'last_import_status' => $report['status'],
             'last_import_report' => (string) json_encode($report),
-        ], ['id' => (int) $connection->getID()]);
+        ] + Connection::successValues((int) $report['status'], $this->now), [
+            'id' => (int) $connection->getID(),
+        ]);
         $connection->getFromDB((int) $connection->getID());
     }
 }

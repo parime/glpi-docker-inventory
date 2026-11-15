@@ -5,6 +5,18 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Preuves pour GRC Manager ([#10](https://github.com/parime/glpi-docker-inventory/issues/10)) :
+  API de lecture publique `GlpiPlugin\Dockerinventory\Api\Evidence` (version 1, lecture seule),
+  qui ne renvoie que ce que l'utilisateur voit dans le plugin (droit de lecture des services,
+  entités actives ; connexions réservées au droit « Configuration ») : inventaire (services, stacks,
+  nœuds, dernier import réussi de chaque connexion), écarts de version, vulnérabilités Harbor des
+  images déployées, configuration et provenance des images, changements de version. Journal des
+  changements de version (autre image, autre tag, image reconstruite sous le même tag) écrit par
+  l'import Portainer, et date du dernier import réussi de chaque connexion (nouvelle table et
+  nouvelle colonne, créées à la mise à jour du plugin).
+
 ### Fixed
 
 - Portainer : un compte sans droits ne donne plus un import « Réussi » avec 0 élément
