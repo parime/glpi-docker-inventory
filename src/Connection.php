@@ -27,6 +27,7 @@ use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
+use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
 use GlpiPlugin\Dockerinventory\Portainer\UrlPolicy;
 use GlpiPlugin\Dockerinventory\Registry\RegistryClient;
 use GlpiPlugin\Dockerinventory\Registry\RegistryContext;
@@ -68,6 +69,8 @@ class Connection extends ConnectionBase
     public const STATUS_OK = 1;
     public const STATUS_PARTIAL = 2;
     public const STATUS_ERROR = 3;
+    /** Lu sans erreur, mais à vérifier : par exemple un compte Portainer qui ne voit rien. */
+    public const STATUS_WARNING = 4;
 
     public const TYPE_PORTAINER = 'portainer';
     public const TYPE_WUD = 'wud';
@@ -311,6 +314,7 @@ class Connection extends ConnectionBase
                 'status_label'  => self::statusLabel((int) ($this->fields['last_import_status'] ?? 0)),
                 'report'        => is_array($report) ? $report : null,
                 'error_labels'  => self::errorLabels(),
+                'warning_labels' => self::warningLabels(),
                 'gaps'          => ImageVersion::gapInfos(),
                 'versions_url'  => ImageVersion::getOverviewURL(),
                 'context_class' => match (true) {
@@ -596,7 +600,51 @@ class Connection extends ConnectionBase
             (int) ($report['services'] ?? 0),
             (int) ($report['retired'] ?? 0),
             (int) ($report['nodes'] ?? 0)
-        );
+        ) . self::warningsMessage($report);
+    }
+
+    /**
+     * Fin du message d'un import Portainer : ses avertissements (compte sans droits...), s'il y en a.
+     *
+     * @param array<string, mixed> $report
+     */
+    public static function warningsMessage(array $report): string
+    {
+        $message = '';
+        foreach (is_array($report['warnings'] ?? null) ? $report['warnings'] : [] as $warning) {
+            $code = is_array($warning) ? (string) ($warning['code'] ?? '') : '';
+            $endpoint = is_array($warning) ? (string) ($warning['endpoint'] ?? '') : '';
+            $label = self::warningLabels()[$code] ?? $code;
+            $message .= ' ' . ($endpoint !== '' ? $endpoint . ' : ' . $label : $label);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Avertissements d'un import Portainer (Importer::WARNING_*).
+     *
+     * @return array<string, string>
+     */
+    public static function warningLabels(): array
+    {
+        return [
+            Importer::WARNING_NO_ENDPOINT => __(
+                'Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer (voir README).',
+                'dockerinventory'
+            ),
+            Importer::WARNING_HIDDEN => __(
+                'Portainer annonce des services ou des conteneurs que ce compte ne voit pas.',
+                'dockerinventory'
+            ) . ' ' . __(
+                "Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir README).",
+                'dockerinventory'
+            ),
+            Importer::WARNING_EMPTY_KEPT => __(
+                "Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été retiré.",
+                'dockerinventory'
+            ) . ' ' . __('Vérifiez les accès du compte dans Portainer (voir README).', 'dockerinventory'),
+        ];
     }
 
     /**
@@ -720,9 +768,11 @@ class Connection extends ConnectionBase
     }
 
     /**
-     * « Tester la connexion » : liste des environnements Portainer (ou appel à WUD).
+     * « Tester la connexion » : liste des environnements Portainer (ou appel à WUD). Avertissement
+     * (warning) si le compte ne voit aucun environnement, ou rien d'un environnement que Portainer
+     * annonce peuplé.
      *
-     * @return array{ok: bool, message: string}
+     * @return array{ok: bool, message: string, warning?: bool}
      */
     public function testConnection(?PortainerClient $client = null): array
     {
@@ -732,17 +782,59 @@ class Connection extends ConnectionBase
         if ($this->isHarbor()) {
             return $this->testHarborConnection();
         }
+        $client ??= $this->getClient();
         try {
-            $endpoints = ($client ?? $this->getClient())->endpoints();
+            $endpoints = $client->endpoints();
         } catch (PortainerException $e) {
             return ['ok' => false, 'message' => self::errorLabels()[$e->getMessage()] ?? $e->getMessage()];
+        }
+        if ($endpoints === []) {
+            return [
+                'ok'      => true,
+                'warning' => true,
+                'message' => sprintf(
+                    __('Connexion établie, mais à vérifier : %s', 'dockerinventory'),
+                    self::warningLabels()[Importer::WARNING_NO_ENDPOINT]
+                ),
+            ];
+        }
+
+        $hidden = [];
+        foreach ($endpoints as $endpoint) {
+            $counts = PortainerMapper::snapshotCounts($endpoint);
+            $id = (int) ($endpoint['Id'] ?? 0);
+            if (
+                $counts === null
+                || $id <= 0
+                || !in_array((int) ($endpoint['Type'] ?? 0), PortainerMapper::DOCKER_ENDPOINT_TYPES, true)
+            ) {
+                continue;
+            }
+            try {
+                $visible = count($counts['swarm'] ? $client->services($id) : $client->containers($id));
+            } catch (PortainerException) {
+                // Environnement injoignable : signalé par l'import, pas par ce test.
+                continue;
+            }
+            if (PortainerMapper::resourcesHidden($endpoint, $counts['swarm'], $visible)) {
+                $hidden[] = is_scalar($endpoint['Name'] ?? null) ? (string) $endpoint['Name'] : (string) $id;
+            }
+        }
+        $message = sprintf(
+            __('Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé.', 'dockerinventory'),
+            count($endpoints)
+        );
+        if ($hidden === []) {
+            return ['ok' => true, 'warning' => false, 'message' => $message];
         }
 
         return [
             'ok'      => true,
-            'message' => sprintf(
-                __('Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé.', 'dockerinventory'),
-                count($endpoints)
+            'warning' => true,
+            'message' => $message . ' ' . sprintf(
+                __('À vérifier (%1$s) : %2$s', 'dockerinventory'),
+                implode(', ', $hidden),
+                self::warningLabels()[Importer::WARNING_HIDDEN]
             ),
         ];
     }
@@ -753,6 +845,7 @@ class Connection extends ConnectionBase
             self::STATUS_OK      => __('Réussi', 'dockerinventory'),
             self::STATUS_PARTIAL => __('Partiel', 'dockerinventory'),
             self::STATUS_ERROR   => __('Échec', 'dockerinventory'),
+            self::STATUS_WARNING => __('Avertissement', 'dockerinventory'),
             default              => __('Jamais lancé', 'dockerinventory'),
         };
     }
@@ -960,7 +1053,7 @@ class Connection extends ConnectionBase
                 $report['services'],
                 $report['retired'],
                 $report['nodes']
-            ));
+            ) . self::warningsMessage($report));
             $done++;
         }
 

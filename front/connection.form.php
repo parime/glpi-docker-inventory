@@ -40,7 +40,9 @@ if (isset($_POST['add'])) {
 } elseif (isset($_POST['test'])) {
     $connection->check($id, UPDATE);
     $result = $connection->testConnection();
-    Session::addMessageAfterRedirect(htmlescape($result['message']), false, $result['ok'] ? INFO : ERROR);
+    // Compte Portainer qui ne voit rien : avertissement, pas succès.
+    $level = $result['ok'] ? (($result['warning'] ?? false) ? WARNING : INFO) : ERROR;
+    Session::addMessageAfterRedirect(htmlescape($result['message']), false, $level);
     Html::back();
 } elseif (isset($_POST['registry_check'])) {
     // Page des versions : vérification des registres (Docker Hub, Harbor) sans attendre la tâche.
@@ -65,7 +67,11 @@ if (isset($_POST['add'])) {
     Session::addMessageAfterRedirect(
         htmlescape($connection->importMessage($report)),
         false,
-        $report['status'] === Connection::STATUS_ERROR ? ERROR : INFO
+        match ($report['status']) {
+            Connection::STATUS_ERROR => ERROR,
+            Connection::STATUS_WARNING, Connection::STATUS_PARTIAL => WARNING,
+            default => INFO,
+        }
     );
     Html::back();
 }

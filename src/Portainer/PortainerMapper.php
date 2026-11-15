@@ -558,6 +558,54 @@ final class PortainerMapper
     }
 
     /**
+     * Compteurs du dernier instantané Portainer d'un environnement (Snapshots[0] de
+     * /api/endpoints). Portainer les calcule avec ses propres droits, pas avec ceux du compte : ils
+     * révèlent des services ou des conteneurs que le compte ne voit pas (contrôle d'accès de
+     * Portainer CE). Null sans instantané.
+     *
+     * @param array<string, mixed> $endpoint
+     * @return array{swarm: bool, services: int, containers: int}|null
+     */
+    public static function snapshotCounts(array $endpoint): ?array
+    {
+        $snapshots = self::arr($endpoint['Snapshots'] ?? null);
+        $snapshot = self::arr($snapshots[0] ?? null);
+        if ($snapshot === []) {
+            return null;
+        }
+
+        return [
+            'swarm'      => ($snapshot['Swarm'] ?? false) === true,
+            'services'   => max(0, (int) ($snapshot['ServiceCount'] ?? 0)),
+            'containers' => max(0, (int) ($snapshot['ContainerCount'] ?? 0)),
+        ];
+    }
+
+    /**
+     * Le compte ne voit rien d'un environnement que Portainer annonce peuplé : aucun service
+     * Swarm visible alors que l'instantané en compte, ou aucun conteneur sur un hôte autonome.
+     *
+     * @param array<string, mixed> $endpoint
+     */
+    public static function resourcesHidden(array $endpoint, bool $swarm, int $visible): bool
+    {
+        $counts = self::snapshotCounts($endpoint);
+        if ($counts === null || $visible > 0) {
+            return false;
+        }
+
+        return ($swarm ? $counts['services'] : $counts['containers']) > 0;
+    }
+
+    /**
+     * Volume anonyme : Docker le nomme par 64 caractères hexadécimaux.
+     */
+    public static function isAnonymousVolume(string $name): bool
+    {
+        return preg_match('/^[0-9a-f]{64}$/', $name) === 1;
+    }
+
+    /**
      * Nom court d'un nom d'hôte (« swarm-node-01.exemple.test » => « swarm-node-01 »).
      */
     public static function shortHostname(string $hostname): string
