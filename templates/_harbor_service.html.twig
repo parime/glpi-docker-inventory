@@ -123,9 +123,9 @@
                     </dd>
                     <dt class="col-sm-3">{{ __('Analyse', 'dockerinventory') }}</dt>
                     <dd class="col-sm-9">
-                        {{ artifact.status_label }}
-                        {% if artifact.scanner %}, {{ artifact.scanner }}{% endif %}
-                        {% if artifact.scan_time %}, {{ artifact.scan_time|formatted_datetime }}{% endif %}
+                        {{ artifact.status_label -}}
+                        {%- if artifact.scanner %}, {{ artifact.scanner }}{% endif -%}
+                        {%- if artifact.scan_time %}, {{ artifact.scan_time|formatted_datetime }}{% endif %}
                         {% if artifact.scanned %}
                             <div class="text-muted small">
                                 {{ __('Total', 'dockerinventory') }} : {{ artifact.total }},

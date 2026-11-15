@@ -57,6 +57,14 @@ final class HarborImporter
     private string $now = '';
 
     /**
+     * Artefacts déjà enregistrés pour la connexion lue : « dépôt\nempreinte » => identifiant et
+     * empreinte des valeurs (une ligne inchangée n'est pas réécrite).
+     *
+     * @var array<string, array{id: int, fingerprint: string}>
+     */
+    private array $known = [];
+
+    /**
      * @param (\Closure(Connection): HarborClient)|null $clientFactory
      */
     public function __construct(?\Closure $clientFactory = null, private readonly bool $withTickets = true)
@@ -94,6 +102,7 @@ final class HarborImporter
         $connectionId = (int) $connection->getID();
         $report = self::emptyReport();
         $client = ($this->clientFactory)($connection);
+        $this->known = $this->knownArtifacts($connectionId);
         $state = [
             'projects_complete'     => false,
             'projects'              => [],
@@ -262,19 +271,69 @@ final class HarborImporter
             'size'          => $artifact['size'],
             'push_time'     => $artifact['push_time'],
             'is_retired'    => 0,
-            'date_retired'  => null,
+        ] + $scan;
+        $fingerprint = self::fingerprint($values);
+        $existing = $this->known[$where['repository'] . "\n" . $where['digest']] ?? null;
+        if ($existing !== null) {
+            if ($existing['fingerprint'] !== $fingerprint) {
+                // Seules les lignes qui ont changé sont réécrites (lecture horaire de gros registres).
+                $DB->update(
+                    $table,
+                    $values + ['date_retired' => null, 'last_seen' => $this->now, 'date_mod' => $this->now],
+                    ['id' => $existing['id']]
+                );
+            }
+
+            return $existing['id'];
+        }
+        $DB->insert($table, $where + $values + [
             'last_seen'     => $this->now,
             'date_mod'      => $this->now,
-        ] + $scan;
-        $existing = $DB->request(['SELECT' => ['id'], 'FROM' => $table, 'WHERE' => $where, 'LIMIT' => 1])->current();
-        if (is_array($existing)) {
-            $DB->update($table, $values, ['id' => (int) $existing['id']]);
-
-            return (int) $existing['id'];
-        }
-        $DB->insert($table, $where + $values + ['date_creation' => $this->now]);
+            'date_creation' => $this->now,
+        ]);
 
         return (int) $DB->insertId();
+    }
+
+    /**
+     * @return array<string, array{id: int, fingerprint: string}>
+     */
+    private function knownArtifacts(int $connectionId): array
+    {
+        global $DB;
+
+        $known = [];
+        $iterator = $DB->request([
+            'FROM'  => HarborArtifact::getTable(),
+            'WHERE' => ['plugin_dockerinventory_connections_id' => $connectionId],
+        ]);
+        foreach ($iterator as $row) {
+            $known[$row['repository'] . "\n" . $row['digest']] = [
+                'id'          => (int) $row['id'],
+                'fingerprint' => self::fingerprint($row),
+            ];
+        }
+
+        return $known;
+    }
+
+    /**
+     * Empreinte des valeurs lues dans Harbor (hors dates de lecture), pour comparer avec la base.
+     *
+     * @param array<string, mixed> $values
+     */
+    private static function fingerprint(array $values): string
+    {
+        $columns = ['entities_id', 'is_recursive', 'project', 'tags', 'child_digests', 'artifact_type', 'size',
+            'push_time', 'is_retired', 'scan_status', 'severity', 'scanner', 'scan_time', 'critical', 'high',
+            'medium', 'low', 'other', 'total', 'fixable'];
+        $parts = [];
+        foreach ($columns as $column) {
+            $value = $values[$column] ?? null;
+            $parts[] = $value === null ? '' : (string) $value;
+        }
+
+        return implode('|', $parts);
     }
 
     /**
