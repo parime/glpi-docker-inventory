@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.5.0] - 2026-11-15
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Added
 
 - Images déployées en fin de support ([#26](https://github.com/parime/glpi-docker-inventory/issues/26)) :
