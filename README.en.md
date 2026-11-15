@@ -252,6 +252,8 @@ filter (including "To watch": end of support passed or near).
 
 ## Documentation
 
+Rules shared by all parime plugins, to read before contributing: [common plugin charter](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md) (in French).
+
 - [ARCHITECTURE.md](ARCHITECTURE.md): tree, classes, tests
 - [ROADMAP.md](ROADMAP.md): lots and issues
 - [CHANGELOG.md](CHANGELOG.md)
