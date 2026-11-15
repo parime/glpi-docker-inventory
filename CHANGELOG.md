@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.6.0] - 2026-11-15
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Fixed
 
 - Portainer : un compte sans droits ne donne plus un import « Réussi » avec 0 élément
