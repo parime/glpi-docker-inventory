@@ -355,7 +355,7 @@ final class Installer
 
         $created = [];
         foreach ($definitions as $table => $columns) {
-            if (!$DB->tableExists($table)) {
+            if (!$DB->tableExists($table, false)) {
                 $DB->doQuery("CREATE TABLE `{$table}` ({$columns}) {$options}");
                 $created[] = $table;
             }

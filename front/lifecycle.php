@@ -16,6 +16,7 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
 use GlpiPlugin\Dockerinventory\Lifecycle\ProductMap;
@@ -81,7 +82,10 @@ foreach ((new LifecycleProduct())->find([], ['image']) as $row) {
     ];
 }
 // Images en service d'abord, puis les autres (ordre alphabétique conservé dans chaque groupe).
-usort($mappings, static fn (array $a, array $b): int => [$b['in_use'] > 0, $a['image']] <=> [$a['in_use'] > 0, $b['image']]);
+usort(
+    $mappings,
+    static fn (array $a, array $b): int => [$b['in_use'] > 0, $a['image']] <=> [$a['in_use'] > 0, $b['image']]
+);
 $unmapped = [];
 foreach ($images as $image => $count) {
     if (!isset($map[$image])) {
@@ -100,7 +104,7 @@ TemplateRenderer::getInstance()->display('@dockerinventory/lifecycle.html.twig',
     'unmapped'     => $unmapped,
     'add_image'    => ProductMap::normalizeImage((string) ($_GET['add'] ?? '')),
     'page_url'     => LifecycleProduct::getPageURL(),
-    'versions_url' => \GlpiPlugin\Dockerinventory\ImageVersion::getOverviewURL(),
+    'versions_url' => ImageVersion::getOverviewURL(),
     'max_days'     => Settings::MAX_DAYS,
 ]);
 Html::footer();

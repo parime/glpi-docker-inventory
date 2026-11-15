@@ -36,7 +36,7 @@ use ITILFollowup;
  * existant n'est jamais modifié (ni statut, ni priorité, ni affectation).
  *
  * @phpstan-import-type EolSituation from EolTicketPolicy
- * @phpstan-import-type EolTracked from EolTicketPolicy
+ * @phpstan-type TrackedTicket array{tickets_id: int, product: string, cycle: string, eol: string}
  * @phpstan-import-type TicketReport from UpdateTickets
  * @phpstan-type EolService array{id: int, name: string, stack_name: string, appliances_id: int,
  *     entities_id: int, image: string, tag: string, days: int, itilcategories_id: int, groups_id: int,
@@ -146,7 +146,7 @@ final class EolTickets
     }
 
     /**
-     * @return (EolTracked&array{tickets_id: int})|null
+     * @return TrackedTicket|null
      */
     private function tracked(int $serviceId): ?array
     {
@@ -279,7 +279,7 @@ final class EolTickets
     }
 
     /**
-     * @param EolTracked&array{tickets_id: int} $tracked
+     * @param TrackedTicket $tracked
      * @param EolService $service
      * @param EolSituation $situation
      */

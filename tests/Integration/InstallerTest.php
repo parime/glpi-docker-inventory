@@ -19,8 +19,14 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
+use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Install\Installer;
+use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
+use GlpiPlugin\Dockerinventory\Lifecycle\ProductMap;
+use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
+use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\Ticket\EolTickets;
 use Migration;
 use PHPUnit\Framework\TestCase;
 
@@ -111,6 +117,65 @@ final class InstallerTest extends TestCase
         $this->assertSame(3, countElementsInTable(self::STACKS, [
             'plugin_dockerinventory_connections_id' => self::CONNECTION,
         ]));
+    }
+
+    /**
+     * Mise à jour depuis la 0.4.0 (#26) : tables de la fin de support, correspondances fournies,
+     * réglages des tickets de fin de support (désactivés) et tâche automatique quotidienne ; la
+     * source reste désactivée.
+     */
+    public function testUpgradeFrom040AddsEndOfSupport(): void
+    {
+        global $DB;
+
+        $mappings = [];
+        foreach ($DB->request(['FROM' => LifecycleProduct::getTable()]) as $row) {
+            unset($row['id']);
+            $mappings[] = $row;
+        }
+        $settings = Settings::get();
+        try {
+            foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
+                $DB->dropTable($table, true);
+            }
+            $migration = new Migration(PLUGIN_DOCKERINVENTORY_VERSION);
+            $migration->dropField(Connection::getTable(), 'ticket_eol_enabled');
+            $migration->dropField(Connection::getTable(), 'ticket_eol_days');
+            $migration->migrationOneTable(Connection::getTable());
+            Settings::delete();
+            \CronTask::unregister('dockerinventory');
+
+            $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
+
+            foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
+                $this->assertTrue($DB->tableExists($table, false), $table);
+            }
+            $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_enabled', false));
+            $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_days', false));
+            $this->assertSame(count(ProductMap::DEFAULTS), countElementsInTable(LifecycleProduct::getTable()));
+            $this->assertSame(1, countElementsInTable(
+                LifecycleProduct::getTable(),
+                ['image' => 'postgres', 'product' => 'postgresql', 'is_default' => 1]
+            ));
+            $this->assertFalse(Settings::enabled());
+            $this->assertSame(Settings::DEFAULT_WARNING_DAYS, Settings::warningDays());
+            $this->assertSame(1, countElementsInTable('glpi_crontasks', [
+                'itemtype' => LifecycleProduct::class,
+                'name'     => LifecycleProduct::CRON_NAME,
+            ]));
+
+            // Correspondance supprimée par l'administrateur : pas rajoutée à la mise à jour suivante.
+            $DB->delete(LifecycleProduct::getTable(), ['image' => 'postgres']);
+            $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
+            $this->assertSame(0, countElementsInTable(LifecycleProduct::getTable(), ['image' => 'postgres']));
+        } finally {
+            $DB->delete(LifecycleProduct::getTable(), ['id' => ['>', 0]]);
+            foreach ($mappings as $row) {
+                $DB->insert(LifecycleProduct::getTable(), $row);
+            }
+            Settings::save($settings['enabled'], $settings['warning_days']);
+            (new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION));
+        }
     }
 
     /**

@@ -136,7 +136,10 @@ class LifecycleProduct extends CommonDBTM
             $image = ProductMap::normalizeImage((string) $input['image']);
             if ($image === '') {
                 Session::addMessageAfterRedirect(
-                    __('Nom d’image invalide (exemples : postgres, bitnami/redis, registry.exemple.test/outils/api).', 'dockerinventory'),
+                    __(
+                        'Nom d’image invalide (exemples : postgres, bitnami/redis, registry.exemple.test/outils/api).',
+                        'dockerinventory'
+                    ),
                     false,
                     ERROR
                 );
@@ -162,7 +165,10 @@ class LifecycleProduct extends CommonDBTM
             $product = strtolower(trim((string) $input['product']));
             if (!ProductMap::isValidProduct($product)) {
                 Session::addMessageAfterRedirect(
-                    __('Produit invalide : nom de la source en minuscules (exemples : postgresql, nodejs).', 'dockerinventory'),
+                    __(
+                        'Produit invalide : nom de la source en minuscules (exemples : postgresql, nodejs).',
+                        'dockerinventory'
+                    ),
                     false,
                     ERROR
                 );
@@ -248,7 +254,10 @@ class LifecycleProduct extends CommonDBTM
     {
         return [
             CycleMatcher::REASON_DISABLED          => __('Source des cycles de vie désactivée.', 'dockerinventory'),
-            CycleMatcher::REASON_NO_PRODUCT        => __('Image sans correspondance avec un produit.', 'dockerinventory'),
+            CycleMatcher::REASON_NO_PRODUCT        => __(
+                'Image sans correspondance avec un produit.',
+                'dockerinventory'
+            ),
             CycleMatcher::REASON_UNVERSIONED       => __('Tag sans numéro de version (latest...).', 'dockerinventory'),
             CycleMatcher::REASON_NOT_CHECKED       => __(
                 'Cycles de vie pas encore lus (source pas encore interrogée ou injoignable).',
@@ -258,7 +267,10 @@ class LifecycleProduct extends CommonDBTM
                 'Produit inconnu de la source : correspondance à corriger.',
                 'dockerinventory'
             ),
-            CycleMatcher::REASON_NO_CYCLE          => __('Branche de cette version absente de la source.', 'dockerinventory'),
+            CycleMatcher::REASON_NO_CYCLE          => __(
+                'Branche de cette version absente de la source.',
+                'dockerinventory'
+            ),
         ];
     }
 
@@ -295,7 +307,8 @@ class LifecycleProduct extends CommonDBTM
         $days = $evaluation['days'];
         $eol = $evaluation['eol'];
         $detail = match (true) {
-            $eol === LifecycleClient::EOL_WITHOUT_DATE => __('Fin de support atteinte (date non publiée).', 'dockerinventory'),
+            $eol === LifecycleClient::EOL_WITHOUT_DATE
+                => __('Fin de support atteinte (date non publiée).', 'dockerinventory'),
             $eol === '' && $status === CycleMatcher::STATUS_SUPPORTED
                 => __('Aucune fin de support annoncée.', 'dockerinventory'),
             $days !== null && $days <= 0 => sprintf(
@@ -303,7 +316,12 @@ class LifecycleProduct extends CommonDBTM
                 Html::convDate($eol)
             ),
             $days !== null => sprintf(
-                _n('Fin de support le %1$s (dans %2$d jour).', 'Fin de support le %1$s (dans %2$d jours).', $days, 'dockerinventory'),
+                _n(
+                    'Fin de support le %1$s (dans %2$d jour).',
+                    'Fin de support le %1$s (dans %2$d jours).',
+                    $days,
+                    'dockerinventory'
+                ),
                 Html::convDate($eol),
                 $days
             ),
@@ -339,7 +357,7 @@ class LifecycleProduct extends CommonDBTM
         }
         $message = sprintf(
             __(
-                'Cycles de vie : %1$d produits en service, %2$d lus, %3$d déjà à jour (moins d’un jour), %4$d inconnus de la source, %5$d requêtes.',
+                'Cycles de vie : %1$d produits, %2$d lus, %3$d en cache, %4$d inconnus de la source, %5$d requêtes.',
                 'dockerinventory'
             ),
             (int) ($report['products'] ?? 0),
