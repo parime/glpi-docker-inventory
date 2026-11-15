@@ -218,8 +218,11 @@ final class AccessControlTest extends TestCase
     public static function requests(): iterable
     {
         yield 'liste des connexions' => ['front/connection.php', [], []];
+        yield 'registres maîtrisés' => [
+            'front/connection.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
+        ];
         yield 'nouvelle connexion' => ['front/connection.form.php', [], []];
-        foreach (['add', 'update', 'purge', 'test', 'import', 'registry_check'] as $action) {
+        foreach (['add', 'update', 'purge', 'test', 'import', 'harbor_import', 'registry_check'] as $action) {
             yield 'connexion : ' . $action => ['front/connection.form.php', [], [$action => 1, 'id' => 1]];
         }
         yield 'recherche des versions' => ['front/imageversion.php', [], []];
@@ -283,7 +286,7 @@ final class AccessControlTest extends TestCase
         $this->assertRefused('front/service.form.php', ['id' => $this->serviceB]);
         $this->assertRefused('front/connection.form.php', ['id' => $this->connectionB]);
         $renamed = 'renomme-' . $this->suffix;
-        foreach (['update', 'test', 'import', 'purge'] as $action) {
+        foreach (['update', 'test', 'import', 'harbor_import', 'purge'] as $action) {
             $this->assertRefused(
                 'front/connection.form.php',
                 [],

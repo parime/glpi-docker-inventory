@@ -337,7 +337,7 @@ class Connection extends ConnectionBase
         $this->fields['type'] = $input['type'];
         if ($input['type'] === self::TYPE_PORTAINER && trim((string) ($input['api_key'] ?? '')) === '') {
             Session::addMessageAfterRedirect(
-                __("La clé d'API Portainer est obligatoire.", 'dockerinventory'),
+                htmlescape(__("La clé d'API Portainer est obligatoire.", 'dockerinventory')),
                 false,
                 ERROR
             );
@@ -372,7 +372,9 @@ class Connection extends ConnectionBase
             $input['registry_host'] = mb_substr($host, 0, 255);
             if ($host !== '' && preg_match('#^[a-z0-9.-]+(:\d+)?$#', $host) !== 1) {
                 Session::addMessageAfterRedirect(
-                    __('Hôte du registre invalide (exemple : registry.exemple.test:5000).', 'dockerinventory'),
+                    htmlescape(
+                        __('Hôte du registre invalide (exemple : registry.exemple.test:5000).', 'dockerinventory')
+                    ),
                     false,
                     ERROR
                 );
@@ -384,14 +386,14 @@ class Connection extends ConnectionBase
             $allowHttp = (bool) ($input['allow_http'] ?? ($this->fields['allow_http'] ?? false));
             $error = UrlPolicy::check($input['url'], $allowHttp);
             if ($error !== null) {
-                Session::addMessageAfterRedirect($this->urlErrorLabel($error), false, ERROR);
+                Session::addMessageAfterRedirect(htmlescape($this->urlErrorLabel($error)), false, ERROR);
                 return false;
             }
         } elseif (array_key_exists('allow_http', $input) && !(bool) $input['allow_http']) {
             // HTTP retiré : l'adresse enregistrée doit alors être en HTTPS.
             $error = UrlPolicy::check((string) ($this->fields['url'] ?? ''), false);
             if ($error !== null) {
-                Session::addMessageAfterRedirect($this->urlErrorLabel($error), false, ERROR);
+                Session::addMessageAfterRedirect(htmlescape($this->urlErrorLabel($error)), false, ERROR);
                 return false;
             }
         }

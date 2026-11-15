@@ -136,10 +136,10 @@ class LifecycleProduct extends CommonDBTM
             $image = ProductMap::normalizeImage((string) $input['image']);
             if ($image === '') {
                 Session::addMessageAfterRedirect(
-                    __(
+                    htmlescape(__(
                         'Nom d’image invalide (exemples : postgres, bitnami/redis, registry.exemple.test/outils/api).',
                         'dockerinventory'
-                    ),
+                    )),
                     false,
                     ERROR
                 );
@@ -152,7 +152,7 @@ class LifecycleProduct extends CommonDBTM
             }
             if (countElementsInTable(static::getTable(), $others) > 0) {
                 Session::addMessageAfterRedirect(
-                    sprintf(__('L’image %s a déjà une correspondance.', 'dockerinventory'), $image),
+                    htmlescape(sprintf(__('L’image %s a déjà une correspondance.', 'dockerinventory'), $image)),
                     false,
                     ERROR
                 );
@@ -165,10 +165,10 @@ class LifecycleProduct extends CommonDBTM
             $product = strtolower(trim((string) $input['product']));
             if (!ProductMap::isValidProduct($product)) {
                 Session::addMessageAfterRedirect(
-                    __(
+                    htmlescape(__(
                         'Produit invalide : nom de la source en minuscules (exemples : postgresql, nodejs).',
                         'dockerinventory'
-                    ),
+                    )),
                     false,
                     ERROR
                 );
