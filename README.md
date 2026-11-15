@@ -13,7 +13,7 @@ Il répond à la question « qu'est-ce qui tourne, en quelle version, est-ce à 
 vulnérable ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
 conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 
-> **État** : version 0.4.0 publiée : Portainer (Swarm et hôtes Docker autonomes avec leurs stacks
+> **État** : version 0.5.0 publiée : Portainer (Swarm et hôtes Docker autonomes avec leurs stacks
 > Compose), versions des images par What's Up Docker ou les registres (Docker Hub, Harbor), tickets
 > de mise à jour selon des seuils. Harbor (lot 3) suit. Voir [ROADMAP.md](ROADMAP.md).
 
