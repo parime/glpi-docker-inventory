@@ -1,0 +1,37 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Suivi d'un ticket de vulnérabilité encore ouvert, quand la situation du service change. #}
+<p>
+    {% if kind == 'resolved' %}
+        <strong>{{ __('Plus de vulnérabilité au seuil', 'dockerinventory') }}</strong> :
+    {% else %}
+        <strong>{{ __('Nouvelle situation', 'dockerinventory') }}</strong> :
+    {% endif %}
+    {{ image }}{% if tag %}:{{ tag }}{% endif %},
+    {{ critical }} {{ __('critiques', 'dockerinventory') }}, {{ high }} {{ __('hautes', 'dockerinventory') }}.
+    {% if digest != previous.digest %}
+        {{ __('Image redéployée ou reconstruite', 'dockerinventory') }} : <code>{{ digest }}</code>.
+    {% endif %}
+</p>
+<p>
+    {{ __('Situation précédente', 'dockerinventory') }} :
+    {{ previous.critical }} {{ __('critiques', 'dockerinventory') }},
+    {{ previous.high }} {{ __('hautes', 'dockerinventory') }}.
+</p>
+<p>
+    {{ __('Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié.', 'dockerinventory') }}
+    <a href="{{ service_url }}">{{ __('Voir le service dans GLPI', 'dockerinventory') }}</a>
+</p>

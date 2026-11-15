@@ -390,6 +390,8 @@ class ImageVersion extends CommonDBTM
             'eol_enabled'   => Settings::enabled(),
             'lifecycle_url' => LifecycleProduct::getPageURL(),
             'can_configure_lifecycle' => LifecycleProduct::canView(),
+            // Service : provenance de l'image et analyse Harbor (#9), même sans ligne de version.
+            'harbor'        => $item instanceof Service ? HarborArtifact::forService($item) : null,
         ]);
 
         return true;

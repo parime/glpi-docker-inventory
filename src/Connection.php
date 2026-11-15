@@ -23,6 +23,8 @@ use CronTask;
 use Glpi\Application\View\TemplateRenderer;
 use GLPIKey;
 use GlpiPlugin\Dockerinventory\Compat\Base\ConnectionBase;
+use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
+use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
 use GlpiPlugin\Dockerinventory\Portainer\UrlPolicy;
@@ -32,6 +34,7 @@ use GlpiPlugin\Dockerinventory\Registry\RegistryException;
 use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Registry\RegistryResolver;
 use GlpiPlugin\Dockerinventory\Ticket\TicketPolicy;
+use GlpiPlugin\Dockerinventory\Ticket\VulnTicketPolicy;
 use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudContext;
 use GlpiPlugin\Dockerinventory\Wud\WudException;
@@ -42,12 +45,14 @@ use Session;
  * Connexion à une source de l'inventaire, de l'un des types :
  * - Portainer : adresse, clé d'API (chiffrée avec la clé de GLPI, jamais réaffichée),
  *   environnement GLPI des applications créées pour ses stacks, tickets de mise à jour de ses
- *   services (désactivés par défaut : seuil, catégorie, groupe, modèle de ticket) ;
+ *   services (désactivés par défaut : seuil, catégorie, groupe, modèle de ticket ; fin de support ;
+ *   vulnérabilités des images analysées par Harbor) ;
  * - What's Up Docker (WUD) : adresse, utilisateur et mot de passe facultatifs (authentification
  *   basique ; mot de passe chiffré dans la même colonne que la clé Portainer, jamais réaffiché) ;
  * - Harbor : adresse, compte robot en lecture seule facultatif (mot de passe chiffré de la même
  *   façon), hôte du registre dans les images s'il diffère de l'adresse. Sert au repli sans WUD
- *   (liste des tags par l'API v2 des registres) ; projets et analyses au lot 3.
+ *   (liste des tags par l'API v2 des registres) et à la lecture des projets, dépôts, artefacts et
+ *   analyses de vulnérabilités par l'API REST de Harbor (#9).
  * Le type se choisit à la création et ne change plus.
  *
  * Réservé aux administrateurs de la configuration de GLPI (droit « Configuration » en
@@ -101,6 +106,19 @@ class Connection extends ConnectionBase
             TicketPolicy::THRESHOLD_MAJOR => __('Version majeure seulement', 'dockerinventory'),
             TicketPolicy::THRESHOLD_MINOR => __('Version mineure ou majeure', 'dockerinventory'),
             TicketPolicy::THRESHOLD_PATCH => __('Tout écart de version, correctifs compris', 'dockerinventory'),
+        ];
+    }
+
+    /**
+     * Seuils des tickets de vulnérabilité : gravité minimale qui donne un ticket.
+     *
+     * @return array<string, string>
+     */
+    public static function vulnThresholdLabels(): array
+    {
+        return [
+            VulnTicketPolicy::THRESHOLD_CRITICAL => __('Vulnérabilités critiques', 'dockerinventory'),
+            VulnTicketPolicy::THRESHOLD_HIGH     => __('Vulnérabilités critiques ou hautes', 'dockerinventory'),
         ];
     }
 
@@ -197,6 +215,14 @@ class Connection extends ConnectionBase
             'massiveaction' => false,
         ];
         $options[] = [
+            'id'            => 9,
+            'table'         => static::getTable(),
+            'field'         => 'ticket_vuln_enabled',
+            'name'          => __('Tickets de vulnérabilité', 'dockerinventory'),
+            'datatype'      => 'bool',
+            'massiveaction' => false,
+        ];
+        $options[] = [
             'id'         => 80,
             'table'      => 'glpi_entities',
             'field'      => 'completename',
@@ -273,10 +299,15 @@ class Connection extends ConnectionBase
             'type_label'  => self::typeLabels()[(string) $this->fields['type']] ?? '',
             'has_api_key' => trim((string) ($this->fields['api_key'] ?? '')) !== '',
             'thresholds'  => self::ticketThresholdLabels(),
+            'vuln_thresholds' => self::vulnThresholdLabels(),
         ]);
         if (!$this->isNewItem()) {
+            $scanReport = json_decode((string) ($this->fields['last_scan_report'] ?? ''), true);
             $renderer->display('@dockerinventory/' . $actions . '.html.twig', [
                 'item'          => $this,
+                'scan_status_label' => self::statusLabel((int) ($this->fields['last_scan_status'] ?? 0)),
+                'scan_report'   => is_array($scanReport) ? $scanReport : null,
+                'harbor_url'    => HarborArtifact::getPageURL(),
                 'status_label'  => self::statusLabel((int) ($this->fields['last_import_status'] ?? 0)),
                 'report'        => is_array($report) ? $report : null,
                 'error_labels'  => self::errorLabels(),
@@ -378,7 +409,8 @@ class Connection extends ConnectionBase
         $isPortainer = ($isNew ? (string) ($input['type'] ?? '') : (string) ($this->fields['type'] ?? ''))
             === self::TYPE_PORTAINER;
         $ticketFields = ['ticket_enabled', 'ticket_threshold', 'ticket_itilcategories_id', 'ticket_groups_id',
-            'ticket_tickettemplates_id', 'ticket_eol_enabled', 'ticket_eol_days'];
+            'ticket_tickettemplates_id', 'ticket_eol_enabled', 'ticket_eol_days', 'ticket_vuln_enabled',
+            'ticket_vuln_severity'];
         foreach ($ticketFields as $field) {
             if (!array_key_exists($field, $input)) {
                 continue;
@@ -390,6 +422,10 @@ class Connection extends ConnectionBase
                 $value = (string) $input[$field];
                 $valid = in_array($value, TicketPolicy::THRESHOLDS, true);
                 $input[$field] = $valid ? $value : TicketPolicy::THRESHOLD_MAJOR;
+            } elseif ($field === 'ticket_vuln_severity') {
+                $value = (string) $input[$field];
+                $valid = in_array($value, VulnTicketPolicy::THRESHOLDS, true);
+                $input[$field] = $valid ? $value : VulnTicketPolicy::THRESHOLD_CRITICAL;
             } elseif ($field === 'ticket_eol_days') {
                 $input[$field] = Lifecycle\Settings::clampDays((int) $input[$field]);
             } else {
@@ -398,8 +434,21 @@ class Connection extends ConnectionBase
         }
         // Champs tenus par l'import, jamais par le formulaire.
         unset($input['last_import_date'], $input['last_import_status'], $input['last_import_report']);
+        unset($input['last_scan_date'], $input['last_scan_status'], $input['last_scan_report']);
 
         return $input;
+    }
+
+    /**
+     * Connexion Harbor supprimée : ses projets et artefacts (données lues dans Harbor) avec elle.
+     */
+    public function cleanDBonPurge()
+    {
+        global $DB;
+
+        $where = ['plugin_dockerinventory_connections_id' => (int) $this->getID()];
+        $DB->delete(HarborArtifact::getTable(), $where);
+        $DB->delete(HarborImporter::PROJECTS_TABLE, $where);
     }
 
     public function getDecryptedApiKey(): string
@@ -431,6 +480,63 @@ class Connection extends ConnectionBase
             (string) ($this->fields['username'] ?? ''),
             $this->getDecryptedApiKey()
         );
+    }
+
+    /**
+     * Client de lecture de l'API REST de ce Harbor (projets, dépôts, artefacts, analyses).
+     */
+    public function getHarborClient(): HarborClient
+    {
+        return new HarborClient(
+            (string) $this->fields['url'],
+            (string) ($this->fields['username'] ?? ''),
+            $this->getDecryptedApiKey()
+        );
+    }
+
+    /**
+     * Lecture de l'API de Harbor (projets, artefacts, analyses), puis tickets de vulnérabilité.
+     *
+     * @return array<string, mixed>
+     */
+    public function runHarborImport(): array
+    {
+        return (new HarborImporter())->import($this);
+    }
+
+    /**
+     * Message du compte rendu d'une lecture de Harbor.
+     *
+     * @param array<string, mixed> $report
+     */
+    public static function harborMessage(array $report): string
+    {
+        $errors = is_array($report['errors'] ?? null) ? $report['errors'] : [];
+        if ((int) $report['status'] === self::STATUS_ERROR && $errors !== []) {
+            $code = (string) ($errors[0]['code'] ?? '');
+
+            return sprintf(__('Échec : %s', 'dockerinventory'), self::errorLabels()[$code] ?? $code);
+        }
+        $tickets = is_array($report['tickets'] ?? null) ? $report['tickets'] : [];
+        $created = (int) ($tickets['created'] ?? 0);
+        $followups = (int) ($tickets['followups'] ?? 0);
+
+        return sprintf(
+            __(
+                'Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d analysés, %6$d retirés.',
+                'dockerinventory'
+            ),
+            self::statusLabel((int) $report['status']),
+            (int) ($report['projects'] ?? 0),
+            (int) ($report['repositories'] ?? 0),
+            (int) ($report['artifacts'] ?? 0),
+            (int) ($report['scanned'] ?? 0),
+            (int) ($report['retired'] ?? 0)
+        ) . ($created === 0 && $followups === 0 ? '' : ' ' . sprintf(
+            __('Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s).', 'dockerinventory'),
+            $created,
+            $followups
+        ));
     }
 
     /**
@@ -555,24 +661,37 @@ class Connection extends ConnectionBase
      *
      * @return array{ok: bool, message: string}
      */
-    public function testHarborConnection(?RegistryClient $client = null): array
+    public function testHarborConnection(?RegistryClient $client = null, ?HarborClient $api = null): array
     {
+        // Client du registre fourni (tests) sans client de l'API : l'API n'est pas appelée.
+        $api ??= $client === null ? $this->getHarborClient() : null;
         $client ??= $this->getRegistryClient();
         try {
             $client->ping();
         } catch (RegistryException $e) {
             return ['ok' => false, 'message' => self::errorLabels()[$e->getMessage()] ?? $e->getMessage()];
         }
+        $message = $client->hasCredentials()
+            ? __('Connexion réussie : le registre Harbor accepte ce compte.', 'dockerinventory')
+            : __(
+                'Connexion réussie : registre joignable sans compte (projets publics seulement).',
+                'dockerinventory'
+            );
+        if ($api !== null) {
+            try {
+                $message .= ' ' . sprintf(
+                    __('API de Harbor : %d projet(s) visible(s) avec ce compte.', 'dockerinventory'),
+                    count($api->projects()['items'])
+                );
+            } catch (RegistryException $e) {
+                $message .= ' ' . sprintf(
+                    __('API de Harbor non lue (projets, analyses) : %s', 'dockerinventory'),
+                    self::errorLabels()[$e->getMessage()] ?? $e->getMessage()
+                );
+            }
+        }
 
-        return [
-            'ok'      => true,
-            'message' => $client->hasCredentials()
-                ? __('Connexion réussie : le registre Harbor accepte ce compte.', 'dockerinventory')
-                : __(
-                    'Connexion réussie : registre joignable sans compte (projets publics seulement).',
-                    'dockerinventory'
-                ),
-        ];
+        return ['ok' => true, 'message' => $message];
     }
 
     /**
@@ -730,6 +849,12 @@ class Connection extends ConnectionBase
                 'dockerinventory'
             )];
         }
+        if ($name === Install\Installer::CRON_HARBOR) {
+            return ['description' => __(
+                'Projets, artefacts et analyses de vulnérabilités depuis Harbor',
+                'dockerinventory'
+            )];
+        }
         if ($name === Install\Installer::CRON_WUD) {
             return ['description' => __("Lecture des versions des images depuis What's Up Docker", 'dockerinventory')];
         }
@@ -754,6 +879,32 @@ class Connection extends ConnectionBase
         }
 
         return $report['services'] > 0 ? 1 : 0;
+    }
+
+    /**
+     * Tâche automatique (toutes les heures) : lecture de l'API de chaque connexion Harbor active.
+     */
+    public static function cronHarborimport(CronTask $task): int
+    {
+        global $DB;
+
+        $done = 0;
+        $where = ['is_active' => 1, 'type' => self::TYPE_HARBOR];
+        foreach ($DB->request(['FROM' => static::getTable(), 'WHERE' => $where]) as $row) {
+            $connection = new self();
+            if (!$connection->getFromDB((int) $row['id'])) {
+                continue;
+            }
+            $report = $connection->runHarborImport();
+            $task->addVolume((int) $report['artifacts']);
+            $task->log($connection->fields['name'] . ' : ' . self::harborMessage($report));
+            foreach ($report['errors'] as $error) {
+                $task->log($error['endpoint'] . ' : ' . (self::errorLabels()[$error['code']] ?? $error['code']));
+            }
+            $done++;
+        }
+
+        return $done > 0 ? 1 : 0;
     }
 
     /**

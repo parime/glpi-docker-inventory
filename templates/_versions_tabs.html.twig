@@ -1,0 +1,31 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglets de la page « Versions des images » : versions et images Harbor (une seule entrée de menu). #}
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a href="{{ versions_url }}" class="nav-link {{ active_tab == 'versions' ? 'active' : '' }}"
+           {% if active_tab == 'versions' %}aria-current="page"{% endif %}>
+            <i class="ti ti-tags me-1" aria-hidden="true"></i>{{ __('Versions des images', 'dockerinventory') }}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a href="{{ harbor_url }}" class="nav-link {{ active_tab == 'harbor' ? 'active' : '' }}"
+           {% if active_tab == 'harbor' %}aria-current="page"{% endif %}>
+            <i class="ti ti-shield-search me-1" aria-hidden="true"></i>
+            {{ __('Images Harbor et vulnérabilités', 'dockerinventory') }}
+        </a>
+    </li>
+</ul>

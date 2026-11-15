@@ -1,0 +1,62 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Description d'un ticket de vulnérabilité (texte enrichi du ticket). #}
+<p>
+    {{ __(
+        'L’analyse Harbor de l’image déployée par ce service signale des vulnérabilités au-delà du seuil choisi.',
+        'dockerinventory'
+    ) }}
+    {{ __(
+        'Prévoir une image corrigée (version plus récente ou image reconstruite), puis la redéployer.',
+        'dockerinventory'
+    ) }}
+</p>
+<ul>
+    <li><strong>{{ __('Service', 'dockerinventory') }}</strong> : {{ service }}</li>
+    {% if stack %}
+        <li><strong>{{ __('Stack', 'dockerinventory') }}</strong> : {{ stack }}</li>
+    {% endif %}
+    {% if appliance %}
+        <li><strong>{{ __('Application', 'dockerinventory') }}</strong> : {{ appliance }}</li>
+    {% endif %}
+    <li><strong>{{ __('Image', 'dockerinventory') }}</strong> : {{ image }}{% if tag %}:{{ tag }}{% endif %}</li>
+    <li><strong>{{ __('Empreinte', 'dockerinventory') }}</strong> : {{ digest }}</li>
+    <li>
+        <strong>{{ __('Vulnérabilités', 'dockerinventory') }}</strong> :
+        {{ critical }} {{ __('critiques', 'dockerinventory') }}, {{ high }} {{ __('hautes', 'dockerinventory') }}
+        {% if artifact.counts is defined %}
+            , {{ artifact.counts.medium }} {{ __('moyennes', 'dockerinventory') }},
+            {{ artifact.counts.low }} {{ __('basses', 'dockerinventory') }}
+            ({{ __('corrigibles', 'dockerinventory') }} : {{ artifact.fixable }})
+        {% endif %}
+    </li>
+    {% if artifact.scanner is defined and artifact.scanner %}
+        <li>
+            <strong>{{ __('Analyse', 'dockerinventory') }}</strong> : {{ artifact.scanner }}
+            {% if artifact.scan_time %}, {{ artifact.scan_time|formatted_datetime }}{% endif %}
+        </li>
+    {% endif %}
+</ul>
+<p>
+    <a href="{{ service_url }}">{{ __('Voir le service dans GLPI', 'dockerinventory') }}</a>
+</p>
+<p>
+    {{ __('Ticket créé par Inventaire Docker, seuil choisi :', 'dockerinventory') }} {{ threshold }}.
+    {{ __(
+        'Un suivi sera ajouté si la situation change ; jamais de changement de statut, de priorité ni d’affectation.',
+        'dockerinventory'
+    ) }}
+</p>

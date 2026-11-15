@@ -5,6 +5,24 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Harbor : projets, dépôts, artefacts et analyses de vulnérabilités
+  ([#9](https://github.com/parime/glpi-docker-inventory/issues/9)), lus en lecture seule par l'API
+  REST de Harbor 2.x avec le compte robot de la connexion Harbor (pagination, erreurs et limite de
+  requêtes non bloquantes, artefacts disparus « retirés », jamais supprimés). Artefact rattaché à
+  chaque service par l'empreinte de l'image qui tourne (sinon par le tag ; empreinte d'index multi-plateforme absente de
+  Harbor signalée sans conclure à une reconstruction),
+  carte « Vulnérabilités de l'image (Harbor) » dans l'onglet « Versions » des services, onglet
+  « Images Harbor et vulnérabilités » de la page des versions (compteurs par gravité, filtres par
+  gravité, projet et provenance), sans nouvelle entrée de menu. Registres maîtrisés réglables sur la
+  page de configuration du plugin (par défaut : les hôtes des connexions Harbor) ; images déployées
+  hors de ces registres signalées. Tickets de vulnérabilité facultatifs sur la connexion Portainer
+  (seuil critique, ou critique et haute ; **désactivés par défaut**), un par service avec des
+  suivis, jamais de changement de statut. Bouton « Lire Harbor maintenant » et action automatique
+  horaire `harborimport`. Faux Harbor `tests/mock-harbor` (données fictives). Mise à jour
+  automatique depuis la 0.5.0.
+
 ### Changed
 
 - Traductions collaboratives sur Hosted Weblate : section « Traductions » des README avec le badge

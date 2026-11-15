@@ -20,6 +20,9 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
+use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
+use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Install\Installer;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
 use GlpiPlugin\Dockerinventory\Lifecycle\ProductMap;
@@ -27,6 +30,7 @@ use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Ticket\EolTickets;
+use GlpiPlugin\Dockerinventory\Ticket\VulnTickets;
 use Migration;
 use PHPUnit\Framework\TestCase;
 
@@ -174,6 +178,59 @@ final class InstallerTest extends TestCase
                 $DB->insert(LifecycleProduct::getTable(), $row);
             }
             Settings::save($settings['enabled'], $settings['warning_days']);
+            (new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION));
+        }
+    }
+
+    /**
+     * Mise à jour depuis la 0.5.0 (#9) : tables de Harbor (projets, artefacts) et des tickets de
+     * vulnérabilité, réglages des tickets (désactivés), dernière lecture de Harbor, tâche
+     * automatique ; les connexions existantes sont gardées.
+     */
+    public function testUpgradeFrom050AddsHarbor(): void
+    {
+        global $DB;
+
+        $connectionId = (int) (new Connection())->add([
+            'name'    => 'Portainer fictif (mise à jour 0.5.0)',
+            'url'     => 'https://portainer.exemple.test:9443',
+            'api_key' => 'ptr_fictive_cle_migration',
+        ]);
+        $this->assertGreaterThan(0, $connectionId);
+        try {
+            foreach ([HarborImporter::PROJECTS_TABLE, HarborArtifact::getTable(), VulnTickets::TABLE] as $table) {
+                $DB->dropTable($table, true);
+            }
+            $migration = new Migration(PLUGIN_DOCKERINVENTORY_VERSION);
+            $fields = ['ticket_vuln_enabled', 'ticket_vuln_severity', 'last_scan_date', 'last_scan_status',
+                'last_scan_report'];
+            foreach ($fields as $field) {
+                $migration->dropField(Connection::getTable(), $field);
+            }
+            $migration->migrationOneTable(Connection::getTable());
+            \CronTask::unregister('dockerinventory');
+            $this->assertFalse($DB->fieldExists(Connection::getTable(), 'ticket_vuln_enabled', false));
+
+            $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
+
+            foreach ([HarborImporter::PROJECTS_TABLE, HarborArtifact::getTable(), VulnTickets::TABLE] as $table) {
+                $this->assertTrue($DB->tableExists($table, false), $table);
+            }
+            foreach ($fields as $field) {
+                $this->assertTrue($DB->fieldExists(Connection::getTable(), $field, false), $field);
+            }
+            $connection = new Connection();
+            $this->assertTrue($connection->getFromDB($connectionId));
+            $this->assertSame(0, (int) $connection->fields['ticket_vuln_enabled']);
+            $this->assertSame('critical', $connection->fields['ticket_vuln_severity']);
+            $this->assertSame('https://portainer.exemple.test:9443', $connection->fields['url']);
+            $this->assertSame(1, countElementsInTable('glpi_crontasks', [
+                'itemtype' => Connection::class,
+                'name'     => Installer::CRON_HARBOR,
+            ]));
+            $this->assertSame([], HarborSettings::configuredHosts());
+        } finally {
+            (new Connection())->delete(['id' => $connectionId], true);
             (new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION));
         }
     }

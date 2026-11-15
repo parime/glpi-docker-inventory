@@ -104,3 +104,92 @@
         </details>
     </div>
 </div>
+
+{# Lecture de l'API de Harbor (#9) : projets, artefacts et analyses de vulnérabilités. #}
+{% set scan_status = item.fields['last_scan_status']|default(0) %}
+<div class="card mt-3">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="ti ti-shield-search me-2" aria-hidden="true"></i>
+            {{ __('Projets, artefacts et analyses de vulnérabilités', 'dockerinventory') }}
+        </h3>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">
+            {{ __(
+         'Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, avec le résumé de leur analyse.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+     'Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit d’écriture ni de lancement d’analyse.',
+                'dockerinventory'
+            ) }}
+            {{ __('La lecture tourne toutes les heures ; le bouton la lance tout de suite.', 'dockerinventory') }}
+        </p>
+        <div class="mb-3">
+            <span class="me-2">{{ __('Dernière lecture', 'dockerinventory') }} :</span>
+            <span class="badge bg-{{ status_colors[scan_status] ?? 'secondary' }} text-white">
+                {{- scan_status_label -}}
+            </span>
+            {% if item.fields['last_scan_date'] %}
+                <span class="ms-2 text-muted">{{ item.fields['last_scan_date']|formatted_datetime }}</span>
+            {% endif %}
+        </div>
+        {% if scan_report %}
+            <ul class="list-inline mb-3">
+                <li class="list-inline-item">
+                    <i class="ti ti-folders" aria-hidden="true"></i>
+                    {{ __('Projets', 'dockerinventory') }} : <strong>{{ scan_report.projects|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item">
+                    <i class="ti ti-database" aria-hidden="true"></i>
+                    {{ __('Dépôts', 'dockerinventory') }} : <strong>{{ scan_report.repositories|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item">
+                    <i class="ti ti-package" aria-hidden="true"></i>
+                    {{ __('Artefacts', 'dockerinventory') }} : <strong>{{ scan_report.artifacts|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item">
+                    <i class="ti ti-shield-check" aria-hidden="true"></i>
+                    {{ __('Analysés', 'dockerinventory') }} : <strong>{{ scan_report.scanned|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item text-danger">
+                    <i class="ti ti-alert-octagon" aria-hidden="true"></i>
+                    {{ __('Avec vulnérabilités critiques', 'dockerinventory') }} :
+                    <strong>{{ scan_report.critical|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item">
+                    <i class="ti ti-archive" aria-hidden="true"></i>
+                    {{ __('Retirés', 'dockerinventory') }} : <strong>{{ scan_report.retired|default(0) }}</strong>
+                </li>
+                <li class="list-inline-item">
+                    <i class="ti ti-arrows-exchange" aria-hidden="true"></i>
+                    {{ __('Requêtes', 'dockerinventory') }} : <strong>{{ scan_report.requests|default(0) }}</strong>
+                </li>
+            </ul>
+            {% if scan_report.errors is not empty %}
+                <div class="alert alert-warning">
+                    <ul class="mb-0">
+                        {% for error in scan_report.errors %}
+                            <li>
+                                <strong>{{ error.endpoint }}</strong> : {{ error_labels[error.code] ?? error.code -}}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        {% endif %}
+        <form method="post" action="{{ item.getFormURL() }}" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="id" value="{{ item.getID() }}">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" name="harbor_import" value="1" class="btn btn-primary">
+                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                {{ __('Lire Harbor maintenant', 'dockerinventory') }}
+            </button>
+            <a href="{{ harbor_url }}" class="btn btn-outline-primary">
+                <i class="ti ti-shield-search me-1" aria-hidden="true"></i>
+                {{ __('Images Harbor et vulnérabilités', 'dockerinventory') }}
+            </a>
+        </form>
+    </div>
+</div>

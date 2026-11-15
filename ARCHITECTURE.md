@@ -13,12 +13,14 @@ dockerinventory/
 ├── hook.php                   installation, mise à jour, désinstallation
 ├── composer.json
 ├── front/                     pages (une par écran)
-│   ├── connection.php         liste des connexions Portainer, WUD et Harbor (droit Configuration en modification)
+│   ├── connection.php         page de configuration du plugin : registres maîtrisés, liste des connexions
+│   │                          Portainer, WUD et Harbor (droit Configuration en modification)
 │   ├── connection.form.php    choix du type, formulaire, « Tester la connexion », « Importer maintenant »,
 │   │                          « Vérifier les registres maintenant »
 │   ├── service.php            liste des services importés (recherche GLPI)
 │   ├── service.form.php       fiche d'un service, en lecture seule
-│   ├── version.php            « Versions des images » : compteurs, filtres, badges (Twig)
+│   ├── version.php            « Versions des images » : compteurs, filtres, badges (Twig) ;
+│   │                          onglet « Images Harbor et vulnérabilités » (?view=harbor)
 │   ├── imageversion.php       recherche GLPI sur les versions (vues enregistrées, exports)
 │   └── lifecycle.php          « Fin de support des images » : source, correspondances image → produit
 │                              (droit Configuration en modification)
@@ -40,6 +42,8 @@ dockerinventory/
 │   │                          onglet « Services » des applications
 │   ├── Node.php               nœud Swarm ou hôte autonome ; onglet « Services du nœud » des ordinateurs
 │   ├── Profile.php            onglet « Inventaire Docker » des profils (droit plugin_dockerinventory_service)
+│   ├── HarborArtifact.php     artefact Harbor (lecture seule) : rattachement d'un service, provenance,
+│   │                          carte de l'onglet « Versions », onglet « Images Harbor » de la page des versions
 │   ├── LifecycleProduct.php   correspondance image → produit (table modifiable), états du support,
 │   │                          menu Configuration, tâche automatique quotidienne `lifecyclecheck`
 │   ├── Lifecycle/             fin de support des images (#26)
@@ -86,8 +90,16 @@ dockerinventory/
 │   │   │                           déclencheur « vulnérabilité critique » réservé au lot 3
 │   │   ├── UpdateTickets.php       après chaque lecture : tickets et suivis, table de suivi
 │   │   ├── EolTicketPolicy.php     ticket de fin de support, suivi ou rien (fonctions pures)
-│   │   └── EolTickets.php          après chaque mise à jour des cycles de vie : tickets et suivis
-│   └── Harbor/                projets, dépôts, artefacts, analyses           (prévu, lot 3)
+│   │   ├── EolTickets.php          après chaque mise à jour des cycles de vie : tickets et suivis
+│   │   ├── VulnTicketPolicy.php    déclencheur « vulnérabilité » : ticket, suivi ou rien (fonctions pures)
+│   │   └── VulnTickets.php         après chaque lecture de Harbor : tickets et suivis
+│   └── Harbor/                projets, dépôts, artefacts, analyses (#9)
+│       ├── HarborClient.php        lecture seule : GET /api/v2.0/projects, .../repositories,
+│       │                           .../artifacts?with_scan_overview=true ; pagination, compte robot
+│       ├── HarborMapper.php        réponses => valeurs (projet, artefact, résumé d'analyse ; fonctions pures)
+│       ├── HarborLinker.php        empreinte, tag ou empreinte différente ; provenance (fonctions pures)
+│       ├── HarborImporter.php      lecture d'une connexion Harbor, retraits, compte rendu
+│       └── HarborSettings.php      registres maîtrisés (configuration de GLPI)
 ├── templates/                 Twig uniquement (aucun HTML dans le PHP)
 ├── locales/                   fr_FR, en_GB, de_DE, es_ES, it_IT, pl_PL, pt_BR (+ variantes régionales)
 └── tests/
@@ -97,6 +109,7 @@ dockerinventory/
     ├── mock-portainer/        faux Portainer (Python) et jeu de données fictif
     ├── mock-wud/              faux WUD (Python, format WUD 8.x) et jeu de données fictif
     ├── mock-registry/         faux registre (Python) : tags façon Docker Hub, /v2/.../tags/list façon Harbor
+    ├── mock-harbor/           faux Harbor 2.x (Python) : projets, dépôts, artefacts, analyses, tags
     └── mock-lifecycle/        fausse source des cycles de vie (Python, API v1 et ancienne API), dates
                                relatives (+30d) et cycles fictifs
 ```
@@ -115,6 +128,9 @@ dockerinventory/
 | `glpi_plugin_dockerinventory_lifecycleproducts` | Correspondance image normalisée → produit de la source (`is_default` : fournie à l'installation) |
 | `glpi_plugin_dockerinventory_lifecycles` | Cache des cycles de vie d'un produit : branches (JSON : nom, nom de code, fin de support, dernière version), erreur, dernier essai, dernière lecture réussie ; valable un jour |
 | `glpi_plugin_dockerinventory_eoltickets` | Ticket de fin de support suivi pour chaque service (un seul) et la branche qu'il décrit |
+| `glpi_plugin_dockerinventory_harborprojects` | Projet d'une connexion Harbor : nom, public ou non, nombre de dépôts, état « retiré » |
+| `glpi_plugin_dockerinventory_harborartifacts` | Artefact d'un dépôt Harbor (une ligne par connexion, dépôt et empreinte) : projet, tags, empreintes par plateforme, taille, date de publication, état de l'analyse, gravité, analyseur, date d'analyse, nombre de vulnérabilités par gravité et corrigibles, état « retiré » |
+| `glpi_plugin_dockerinventory_vulntickets` | Ticket de vulnérabilité suivi pour chaque service (un seul) et l'image qu'il décrit : empreinte, nombre de vulnérabilités critiques et hautes |
 | `glpi_plugin_dockerinventory_registrytags` | Cache des tags de Docker Hub : dépôt, tags et empreintes (JSON), raison d'un échec durable (introuvable), date de lecture ; valable un jour |
 
 ## Portainer (lot 1)
@@ -211,8 +227,8 @@ dockerinventory/
   description et suivis en Twig (`ticket_content`, `ticket_followup`). Suivis ajoutés avec
   `_no_reopen`, `_do_not_compute_status` et `_do_not_compute_takeintoaccount` : ni statut, ni
   priorité, ni affectation modifiés.
-- Lot 3 : `TicketPolicy::TRIGGER_VULNERABILITY` (paramètre `$signals` de `triggers()`), avec son
-  propre réglage sur la connexion.
+- Lot 3 : `TicketPolicy::TRIGGER_VULNERABILITY`, évalué par `VulnTicketPolicy`, avec son propre
+  réglage et son propre ticket par service (voir Harbor ci-dessous).
 - Désinstallation : la table de suivi est supprimée, les tickets restent (objets GLPI).
 
 ## Fin de support des images (#26)
@@ -240,6 +256,43 @@ dockerinventory/
 - Désinstallation : tables et réglages supprimés, tickets gardés.
 - Pas encore de colonne « fin de support » dans la recherche GLPI des versions (valeur calculée à
   l'affichage) ; preuve GRC Manager (A.8.8) avec #10.
+
+## Harbor (lot 3, #9)
+
+- Lecture seule de l'API REST de Harbor 2.x avec le compte robot de la connexion Harbor
+  (authentification basique, champ sécurisé) : `GET /api/v2.0/projects`,
+  `GET /api/v2.0/projects/<projet>/repositories`,
+  `GET /api/v2.0/projects/<projet>/repositories/<dépôt>/artifacts?with_tag=true&with_scan_overview=true`
+  (nom de dépôt encodé deux fois, en-tête `X-Accept-Vulnerabilities`). Aucune analyse lancée.
+- Pagination : `page` et `page_size=100` ; une page incomplète est la dernière ; 20 pages au plus
+  par liste (au-delà, la liste est « incomplète » et rien n'en est retiré).
+- Résumé d'analyse : premier rapport de `scan_overview` qui a un état ; état (réussie, en échec, en
+  cours, en attente, arrêtée, jamais analysée), analyseur, fin d'analyse, `summary.summary` par
+  gravité (Critical, High, Medium, Low ; le reste en « autres »), `summary.fixable`. Gravité
+  seulement pour une analyse réussie (« aucune vulnérabilité » si rien) ; sinon « non analysée ».
+- Retraits : artefact absent d'un dépôt lu en entier, dépôt absent d'un projet lu en entier, projet
+  absent de la liste lue en entier => « retiré » (jamais supprimé, réactivé s'il réapparaît).
+  Erreur sur un dépôt : la suite continue, lecture « partielle » ; limite (429) : plus d'appel
+  jusqu'à la lecture suivante ; liste des projets en erreur : échec, rien n'est modifié.
+- Rattachement d'un service (à l'affichage et pour les tickets, rien n'est stocké) : connexion
+  Harbor de l'image (même règle que le repli des registres : hôte et entité), puis artefacts actifs
+  du dépôt : empreinte (ou empreinte par plateforme), sinon tag si l'empreinte déployée est inconnue,
+  sinon « empreinte différente » (empreinte connue absente, tag présent : index multi-plateforme
+  gardé par Docker 29 alors que Harbor n'a que le manifeste d'une plateforme, ou reconstruction ;
+  gravité du tag affichée et prise en compte pour les tickets). Pastille : gravité si l'analyse a
+  réussi, sinon état de l'analyse (en cours, en attente, en échec, arrêtée).
+- Provenance : hôte de l'image comparé aux registres maîtrisés (réglage `harbor_managed_registries`
+  du contexte `plugin:dockerinventory`, saisi sur la page de configuration du plugin ; vide : hôtes
+  des connexions Harbor actives ; aucun : « non évaluée »).
+- Affichage sans nouvelle entrée de menu : onglet de la page des versions (`?view=harbor`) et carte
+  de l'onglet « Versions » des services, droit de lecture des services ; entités actives.
+- Tickets (`VulnTickets`, désactivés par défaut : `ticket_vuln_enabled`, `ticket_vuln_severity` sur
+  la connexion Portainer) après chaque lecture de Harbor ; mêmes catégorie, groupe et modèle que les
+  tickets de mise à jour ; un ticket par service, suivi si l'empreinte ou le nombre de
+  vulnérabilités critiques ou hautes change, jamais de changement de statut ; ticket clos : pas de
+  nouveau ticket pour la même empreinte.
+- Désinstallation : tables et réglage supprimés, tickets gardés.
+- Corrélation des vulnérabilités de GRC Manager : #10.
 
 ## Règles communes
 

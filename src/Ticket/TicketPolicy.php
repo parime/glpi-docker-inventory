@@ -27,7 +27,7 @@ use GlpiPlugin\Dockerinventory\Version\VersionComparator;
  *
  * Règles :
  * - un ticket seulement si un déclencheur est atteint (écart de version au-delà du seuil choisi ;
- *   lot 3 : vulnérabilité critique de l'image, voir TRIGGER_VULNERABILITY) ;
+ *   les vulnérabilités ont leur propre ticket, voir TRIGGER_VULNERABILITY) ;
  * - un seul ticket par service : tant qu'il est ouvert, un suivi quand la situation change (nouvelle
  *   version, autre version déployée, écart résolu), jamais un second ticket ;
  * - ticket résolu, clos ou supprimé : nouveau ticket seulement pour une nouvelle dernière version
@@ -50,9 +50,11 @@ final class TicketPolicy
     public const TRIGGER_VERSION = 'version';
 
     /**
-     * Déclencheur prévu au lot 3 (Harbor) : vulnérabilité critique dans l'analyse de l'image. Pas
-     * encore évalué : triggers() le recevra de la lecture de Harbor (paramètre $signals), avec son
-     * propre réglage sur la connexion, sans changer le reste de la logique.
+     * Déclencheur du lot 3 (Harbor, #9) : vulnérabilités critiques (ou critiques et hautes) dans
+     * l'analyse de l'image qui tourne. Évalué par VulnTicketPolicy, avec son propre réglage sur la
+     * connexion Portainer et son propre ticket par service (VulnTickets), comme la fin de support :
+     * un ticket « mettre à jour 1.2 → 1.4 » et un ticket « image vulnérable » ne se remplacent pas.
+     * Le paramètre $signals de triggers() permet encore de l'ajouter à un ticket de mise à jour.
      */
     public const TRIGGER_VULNERABILITY = 'vulnerability';
 
@@ -78,8 +80,8 @@ final class TicketPolicy
      * Déclencheurs atteints pour une situation.
      *
      * @param Situation $situation
-     * @param array<string, bool> $signals Lot 3 : TRIGGER_VULNERABILITY => vulnérabilité critique
-     *        connue et activée sur la connexion. Ignoré tant que le lot 3 n'existe pas.
+     * @param array<string, bool> $signals TRIGGER_VULNERABILITY => vulnérabilité au seuil connue
+     *        (non utilisé par les tickets de mise à jour : voir VulnTicketPolicy).
      * @return list<string>
      */
     public static function triggers(array $situation, string $threshold, array $signals = []): array

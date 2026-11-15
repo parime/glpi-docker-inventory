@@ -18,12 +18,120 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: templates/_harbor_service.html.twig
+msgid "Ticket de vulnérabilité"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Vulnérabilités de l’image (Harbor)"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Ce service n’a pas d’image connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Image hors registre maîtrisé"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "elle vient de"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "qui n’est pas dans la liste des registres maîtrisés"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le "
+"registre maîtrisé."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde "
+"qu’une plateforme)."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "aucun résultat d’analyse pour cette image dans Harbor."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Artefact Harbor"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/version_tab.html.twig
+#: src/ImageVersion.php
+msgid "Rattachement"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Empreinte"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Tags"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "sans tag"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Publié le"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Analyse"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Total"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "corrigibles"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Image introuvable dans Harbor"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Image hors des registres Harbor déclarés : pas d’analyse de vulnérabilités "
+"connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Aucune connexion Harbor : pas d’analyse de vulnérabilités connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Voir toutes les images Harbor et leurs vulnérabilités"
+msgstr ""
+
 #: templates/_service_rows.html.twig
 msgid "Tag mobile : la version réelle est donnée par l’empreinte."
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/_version_rows.html.twig
-#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/eol_ticket_content.html.twig templates/harbor_images.html.twig
+#: templates/ticket_content.html.twig templates/vuln_ticket_content.html.twig
 msgid "Service"
 msgstr ""
 
@@ -59,9 +167,44 @@ msgid "Vu la dernière fois"
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/_version_rows.html.twig
-#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/eol_ticket_content.html.twig templates/harbor_images.html.twig
+#: templates/ticket_content.html.twig templates/vuln_ticket_content.html.twig
 #: src/ImageVersion.php src/Service.php
 msgid "Stack"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "C"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "critiques"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "H"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "hautes"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "M"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+msgid "moyennes"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "B"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+msgid "basses"
 msgstr ""
 
 #: templates/_state_badges.html.twig
@@ -98,8 +241,9 @@ msgid "Application et environnement"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig
-#: templates/lifecycle.html.twig templates/service_form.html.twig
-#: templates/ticket_content.html.twig templates/version_tab.html.twig
+#: templates/harbor_images.html.twig templates/lifecycle.html.twig
+#: templates/service_form.html.twig templates/ticket_content.html.twig
+#: templates/version_tab.html.twig templates/vuln_ticket_content.html.twig
 #: src/ImageVersion.php src/Service.php
 msgid "Image"
 msgstr ""
@@ -146,6 +290,16 @@ msgstr ""
 
 #: templates/_version_rows.html.twig templates/version_tab.html.twig
 msgid "Erreur WUD"
+msgstr ""
+
+#: templates/_versions_tabs.html.twig templates/lifecycle.html.twig
+#: templates/versions.html.twig src/ImageVersion.php
+msgid "Versions des images"
+msgstr ""
+
+#: templates/_versions_tabs.html.twig templates/harbor_actions.html.twig
+#: templates/harbor_images.html.twig templates/managed_registries.html.twig
+msgid "Images Harbor et vulnérabilités"
 msgstr ""
 
 #: templates/appliance_services.html.twig
@@ -440,14 +594,6 @@ msgid "Ses champs prédéfinis (type, urgence, demandeur...) servent de départ.
 msgstr ""
 
 #: templates/connection_form.html.twig
-msgid "Vulnérabilité critique de l’image : avec Harbor, au lot 3."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Autre déclencheur"
-msgstr ""
-
-#: templates/connection_form.html.twig
 msgid "Tickets de fin de support"
 msgstr ""
 
@@ -477,6 +623,24 @@ msgstr ""
 
 #: templates/connection_form.html.twig
 msgid "Réglages communs"
+msgstr ""
+
+#: templates/connection_form.html.twig src/Connection.php
+msgid "Tickets de vulnérabilité"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Créer des tickets de vulnérabilité"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Désactivé par défaut. Selon l’analyse Harbor de l’image qui tourne : un "
+"ticket par service, puis des suivis."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Gravité minimale des vulnérabilités qui donne un ticket."
 msgstr ""
 
 #: templates/connection_type_choice.html.twig
@@ -525,6 +689,7 @@ msgid ""
 msgstr ""
 
 #: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/vuln_ticket_content.html.twig
 msgid "Application"
 msgstr ""
 
@@ -538,7 +703,8 @@ msgstr ""
 
 #: templates/eol_ticket_content.html.twig
 #: templates/eol_ticket_followup.html.twig templates/ticket_content.html.twig
-#: templates/ticket_followup.html.twig
+#: templates/ticket_followup.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
 msgid "Voir le service dans GLPI"
 msgstr ""
 
@@ -547,6 +713,7 @@ msgid "Ticket créé par Inventaire Docker, délai choisi (jours) :"
 msgstr ""
 
 #: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/vuln_ticket_content.html.twig
 msgid ""
 "Un suivi sera ajouté si la situation change ; jamais de changement de statut,"
 " de priorité ni d’affectation."
@@ -561,14 +728,17 @@ msgid "le service utilise maintenant"
 msgstr ""
 
 #: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
 msgid "Nouvelle situation"
 msgstr ""
 
 #: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
 msgid "Situation précédente"
 msgstr ""
 
 #: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
 msgid ""
 "Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié."
 msgstr ""
@@ -628,6 +798,190 @@ msgstr ""
 msgid "Pour les registres seulement, ajouter dans config/local_define.php :"
 msgstr ""
 
+#: templates/harbor_actions.html.twig
+msgid "Projets, artefacts et analyses de vulnérabilités"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, "
+"avec le résumé de leur analyse."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit "
+"d’écriture ni de lancement d’analyse."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "La lecture tourne toutes les heures ; le bouton la lance tout de suite."
+msgstr ""
+
+#: templates/harbor_actions.html.twig templates/wud_actions.html.twig
+msgid "Dernière lecture"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Projets"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Dépôts"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Artefacts"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Analysés"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Avec vulnérabilités critiques"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Retirés"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Lire Harbor maintenant"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Connexions et registres maîtrisés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Pour chaque image déployée : l’artefact Harbor qui lui correspond et le "
+"résumé de son analyse de vulnérabilités."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Données lues dans Harbor toutes les heures, sans rien y modifier."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucune connexion Harbor pour le moment."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la "
+"configuration du plugin."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Ajouter une connexion Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Images déployées"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Images qui ne viennent d’aucun registre maîtrisé."
+msgstr ""
+
+#: templates/harbor_images.html.twig src/HarborArtifact.php
+msgid "Hors registre maîtrisé"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/managed_registries.html.twig
+msgid "Registres maîtrisés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "aucun (provenance des images non évaluée)"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Gravité"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Toutes"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Critique ou haute"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Projet Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/versions.html.twig
+msgid "Tous"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Artefacts listés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Seulement ceux déployés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Seulement hors registre maîtrisé"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/versions.html.twig
+msgid "Filtrer"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/versions.html.twig
+msgid "Réinitialiser"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucune image déployée ne correspond à ces filtres."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Provenance"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/vuln_ticket_content.html.twig
+msgid "Vulnérabilités"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Analysée le"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Absente de Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Artefacts Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucun artefact ne correspond à ces filtres."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Voir tous les artefacts"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Dépôt"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Taille"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Déployé par"
+msgstr ""
+
 #: templates/lifecycle.html.twig src/LifecycleProduct.php
 msgid "Fin de support des images"
 msgstr ""
@@ -638,11 +992,6 @@ msgstr ""
 
 #: templates/lifecycle.html.twig
 msgid "Désactivée"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/versions.html.twig
-#: src/ImageVersion.php
-msgid "Versions des images"
 msgstr ""
 
 #: templates/lifecycle.html.twig
@@ -682,7 +1031,7 @@ msgstr ""
 msgid "Signaler « bientôt en fin de support » (jours avant)"
 msgstr ""
 
-#: templates/lifecycle.html.twig
+#: templates/lifecycle.html.twig templates/managed_registries.html.twig
 msgid "Enregistrer"
 msgstr ""
 
@@ -808,6 +1157,40 @@ msgstr ""
 msgid "Enregistrer les correspondances"
 msgstr ""
 
+#: templates/managed_registries.html.twig
+msgid "Images déployées hors de ces registres : signalées."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
+"contrôlée."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la"
+" fiche du service."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Hôtes des registres maîtrisés, un par ligne"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Tel qu’écrit au début des images (registry.exemple.test:5000/outils/wiki). "
+"docker.io : Docker Hub."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Laisser vide pour utiliser les hôtes des connexions Harbor :"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "aucune connexion Harbor"
+msgstr ""
+
 #: templates/service_form.html.twig
 msgid "depuis le"
 msgstr ""
@@ -912,7 +1295,7 @@ msgstr ""
 msgid "Une version plus récente de l’image de ce service est disponible."
 msgstr ""
 
-#: templates/ticket_content.html.twig
+#: templates/ticket_content.html.twig templates/vuln_ticket_content.html.twig
 msgid "Ticket créé par Inventaire Docker, seuil choisi :"
 msgstr ""
 
@@ -997,10 +1380,6 @@ msgstr ""
 msgid "Conteneurs WUD"
 msgstr ""
 
-#: templates/version_tab.html.twig src/ImageVersion.php
-msgid "Rattachement"
-msgstr ""
-
 #: templates/version_tab.html.twig
 msgid "dernière version de la branche"
 msgstr ""
@@ -1055,10 +1434,6 @@ msgid ""
 msgstr ""
 
 #: templates/versions.html.twig
-msgid "Tous"
-msgstr ""
-
-#: templates/versions.html.twig
 msgid "À mettre à jour"
 msgstr ""
 
@@ -1103,14 +1478,6 @@ msgid "Sans environnement"
 msgstr ""
 
 #: templates/versions.html.twig
-msgid "Filtrer"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Réinitialiser"
-msgstr ""
-
-#: templates/versions.html.twig
 msgid "Aucun service ne correspond à ces filtres."
 msgstr ""
 
@@ -1130,6 +1497,26 @@ msgstr ""
 
 #: templates/versions.html.twig
 msgid "« Non suivable » : tag mobile (latest...) ou sans numéro de version."
+msgstr ""
+
+#: templates/vuln_ticket_content.html.twig
+msgid ""
+"L’analyse Harbor de l’image déployée par ce service signale des "
+"vulnérabilités au-delà du seuil choisi."
+msgstr ""
+
+#: templates/vuln_ticket_content.html.twig
+msgid ""
+"Prévoir une image corrigée (version plus récente ou image reconstruite), puis"
+" la redéployer."
+msgstr ""
+
+#: templates/vuln_ticket_followup.html.twig
+msgid "Plus de vulnérabilité au seuil"
+msgstr ""
+
+#: templates/vuln_ticket_followup.html.twig
+msgid "Image redéployée ou reconstruite"
 msgstr ""
 
 #: templates/wud_actions.html.twig
@@ -1158,10 +1545,6 @@ msgid ""
 msgstr ""
 
 #: templates/wud_actions.html.twig
-msgid "Dernière lecture"
-msgstr ""
-
-#: templates/wud_actions.html.twig
 msgid "Conteneurs suivis"
 msgstr ""
 
@@ -1183,6 +1566,15 @@ msgstr ""
 
 #: templates/wud_actions.html.twig
 msgid "Pour WUD seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: front/connection.php
+#, php-format
+msgid "Registres maîtrisés enregistrés : %s"
+msgstr ""
+
+#: front/connection.php
+msgid "ceux des connexions Harbor"
 msgstr ""
 
 #: front/lifecycle.php
@@ -1210,6 +1602,14 @@ msgid "Tout écart de version, correctifs compris"
 msgstr ""
 
 #: src/Connection.php
+msgid "Vulnérabilités critiques"
+msgstr ""
+
+#: src/Connection.php
+msgid "Vulnérabilités critiques ou hautes"
+msgstr ""
+
+#: src/Connection.php
 msgid "La clé d'API Portainer est obligatoire."
 msgstr ""
 
@@ -1220,6 +1620,18 @@ msgstr ""
 #: src/Connection.php
 #, php-format
 msgid "Échec : %s"
+msgstr ""
+
+#: src/Connection.php
+#, php-format
+msgid ""
+"Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d "
+"analysés, %6$d retirés."
+msgstr ""
+
+#: src/Connection.php
+#, php-format
+msgid "Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
 #: src/Connection.php
@@ -1256,6 +1668,16 @@ msgstr ""
 msgid ""
 "Connexion réussie : registre joignable sans compte (projets publics "
 "seulement)."
+msgstr ""
+
+#: src/Connection.php
+#, php-format
+msgid "API de Harbor : %d projet(s) visible(s) avec ce compte."
+msgstr ""
+
+#: src/Connection.php
+#, php-format
+msgid "API de Harbor non lue (projets, analyses) : %s"
 msgstr ""
 
 #: src/Connection.php
@@ -1395,6 +1817,10 @@ msgid ""
 msgstr ""
 
 #: src/Connection.php
+msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
+msgstr ""
+
+#: src/Connection.php
 msgid "Lecture des versions des images depuis What's Up Docker"
 msgstr ""
 
@@ -1411,6 +1837,143 @@ msgstr ""
 #: src/Connection.php
 #, php-format
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Images Harbor"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Image Harbor"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Critique"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Au moins une vulnérabilité critique."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Haute"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Au moins une vulnérabilité haute, aucune critique."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Moyenne"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Vulnérabilités moyennes au plus."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Basse"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Vulnérabilités basses seulement."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Aucune vulnérabilité"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse réussie sans vulnérabilité connue."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Non analysée"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid ""
+"Pas d’analyse réussie dans Harbor (jamais lancée, en cours ou en échec)."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid ""
+"Pas encore de résultat d’analyse dans Harbor pour cette image : voir l’état "
+"de l’analyse."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse réussie"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse en échec"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse en cours"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse en attente"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Analyse arrêtée"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Jamais analysée"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Par empreinte : c’est l’image qui tourne"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Par tag (empreinte déployée inconnue) : probablement l’image qui tourne"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Par tag : empreinte déployée différente de celle de Harbor"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Registre maîtrisé"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "L’image vient de l’un des registres maîtrisés."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid ""
+"L’image ne vient d’aucun registre maîtrisé : ni analysée ni contrôlée par "
+"Harbor."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Provenance non évaluée"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Aucun registre maîtrisé déclaré (ni connexion Harbor, ni liste)."
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "o"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Ko"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Mo"
+msgstr ""
+
+#: src/HarborArtifact.php
+msgid "Go"
 msgstr ""
 
 #: src/ImageVersion.php
@@ -1755,4 +2318,18 @@ msgstr ""
 #: src/Ticket/UpdateTickets.php
 #, php-format
 msgid "Mettre à jour le service %1$s de la stack %2$s : %3$s → %4$s"
+msgstr ""
+
+#: src/Ticket/VulnTickets.php
+#, php-format
+msgid ""
+"Vulnérabilités dans l’image %1$s (service %2$s) : %3$d critique(s), %4$d "
+"haute(s)"
+msgstr ""
+
+#: src/Ticket/VulnTickets.php
+#, php-format
+msgid ""
+"Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d "
+"critique(s), %5$d haute(s)"
 msgstr ""
