@@ -253,13 +253,14 @@ final class Evidence
 
     /**
      * Configuration des services actifs (A.8.9) : image, tag, empreinte, réplicas et ports, et la
-     * provenance de chaque image (registre maîtrisé ou non).
+     * provenance de chaque image (registre maîtrisé ou non). La liste des registres maîtrisés n'est
+     * pas renvoyée : elle comprend les hôtes des connexions Harbor de toutes les entités.
      *
      * @return array{services: list<array{service: string, url: string, stack: string, image: string,
      *     tag: string, digest: string, replicas: string, replicas_ok: bool, ports: list<string>,
      *     provenance: string, entities_id: int}>, services_total: int, provenance_counts: array<string, int>,
      *     provenances: array<string, array{label: string, color: string, icon: string, help: string}>,
-     *     managed_hosts: list<string>, services_url: string}|null
+     *     services_url: string}|null
      */
     public static function configuration(int $limit = 50): ?array
     {
@@ -305,7 +306,6 @@ final class Evidence
             'services_total'    => count($rows),
             'provenance_counts' => $counts,
             'provenances'       => HarborArtifact::provenanceInfos(),
-            'managed_hosts'     => $managed,
             'services_url'      => Service::getSearchURL(),
         ];
     }
