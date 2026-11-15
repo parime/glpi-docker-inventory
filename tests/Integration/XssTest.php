@@ -59,9 +59,53 @@ final class XssTest extends TestCase
 
     private int $harborId = 0;
 
+    /** Session de connexion enregistrée par le test (GLPI 12), supprimée au tearDown. */
+    private ?string $trackedSession = null;
+
+    /**
+     * GLPI 12 n'accepte une session (Session::checkValidSessionId()) que si elle figure dans
+     * glpi_users_sessions, ce qu'il ne fait pas pour la ligne de commande hors environnement de test :
+     * la session du test y est enregistrée comme le ferait une connexion web. Sans effet sur GLPI 11.
+     * Un refus reste un refus : seule l'expiration de session, sans rapport avec les droits, est évitée.
+     */
+    private function trackSession(): void
+    {
+        global $DB;
+
+        $uid = $_SESSION['login_session_uid'] ?? null;
+        if (
+            !is_string($uid) || !$DB->tableExists('glpi_users_sessions')
+            || countElementsInTable('glpi_users_sessions', ['login_session_uid' => $uid]) > 0
+        ) {
+            return;
+        }
+        $DB->insert('glpi_users_sessions', [
+            'users_id'          => (int) \Session::getLoginUserID(),
+            'login_session_uid' => $uid,
+            'session_file'      => 'sess_' . session_id(),
+            'ip_address'        => '::1',
+            'user_agent'        => 'PHPUnit',
+            'auth_type'         => \Auth::DB_GLPI,
+            'created_at'        => \Session::getCurrentTime(),
+            'last_activity_at'  => \Session::getCurrentTime(),
+        ]);
+        $this->trackedSession = $uid;
+    }
+
+    private function untrackSession(): void
+    {
+        global $DB;
+
+        if ($this->trackedSession !== null) {
+            $DB->delete('glpi_users_sessions', ['login_session_uid' => $this->trackedSession]);
+            $this->trackedSession = null;
+        }
+    }
+
     protected function setUp(): void
     {
         $suffix = bin2hex(random_bytes(4));
+        $this->trackSession();
         $this->entityId = (int) (new \Entity())->add(['name' => 'PHPUnit XSS ' . $suffix, 'entities_id' => 0]);
         \Session::changeActiveEntities(0, true);
         $this->portainerId = (int) (new Connection())->add([
@@ -124,6 +168,7 @@ final class XssTest extends TestCase
         HarborArtifact::resetCache();
         $_GET = $_POST = $_REQUEST = [];
         $_SESSION['MESSAGE_AFTER_REDIRECT'] = [];
+        $this->untrackSession();
     }
 
     private function connection(int $id): Connection
