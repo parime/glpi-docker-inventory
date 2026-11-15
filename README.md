@@ -15,7 +15,8 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 
 > **État** : version 0.5.0 publiée : Portainer (Swarm et hôtes Docker autonomes avec leurs stacks
 > Compose), versions des images par What's Up Docker ou les registres (Docker Hub, Harbor), tickets
-> de mise à jour selon des seuils. Harbor (lot 3) suit. Voir [ROADMAP.md](ROADMAP.md).
+> de mise à jour selon des seuils. En cours : Harbor (lot 3, projets, artefacts, vulnérabilités).
+> Voir [ROADMAP.md](ROADMAP.md).
 
 ## Principes
 
@@ -196,7 +197,8 @@ l'application de la stack, avec l'image, les versions, l'écart et un lien vers 
   ticket.
 - Le lien vers le ticket apparaît dans l'onglet « Versions » du service ; le compte rendu (tickets
   créés, suivis ajoutés) dans le message de lecture et le journal des actions automatiques.
-- Vulnérabilité critique de l'image : déclencheur prévu avec Harbor au lot 3.
+- Vulnérabilités de l'image (Harbor) : tickets à part, voir « Harbor, vulnérabilités et registres
+  maîtrisés ».
 
 **Portainer, WUD ou Harbor sur un réseau privé (GLPI 12).** GLPI 12 refuse par défaut les appels
 vers une adresse privée. Pour les autoriser pour ces sources seulement, ajouter dans
@@ -253,6 +255,57 @@ proche).
 - Miroir interne de la source ou tests : constante `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (modèle
   avec `{product}`) dans `config/local_define.php`, et contexte
   `\GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext` pour une adresse privée sous GLPI 12.
+
+## Utilisation : Harbor, vulnérabilités et registres maîtrisés (lot 3)
+
+La connexion **Harbor** (compte robot) sert aussi à lire, par l'**API REST de Harbor 2.x**
+(`/api/v2.0`), les **projets**, **dépôts** et **artefacts** visibles par le compte (empreinte, tags,
+date de publication, taille) avec le **résumé de leur analyse de vulnérabilités**
+(`with_scan_overview=true` : état, analyseur, date, nombre de vulnérabilités critiques, hautes,
+moyennes, basses, corrigibles). **Uniquement des GET** : le plugin ne lance aucune analyse, ne
+modifie ni ne supprime rien dans Harbor.
+
+1. Compte robot en lecture seule : lecture des projets, dépôts et artefacts (et de la liste des
+   tags pour le repli sans WUD) ; aucun droit d'écriture, de suppression ni de lancement d'analyse.
+2. Sur la connexion Harbor (*Configuration > Connexions Docker*), « Tester la connexion » indique
+   aussi le nombre de projets visibles par l'API ; « **Lire Harbor maintenant** » lance la lecture,
+   sinon l'action automatique `harborimport` (toutes les heures). Le compte rendu (projets, dépôts,
+   artefacts, analysés, retirés, requêtes, erreurs) s'affiche sur la connexion.
+3. Résultat : onglet **« Images Harbor et vulnérabilités »** de la page *Parc > Versions des images*
+   (pas de nouvelle entrée de menu) et carte « Vulnérabilités de l'image (Harbor) » dans l'onglet
+   « Versions » de chaque service.
+
+**Rattachement d'un service à son artefact** : par l'**empreinte** de l'image qui tourne (ou de
+l'une de ses images par plateforme), seule preuve que l'analyse est celle de l'image déployée ;
+sinon par le **tag** si l'empreinte déployée n'est pas connue. Empreinte connue mais absente de
+Harbor alors que le tag existe : « **tag déplacé** » (l'image a été reconstruite depuis le
+déploiement), l'analyse affichée est celle du tag actuel et ne donne pas de ticket.
+
+**Registres maîtrisés** : en haut de *Configuration > Connexions Docker* (page de configuration du
+plugin), liste des hôtes d'où les images doivent venir (`registry.exemple.test:5000`, `docker.io`
+pour Docker Hub). Liste vide : les hôtes des connexions Harbor. Une image déployée venant d'ailleurs
+est signalée « **Hors registre maîtrisé** » (compteur et filtre de l'onglet, alerte sur le service).
+
+**Tickets de vulnérabilité**, désactivés par défaut, sur la connexion **Portainer** des services :
+« Créer des tickets de vulnérabilité » et le **seuil** (vulnérabilités critiques, ou critiques et
+hautes) ; catégorie, groupe et modèle des tickets de mise à jour. Après chaque lecture de Harbor :
+un ticket par service dont l'image qui tourne (rattachée par l'empreinte, ou le tag) a une analyse
+réussie au-delà du seuil, puis des **suivis** quand le nombre de vulnérabilités ou l'image change ;
+jamais de doublon, **jamais de changement de statut, de priorité ni d'affectation** ; ticket clos
+pour une image : pas de nouveau ticket pour la même empreinte. Image non analysée, analyse en échec
+ou tag déplacé : pas de ticket.
+
+- **Pagination** de Harbor (pages de 100, 20 pages au plus par liste) ; un artefact, un dépôt ou un
+  projet absent d'une liste lue en entier est **« retiré »**, jamais supprimé ; une liste en erreur
+  ou incomplète ne retire rien.
+- **Erreurs non bloquantes** : une erreur sur un dépôt n'empêche pas la lecture des autres (lecture
+  « partielle ») ; une limite de requêtes (429) arrête les appels jusqu'à la lecture suivante, les
+  données déjà lues restent affichées.
+- Les vulnérabilités ne sont pas encore versées dans la corrélation des vulnérabilités de GRC
+  Manager : c'est l'objet de [#10](https://github.com/parime/glpi-docker-inventory/issues/10).
+
+> Écrit d'après la documentation publique de l'API de Harbor 2.x et un faux Harbor
+> (`tests/mock-harbor`, données fictives) ; **à valider sur un vrai Harbor 2.x**.
 
 ## Liens avec les autres plugins
 

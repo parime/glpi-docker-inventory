@@ -15,7 +15,8 @@ replicas or version.
 
 > **Status**: version 0.5.0 released: Portainer (Swarm and standalone Docker hosts with their
 > Compose stacks), image versions from What's Up Docker or registries (Docker Hub, Harbor), update
-> tickets above thresholds. Harbor (batch 3) follows. See [ROADMAP.md](ROADMAP.md).
+> tickets above thresholds. In progress: Harbor (batch 3, projects, artifacts, vulnerabilities).
+> See [ROADMAP.md](ROADMAP.md).
 
 ## Principles
 
@@ -188,7 +189,8 @@ of the stack, with the image, the versions, the gap and a link to the service.
 - Below the threshold, pre-release, digest only, untrackable tag or version not checked: no ticket.
 - The link to the ticket appears in the "Versions" tab of the service; the report (tickets created,
   follow-ups added) in the read message and the automatic actions log.
-- Critical vulnerability of the image: trigger planned with Harbor in batch 3.
+- Image vulnerabilities (Harbor): separate tickets, see "Harbor, vulnerabilities and managed
+  registries".
 
 **Portainer, WUD or Harbor on a private network (GLPI 12).** By default GLPI 12 refuses calls to a
 private address. To allow them for these sources only, add to `config/local_define.php`:
@@ -241,6 +243,53 @@ filter (including "To watch": end of support passed or near).
 - Internal mirror of the source or tests: `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` constant (template
   with `{product}`) in `config/local_define.php`, and the
   `\GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext` context for a private address on GLPI 12.
+
+## Usage: Harbor, vulnerabilities and managed registries (batch 3)
+
+The **Harbor** connection (robot account) is also used to read, through the **Harbor 2.x REST API**
+(`/api/v2.0`), the **projects**, **repositories** and **artifacts** visible to the account (digest,
+tags, push time, size) with the **summary of their vulnerability scan** (`with_scan_overview=true`:
+status, scanner, date, number of critical, high, medium, low and fixable vulnerabilities). **GET
+requests only**: the plugin never starts a scan, never changes or deletes anything in Harbor.
+
+1. Read-only robot account: read projects, repositories and artifacts (and the tag list for the
+   fallback without WUD); no write, delete or scan permission.
+2. On the Harbor connection (*Setup > Docker connections*), "Test the connection" also shows the
+   number of projects visible through the API; "**Read Harbor now**" starts the reading, otherwise
+   the automatic action `harborimport` (every hour). The report (projects, repositories, artifacts,
+   scanned, retired, requests, errors) is shown on the connection.
+3. Result: **"Harbor images and vulnerabilities"** tab of the *Assets > Image versions* page (no new
+   menu entry) and a "Image vulnerabilities (Harbor)" card in the "Versions" tab of each service.
+
+**Linking a service to its artifact**: by the **digest** of the running image (or of one of its
+per-platform images), the only proof that the scan is the one of the deployed image; otherwise by
+the **tag** when the deployed digest is unknown. Digest known but missing from Harbor while the tag
+exists: "**tag moved**" (the image was rebuilt since the deployment); the scan shown is the one of the
+current tag and never gives a ticket.
+
+**Managed registries**: at the top of *Setup > Docker connections* (the plugin configuration page),
+list of the hosts images must come from (`registry.exemple.test:5000`, `docker.io` for Docker Hub).
+Empty list: the hosts of the Harbor connections. A deployed image coming from elsewhere is flagged
+"**Outside managed registry**" (counter and filter of the tab, alert on the service).
+
+**Vulnerability tickets**, disabled by default, on the **Portainer** connection of the services:
+"Create vulnerability tickets" and the **threshold** (critical vulnerabilities, or critical and
+high); category, group and template of the update tickets. After each Harbor reading: one ticket per
+service whose running image (linked by digest, or tag) has a successful scan above the threshold,
+then **follow-ups** when the number of vulnerabilities or the image changes; never a duplicate,
+**never a change of status, priority or assignment**; ticket closed for an image: no new ticket for
+the same digest. Image not scanned, failed scan or moved tag: no ticket.
+
+- Harbor **pagination** (pages of 100, at most 20 pages per list); an artifact, repository or project
+  missing from a list read completely is **"retired"**, never deleted; a failed or incomplete list
+  retires nothing.
+- **Non-blocking errors**: an error on a repository does not stop the others ("partial" reading); a
+  rate limit (429) stops the calls until the next reading, data already read stays displayed.
+- Vulnerabilities are not yet sent to the vulnerability correlation of GRC Manager: see
+  [#10](https://github.com/parime/glpi-docker-inventory/issues/10).
+
+> Written from the public documentation of the Harbor 2.x API and a fake Harbor
+> (`tests/mock-harbor`, fictitious data); **to be validated on a real Harbor 2.x**.
 
 ## Links with the other plugins
 

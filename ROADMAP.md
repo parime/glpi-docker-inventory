@@ -38,8 +38,11 @@ Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 e
 
 ## Lot 3 : Harbor
 
-- [#9](https://github.com/parime/glpi-docker-inventory/issues/9) Projets, artefacts, analyses de
-  vulnérabilités, lien avec la corrélation des vulnérabilités de grcmanager.
+- [#9](https://github.com/parime/glpi-docker-inventory/issues/9) Projets, dépôts, artefacts et
+  résumé des analyses de vulnérabilités (API REST de Harbor 2.x), artefact rattaché à chaque service
+  par l'empreinte, images hors registre maîtrisé signalées, tickets de vulnérabilité (désactivés par
+  défaut). Fait, à valider sur un vrai Harbor 2.x. Le versement dans la corrélation des
+  vulnérabilités de grcmanager suit avec #10.
 
 ## Intégration
 
