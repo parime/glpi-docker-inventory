@@ -47,6 +47,18 @@ if (isset($_POST['add'])) {
     $report = (new RegistryImporter())->run();
     Session::addMessageAfterRedirect(htmlescape(Connection::registryMessage($report)), false, INFO);
     Html::back();
+} elseif (isset($_POST['harbor_import'])) {
+    // Connexion Harbor : projets, artefacts et analyses sans attendre la tâche automatique.
+    $connection->check($id, UPDATE);
+    if ($connection->isHarbor()) {
+        $report = $connection->runHarborImport();
+        Session::addMessageAfterRedirect(
+            htmlescape(Connection::harborMessage($report)),
+            false,
+            $report['status'] === Connection::STATUS_ERROR ? ERROR : INFO
+        );
+    }
+    Html::back();
 } elseif (isset($_POST['import'])) {
     $connection->check($id, UPDATE);
     $report = $connection->runImport();

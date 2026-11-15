@@ -163,13 +163,6 @@
             item.fields['ticket_tickettemplates_id'] ?? 0, __('Modèle de ticket', 'dockerinventory'), {
             helper: __('Ses champs prédéfinis (type, urgence, demandeur...) servent de départ.', 'dockerinventory'),
         }) }}
-        {% set vulnerability_html %}
-            <span class="text-muted">
-                <i class="ti ti-shield-lock me-1" aria-hidden="true"></i>
-                {{ __('Vulnérabilité critique de l’image : avec Harbor, au lot 3.', 'dockerinventory') }}
-            </span>
-        {% endset %}
-        {{ fields.htmlField('_ticket_vulnerability', vulnerability_html, __('Autre déclencheur', 'dockerinventory')) }}
         {# Tickets de fin de support (#26) : mêmes catégorie, groupe et modèle de ticket. #}
         {{ fields.largeTitle(__('Tickets de fin de support', 'dockerinventory'), 'ti ti-calendar-x') }}
         {{ fields.dropdownYesNo('ticket_eol_enabled', item.fields['ticket_eol_enabled'] ?? 0,
@@ -195,5 +188,19 @@
             </span>
         {% endset %}
         {{ fields.htmlField('_ticket_eol_common', eol_common_html, __('Réglages communs', 'dockerinventory')) }}
+        {# Tickets de vulnérabilité (#9) : analyses Harbor de l'image qui tourne, mêmes réglages communs. #}
+        {{ fields.largeTitle(__('Tickets de vulnérabilité', 'dockerinventory'), 'ti ti-shield-exclamation') }}
+        {{ fields.dropdownYesNo('ticket_vuln_enabled', item.fields['ticket_vuln_enabled'] ?? 0,
+            __('Créer des tickets de vulnérabilité', 'dockerinventory'), {
+            helper: __(
+                'Désactivé par défaut. Selon l’analyse Harbor de l’image qui tourne : un ticket par service, puis des suivis.',
+                'dockerinventory'
+            ),
+        }) }}
+        {{ fields.dropdownArrayField('ticket_vuln_severity', item.fields['ticket_vuln_severity'] ?? 'critical',
+            vuln_thresholds, __('Seuil', 'dockerinventory'), {
+            helper: __('Gravité minimale des vulnérabilités qui donne un ticket.', 'dockerinventory'),
+        }) }}
+        {{ fields.htmlField('_ticket_vuln_common', eol_common_html, __('Réglages communs', 'dockerinventory')) }}
     {% endif %}
 {% endblock %}

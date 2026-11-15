@@ -1,0 +1,299 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Images Harbor et vulnérabilités » de la page des versions : compteurs des images
+   déployées par gravité (cliquables), filtres, images déployées (provenance, artefact, analyse),
+   artefacts lus dans Harbor. Lecture seule (GET). #}
+{% set base = harbor_url %}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_versions_tabs.html.twig') }}
+    <div class="card mb-3">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
+            <h2 class="card-title mb-0">
+                <i class="ti ti-shield-search me-2" aria-hidden="true"></i>
+                {{ __('Images Harbor et vulnérabilités', 'dockerinventory') }}
+            </h2>
+            {% if can_configure %}
+                <a href="{{ connection_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
+                    <i class="ti ti-settings me-1" aria-hidden="true"></i>
+                    {{ __('Connexions et registres maîtrisés', 'dockerinventory') }}
+                </a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                {{ __(
+                    'Pour chaque image déployée : l’artefact Harbor qui lui correspond et le résumé de son analyse de vulnérabilités.',
+                    'dockerinventory'
+                ) }}
+                {{ __('Données lues dans Harbor toutes les heures, sans rien y modifier.', 'dockerinventory') }}
+            </p>
+            {% if not has_harbor %}
+                <div class="alert alert-info">
+                    <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
+                    <div>
+                        {{ __('Aucune connexion Harbor pour le moment.', 'dockerinventory') }}
+                        {{ __(
+                            'Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la configuration du plugin.',
+                            'dockerinventory'
+                        ) }}
+                        {% if can_configure %}
+                            <a href="{{ connection_form_url }}?type=harbor" class="ms-1">
+                                {{ __('Ajouter une connexion Harbor', 'dockerinventory') }}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <h3 class="h4">{{ __('Images déployées', 'dockerinventory') }}</h3>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for code, info in severities %}
+                    {% set filter_value = code == '' ? unknown_filter : code %}
+                    <a href="{{ base }}&severity={{ filter_value }}"
+                       class="card card-sm text-decoration-none {{ severity == filter_value ? 'border-primary' : '' }}"
+                       style="min-width: 9rem" title="{{ info.help }}" data-bs-toggle="tooltip">
+                        <div class="card-body d-flex align-items-center gap-2 py-2">
+                            <span class="avatar avatar-sm bg-{{ info.color }} text-white">
+                                <i class="{{ info.icon }}" aria-hidden="true"></i>
+                            </span>
+                            <div>
+                                <div class="fw-bold fs-3">{{ deployed_counts[code]|default(0) }}</div>
+                                <div class="text-muted small">{{ info.label }}</div>
+                            </div>
+                        </div>
+                    </a>
+                {% endfor %}
+                <a href="{{ base }}&unmanaged=1"
+                   class="card card-sm text-decoration-none {{ unmanaged_only ? 'border-primary' : '' }}"
+                   style="min-width: 9rem"
+                   title="{{ __('Images qui ne viennent d’aucun registre maîtrisé.', 'dockerinventory') }}"
+                   data-bs-toggle="tooltip">
+                    <div class="card-body d-flex align-items-center gap-2 py-2">
+                        <span class="avatar avatar-sm bg-danger-lt">
+                            <i class="ti ti-world-download" aria-hidden="true"></i>
+                        </span>
+                        <div>
+                            <div class="fw-bold fs-3">{{ unmanaged_count }}</div>
+                            <div class="text-muted small">{{ __('Hors registre maîtrisé', 'dockerinventory') }}</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <p class="text-muted small">
+                <i class="ti ti-building-warehouse me-1" aria-hidden="true"></i>
+                {{ __('Registres maîtrisés', 'dockerinventory') }} :
+                {% if managed_hosts is empty %}
+                    {{ __('aucun (provenance des images non évaluée)', 'dockerinventory') }}
+                {% else %}
+                    {% for host in managed_hosts %}<code class="me-1">{{ host }}</code>{% endfor %}
+                {% endif %}
+            </p>
+
+            <form method="get" action="{{ versions_url }}" class="row g-2 align-items-end mb-3">
+                <input type="hidden" name="view" value="harbor">
+                <div class="col-auto">
+                    <label class="form-label" for="harbor-severity">{{ __('Gravité', 'dockerinventory') }}</label>
+                    <select name="severity" id="harbor-severity" class="form-select">
+                        <option value="">{{ __('Toutes', 'dockerinventory') }}</option>
+                        <option value="{{ critical_high }}" {{ severity == critical_high ? 'selected' : '' }}>
+                            {{ __('Critique ou haute', 'dockerinventory') }}
+                        </option>
+                        {% for code, info in severities %}
+                            {% set filter_value = code == '' ? unknown_filter : code %}
+                            <option value="{{ filter_value }}" {{ severity == filter_value ? 'selected' : '' }}>
+                                {{ info.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label" for="harbor-project">{{ __('Projet Harbor', 'dockerinventory') }}</label>
+                    <select name="project" id="harbor-project" class="form-select">
+                        <option value="">{{ __('Tous', 'dockerinventory') }}</option>
+                        {% for name in projects %}
+                            <option value="{{ name }}" {{ project == name ? 'selected' : '' }}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-label" for="harbor-artifacts">{{ __('Artefacts listés', 'dockerinventory') }}</label>
+                    <select name="artifacts" id="harbor-artifacts" class="form-select">
+                        <option value="deployed" {{ deployed_only ? 'selected' : '' }}>
+                            {{ __('Seulement ceux déployés', 'dockerinventory') }}
+                        </option>
+                        <option value="all" {{ not deployed_only ? 'selected' : '' }}>
+                            {{ __('Tous', 'dockerinventory') }}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label class="form-check mb-2">
+                        <input type="checkbox" name="unmanaged" value="1" class="form-check-input"
+                               {{ unmanaged_only ? 'checked' : '' }}>
+                        <span class="form-check-label">{{ __('Seulement hors registre maîtrisé', 'dockerinventory') }}</span>
+                    </label>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti ti-filter me-1" aria-hidden="true"></i>{{ __('Filtrer', 'dockerinventory') }}
+                    </button>
+                    <a href="{{ base }}" class="btn btn-outline-secondary">{{ __('Réinitialiser', 'dockerinventory') }}</a>
+                </div>
+            </form>
+
+            {% if deployed is empty %}
+                <div class="alert alert-secondary">
+                    <i class="ti ti-filter-off me-2" aria-hidden="true"></i>
+                    {{ __('Aucune image déployée ne correspond à ces filtres.', 'dockerinventory') }}
+                </div>
+            {% else %}
+                <div class="table-responsive mb-4">
+                    <table class="table table-hover table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Service', 'dockerinventory') }}</th>
+                                <th>{{ __('Image', 'dockerinventory') }}</th>
+                                <th>{{ __('Provenance', 'dockerinventory') }}</th>
+                                <th>{{ __('Artefact Harbor', 'dockerinventory') }}</th>
+                                <th>{{ __('Vulnérabilités', 'dockerinventory') }}</th>
+                                <th>{{ __('Analysée le', 'dockerinventory') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in deployed %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ row.url }}">{{ row.name }}</a>
+                                        {% if row.stack_name %}
+                                            <div class="text-muted small">{{ __('Stack', 'dockerinventory') }} {{ row.stack_name }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td><code>{{ row.image }}{% if row.tag %}:{{ row.tag }}{% endif %}</code></td>
+                                    <td>
+                                        <span class="badge bg-{{ row.provenance.color }}-lt text-nowrap"
+                                              title="{{ row.provenance.help }}" data-bs-toggle="tooltip">
+                                            <i class="{{ row.provenance.icon }} me-1" aria-hidden="true"></i>
+                                            {{ row.provenance.label }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if row.artifact %}
+                                            {{ row.artifact.repository }}
+                                            <code class="small">@{{ row.artifact.short_digest }}</code>
+                                            <div class="small {{ row.method == 'tag_moved' ? 'text-warning' : 'text-muted' }}">
+                                                {{ row.method_label }}
+                                            </div>
+                                        {% else %}
+                                            <span class="text-muted">{{ __('Absente de Harbor', 'dockerinventory') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {{ include('@dockerinventory/_severity_badge.html.twig', {
+                                            severity: row.severity,
+                                            artifact: row.method != 'tag_moved' ? row.artifact : null,
+                                        }) }}
+                                    </td>
+                                    <td>
+                                        {% if row.artifact and row.artifact.scan_time %}
+                                            {{ row.artifact.scan_time|formatted_datetime }}
+                                        {% elseif row.artifact %}
+                                            <span class="text-muted">{{ row.artifact.status_label }}</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            <h3 class="h4">{{ __('Artefacts Harbor', 'dockerinventory') }}</h3>
+            {% if artifacts is empty %}
+                <div class="alert alert-secondary">
+                    <i class="ti ti-package-off me-2" aria-hidden="true"></i>
+                    {{ __('Aucun artefact ne correspond à ces filtres.', 'dockerinventory') }}
+                    {% if deployed_only %}
+                        <a href="{{ base }}&artifacts=all" class="ms-1">{{ __('Voir tous les artefacts', 'dockerinventory') }}</a>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    <table class="table table-hover table-vcenter card-table">
+                        <thead>
+                            <tr>
+                                <th>{{ __('Dépôt', 'dockerinventory') }}</th>
+                                <th>{{ __('Tags', 'dockerinventory') }}</th>
+                                <th>{{ __('Empreinte', 'dockerinventory') }}</th>
+                                <th>{{ __('Publié le', 'dockerinventory') }}</th>
+                                <th>{{ __('Taille', 'dockerinventory') }}</th>
+                                <th>{{ __('Vulnérabilités', 'dockerinventory') }}</th>
+                                <th>{{ __('Analyse', 'dockerinventory') }}</th>
+                                <th>{{ __('Déployé par', 'dockerinventory') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for artifact in artifacts %}
+                                <tr>
+                                    <td>
+                                        {{ artifact.repository }}
+                                        {% if artifact.connection %}
+                                            <div class="text-muted small">{{ artifact.connection }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for tag in artifact.tags %}
+                                            <span class="badge bg-blue-lt me-1 mb-1">{{ tag }}</span>
+                                        {% else %}
+                                            <span class="text-muted small">{{ __('sans tag', 'dockerinventory') }}</span>
+                                        {% endfor %}
+                                    </td>
+                                    <td><code title="{{ artifact.digest }}">{{ artifact.short_digest }}</code></td>
+                                    <td>{{ artifact.push_time ? artifact.push_time|formatted_datetime : '-' }}</td>
+                                    <td class="text-nowrap">{{ artifact.size ?: '-' }}</td>
+                                    <td>
+                                        {{ include('@dockerinventory/_severity_badge.html.twig', {
+                                            severity: artifact.severity, artifact: artifact,
+                                        }) }}
+                                        {% if artifact.scanned and artifact.fixable > 0 %}
+                                            <div class="text-muted small">
+                                                {{ __('corrigibles', 'dockerinventory') }} : {{ artifact.fixable }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small">
+                                        {{ artifact.status_label }}
+                                        {% if artifact.scanner %}<div class="text-muted">{{ artifact.scanner }}</div>{% endif %}
+                                        {% if artifact.scan_time %}
+                                            <div class="text-muted">{{ artifact.scan_time|formatted_datetime }}</div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% for service in artifact.services %}
+                                            <a href="{{ service.url }}" class="badge bg-secondary-lt me-1 mb-1">{{ service.name }}</a>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

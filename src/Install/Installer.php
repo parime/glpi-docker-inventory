@@ -23,6 +23,7 @@ use CronTask;
 use DBConnection;
 use DisplayPreference;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
@@ -51,11 +52,15 @@ final class Installer
         'glpi_plugin_dockerinventory_lifecycleproducts',
         'glpi_plugin_dockerinventory_lifecycles',
         'glpi_plugin_dockerinventory_eoltickets',
+        'glpi_plugin_dockerinventory_harborprojects',
+        'glpi_plugin_dockerinventory_harborartifacts',
+        'glpi_plugin_dockerinventory_vulntickets',
     ];
 
     public const CRON_NAME = 'portainerimport';
     public const CRON_WUD = 'wudimport';
     public const CRON_REGISTRY = 'registrycheck';
+    public const CRON_HARBOR = 'harborimport';
 
     /** Colonnes affichées par défaut dans la liste des services (options de recherche de Service). */
     private const DEFAULT_COLUMNS = [8, 3, 4, 6, 7, 10, 11];
@@ -90,7 +95,7 @@ final class Installer
             }
         }
 
-        foreach ([self::CRON_NAME, self::CRON_WUD, self::CRON_REGISTRY] as $cron) {
+        foreach ([self::CRON_NAME, self::CRON_WUD, self::CRON_REGISTRY, self::CRON_HARBOR] as $cron) {
             CronTask::register(Connection::class, $cron, HOUR_TIMESTAMP, [
                 'state'         => CronTask::STATE_WAITING,
                 'logs_lifetime' => 30,
@@ -115,6 +120,7 @@ final class Installer
         ProfileRight::deleteProfileRights([Service::RIGHTNAME]);
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
+        HarborSettings::delete();
 
         foreach (self::TABLES as $table) {
             $DB->dropTable($table, true);
@@ -156,9 +162,14 @@ final class Installer
                 `ticket_tickettemplates_id` int {$sign} NOT NULL DEFAULT '0',
                 `ticket_eol_enabled` tinyint NOT NULL DEFAULT '0',
                 `ticket_eol_days` int NOT NULL DEFAULT '90',
+                `ticket_vuln_enabled` tinyint NOT NULL DEFAULT '0',
+                `ticket_vuln_severity` varchar(16) NOT NULL DEFAULT 'critical',
                 `last_import_date` timestamp NULL DEFAULT NULL,
                 `last_import_status` tinyint NOT NULL DEFAULT '0',
                 `last_import_report` text,
+                `last_scan_date` timestamp NULL DEFAULT NULL,
+                `last_scan_status` tinyint NOT NULL DEFAULT '0',
+                `last_scan_report` text,
                 `comment` text,
                 `date_mod` timestamp NULL DEFAULT NULL,
                 `date_creation` timestamp NULL DEFAULT NULL,
@@ -351,6 +362,70 @@ final class Installer
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`),
                 KEY `tickets_id` (`tickets_id`)",
+            // Harbor (#9) : projets visibles par le compte robot de chaque connexion Harbor.
+            'glpi_plugin_dockerinventory_harborprojects' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `plugin_dockerinventory_connections_id` int {$sign} NOT NULL DEFAULT '0',
+                `project_uid` int NOT NULL DEFAULT '0',
+                `name` varchar(255) NOT NULL DEFAULT '',
+                `is_public` tinyint NOT NULL DEFAULT '0',
+                `repo_count` int NOT NULL DEFAULT '0',
+                `is_retired` tinyint NOT NULL DEFAULT '0',
+                `last_seen` timestamp NULL DEFAULT NULL,
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_connections_id`, `name`)",
+            // Harbor (#9) : un artefact par dépôt et par empreinte, tags et résumé de son analyse.
+            'glpi_plugin_dockerinventory_harborartifacts' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `is_recursive` tinyint NOT NULL DEFAULT '1',
+                `plugin_dockerinventory_connections_id` int {$sign} NOT NULL DEFAULT '0',
+                `project` varchar(255) NOT NULL DEFAULT '',
+                `repository` varchar(255) NOT NULL DEFAULT '',
+                `digest` varchar(255) NOT NULL DEFAULT '',
+                `child_digests` text,
+                `tags` text,
+                `artifact_type` varchar(32) NOT NULL DEFAULT '',
+                `size` bigint NOT NULL DEFAULT '0',
+                `push_time` timestamp NULL DEFAULT NULL,
+                `scan_status` varchar(16) NOT NULL DEFAULT 'not_scanned',
+                `severity` varchar(16) NOT NULL DEFAULT '',
+                `scanner` varchar(255) NOT NULL DEFAULT '',
+                `scan_time` timestamp NULL DEFAULT NULL,
+                `critical` int NOT NULL DEFAULT '0',
+                `high` int NOT NULL DEFAULT '0',
+                `medium` int NOT NULL DEFAULT '0',
+                `low` int NOT NULL DEFAULT '0',
+                `other` int NOT NULL DEFAULT '0',
+                `total` int NOT NULL DEFAULT '0',
+                `fixable` int NOT NULL DEFAULT '0',
+                `is_retired` tinyint NOT NULL DEFAULT '0',
+                `date_retired` timestamp NULL DEFAULT NULL,
+                `last_seen` timestamp NULL DEFAULT NULL,
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_connections_id`, `repository`, `digest`),
+                KEY `entities_id` (`entities_id`),
+                KEY `is_recursive` (`is_recursive`),
+                KEY `digest` (`digest`),
+                KEY `severity` (`severity`),
+                KEY `is_retired` (`is_retired`)",
+            // Ticket de vulnérabilité suivi pour chaque service, et l'image qu'il décrit.
+            'glpi_plugin_dockerinventory_vulntickets' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `plugin_dockerinventory_services_id` int {$sign} NOT NULL DEFAULT '0',
+                `tickets_id` int {$sign} NOT NULL DEFAULT '0',
+                `digest` varchar(255) NOT NULL DEFAULT '',
+                `critical` int NOT NULL DEFAULT '0',
+                `high` int NOT NULL DEFAULT '0',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`),
+                KEY `tickets_id` (`tickets_id`)",
         ];
 
         $created = [];
@@ -386,9 +461,24 @@ final class Installer
             // 0.4.0 => tickets de fin de support (#26), désactivés par défaut.
             'ticket_eol_enabled'        => "tinyint NOT NULL DEFAULT '0'",
             'ticket_eol_days'           => "int NOT NULL DEFAULT '90'",
+            // 0.5.0 => tickets de vulnérabilité (#9), désactivés par défaut.
+            'ticket_vuln_enabled'       => "tinyint NOT NULL DEFAULT '0'",
+            'ticket_vuln_severity'      => "varchar(16) NOT NULL DEFAULT 'critical'",
         ];
         $after = 'applianceenvironments_id';
         foreach ($ticketFields as $field => $definition) {
+            $migration->addField($table, $field, $definition, ['after' => $after]);
+            $after = $field;
+        }
+        // 0.5.0 => dernière lecture de l'API de Harbor (#9), à côté de celle des registres.
+        $after = 'last_import_report';
+        foreach (
+            [
+                'last_scan_date'   => 'timestamp NULL DEFAULT NULL',
+                'last_scan_status' => "tinyint NOT NULL DEFAULT '0'",
+                'last_scan_report' => 'text',
+            ] as $field => $definition
+        ) {
             $migration->addField($table, $field, $definition, ['after' => $after]);
             $after = $field;
         }

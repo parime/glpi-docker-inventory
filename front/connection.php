@@ -15,11 +15,30 @@
  * -------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
+use GlpiPlugin\Dockerinventory\HarborArtifact;
 
-// Liste des connexions Portainer : administrateurs de la configuration de GLPI seulement.
+// Page de configuration du plugin : connexions Portainer, WUD et Harbor, registres maîtrisés.
+// Administrateurs de la configuration de GLPI seulement.
 Session::checkRight(Connection::RIGHTNAME, UPDATE);
 
+if (isset($_POST['save_managed_registries'])) {
+    $hosts = HarborSettings::save((string) ($_POST['managed_registries'] ?? ''));
+    Session::addMessageAfterRedirect(htmlescape(sprintf(
+        __('Registres maîtrisés enregistrés : %s', 'dockerinventory'),
+        $hosts === [] ? __('ceux des connexions Harbor', 'dockerinventory') : implode(', ', $hosts)
+    )), false, INFO);
+    Html::back();
+}
+
 Html::header(Connection::getTypeName(2), '', 'config', Connection::class);
+TemplateRenderer::getInstance()->display('@dockerinventory/managed_registries.html.twig', [
+    'text'          => HarborSettings::text(),
+    'harbor_hosts'  => array_values(array_unique(array_filter(array_column(HarborArtifact::harborTargets(), 'host')))),
+    'page_url'      => Connection::getSearchURL(),
+    'harbor_url'    => HarborArtifact::getPageURL(),
+]);
 Search::show(Connection::class);
 Html::footer();

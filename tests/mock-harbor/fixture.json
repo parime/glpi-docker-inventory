@@ -1,0 +1,108 @@
+{
+  "simulate": "",
+  "generate": {
+    "outils/ci-cache": 130
+  },
+  "projects": [
+    {
+      "project_id": 1,
+      "name": "outils",
+      "public": true,
+      "repositories": {
+        "wiki": [
+          {
+            "digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+            "tags": ["3.2.0", "3.2"],
+            "push_time": "2026-11-02T09:15:00.000Z",
+            "size": 187654321,
+            "scan": {"status": "Success", "critical": 1, "high": 3, "medium": 5, "low": 9, "fixable": 6,
+                     "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          },
+          {
+            "digest": "sha256:d310d310d310d310d310d310d310d310d310d310d310d310d310d310d310d310",
+            "tags": ["3.1.0"],
+            "push_time": "2026-09-20T09:15:00.000Z",
+            "size": 185000000,
+            "scan": {"status": "Success", "critical": 4, "high": 7, "medium": 8, "low": 12, "fixable": 20,
+                     "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          }
+        ],
+        "wiki-indexeur": [
+          {
+            "digest": "sha256:f320f320f320f320f320f320f320f320f320f320f320f320f320f320f320f320",
+            "tags": ["3.2.0"],
+            "push_time": "2026-11-12T10:00:00.000Z",
+            "size": 64000000,
+            "scan": {"status": "Success", "low": 2, "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          },
+          {
+            "digest": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+            "tags": [],
+            "push_time": "2026-11-01T10:00:00.000Z",
+            "size": 63500000,
+            "scan": {"status": "Success", "high": 2, "medium": 1, "fixable": 2,
+                     "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          }
+        ],
+        "sauvegarde": [
+          {
+            "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "tags": ["0.17.1"],
+            "push_time": "2026-10-15T07:30:00.000Z",
+            "size": 25000000,
+            "scan": {"status": "Success", "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          }
+        ],
+        "courrier-test": [
+          {
+            "digest": "sha256:c120c120c120c120c120c120c120c120c120c120c120c120c120c120c120c120",
+            "tags": ["1.2.0"],
+            "push_time": "2026-08-30T16:45:00.000Z",
+            "size": 18000000
+          }
+        ]
+      }
+    },
+    {
+      "project_id": 2,
+      "name": "boutique",
+      "public": false,
+      "repositories": {
+        "api": [
+          {
+            "digest": "sha256:a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190",
+            "tags": ["1.9.0"],
+            "push_time": "2026-10-05T11:00:00.000Z",
+            "size": 98000000,
+            "children": ["sha256:a191a191a191a191a191a191a191a191a191a191a191a191a191a191a191a191"],
+            "scan": {"status": "Success", "critical": 2, "high": 1, "medium": 4, "fixable": 3,
+                     "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          },
+          {
+            "digest": "sha256:a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0a1a0",
+            "tags": ["1.10.0", "latest"],
+            "push_time": "2026-11-13T11:00:00.000Z",
+            "size": 99000000,
+            "scan": {"status": "Running", "scanner": "Trivy", "end_time": ""}
+          }
+        ]
+      }
+    },
+    {
+      "project_id": 3,
+      "name": "archives",
+      "public": false,
+      "repositories": {
+        "anciens/portail": [
+          {
+            "digest": "sha256:0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a",
+            "tags": ["2.0.4"],
+            "push_time": "2025-03-01T08:00:00.000Z",
+            "size": 120000000,
+            "scan": {"status": "Error", "scanner": "Trivy", "end_time": "2026-11-14T03:00:00.000Z"}
+          }
+        ]
+      }
+    }
+  ]
+}

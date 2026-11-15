@@ -1,0 +1,35 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Pastille de gravité (HarborArtifact::severityInfo()) ; avec « artifact », nombre de vulnérabilités
+   par gravité à côté (C critiques, H hautes, M moyennes, B basses). #}
+<span class="badge bg-{{ severity.color }} text-white text-nowrap" title="{{ severity.help }}" data-bs-toggle="tooltip">
+    <i class="{{ severity.icon }} me-1" aria-hidden="true"></i>{{ severity.label }}
+</span>
+{% if artifact is defined and artifact and artifact.scanned and artifact.total > 0 %}
+    {% set letters = {
+        critical: {letter: __('C', 'dockerinventory'), color: 'danger', label: __('critiques', 'dockerinventory')},
+        high: {letter: __('H', 'dockerinventory'), color: 'orange', label: __('hautes', 'dockerinventory')},
+        medium: {letter: __('M', 'dockerinventory'), color: 'warning', label: __('moyennes', 'dockerinventory')},
+        low: {letter: __('B', 'dockerinventory'), color: 'info', label: __('basses', 'dockerinventory')},
+    } %}
+    <span class="text-nowrap ms-1">
+        {% for code, count in artifact.counts %}
+            {% set info = letters[code] %}
+            <span class="badge {{ count > 0 ? 'bg-' ~ info.color ~ '-lt' : 'bg-secondary-lt text-muted' }}"
+                  title="{{ count }} {{ info.label }}" data-bs-toggle="tooltip">{{ info.letter }} {{ count }}</span>
+        {% endfor %}
+    </span>
+{% endif %}
