@@ -61,9 +61,10 @@ final class HarborClientTest extends TestCase
 
     public function testFullLastPageNeedsAnEmptyPageToBeComplete(): void
     {
-        $client = new HarborClient(self::URL, '', '', static fn (string $url, array $query): string => (string) json_encode(
+        $transport = static fn (string $url, array $query): string => (string) json_encode(
             (int) $query['page'] === 1 ? [['name' => 'a'], ['name' => 'b']] : []
-        ), 2);
+        );
+        $client = new HarborClient(self::URL, '', '', $transport, 2);
 
         $result = $client->projects();
 
@@ -74,7 +75,8 @@ final class HarborClientTest extends TestCase
 
     public function testTooManyPagesMarksTheListIncomplete(): void
     {
-        $client = new HarborClient(self::URL, '', '', static fn (): string => (string) json_encode([['name' => 'x']]), 1);
+        $transport = static fn (): string => (string) json_encode([['name' => 'x']]);
+        $client = new HarborClient(self::URL, '', '', $transport, 1);
 
         $result = $client->projects();
 
@@ -131,9 +133,10 @@ final class HarborClientTest extends TestCase
             'Connection refused'                                                    => RegistryException::UNREACHABLE,
         ];
         foreach ($failures as $message => $code) {
-            $client = new HarborClient(self::URL, 'robot$lecture', self::PASSWORD, static function () use ($message): string {
+            $transport = static function () use ($message): string {
                 throw new \RuntimeException($message . ' ' . self::PASSWORD);
-            });
+            };
+            $client = new HarborClient(self::URL, 'robot$lecture', self::PASSWORD, $transport);
             try {
                 $client->projects();
                 $this->fail('exception attendue');

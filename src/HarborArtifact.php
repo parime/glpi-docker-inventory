@@ -137,7 +137,10 @@ class HarborArtifact extends CommonDBTM
                 'label' => __('Non analysée', 'dockerinventory'),
                 'color' => 'secondary',
                 'icon'  => 'ti ti-help-circle',
-                'help'  => __('Pas d’analyse réussie dans Harbor (jamais lancée, en cours ou en échec).', 'dockerinventory'),
+                'help'  => __(
+                    'Pas d’analyse réussie dans Harbor (jamais lancée, en cours ou en échec).',
+                    'dockerinventory'
+                ),
             ],
         ];
     }
@@ -208,7 +211,10 @@ class HarborArtifact extends CommonDBTM
                 'label' => __('Provenance non évaluée', 'dockerinventory'),
                 'color' => 'secondary',
                 'icon'  => 'ti ti-help-circle',
-                'help'  => __('Aucun registre maîtrisé déclaré (ni connexion Harbor, ni liste).', 'dockerinventory'),
+                'help'  => __(
+                    'Aucun registre maîtrisé déclaré (ni connexion Harbor, ni liste).',
+                    'dockerinventory'
+                ),
             ],
         ];
     }
@@ -235,7 +241,10 @@ class HarborArtifact extends CommonDBTM
             ])->current();
             $targets[] = [
                 'id'       => (int) $row['id'],
-                'host'     => RegistryResolver::harborHost((string) $row['url'], (string) ($row['registry_host'] ?? '')),
+                'host'     => RegistryResolver::harborHost(
+                    (string) $row['url'],
+                    (string) ($row['registry_host'] ?? '')
+                ),
                 'entities' => array_values(array_map(
                     'intval',
                     (new DbUtils())->getSonsOf('glpi_entities', (int) $row['entities_id'])
@@ -349,7 +358,10 @@ class HarborArtifact extends CommonDBTM
      */
     public static function tagList(string $tags): array
     {
-        return array_values(array_filter(array_map('trim', explode(',', $tags)), static fn (string $t): bool => $t !== ''));
+        return array_values(array_filter(
+            array_map('trim', explode(',', $tags)),
+            static fn (string $tag): bool => $tag !== ''
+        ));
     }
 
     /**

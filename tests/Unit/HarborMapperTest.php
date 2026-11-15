@@ -37,14 +37,18 @@ final class HarborMapperTest extends TestCase
             HarborMapper::project(['project_id' => 1, 'name' => 'outils', 'repo_count' => 5,
                 'metadata' => ['public' => 'true'], 'inconnu' => 'ignoré'])
         );
-        $this->assertSame(0, HarborMapper::project(['name' => 'boutique', 'metadata' => ['public' => 'false']])['is_public'] ?? null);
+        $private = HarborMapper::project(['name' => 'boutique', 'metadata' => ['public' => 'false']]);
+        $this->assertSame(0, $private['is_public'] ?? null);
         $this->assertNull(HarborMapper::project(['project_id' => 3]));
     }
 
     public function testRepositoryNameWithinProject(): void
     {
         $this->assertSame('api', HarborMapper::repositoryName(['name' => 'boutique/api'], 'boutique'));
-        $this->assertSame('anciens/portail', HarborMapper::repositoryName(['name' => 'archives/anciens/portail'], 'archives'));
+        $this->assertSame(
+            'anciens/portail',
+            HarborMapper::repositoryName(['name' => 'archives/anciens/portail'], 'archives')
+        );
         $this->assertSame('', HarborMapper::repositoryName(['name' => 'autre/api'], 'boutique'));
         $this->assertSame('', HarborMapper::repositoryName([], 'boutique'));
     }
@@ -97,7 +101,8 @@ final class HarborMapperTest extends TestCase
         $this->assertSame(HarborMapper::SEVERITY_CRITICAL, $scan['severity']);
         $this->assertSame('Trivy v0.57.0', $scan['scanner']);
         $this->assertSame([1, 3, 5, 9, 2, 20, 6], [
-            $scan['critical'], $scan['high'], $scan['medium'], $scan['low'], $scan['other'], $scan['total'], $scan['fixable'],
+            $scan['critical'], $scan['high'], $scan['medium'], $scan['low'], $scan['other'], $scan['total'],
+            $scan['fixable'],
         ]);
         $this->assertNotNull($scan['scan_time']);
     }
@@ -111,10 +116,12 @@ final class HarborMapperTest extends TestCase
 
         $running = HarborMapper::scan(['x' => ['scan_status' => 'Running', 'summary' => ['summary' => ['High' => 4]]]]);
         $this->assertSame(HarborMapper::STATUS_RUNNING, $running['scan_status']);
-        $this->assertSame(HarborMapper::SEVERITY_UNKNOWN, $running['severity'], 'pas de gravité sans analyse réussie');
+        $this->assertSame(HarborMapper::SEVERITY_UNKNOWN, $running['severity'], 'gravité : analyse réussie seulement');
 
-        $this->assertSame(HarborMapper::STATUS_ERROR, HarborMapper::scan(['x' => ['scan_status' => 'Error']])['scan_status']);
-        $this->assertSame(HarborMapper::STATUS_PENDING, HarborMapper::scan(['x' => ['scan_status' => 'Scheduled']])['scan_status']);
+        $error = HarborMapper::scan(['x' => ['scan_status' => 'Error']]);
+        $this->assertSame(HarborMapper::STATUS_ERROR, $error['scan_status']);
+        $scheduled = HarborMapper::scan(['x' => ['scan_status' => 'Scheduled']]);
+        $this->assertSame(HarborMapper::STATUS_PENDING, $scheduled['scan_status']);
         foreach ([null, [], ['x' => 'pas un rapport'], 'texte'] as $overview) {
             $scan = HarborMapper::scan($overview);
             $this->assertSame(HarborMapper::STATUS_NOT_SCANNED, $scan['scan_status']);
@@ -136,7 +143,8 @@ final class HarborMapperTest extends TestCase
         $this->assertNull(HarborMapper::date(''));
         $this->assertNull(HarborMapper::date('pas une date'));
         $this->assertNull(HarborMapper::date(null));
-        $this->assertMatchesRegularExpression('/^2026-11-1[34] \d\d:\d\d:\d\d$/', (string) HarborMapper::date('2026-11-14T03:00:00Z'));
+        $date = (string) HarborMapper::date('2026-11-14T03:00:00Z');
+        $this->assertMatchesRegularExpression('/^2026-11-1[34] \d\d:\d\d:\d\d$/', $date);
     }
 
     public function testRetireOnlyWhenTheListWasReadCompletely(): void

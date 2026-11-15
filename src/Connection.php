@@ -439,6 +439,18 @@ class Connection extends ConnectionBase
         return $input;
     }
 
+    /**
+     * Connexion Harbor supprimée : ses projets et artefacts (données lues dans Harbor) avec elle.
+     */
+    public function cleanDBonPurge()
+    {
+        global $DB;
+
+        $where = ['plugin_dockerinventory_connections_id' => (int) $this->getID()];
+        $DB->delete(HarborArtifact::getTable(), $where);
+        $DB->delete(HarborImporter::PROJECTS_TABLE, $where);
+    }
+
     public function getDecryptedApiKey(): string
     {
         $stored = (string) ($this->fields['api_key'] ?? '');

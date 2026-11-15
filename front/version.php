@@ -40,7 +40,10 @@ $tabs = [
 
 if (($_GET['view'] ?? '') === 'harbor') {
     $severity = (string) ($_GET['severity'] ?? '');
-    $known = array_merge(HarborMapper::SEVERITIES, [HarborArtifact::FILTER_CRITICAL_HIGH, HarborArtifact::FILTER_UNKNOWN]);
+    $known = array_merge(
+        HarborMapper::SEVERITIES,
+        [HarborArtifact::FILTER_CRITICAL_HIGH, HarborArtifact::FILTER_UNKNOWN]
+    );
     if (!in_array($severity, $known, true)) {
         $severity = '';
     }

@@ -70,7 +70,8 @@ final class HarborFixture
         $projects = self::projects($fixture);
         $page = max(1, (int) ($query['page'] ?? 1));
         $size = max(1, min(100, (int) ($query['page_size'] ?? 10)));
-        $slice = static fn (array $items): string => (string) json_encode(array_slice($items, ($page - 1) * $size, $size));
+        $slice = static fn (array $items): string
+            => (string) json_encode(array_slice($items, ($page - 1) * $size, $size));
 
         if ($path === '/api/v2.0/projects') {
             $items = [];

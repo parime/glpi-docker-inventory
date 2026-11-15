@@ -211,7 +211,10 @@ final class HarborImporter
     {
         global $DB;
 
-        $where = ['plugin_dockerinventory_connections_id' => $connectionId, 'name' => mb_substr($project['name'], 0, 255)];
+        $where = [
+            'plugin_dockerinventory_connections_id' => $connectionId,
+            'name'                                  => mb_substr($project['name'], 0, 255),
+        ];
         $values = [
             'project_uid'  => $project['uid'],
             'is_public'    => $project['is_public'],
@@ -288,7 +291,8 @@ final class HarborImporter
             $where[] = ['NOT' => ['id' => $seen]];
         }
         $ids = [];
-        foreach ($DB->request(['SELECT' => ['id', 'project', 'repository'], 'FROM' => $table, 'WHERE' => $where]) as $row) {
+        $rows = $DB->request(['SELECT' => ['id', 'project', 'repository'], 'FROM' => $table, 'WHERE' => $where]);
+        foreach ($rows as $row) {
             if (self::shouldRetire((string) $row['project'], (string) $row['repository'], $state)) {
                 $ids[] = (int) $row['id'];
             }

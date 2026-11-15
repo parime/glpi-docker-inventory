@@ -31,8 +31,12 @@ final class VulnTicketPolicyTest extends TestCase
     /**
      * @return array{scan_status: string, digest: string, critical: int, high: int}
      */
-    private static function artifact(int $critical, int $high, string $status = 'success', string $digest = 'sha256:aaa'): array
-    {
+    private static function artifact(
+        int $critical,
+        int $high,
+        string $status = 'success',
+        string $digest = 'sha256:aaa'
+    ): array {
         return ['scan_status' => $status, 'digest' => $digest, 'critical' => $critical, 'high' => $high];
     }
 

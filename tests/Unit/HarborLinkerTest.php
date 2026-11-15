@@ -41,8 +41,9 @@ final class HarborLinkerTest extends TestCase
 
     public function testDigestFirst(): void
     {
-        $this->assertSame(['id' => 2, 'method' => 'digest'], HarborLinker::match('sha256:bbb', '3.2.0', self::artifacts()));
-        $this->assertSame(['id' => 1, 'method' => 'digest'], HarborLinker::match('SHA256:AAA-ARM64', '', self::artifacts()));
+        $artifacts = self::artifacts();
+        $this->assertSame(['id' => 2, 'method' => 'digest'], HarborLinker::match('sha256:bbb', '3.2.0', $artifacts));
+        $this->assertSame(['id' => 1, 'method' => 'digest'], HarborLinker::match('SHA256:AAA-ARM64', '', $artifacts));
     }
 
     public function testTagWhenDigestUnknown(): void

@@ -86,7 +86,8 @@ final class HarborImporterTest extends TestCase
         (new Importer(static fn (Connection $c): PortainerClient => new PortainerClient(
             'https://portainer.exemple.test:9443',
             'ptr_fictive_cle_harbor',
-            static fn (string $url): string => PortainerFixture::respond($fixture, (string) parse_url($url, PHP_URL_PATH))
+            static fn (string $url): string
+                => PortainerFixture::respond($fixture, (string) parse_url($url, PHP_URL_PATH))
         )))->import($connection);
         foreach (
             $DB->request(['SELECT' => ['id', 'name'], 'FROM' => Service::getTable(),
@@ -212,7 +213,8 @@ final class HarborImporterTest extends TestCase
         $connection = new Connection();
         $connection->getFromDB($this->harborId);
         $this->assertSame(Connection::STATUS_OK, (int) $connection->fields['last_scan_status']);
-        $this->assertStringNotContainsString('robot_mot_de_passe_fictif', (string) $connection->fields['last_scan_report']);
+        $saved = (string) $connection->fields['last_scan_report'];
+        $this->assertStringNotContainsString('robot_mot_de_passe_fictif', $saved);
 
         // Idempotence : aucune ligne en plus, rien de retiré.
         $again = $this->import();
@@ -296,7 +298,10 @@ final class HarborImporterTest extends TestCase
         // Erreur sur le dépôt wiki : lecture partielle, l'artefact absent n'est pas retiré.
         $partial = $this->import(['/api/v2.0/projects/outils/repositories/wiki/' => 'HTTP 500 returned']);
         $this->assertSame(Connection::STATUS_PARTIAL, $partial['status']);
-        $this->assertSame([['endpoint' => 'outils/wiki', 'code' => RegistryException::SERVER_ERROR]], $partial['errors']);
+        $this->assertSame(
+            [['endpoint' => 'outils/wiki', 'code' => RegistryException::SERVER_ERROR]],
+            $partial['errors']
+        );
         $this->assertSame(0, (int) $this->artifact('outils/wiki', 'd310')['is_retired']);
         $this->assertGreaterThan(100, $partial['artifacts'], 'les autres dépôts sont lus');
 

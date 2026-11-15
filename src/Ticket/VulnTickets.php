@@ -36,7 +36,6 @@ use ITILFollowup;
  * affectation) : les suivis sont ajoutés sans réouverture ni recalcul du statut.
  *
  * @phpstan-import-type VulnSituation from VulnTicketPolicy
- * @phpstan-import-type VulnTracked from VulnTicketPolicy
  * @phpstan-import-type TicketReport from UpdateTickets
  * @phpstan-type VulnService array{id: int, name: string, stack_name: string, appliances_id: int,
  *     entities_id: int, image: string, tag: string, digest: string, threshold: string,
@@ -151,7 +150,7 @@ final class VulnTickets
     }
 
     /**
-     * @return (VulnTracked&array{tickets_id: int})|null
+     * @return array{tickets_id: int, digest: string, critical: int, high: int}|null
      */
     private function tracked(int $serviceId): ?array
     {
@@ -239,8 +238,13 @@ final class VulnTickets
     {
         $image = $service['image'] . ($service['tag'] !== '' ? ':' . $service['tag'] : '');
         if ($service['stack_name'] === '') {
+            $format = __(
+                'Vulnérabilités dans l’image %1$s (service %2$s) : %3$d critique(s), %4$d haute(s)',
+                'dockerinventory'
+            );
+
             return sprintf(
-                __('Vulnérabilités dans l’image %1$s (service %2$s) : %3$d critique(s), %4$d haute(s)', 'dockerinventory'),
+                $format,
                 $image,
                 $service['name'],
                 $situation['critical'],
@@ -248,11 +252,13 @@ final class VulnTickets
             );
         }
 
+        $format = __(
+            'Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d critique(s), %5$d haute(s)',
+            'dockerinventory'
+        );
+
         return sprintf(
-            __(
-                'Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d critique(s), %5$d haute(s)',
-                'dockerinventory'
-            ),
+            $format,
             $image,
             $service['name'],
             $service['stack_name'],
@@ -292,7 +298,7 @@ final class VulnTickets
     }
 
     /**
-     * @param VulnTracked&array{tickets_id: int} $tracked
+     * @param array{tickets_id: int, digest: string, critical: int, high: int} $tracked
      * @param VulnService $service
      * @param VulnSituation $situation
      * @param array<string, mixed> $details
