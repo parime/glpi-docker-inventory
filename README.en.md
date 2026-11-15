@@ -301,9 +301,20 @@ the same digest. Image not scanned, failed scan or moved tag: no ticket.
 
 ## Documentation
 
+Rules shared by all parime plugins, to read before contributing: [common plugin charter](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md) (in French).
+
 - [ARCHITECTURE.md](ARCHITECTURE.md): tree, classes, tests
 - [ROADMAP.md](ROADMAP.md): lots and issues
 - [CHANGELOG.md](CHANGELOG.md)
+
+## Translations
+
+[![Translation status](https://hosted.weblate.org/widget/glpi-docker-inventory/svg-badge.svg)](https://hosted.weblate.org/engage/glpi-docker-inventory/)
+
+The plugin is translated into French, English, German, Spanish, Italian, Polish and Portuguese
+(Brazil). **Translation contributions are welcome on [Hosted Weblate](https://hosted.weblate.org/engage/glpi-docker-inventory/)**: fixing a term,
+improving domain vocabulary or adding a language is done directly in the browser, without Git.
+Weblate then proposes the translations through a Pull Request, reviewed before being merged.
 
 ## Reuse and citation
 

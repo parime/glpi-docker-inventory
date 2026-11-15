@@ -318,9 +318,21 @@ ou tag déplacé : pas de ticket.
 
 ## Documentation
 
+Règles communes à tous les plugins de parime, à lire avant de contribuer : [charte commune des plugins](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md).
+
 - [ARCHITECTURE.md](ARCHITECTURE.md) : arborescence, classes, tests
 - [ROADMAP.md](ROADMAP.md) : lots et issues
 - [CHANGELOG.md](CHANGELOG.md)
+
+## Traductions
+
+[![État de la traduction](https://hosted.weblate.org/widget/glpi-docker-inventory/svg-badge.svg)](https://hosted.weblate.org/engage/glpi-docker-inventory/)
+
+Le plugin est traduit en français, anglais, allemand, espagnol, italien, polonais et portugais
+(Brésil). **Les contributions de traduction sont bienvenues sur [Hosted Weblate](https://hosted.weblate.org/engage/glpi-docker-inventory/)** :
+corriger un terme, améliorer le vocabulaire métier ou ajouter une langue se fait directement dans
+le navigateur, sans Git. Weblate propose ensuite les traductions par une Pull Request, relue avant
+d'être fusionnée.
 
 ## Réutilisation et citation
 
