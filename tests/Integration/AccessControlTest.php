@@ -21,6 +21,7 @@ namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
@@ -69,6 +70,9 @@ final class AccessControlTest extends TestCase
     private int $applianceB = 0;
 
     private int $connectionB = 0;
+
+    /** @var array<string, int> Connexions Harbor des entités A et B, par lettre. */
+    private array $harbors = [];
 
     /** @var list<int> */
     private array $versions = [];
@@ -169,7 +173,24 @@ final class AccessControlTest extends TestCase
         foreach ([$this->serviceA, $this->serviceB, $this->connectionB, $this->applianceB] as $id) {
             $this->assertGreaterThan(0, $id);
         }
+        foreach (['a' => $this->entityA, 'b' => $this->entityB] as $letter => $entity) {
+            $this->harbors[$letter] = (int) (new Connection())->add([
+                'name'          => 'harbor-' . $letter . '-' . $this->suffix,
+                'type'          => Connection::TYPE_HARBOR,
+                'entities_id'   => $entity,
+                'url'           => 'https://harbor-' . $letter . '.exemple.test',
+                'registry_host' => $this->harborHost($letter),
+                'username'      => 'robot$lecture',
+                'api_key'       => 'robot_mot_de_passe_fictif',
+            ]);
+            $this->assertGreaterThan(0, $this->harbors[$letter]);
+        }
         HarborArtifact::resetCache();
+    }
+
+    private function harborHost(string $letter): string
+    {
+        return 'harbor-' . $letter . '-' . $this->suffix . '.exemple.test';
     }
 
     protected function tearDown(): void
@@ -186,6 +207,9 @@ final class AccessControlTest extends TestCase
         (new Service())->delete(['id' => $this->serviceA], true);
         (new Service())->delete(['id' => $this->serviceB], true);
         (new Connection())->delete(['id' => $this->connectionB], true);
+        foreach ($this->harbors as $id) {
+            (new Connection())->delete(['id' => $id], true);
+        }
         (new Appliance())->delete(['id' => $this->applianceB], true);
         (new \Entity())->delete(['id' => $this->entityA], true);
         (new \Entity())->delete(['id' => $this->entityB], true);
@@ -350,6 +374,19 @@ final class AccessControlTest extends TestCase
         $harbor = $this->open('front/version.php', ['view' => 'harbor', 'artifacts' => 'all']);
         $this->assertStringContainsString('projet-a-' . $this->suffix, $harbor);
         $this->assertStringNotContainsString('projet-b-' . $this->suffix, $harbor);
+        // Registres maîtrisés (#48) : seuls les hôtes des connexions Harbor de l'entité A sont
+        // affichés ; la provenance des images reste évaluée avec tous les hôtes.
+        $this->assertStringNotContainsString($this->harborHost('b'), $harbor);
+        $this->assertStringNotContainsString($this->harborHost('b'), $this->open('front/connection.php'));
+        $this->assertContains($this->harborHost('a'), HarborArtifact::visibleHarborHosts());
+        $this->assertNotContains($this->harborHost('b'), HarborArtifact::visibleHarborHosts());
+        $this->assertNotContains($this->harborHost('b'), HarborArtifact::visibleManagedHosts());
+        $overview = HarborArtifact::overview('', false, '', false);
+        $this->assertNotContains($this->harborHost('b'), $overview['managed_hosts']);
+        if (HarborSettings::configuredHosts() === []) {
+            $this->assertContains($this->harborHost('b'), HarborArtifact::managedHosts());
+            $this->assertStringContainsString($this->harborHost('a'), $harbor);
+        }
         $images = array_column(ImageVersion::fetch([]), 'image');
         $this->assertContains('image-a-' . $this->suffix, $images);
         $this->assertNotContains('image-b-' . $this->suffix, $images);

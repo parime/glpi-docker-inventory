@@ -36,7 +36,8 @@ if (isset($_POST['save_managed_registries'])) {
 Html::header(Connection::getTypeName(2), '', 'config', Connection::class);
 TemplateRenderer::getInstance()->display('@dockerinventory/managed_registries.html.twig', [
     'text'          => HarborSettings::text(),
-    'harbor_hosts'  => array_values(array_unique(array_filter(array_column(HarborArtifact::harborTargets(), 'host')))),
+    // Hôtes des connexions Harbor des entités actives seulement (#48).
+    'harbor_hosts'  => HarborArtifact::visibleHarborHosts(),
     'page_url'      => Connection::getSearchURL(),
     'harbor_url'    => HarborArtifact::getPageURL(),
 ]);
