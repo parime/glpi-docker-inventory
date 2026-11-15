@@ -43,6 +43,18 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   dans `AGENTS.md` et les README ; contrôles de sécurité communs v1.7.0 (charte commune et
   menus, en avertissement) ; `SECURITY.md` (signalement privé des vulnérabilités).
 
+### Security
+
+- Contrôles d'accès et échappement imposés en CI ([#43](https://github.com/parime/glpi-docker-inventory/issues/43),
+  [#38](https://github.com/parime/glpi-docker-inventory/issues/38)) : chaque page de `front/` doit
+  appeler un contrôle de droits (`check-entrypoints-auth.sh`) et figurer dans la matrice d'accès
+  PHPUnit (`check-security-matrix-coverage.sh`), qui ouvre chaque page et chaque action avec un
+  profil sans droit, un profil en lecture seule et un objet d'une autre entité (refus attendu,
+  y compris pour les pages et actions Harbor) ; test XSS : noms piégés (`<script>`,
+  `"><img onerror>`) importés depuis Portainer, WUD et Harbor, restitués échappés sur chaque page et
+  chaque onglet, aucun `|raw` dans les gabarits. Messages d'erreur des formulaires échappés comme
+  les autres. Charte commune bloquante (`charter-mode: error`).
+
 ## [0.5.0] - 2026-11-15
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

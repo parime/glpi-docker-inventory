@@ -17,3 +17,5 @@ jobs:
     with:
       plugin-key: dockerinventory
       seed-command: php plugins/dockerinventory/tests/security/setup.php
+      # Charte commune bloquante : licence, en-têtes, documentation et langues conformes (#43).
+      charter-mode: error
