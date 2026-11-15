@@ -56,6 +56,8 @@
                         {{ __('qui n’est pas dans la liste des registres maîtrisés', 'dockerinventory') }}
                         ({% for host in harbor.managed_hosts -%}
                             <code>{{ host }}</code>{% if not loop.last %}, {% endif %}
+                        {%- else -%}
+                            <code>-</code>
                         {%- endfor %}).
                         {{ __(
                         'Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le registre maîtrisé.',

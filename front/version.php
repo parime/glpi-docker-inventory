@@ -66,6 +66,7 @@ if (($_GET['view'] ?? '') === 'harbor') {
         'projects'       => $data['projects'],
         'unmanaged_count' => $data['unmanaged'],
         'managed_hosts'  => $data['managed_hosts'],
+        'managed_hidden' => $data['managed_hidden'],
         'severities'     => HarborArtifact::severityInfos(),
         'severity'       => $severity,
         'critical_high'  => HarborArtifact::FILTER_CRITICAL_HIGH,
