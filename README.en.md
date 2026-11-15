@@ -45,8 +45,29 @@ replicas or version.
 - PHP 8.2 to 8.5 (GLPI 11), 8.3 to 8.5 (GLPI 12)
 - Portainer CE or BE (API 2.x), WUD 8.x, Harbor 2.x
 
-Portainer CE only has coarse roles: the read-only user sees more than needed there. The
-installation guide will say so.
+### Portainer account: minimal rights and CE limits
+
+The plugin only sends `GET` requests to Portainer, but what the API returns depends on the rights of
+the account that owns the token:
+
+- **Portainer BE**: give the dedicated account the **Read-only user** role on each environment to
+  inventory (*Environments > Manage access*), then create its access token.
+- **Portainer CE has no read-only role.** A standard user must first be given access to the
+  environments (*Environments > Manage access*). Even then, it only sees resources whose access
+  control is "Public" or that are assigned to it (or to its team): stacks, services and containers
+  deployed by an administrator, or outside Portainer, stay invisible to it, and the API answers with
+  empty lists and no error.
+- For a complete inventory with CE, two options: set the resources to inventory to "Public" access
+  or assign them to the dedicated account's team, or use the token of an **administrator account
+  dedicated** to GLPI. That token has every right in Portainer: keep it for GLPI only, keep it secret
+  (it is encrypted in GLPI) and revoke it at the slightest doubt.
+
+The plugin detects an account that sees nothing: "Test connection" and the import then show a
+**warning** (status "Warning"), not a success, when the account sees no environment, or when
+Portainer reports services or containers in an environment (its snapshots) while the account sees
+none. Nothing is retired from the inventory in that case. Likewise, an import that no longer finds
+anything while services were active retires nothing and says so: a loss of rights never empties the
+inventory.
 
 ## Installation
 
@@ -63,7 +84,8 @@ Then **Setup > Plugins**, install and enable "Docker Inventory".
 ## Usage (batch 1: Portainer)
 
 1. **In Portainer**, create a dedicated user with minimal rights (read-only on the environments to
-   inventory) and an access token for it (*My account > Access tokens*).
+   inventory) and an access token for it (*My account > Access tokens*). With Portainer CE, first
+   read [the CE limits](#portainer-account-minimal-rights-and-ce-limits).
 2. **In GLPI**, *Setup > Docker connections* (or the plugin name in *Setup > Plugins*): "Add",
    choose **Portainer**, then enter the Portainer address (`https://portainer.exemple.test:9443`)
    and the key. Pick

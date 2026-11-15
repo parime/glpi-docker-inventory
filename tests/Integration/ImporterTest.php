@@ -457,4 +457,197 @@ final class ImporterTest extends TestCase
         $this->assertSame([], $this->services());
         $this->assertSame(Connection::STATUS_ERROR, (int) $this->connection()->fields['last_import_status']);
     }
+
+    /**
+     * Compte Portainer CE sans droits : l'API répond 200 avec des listes vides, tandis que les
+     * instantanés de /api/endpoints (calculés par Portainer) comptent les services et conteneurs.
+     */
+    private function hideResourcesFromAccount(): void
+    {
+        $this->fixture['endpoints'][0]['Snapshots'] = [['Swarm' => true, 'ServiceCount' => 7, 'ContainerCount' => 9]];
+        $this->fixture['endpoints'][1]['Snapshots'] = [['Swarm' => false, 'ServiceCount' => 0, 'ContainerCount' => 7]];
+        $this->fixture['stacks'] = [];
+        $this->fixture['docker']['1']['services'] = [];
+        $this->fixture['docker']['1']['tasks'] = [];
+        $this->fixture['docker']['2']['containers'] = [];
+    }
+
+    /**
+     * @param array<string, mixed> $report
+     * @return list<string>
+     */
+    private static function warningCodes(array $report): array
+    {
+        return array_column($report['warnings'], 'code');
+    }
+
+    public function testAccountSeeingNoEndpointWarnsInsteadOfSucceeding(): void
+    {
+        $this->fixture['endpoints'] = [];
+        $this->fixture['stacks'] = [];
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_WARNING, $report['status'], json_encode($report) ?: '');
+        $this->assertSame([['endpoint' => '', 'code' => Importer::WARNING_NO_ENDPOINT]], $report['warnings']);
+        $this->assertSame([], $report['errors']);
+        $this->assertSame(Connection::STATUS_WARNING, (int) $this->connection()->fields['last_import_status']);
+        // Message affiché : statut d'avertissement, pas de succès, et l'avertissement lui-même.
+        $message = $this->connection()->importMessage($report);
+        $this->assertStringContainsString(Connection::statusLabel(Connection::STATUS_WARNING), $message);
+        $this->assertStringNotContainsString(Connection::statusLabel(Connection::STATUS_OK), $message);
+        $this->assertStringContainsString(Connection::warningLabels()[Importer::WARNING_NO_ENDPOINT], $message);
+    }
+
+    public function testLostAccessToEveryEndpointRetiresNothing(): void
+    {
+        $this->importer()->import($this->connection());
+        $this->fixture['endpoints'] = [];
+        $this->fixture['stacks'] = [];
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_WARNING, $report['status']);
+        $this->assertSame([Importer::WARNING_NO_ENDPOINT, Importer::WARNING_EMPTY_KEPT], self::warningCodes($report));
+        $this->assertSame(0, $report['retired']);
+        foreach ($this->services() as $name => $row) {
+            $this->assertSame(0, (int) $row['is_retired'], $name);
+        }
+        $this->assertSame(0, countElementsInTable(Node::getTable(), [
+            'plugin_dockerinventory_connections_id' => $this->connectionId,
+            'is_retired'                            => 1,
+        ]));
+    }
+
+    public function testResourcesHiddenByPortainerAccessControlWarnAndRetireNothing(): void
+    {
+        $this->importer()->import($this->connection());
+        $this->hideResourcesFromAccount();
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_WARNING, $report['status'], json_encode($report) ?: '');
+        $this->assertContains(
+            ['endpoint' => 'swarm-production', 'code' => Importer::WARNING_HIDDEN],
+            $report['warnings']
+        );
+        $this->assertContains(
+            ['endpoint' => 'docker-recette', 'code' => Importer::WARNING_HIDDEN],
+            $report['warnings']
+        );
+        $this->assertSame(0, $report['retired']);
+        $this->assertSame(0, $report['services']);
+        foreach ($this->services() as $name => $row) {
+            $this->assertSame(0, (int) $row['is_retired'], $name);
+        }
+    }
+
+    public function testHiddenResourcesOnFirstImportWarn(): void
+    {
+        $this->hideResourcesFromAccount();
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_WARNING, $report['status']);
+        $this->assertSame(
+            [Importer::WARNING_HIDDEN, Importer::WARNING_HIDDEN],
+            self::warningCodes($report),
+            json_encode($report) ?: ''
+        );
+        $this->assertSame([], $this->services());
+    }
+
+    public function testEmptyImportAfterAFullOneKeepsTheInventory(): void
+    {
+        $this->importer()->import($this->connection());
+        // Listes vides sans instantané pour comparer : rien ne distingue une perte de droits.
+        $this->fixture['stacks'] = [];
+        $this->fixture['docker']['1']['services'] = [];
+        $this->fixture['docker']['1']['tasks'] = [];
+        $this->fixture['docker']['2']['containers'] = [];
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_WARNING, $report['status']);
+        $this->assertSame([Importer::WARNING_EMPTY_KEPT], self::warningCodes($report));
+        $this->assertSame(0, $report['retired']);
+        foreach ($this->services() as $name => $row) {
+            $this->assertSame(0, (int) $row['is_retired'], $name);
+        }
+    }
+
+    public function testSwarmStackDeployedOutsidePortainerBecomesAnAppliance(): void
+    {
+        // « supervision » déployée par docker stack deploy : Portainer ne la liste pas.
+        $this->fixture['stacks'] = array_values(array_filter(
+            $this->fixture['stacks'],
+            static fn (array $stack): bool => $stack['Name'] !== 'supervision'
+        ));
+
+        $report = $this->importer()->import($this->connection());
+
+        $this->assertSame(Connection::STATUS_OK, $report['status'], json_encode($report) ?: '');
+        $this->assertSame(4, $report['stacks']);
+        $this->assertSame(4, $report['appliances_created']);
+        $stack = current((new \DbUtils())->getAllDataFromTable('glpi_plugin_dockerinventory_stacks', [
+            'plugin_dockerinventory_connections_id' => $this->connectionId,
+            'name'                                  => 'supervision',
+        ]));
+        $this->assertIsArray($stack);
+        $this->assertSame(0, (int) $stack['stack_uid']);
+        $this->assertSame('swarm', $stack['kind']);
+        $grafana = $this->services()['supervision_grafana'];
+        $this->assertSame((int) $stack['appliances_id'], (int) $grafana['appliances_id']);
+        $appliance = new Appliance();
+        $this->assertTrue($appliance->getFromDB((int) $grafana['appliances_id']));
+        $this->assertSame('supervision', $appliance->fields['name']);
+
+        // Réimport : même stack, même application, rien de retiré.
+        $again = $this->importer()->import($this->connection());
+        $this->assertSame(0, $again['appliances_created']);
+        $this->assertSame(0, $again['retired']);
+        $this->assertSame($grafana['appliances_id'], $this->services()['supervision_grafana']['appliances_id']);
+    }
+
+    public function testConnectionTestWarnsWhenTheAccountSeesNothing(): void
+    {
+        $client = fn (): PortainerClient => new PortainerClient(
+            'https://portainer.exemple.test:9443',
+            self::KEY,
+            fn (string $url): string => PortainerFixture::respond(
+                $this->fixture,
+                (string) parse_url($url, PHP_URL_PATH)
+            )
+        );
+
+        $result = $this->connection()->testConnection($client());
+        $this->assertTrue($result['ok']);
+        $this->assertFalse($result['warning'] ?? false, $result['message']);
+
+        $this->hideResourcesFromAccount();
+        $result = $this->connection()->testConnection($client());
+        $this->assertTrue($result['ok']);
+        $this->assertTrue($result['warning'] ?? false);
+        $this->assertStringContainsString('swarm-production', $result['message']);
+        $this->assertStringContainsString('docker-recette', $result['message']);
+
+        $this->fixture['endpoints'] = [];
+        $result = $this->connection()->testConnection($client());
+        $this->assertTrue($result['ok']);
+        $this->assertTrue($result['warning'] ?? false);
+        $this->assertStringContainsString(
+            Connection::warningLabels()[Importer::WARNING_NO_ENDPOINT],
+            $result['message']
+        );
+    }
+
+    public function testAnonymousVolumeIsShownWithAShortLabel(): void
+    {
+        $hex = str_repeat('5b91a7f5', 8);
+        $volumes = Service::present(['id' => 1, 'volumes' => 'wiki-interne_pages, ' . $hex])['volumes'];
+
+        $this->assertSame('wiki-interne_pages', $volumes[0]);
+        $this->assertStringContainsString(substr($hex, 0, 12), $volumes[1]);
+        $this->assertStringNotContainsString($hex, $volumes[1]);
+    }
 }

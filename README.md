@@ -45,8 +45,29 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 - PHP 8.2 à 8.5 (GLPI 11), 8.3 à 8.5 (GLPI 12)
 - Portainer CE ou BE (API 2.x), WUD 8.x, Harbor 2.x
 
-Portainer CE n'a que des rôles grossiers : l'utilisateur en lecture seule y voit plus que
-nécessaire. La documentation d'installation le précisera.
+### Compte Portainer : droits minimaux et limites de CE
+
+Le plugin n'envoie que des requêtes `GET` à Portainer, mais ce que l'API renvoie dépend des droits
+du compte qui porte le jeton :
+
+- **Portainer BE** : donner au compte dédié le rôle **Read-only user** sur chaque environnement à
+  inventorier (*Environments > Manage access*), puis créer son jeton d'accès.
+- **Portainer CE n'a pas de rôle en lecture seule.** Un utilisateur standard doit d'abord recevoir
+  l'accès aux environnements (*Environments > Manage access*). Même alors, il ne voit que les
+  ressources dont le contrôle d'accès est « Public » ou qui lui sont attribuées (à lui ou à son
+  équipe) : les stacks, services et conteneurs déployés par un administrateur, ou hors de Portainer,
+  lui restent invisibles, et l'API lui répond par des listes vides sans erreur.
+- Pour un inventaire complet sous CE, deux choix : passer les ressources à inventorier en accès
+  « Public » ou les attribuer à l'équipe du compte dédié, ou utiliser le jeton d'un **compte
+  administrateur dédié** à GLPI. Ce jeton donne tous les droits dans Portainer : le réserver à GLPI,
+  le garder secret (il est chiffré dans GLPI) et le révoquer au moindre doute.
+
+Le plugin détecte un compte qui ne voit rien : « Tester la connexion » et l'import affichent alors un
+**avertissement** (statut « Avertissement »), et non un succès, quand le compte ne voit aucun
+environnement, ou quand Portainer annonce des services ou des conteneurs dans un environnement (ses
+instantanés) alors que le compte n'en voit aucun. Rien n'est alors retiré de l'inventaire. De même,
+un import qui ne trouve plus rien alors que des services étaient actifs ne retire rien et le
+signale : une perte de droits ne vide jamais l'inventaire.
 
 ## Installation
 
@@ -63,7 +84,8 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 ## Utilisation (lot 1 : Portainer)
 
 1. **Dans Portainer**, créer un utilisateur dédié aux droits minimaux (lecture seule sur les
-   environnements à inventorier) et un jeton d'accès pour lui (*My account > Access tokens*).
+   environnements à inventorier) et un jeton d'accès pour lui (*My account > Access tokens*). Sous
+   Portainer CE, lire d'abord [les limites de CE](#compte-portainer--droits-minimaux-et-limites-de-ce).
 2. **Dans GLPI**, *Configuration > Connexions Docker* (ou le nom du plugin dans *Configuration >
    Plugins*) : « Ajouter », choisir **Portainer**, puis saisir l'adresse de Portainer
    (`https://portainer.exemple.test:9443`) et la clé. Choisir l'environnement (Production, Préproduction...) à donner aux applications que

@@ -160,4 +160,44 @@ final class PortainerMapperTest extends TestCase
         $this->assertSame('swarm-node-01', PortainerMapper::shortHostname('swarm-node-01.exemple.test'));
         $this->assertSame('swarm-node-01', PortainerMapper::shortHostname('swarm-node-01'));
     }
+
+    public function testSnapshotCountsReadTheFirstSnapshotOnly(): void
+    {
+        $this->assertNull(PortainerMapper::snapshotCounts(['Id' => 1]));
+        $this->assertNull(PortainerMapper::snapshotCounts(['Id' => 1, 'Snapshots' => []]));
+        $this->assertSame(
+            ['swarm' => true, 'services' => 7, 'containers' => 9],
+            PortainerMapper::snapshotCounts(['Snapshots' => [
+                ['Swarm' => true, 'ServiceCount' => 7, 'ContainerCount' => 9, 'DockerSnapshotRaw' => []],
+                ['Swarm' => false, 'ServiceCount' => 0, 'ContainerCount' => 0],
+            ]])
+        );
+        $this->assertSame(
+            ['swarm' => false, 'services' => 0, 'containers' => 0],
+            PortainerMapper::snapshotCounts(['Snapshots' => [['Swarm' => 'oui', 'ContainerCount' => -3]]])
+        );
+    }
+
+    public function testResourcesHiddenWhenTheSnapshotCountsWhatTheAccountCannotSee(): void
+    {
+        $swarm = ['Snapshots' => [['Swarm' => true, 'ServiceCount' => 7, 'ContainerCount' => 9]]];
+        $standalone = ['Snapshots' => [['Swarm' => false, 'ServiceCount' => 0, 'ContainerCount' => 7]]];
+        $empty = ['Snapshots' => [['Swarm' => false, 'ServiceCount' => 0, 'ContainerCount' => 0]]];
+
+        // Réponses vides d'un compte sans droits, instantané peuplé : ressources cachées.
+        $this->assertTrue(PortainerMapper::resourcesHidden($swarm, true, 0));
+        $this->assertTrue(PortainerMapper::resourcesHidden($standalone, false, 0));
+        // Quelque chose de visible, environnement vide, ou pas d'instantané : rien à signaler.
+        $this->assertFalse(PortainerMapper::resourcesHidden($swarm, true, 2));
+        $this->assertFalse(PortainerMapper::resourcesHidden($empty, false, 0));
+        $this->assertFalse(PortainerMapper::resourcesHidden(['Id' => 2], false, 0));
+    }
+
+    public function testAnonymousVolumeIsSixtyFourHexadecimalCharacters(): void
+    {
+        $this->assertTrue(PortainerMapper::isAnonymousVolume(str_repeat('5b91a7f5', 8)));
+        $this->assertFalse(PortainerMapper::isAnonymousVolume('wiki-interne_pages'));
+        $this->assertFalse(PortainerMapper::isAnonymousVolume(str_repeat('5b91a7f5', 7)));
+        $this->assertFalse(PortainerMapper::isAnonymousVolume(strtoupper(str_repeat('5b91a7f5', 8))));
+    }
 }

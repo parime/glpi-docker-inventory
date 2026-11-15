@@ -5,6 +5,18 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Fixed
+
+- Portainer : un compte sans droits ne donne plus un import « Réussi » avec 0 élément
+  ([#46](https://github.com/parime/glpi-docker-inventory/issues/46)). « Tester la connexion » et
+  l'import affichent un avertissement (nouveau statut « Avertissement ») quand le compte ne voit
+  aucun environnement, ou quand les instantanés de Portainer annoncent des services ou des
+  conteneurs qu'il ne voit pas ; rien n'est alors retiré. Un import qui ne trouve plus rien alors que
+  des services étaient actifs ne retire rien : une perte de droits ne vide jamais l'inventaire.
+  Les piles Swarm déployées hors Portainer deviennent des Applications, comme les projets Compose ;
+  les volumes anonymes s'affichent « volume anonyme » suivi de 12 caractères. README : droits
+  minimaux du compte Portainer et limites de CE (pas de rôle en lecture seule).
+
 ### Added
 
 - Harbor : projets, dépôts, artefacts et analyses de vulnérabilités

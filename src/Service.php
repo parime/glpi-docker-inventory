@@ -292,7 +292,12 @@ class Service extends ServiceBase
             'ports'        => self::split((string) ($row['ports'] ?? '')),
             'networks'     => self::split((string) ($row['networks'] ?? '')),
             'secrets'      => self::split((string) ($row['secrets'] ?? '')),
-            'volumes'      => self::split((string) ($row['volumes'] ?? '')),
+            'volumes'      => array_map(
+                static fn (string $volume): string => PortainerMapper::isAnonymousVolume($volume)
+                    ? sprintf(__('volume anonyme %s', 'dockerinventory'), substr($volume, 0, 12))
+                    : $volume,
+                self::split((string) ($row['volumes'] ?? ''))
+            ),
             'kind'         => $kind,
             'kind_label'   => self::kindLabels()[$kind] ?? $kind,
             'is_swarm'     => $kind === PortainerMapper::KIND_SWARM,

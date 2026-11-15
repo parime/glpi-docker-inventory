@@ -40,13 +40,27 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  *   court) dans l'entité de la connexion et ses sous-entités, s'il est unique. Aucun ordinateur
  *   n'est créé ni modifié ;
  * - service, stack ou nœud absent d'un environnement lu avec succès (ou d'un environnement
- *   disparu) => marqué « retiré ». Rien n'est supprimé. Un environnement en erreur ne retire rien.
+ *   disparu) => marqué « retiré ». Rien n'est supprimé. Un environnement en erreur ne retire rien ;
+ * - compte sans droits (Portainer CE n'a pas de rôle en lecture seule) : aucun environnement visible,
+ *   ou environnement que Portainer annonce peuplé mais dont le compte ne voit rien => avertissement,
+ *   rien n'est retiré. Un import qui ne trouve plus rien alors que des services étaient actifs ne
+ *   retire rien non plus : une perte de droits ne vide jamais l'inventaire.
  *
  * @phpstan-type Report array{status: int, stacks: int, services: int, retired: int, nodes: int,
- *     linked_nodes: int, appliances_created: int, errors: list<array{endpoint: string, code: string}>}
+ *     linked_nodes: int, appliances_created: int, errors: list<array{endpoint: string, code: string}>,
+ *     warnings: list<array{endpoint: string, code: string}>}
  */
 final class Importer
 {
+    /** Le compte ne voit aucun environnement (liste vide). */
+    public const WARNING_NO_ENDPOINT = 'no_endpoint';
+
+    /** Portainer annonce des services ou des conteneurs que le compte ne voit pas. */
+    public const WARNING_HIDDEN = 'hidden_resources';
+
+    /** Rien trouvé alors que des services étaient actifs : rien n'est retiré. */
+    public const WARNING_EMPTY_KEPT = 'empty_kept';
+
     /** @var \Closure(Connection): PortainerClient */
     private \Closure $clientFactory;
 
@@ -76,6 +90,7 @@ final class Importer
             'linked_nodes'       => 0,
             'appliances_created' => 0,
             'errors'             => [],
+            'warnings'           => [],
         ];
 
         try {
@@ -88,6 +103,10 @@ final class Importer
             $this->saveReport($connection, $report);
 
             return $report;
+        }
+
+        if ($endpoints === []) {
+            $report['warnings'][] = ['endpoint' => '', 'code' => self::WARNING_NO_ENDPOINT];
         }
 
         $listed = [];
@@ -117,11 +136,19 @@ final class Importer
                 }
                 // Hôte Docker autonome, sans Swarm : stacks Compose et conteneurs.
                 try {
-                    $this->importStandalone($client, $connection, $endpoint, $stacks, $report, $seen);
-                    $read[] = $endpointId;
+                    if ($this->importStandalone($client, $connection, $endpoint, $stacks, $report, $seen)) {
+                        $read[] = $endpointId;
+                    } else {
+                        $report['warnings'][] = ['endpoint' => $endpointName, 'code' => self::WARNING_HIDDEN];
+                    }
                 } catch (PortainerException $e) {
                     $report['errors'][] = ['endpoint' => $endpointName, 'code' => $e->getMessage()];
                 }
+                continue;
+            }
+            if (PortainerMapper::resourcesHidden($endpoint, true, count($services))) {
+                // Services invisibles pour ce compte : rien n'est lu ni retiré ici.
+                $report['warnings'][] = ['endpoint' => $endpointName, 'code' => self::WARNING_HIDDEN];
                 continue;
             }
             $read[] = $endpointId;
@@ -168,6 +195,21 @@ final class Importer
                 if ($mapped === null) {
                     continue;
                 }
+                if ($mapped['stack_name'] !== '' && !isset($stackRows[$mapped['stack_name']])) {
+                    // Stack déployée hors Portainer (docker stack deploy) : application comme une
+                    // stack Portainer, repérée par l'environnement et son nom.
+                    $stackRows[$mapped['stack_name']] = $this->upsertStack(
+                        $connection,
+                        $endpointId,
+                        $endpointName,
+                        0,
+                        $mapped['stack_name'],
+                        PortainerMapper::KIND_SWARM,
+                        $report
+                    );
+                    $seen['stacks'][] = $stackRows[$mapped['stack_name']]['id'];
+                    $report['stacks']++;
+                }
                 $stackRow = $stackRows[$mapped['stack_name']] ?? ['id' => 0, 'appliances_id' => 0];
                 $serviceId = $this->upsertService($connection, $endpointId, $endpointName, $mapped, $stackRow);
                 $this->replacePlacement($serviceId, $running['placement'][$mapped['service_uid']] ?? [], $nodeRows);
@@ -177,12 +219,23 @@ final class Importer
         }
 
         $connectionId = (int) $connection->getID();
-        $report['retired'] = $this->retire(Service::getTable(), $connectionId, $seen['services'], $read, $listed);
-        $this->retire('glpi_plugin_dockerinventory_stacks', $connectionId, $seen['stacks'], $read, $listed);
-        $this->retire(Node::getTable(), $connectionId, $seen['nodes'], $read, $listed);
+        $active = countElementsInTable(
+            Service::getTable(),
+            ['plugin_dockerinventory_connections_id' => $connectionId, 'is_retired' => 0]
+        );
+        if ($seen['services'] === [] && $seen['stacks'] === [] && $active > 0) {
+            // Perte de droits plutôt que tout supprimé dans Portainer : l'inventaire est gardé.
+            $report['warnings'][] = ['endpoint' => '', 'code' => self::WARNING_EMPTY_KEPT];
+        } elseif ($listed !== []) {
+            $report['retired'] = $this->retire(Service::getTable(), $connectionId, $seen['services'], $read, $listed);
+            $this->retire('glpi_plugin_dockerinventory_stacks', $connectionId, $seen['stacks'], $read, $listed);
+            $this->retire(Node::getTable(), $connectionId, $seen['nodes'], $read, $listed);
+        }
 
         if ($report['errors'] !== []) {
             $report['status'] = $read === [] ? Connection::STATUS_ERROR : Connection::STATUS_PARTIAL;
+        } elseif ($report['warnings'] !== []) {
+            $report['status'] = Connection::STATUS_WARNING;
         }
         $this->saveReport($connection, $report);
 
@@ -200,6 +253,8 @@ final class Importer
      * @param list<array<string, mixed>> $stacks
      * @param Report $report
      * @param array{services: list<int>, stacks: list<int>, nodes: list<int>} $seen
+     * @return bool Faux si Portainer annonce des conteneurs que le compte ne voit pas : rien n'est
+     *     alors enregistré ni retiré dans cet environnement.
      * @throws PortainerException Lecture impossible : rien n'est retiré dans cet environnement.
      */
     private function importStandalone(
@@ -209,14 +264,18 @@ final class Importer
         array $stacks,
         array &$report,
         array &$seen
-    ): void {
+    ): bool {
         $endpointId = (int) $endpoint['Id'];
         $endpointName = is_scalar($endpoint['Name'] ?? null) ? (string) $endpoint['Name'] : '';
         $info = $client->info($endpointId);
+        $rawContainers = $client->containers($endpointId);
+        if (PortainerMapper::resourcesHidden($endpoint, false, count($rawContainers))) {
+            return false;
+        }
         $images = PortainerMapper::imageIndex($client->images($endpointId));
         $containers = [];
         $policies = [];
-        foreach ($client->containers($endpointId) as $raw) {
+        foreach ($rawContainers as $raw) {
             $container = PortainerMapper::mapContainer($raw, $images);
             if ($container === null) {
                 continue;
@@ -302,6 +361,8 @@ final class Importer
             $seen['services'][] = $serviceId;
             $report['services']++;
         }
+
+        return true;
     }
 
     /**

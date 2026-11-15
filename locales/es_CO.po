@@ -2145,3 +2145,46 @@ msgstr "Vulnerabilidades en la imagen %1$s (servicio %2$s): %3$d crítica(s), %4
 #, php-format
 msgid "Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d critique(s), %5$d haute(s)"
 msgstr "Vulnerabilidades en la imagen %1$s (servicio %2$s del stack %3$s): %4$d crítica(s), %5$d alta(s)"
+
+#: src/Connection.php
+msgid "Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer (voir README)."
+msgstr "La cuenta no ve ningún entorno: compruebe sus accesos en Portainer (ver README)."
+
+#: src/Connection.php
+msgid "Portainer annonce des services ou des conteneurs que ce compte ne voit pas."
+msgstr "Portainer indica servicios o contenedores que esta cuenta no ve."
+
+#: src/Connection.php
+msgid "Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir README)."
+msgstr "No se ha retirado nada aquí: compruebe los accesos de la cuenta en Portainer (ver README)."
+
+#: src/Connection.php
+msgid "Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été retiré."
+msgstr "No se ha encontrado nada aunque la importación anterior encontraba elementos: no se ha retirado nada."
+
+#: src/Connection.php
+msgid "Vérifiez les accès du compte dans Portainer (voir README)."
+msgstr "Compruebe los accesos de la cuenta en Portainer (ver README)."
+
+#: src/Connection.php
+#, php-format
+msgid "Connexion établie, mais à vérifier : %s"
+msgstr "Conexión establecida, pero hay que comprobarla: %s"
+
+#: src/Connection.php
+#, php-format
+msgid "À vérifier (%1$s) : %2$s"
+msgstr "A comprobar (%1$s): %2$s"
+
+#: src/Connection.php
+msgid "Avertissement"
+msgstr "Advertencia"
+
+#: src/Service.php
+#, php-format
+msgid "volume anonyme %s"
+msgstr "volumen anónimo %s"
+
+#: templates/connection_actions.html.twig
+msgid "À vérifier dans Portainer"
+msgstr "A comprobar en Portainer"
