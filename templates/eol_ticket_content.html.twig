@@ -15,8 +15,14 @@
 
 {# Description d'un ticket de fin de support (texte enrichi du ticket). #}
 <p>
-    {{ __('La branche de l’image déployée par ce service arrive en fin de support, ou l’a dépassée.', 'dockerinventory') }}
-    {{ __('Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une branche maintenue.', 'dockerinventory') }}
+    {{ __(
+        'La branche de l’image déployée par ce service arrive en fin de support, ou l’a dépassée.',
+        'dockerinventory'
+    ) }}
+    {{ __(
+        'Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une branche maintenue.',
+        'dockerinventory'
+    ) }}
 </p>
 <ul>
     <li><strong>{{ __('Service', 'dockerinventory') }}</strong> : {{ service }}</li>

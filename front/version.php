@@ -20,6 +20,7 @@ use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
+use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
@@ -66,6 +67,7 @@ TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', 
     'eol_statuses'   => LifecycleProduct::statusInfos(),
     'eol_watch'      => ImageVersion::FILTER_EOL_WATCH,
     'eol_source'     => LifecycleChecker::current()->sourceState(),
+    'eol_source_host' => (string) parse_url(LifecycleClient::configuredUrl(), PHP_URL_HOST),
     'eol_errors'     => LifecycleProduct::errorLabels(),
     'lifecycle_url'  => LifecycleProduct::getPageURL(),
     'can_configure_lifecycle' => LifecycleProduct::canView(),

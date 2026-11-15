@@ -120,7 +120,7 @@
                     {% if eol_source.last_success %}
                         {{ __('Cycles de vie mis à jour le', 'dockerinventory') }}
                         {{ eol_source.last_success|formatted_datetime }}
-                        (endoflife.date).
+                        ({{ eol_source_host }}).
                     {% else %}
                         {{ __(
                             'Cycles de vie pas encore lus : prochaine mise à jour par la tâche automatique.',

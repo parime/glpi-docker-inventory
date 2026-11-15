@@ -41,6 +41,7 @@ if (isset($_POST['save_settings'])) {
 } elseif (isset($_POST['save_mappings'])) {
     $mapping = new LifecycleProduct();
     $rows = is_array($_POST['rows'] ?? null) ? $_POST['rows'] : [];
+    $failed = false;
     foreach ($rows as $id => $row) {
         if (!is_array($row) || !$mapping->getFromDB((int) $id)) {
             continue;
@@ -52,16 +53,28 @@ if (isset($_POST['save_settings'])) {
         $image = trim((string) ($row['image'] ?? ''));
         $product = trim((string) ($row['product'] ?? ''));
         if ($image !== $mapping->fields['image'] || $product !== $mapping->fields['product']) {
-            $mapping->update(['id' => (int) $id, 'image' => $image, 'product' => $product, 'is_default' => 0]);
+            $values = ['id' => (int) $id, 'image' => $image, 'product' => $product, 'is_default' => 0];
+            $failed = !$mapping->update($values) || $failed;
         }
     }
     $newImage = trim((string) ($_POST['new_image'] ?? ''));
     $newProduct = trim((string) ($_POST['new_product'] ?? ''));
+    $keep = '';
     if ($newImage !== '' || $newProduct !== '') {
-        (new LifecycleProduct())->add(['image' => $newImage, 'product' => $newProduct]);
+        if ((new LifecycleProduct())->add(['image' => $newImage, 'product' => $newProduct]) === false) {
+            $failed = true;
+            // Nouvelle ligne refusée : l'image saisie reste dans le formulaire.
+            $keep = $newImage;
+        }
     }
-    Session::addMessageAfterRedirect(htmlescape(__('Correspondances enregistrées.', 'dockerinventory')), false, INFO);
-    Html::redirect(LifecycleProduct::getPageURL());
+    if (!$failed) {
+        Session::addMessageAfterRedirect(
+            htmlescape(__('Correspondances enregistrées.', 'dockerinventory')),
+            false,
+            INFO
+        );
+    }
+    Html::redirect(LifecycleProduct::getPageURL() . ($keep !== '' ? '?add=' . rawurlencode($keep) : ''));
 }
 
 $checker = LifecycleChecker::current();

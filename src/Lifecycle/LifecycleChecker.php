@@ -364,7 +364,8 @@ final class LifecycleChecker
         foreach ($this->cache() as $product => $row) {
             $success = max($success, $row['date_success']);
             $attempt = max($attempt, $row['date_checked']);
-            if ($row['error'] !== '') {
+            // Produit inconnu de la source : signalé sur sa correspondance, pas une panne.
+            if ($row['error'] !== '' && $row['error'] !== LifecycleException::NOT_FOUND) {
                 $errors[] = ['product' => $product, 'code' => $row['error'], 'date_success' => $row['date_success']];
             }
         }
