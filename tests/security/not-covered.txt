@@ -1,0 +1,5 @@
+# Pages de front/ et ajax/ volontairement absentes de la matrice d'acces
+# (tests/Integration/AccessControlTest.php), avec la raison. Lu par
+# .github/scripts/check-security-matrix-coverage.sh. Format : chemin : justification.
+#
+# Aucune entree : toutes les pages sont testees.
