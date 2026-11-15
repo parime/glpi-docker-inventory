@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Changed
 
+- Traductions collaboratives sur Hosted Weblate : section « Traductions » des README avec le badge
+  d'avancement et le lien pour contribuer.
 - Documentation : lien vers la charte commune des plugins ([CHARTE.md](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md))
   dans `AGENTS.md` et les README ; contrôles de sécurité communs v1.7.0 (charte commune et
   menus, en avertissement) ; `SECURITY.md` (signalement privé des vulnérabilités).
