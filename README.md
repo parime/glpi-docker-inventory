@@ -278,8 +278,12 @@ modifie ni ne supprime rien dans Harbor.
 **Rattachement d'un service à son artefact** : par l'**empreinte** de l'image qui tourne (ou de
 l'une de ses images par plateforme), seule preuve que l'analyse est celle de l'image déployée ;
 sinon par le **tag** si l'empreinte déployée n'est pas connue. Empreinte connue mais absente de
-Harbor alors que le tag existe : « **tag déplacé** » (l'image a été reconstruite depuis le
-déploiement), l'analyse affichée est celle du tag actuel et ne donne pas de ticket.
+Harbor alors que le tag existe : « **empreinte différente de celle de Harbor** », rattaché par le
+tag avec la gravité de son analyse. Cas courant sans reconstruction : Docker 29 (stockage containerd)
+garde l'empreinte de l'**index multi-plateforme** d'origine, alors que Harbor ne reçoit que le
+manifeste de la plateforme de l'hôte qui a poussé l'image ; l'image a aussi pu être reconstruite
+depuis le déploiement. Une analyse restée « en cours » ou « en attente » dans Harbor est affichée
+comme telle, pas comme « non analysée ».
 
 **Registres maîtrisés** : en haut de *Configuration > Connexions Docker* (page de configuration du
 plugin), liste des hôtes d'où les images doivent venir (`registry.exemple.test:5000`, `docker.io`
@@ -292,8 +296,8 @@ hautes) ; catégorie, groupe et modèle des tickets de mise à jour. Après chaq
 un ticket par service dont l'image qui tourne (rattachée par l'empreinte, ou le tag) a une analyse
 réussie au-delà du seuil, puis des **suivis** quand le nombre de vulnérabilités ou l'image change ;
 jamais de doublon, **jamais de changement de statut, de priorité ni d'affectation** ; ticket clos
-pour une image : pas de nouveau ticket pour la même empreinte. Image non analysée, analyse en échec
-ou tag déplacé : pas de ticket.
+pour une image : pas de nouveau ticket pour la même empreinte. Image non analysée ou analyse en
+échec : pas de ticket.
 
 - **Pagination** de Harbor (pages de 100, 20 pages au plus par liste) ; un artefact, un dépôt ou un
   projet absent d'une liste lue en entier est **« retiré »**, jamais supprimé ; une liste en erreur

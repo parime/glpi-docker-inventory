@@ -11,7 +11,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   ([#9](https://github.com/parime/glpi-docker-inventory/issues/9)), lus en lecture seule par l'API
   REST de Harbor 2.x avec le compte robot de la connexion Harbor (pagination, erreurs et limite de
   requêtes non bloquantes, artefacts disparus « retirés », jamais supprimés). Artefact rattaché à
-  chaque service par l'empreinte de l'image qui tourne (sinon par le tag ; « tag déplacé » signalé),
+  chaque service par l'empreinte de l'image qui tourne (sinon par le tag ; empreinte d'index multi-plateforme absente de
+  Harbor signalée sans conclure à une reconstruction),
   carte « Vulnérabilités de l'image (Harbor) » dans l'onglet « Versions » des services, onglet
   « Images Harbor et vulnérabilités » de la page des versions (compteurs par gravité, filtres par
   gravité, projet et provenance), sans nouvelle entrée de menu. Registres maîtrisés réglables sur la

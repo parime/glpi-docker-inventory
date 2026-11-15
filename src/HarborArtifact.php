@@ -154,6 +154,38 @@ class HarborArtifact extends CommonDBTM
     }
 
     /**
+     * Pastille d'un artefact : sa gravité si l'analyse a réussi, sinon l'état de l'analyse (en cours,
+     * en attente, en échec, arrêtée) plutôt que « non analysée ».
+     *
+     * @return array{label: string, color: string, icon: string, help: string}
+     */
+    public static function badgeInfo(string $severity, string $status): array
+    {
+        if ($severity !== HarborMapper::SEVERITY_UNKNOWN) {
+            return self::severityInfo($severity);
+        }
+        $states = [
+            HarborMapper::STATUS_RUNNING => ['info', 'ti ti-loader'],
+            HarborMapper::STATUS_PENDING => ['info', 'ti ti-clock'],
+            HarborMapper::STATUS_ERROR   => ['warning', 'ti ti-alert-circle'],
+            HarborMapper::STATUS_STOPPED => ['secondary', 'ti ti-player-stop'],
+        ];
+        if (!isset($states[$status])) {
+            return self::severityInfo(HarborMapper::SEVERITY_UNKNOWN);
+        }
+
+        return [
+            'label' => self::statusLabels()[$status],
+            'color' => $states[$status][0],
+            'icon'  => $states[$status][1],
+            'help'  => __(
+                'Pas encore de résultat d’analyse dans Harbor pour cette image : voir l’état de l’analyse.',
+                'dockerinventory'
+            ),
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public static function statusLabels(): array
@@ -179,8 +211,8 @@ class HarborArtifact extends CommonDBTM
                 'Par tag (empreinte déployée inconnue) : probablement l’image qui tourne',
                 'dockerinventory'
             ),
-            HarborLinker::METHOD_TAG_MOVED => __(
-                'Tag déplacé : l’image a été reconstruite, celle qui tourne n’est plus dans Harbor',
+            HarborLinker::METHOD_TAG_DIGEST_DIFFERS => __(
+                'Par tag : empreinte déployée différente de celle de Harbor',
                 'dockerinventory'
             ),
         ];
@@ -386,7 +418,7 @@ class HarborArtifact extends CommonDBTM
             'push_time'    => (string) ($row['push_time'] ?? ''),
             'status'       => $status,
             'status_label' => self::statusLabels()[$status] ?? $status,
-            'severity'     => self::severityInfo((string) ($row['severity'] ?? '')),
+            'severity'     => self::badgeInfo((string) ($row['severity'] ?? ''), $status),
             'severity_code' => (string) ($row['severity'] ?? ''),
             'scanned'      => $status === HarborMapper::STATUS_SUCCESS,
             'counts'       => [
@@ -501,9 +533,10 @@ class HarborArtifact extends CommonDBTM
                 'entities_id' => (int) $row['entities_id'],
             ]);
             $provenance = HarborLinker::provenance((string) $row['image'], $managed);
-            $reliable = in_array($link['method'], [HarborLinker::METHOD_DIGEST, HarborLinker::METHOD_TAG], true);
             $artifact = $link['artifact'] !== null ? self::present($link['artifact']) : null;
-            $code = $artifact !== null && $reliable ? $artifact['severity_code'] : HarborMapper::SEVERITY_UNKNOWN;
+            // Gravité de l'artefact rattaché, quelle que soit la façon (empreinte différente : analyse
+            // du tag actuel, signalée à côté).
+            $code = $artifact !== null ? $artifact['severity_code'] : HarborMapper::SEVERITY_UNKNOWN;
             $service = [
                 'id'          => (int) $row['id'],
                 'name'        => (string) $row['name'],
@@ -516,10 +549,10 @@ class HarborArtifact extends CommonDBTM
                 'artifact'    => $artifact,
                 'method'      => $link['method'],
                 'method_label' => self::methodLabels()[$link['method']] ?? '',
-                'severity'    => self::severityInfo($code),
+                'severity'    => $artifact !== null ? $artifact['severity'] : self::severityInfo($code),
                 'severity_code' => $code,
             ];
-            if ($artifact !== null && $reliable) {
+            if ($artifact !== null) {
                 $byArtifact[$artifact['id']][] = ['name' => $service['name'], 'url' => $service['url']];
             }
             $deployedCounts[$code] = ($deployedCounts[$code] ?? 0) + 1;

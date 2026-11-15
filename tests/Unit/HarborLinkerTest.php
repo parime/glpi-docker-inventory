@@ -51,10 +51,14 @@ final class HarborLinkerTest extends TestCase
         $this->assertSame(['id' => 3, 'method' => 'tag'], HarborLinker::match('', '3.1.0', self::artifacts()));
     }
 
-    public function testTagMovedWhenDeployedDigestIsNoLongerInHarbor(): void
+    /**
+     * Vrai Harbor 2.14 et Docker 29 : l'hôte garde l'empreinte de l'index multi-plateforme, Harbor
+     * n'a que le manifeste d'une plateforme ; rattaché par le tag, pas « reconstruit ».
+     */
+    public function testDigestDiffersWhenDeployedDigestIsNotInHarbor(): void
     {
         $this->assertSame(
-            ['id' => 1, 'method' => HarborLinker::METHOD_TAG_MOVED],
+            ['id' => 1, 'method' => HarborLinker::METHOD_TAG_DIGEST_DIFFERS],
             HarborLinker::match('sha256:ancienne', '3.2.0', self::artifacts())
         );
     }

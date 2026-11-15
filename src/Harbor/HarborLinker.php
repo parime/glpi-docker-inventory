@@ -30,9 +30,11 @@ use GlpiPlugin\Dockerinventory\Wud\WudMapper;
  *    par plateforme (index multi-architecture) ; c'est la seule preuve que l'image analysée est
  *    celle qui tourne ;
  * 2. sinon par le tag, si l'empreinte déployée est inconnue (service non épinglé) ;
- * 3. empreinte connue mais absente du dépôt, tag présent : « tag déplacé » (l'image a été
- *    reconstruite depuis le déploiement) ; l'analyse affichée est celle du tag actuel, pas celle de
- *    l'image qui tourne : elle ne déclenche aucun ticket.
+ * 3. empreinte connue mais absente du dépôt (ni artefact, ni image par plateforme d'un index),
+ *    tag présent : « empreinte différente ». Cas courant sans reconstruction : Docker 29 (stockage
+ *    containerd) garde l'empreinte de l'index multi-plateforme d'origine alors que Harbor ne reçoit
+ *    que le manifeste de la plateforme de l'hôte qui a poussé l'image. L'image a aussi pu être
+ *    reconstruite depuis le déploiement : l'analyse affichée est celle du tag actuel.
  *
  * @phpstan-type Candidate array{id: int, digest: string, child_digests: list<string>, tags: list<string>}
  */
@@ -40,7 +42,8 @@ final class HarborLinker
 {
     public const METHOD_DIGEST = 'digest';
     public const METHOD_TAG = 'tag';
-    public const METHOD_TAG_MOVED = 'tag_moved';
+    /** Empreinte déployée absente de Harbor, tag présent (index multi-plateforme ou reconstruction). */
+    public const METHOD_TAG_DIGEST_DIFFERS = 'tag_digest_differs';
 
     public const PROVENANCE_MANAGED = 'managed';
     public const PROVENANCE_UNMANAGED = 'unmanaged';
@@ -68,7 +71,7 @@ final class HarborLinker
             if (in_array($tag, $artifact['tags'], true)) {
                 return [
                     'id'     => $artifact['id'],
-                    'method' => $digest === '' ? self::METHOD_TAG : self::METHOD_TAG_MOVED,
+                    'method' => $digest === '' ? self::METHOD_TAG : self::METHOD_TAG_DIGEST_DIFFERS,
                 ];
             }
         }

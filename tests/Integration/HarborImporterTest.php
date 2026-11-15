@@ -207,6 +207,9 @@ final class HarborImporterTest extends TestCase
         $this->assertStringStartsWith('Trivy', $wiki['scanner']);
         $this->assertSame('not_scanned', $this->artifact('outils/courrier-test', 'c120')['scan_status']);
         $this->assertSame('running', $this->artifact('boutique/api', 'a1a0')['scan_status']);
+        // Analyse restée « en cours » dans Harbor : affichée comme telle, pas « non analysée ».
+        $running = HarborArtifact::present($this->artifact('boutique/api', 'a1a0'));
+        $this->assertSame(HarborArtifact::statusLabels()['running'], $running['severity']['label']);
         $this->assertSame('', $this->artifact('boutique/api', 'a1a0')['severity']);
         $this->assertSame('error', $this->artifact('archives/anciens/portail', '0a0a')['scan_status']);
 
@@ -246,6 +249,24 @@ final class HarborImporterTest extends TestCase
         // Service Swarm non épinglé : par le tag.
         $service->getFromDB($this->services['boutique_api']);
         $this->assertSame(HarborLinker::METHOD_TAG, HarborArtifact::forService($service)['method']);
+
+        // Vrai Harbor 2.14 et Docker 29 : l'hôte garde l'empreinte de l'index multi-plateforme,
+        // absente de Harbor. Rattaché par le tag, gravité du tag affichée (pas « non analysée »).
+        global $DB;
+        $DB->update(Service::getTable(), ['digest' => 'sha256:' . str_repeat('9', 64)], [
+            'id' => $this->services['wiki'],
+        ]);
+        HarborArtifact::resetCache();
+        $service->getFromDB($this->services['wiki']);
+        $index = HarborArtifact::forService($service);
+        $this->assertSame(HarborLinker::METHOD_TAG_DIGEST_DIFFERS, $index['method']);
+        $this->assertSame('critical', $index['artifact']['severity_code']);
+        $overview = HarborArtifact::overview('', false, '', true);
+        $rows = array_values(array_filter(
+            $overview['deployed'],
+            fn (array $row): bool => $row['id'] === $this->services['wiki']
+        ));
+        $this->assertSame('critical', $rows[0]['severity_code'] ?? null);
 
         // Image de Docker Hub : hors registre maîtrisé, sans artefact.
         $service->getFromDB($this->services['boutique_db']);

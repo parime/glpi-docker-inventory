@@ -26,13 +26,14 @@ use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
  * Déclencheur « vulnérabilité » (TicketPolicy::TRIGGER_VULNERABILITY, lot 3) : faut-il un ticket
  * pour l'image déployée par un service, ou un suivi sur celui déjà ouvert ? Fonctions pures, sans
  * GLPI. Même principe que les tickets de mise à jour et de fin de support :
- * - un ticket seulement si l'analyse Harbor de l'image qui tourne (rattachée par l'empreinte, ou
- *   par le tag si l'empreinte est inconnue) a réussi et compte des vulnérabilités critiques (seuil
+ * - un ticket seulement si l'analyse Harbor de l'image qui tourne (rattachée par l'empreinte, sinon
+ *   par le tag, y compris quand l'empreinte déployée est celle d'un index multi-plateforme absent de
+ *   Harbor) a réussi et compte des vulnérabilités critiques (seuil
  *   « critique ») ou critiques et hautes (seuil « haute ») ;
  * - un seul ticket par service : tant qu'il est ouvert, un suivi quand la situation change (autre
  *   image déployée, nombre de vulnérabilités critiques ou hautes différent), jamais un second ;
  * - ticket résolu, clos ou supprimé : nouveau ticket seulement pour une autre image (empreinte) ;
- * - image absente de Harbor, non analysée, analyse en échec ou tag déplacé : rien ;
+ * - image absente de Harbor, non analysée ou analyse en échec : rien ;
  * - jamais de changement automatique du ticket : seulement des suivis.
  *
  * @phpstan-type VulnSituation array{known: bool, digest: string, critical: int, high: int}
@@ -54,7 +55,11 @@ final class VulnTicketPolicy
     public static function situation(?array $artifact, string $method): array
     {
         $known = $artifact !== null
-            && in_array($method, [HarborLinker::METHOD_DIGEST, HarborLinker::METHOD_TAG], true)
+            && in_array(
+                $method,
+                [HarborLinker::METHOD_DIGEST, HarborLinker::METHOD_TAG, HarborLinker::METHOD_TAG_DIGEST_DIFFERS],
+                true
+            )
             && $artifact['scan_status'] === HarborMapper::STATUS_SUCCESS;
 
         return [

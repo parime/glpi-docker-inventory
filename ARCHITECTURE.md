@@ -97,7 +97,7 @@ dockerinventory/
 │       ├── HarborClient.php        lecture seule : GET /api/v2.0/projects, .../repositories,
 │       │                           .../artifacts?with_scan_overview=true ; pagination, compte robot
 │       ├── HarborMapper.php        réponses => valeurs (projet, artefact, résumé d'analyse ; fonctions pures)
-│       ├── HarborLinker.php        empreinte, tag ou tag déplacé ; provenance (fonctions pures)
+│       ├── HarborLinker.php        empreinte, tag ou empreinte différente ; provenance (fonctions pures)
 │       ├── HarborImporter.php      lecture d'une connexion Harbor, retraits, compte rendu
 │       └── HarborSettings.php      registres maîtrisés (configuration de GLPI)
 ├── templates/                 Twig uniquement (aucun HTML dans le PHP)
@@ -277,7 +277,10 @@ dockerinventory/
 - Rattachement d'un service (à l'affichage et pour les tickets, rien n'est stocké) : connexion
   Harbor de l'image (même règle que le repli des registres : hôte et entité), puis artefacts actifs
   du dépôt : empreinte (ou empreinte par plateforme), sinon tag si l'empreinte déployée est inconnue,
-  sinon « tag déplacé » (empreinte connue absente, tag présent : analyse affichée, jamais de ticket).
+  sinon « empreinte différente » (empreinte connue absente, tag présent : index multi-plateforme
+  gardé par Docker 29 alors que Harbor n'a que le manifeste d'une plateforme, ou reconstruction ;
+  gravité du tag affichée et prise en compte pour les tickets). Pastille : gravité si l'analyse a
+  réussi, sinon état de l'analyse (en cours, en attente, en échec, arrêtée).
 - Provenance : hôte de l'image comparé aux registres maîtrisés (réglage `harbor_managed_registries`
   du contexte `plugin:dockerinventory`, saisi sur la page de configuration du plugin ; vide : hôtes
   des connexions Harbor actives ; aucun : « non évaluée »).

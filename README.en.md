@@ -264,8 +264,11 @@ requests only**: the plugin never starts a scan, never changes or deletes anythi
 **Linking a service to its artifact**: by the **digest** of the running image (or of one of its
 per-platform images), the only proof that the scan is the one of the deployed image; otherwise by
 the **tag** when the deployed digest is unknown. Digest known but missing from Harbor while the tag
-exists: "**tag moved**" (the image was rebuilt since the deployment); the scan shown is the one of the
-current tag and never gives a ticket.
+exists: "**digest differs from Harbor's**", linked by the tag with the severity of its scan. Common
+case without any rebuild: Docker 29 (containerd image store) keeps the digest of the original
+**multi-platform index**, while Harbor only receives the manifest of the pushing host's platform;
+the image may also have been rebuilt since the deployment. A scan still "running" or "pending" in
+Harbor is shown as such, not as "not scanned".
 
 **Managed registries**: at the top of *Setup > Docker connections* (the plugin configuration page),
 list of the hosts images must come from (`registry.exemple.test:5000`, `docker.io` for Docker Hub).
@@ -278,7 +281,7 @@ high); category, group and template of the update tickets. After each Harbor rea
 service whose running image (linked by digest, or tag) has a successful scan above the threshold,
 then **follow-ups** when the number of vulnerabilities or the image changes; never a duplicate,
 **never a change of status, priority or assignment**; ticket closed for an image: no new ticket for
-the same digest. Image not scanned, failed scan or moved tag: no ticket.
+the same digest. Image not scanned or failed scan: no ticket.
 
 - Harbor **pagination** (pages of 100, at most 20 pages per list); an artifact, repository or project
   missing from a list read completely is **"retired"**, never deleted; a failed or incomplete list

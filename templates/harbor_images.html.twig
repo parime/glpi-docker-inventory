@@ -35,7 +35,7 @@
         <div class="card-body">
             <p class="text-muted">
                 {{ __(
-                    'Pour chaque image déployée : l’artefact Harbor qui lui correspond et le résumé de son analyse de vulnérabilités.',
+     'Pour chaque image déployée : l’artefact Harbor qui lui correspond et le résumé de son analyse de vulnérabilités.',
                     'dockerinventory'
                 ) }}
                 {{ __('Données lues dans Harbor toutes les heures, sans rien y modifier.', 'dockerinventory') }}
@@ -46,7 +46,7 @@
                     <div>
                         {{ __('Aucune connexion Harbor pour le moment.', 'dockerinventory') }}
                         {{ __(
-                            'Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la configuration du plugin.',
+                'Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la configuration du plugin.',
                             'dockerinventory'
                         ) }}
                         {% if can_configure %}
@@ -128,7 +128,9 @@
                     </select>
                 </div>
                 <div class="col-auto">
-                    <label class="form-label" for="harbor-artifacts">{{ __('Artefacts listés', 'dockerinventory') }}</label>
+                    <label class="form-label" for="harbor-artifacts">
+                        {{- __('Artefacts listés', 'dockerinventory') -}}
+                    </label>
                     <select name="artifacts" id="harbor-artifacts" class="form-select">
                         <option value="deployed" {{ deployed_only ? 'selected' : '' }}>
                             {{ __('Seulement ceux déployés', 'dockerinventory') }}
@@ -142,14 +144,18 @@
                     <label class="form-check mb-2">
                         <input type="checkbox" name="unmanaged" value="1" class="form-check-input"
                                {{ unmanaged_only ? 'checked' : '' }}>
-                        <span class="form-check-label">{{ __('Seulement hors registre maîtrisé', 'dockerinventory') }}</span>
+                        <span class="form-check-label">
+                            {{- __('Seulement hors registre maîtrisé', 'dockerinventory') -}}
+                        </span>
                     </label>
                 </div>
                 <div class="col-auto">
                     <button type="submit" class="btn btn-primary">
                         <i class="ti ti-filter me-1" aria-hidden="true"></i>{{ __('Filtrer', 'dockerinventory') }}
                     </button>
-                    <a href="{{ base }}" class="btn btn-outline-secondary">{{ __('Réinitialiser', 'dockerinventory') }}</a>
+                    <a href="{{ base }}" class="btn btn-outline-secondary">
+                        {{- __('Réinitialiser', 'dockerinventory') -}}
+                    </a>
                 </div>
             </form>
 
@@ -177,7 +183,9 @@
                                     <td>
                                         <a href="{{ row.url }}">{{ row.name }}</a>
                                         {% if row.stack_name %}
-                                            <div class="text-muted small">{{ __('Stack', 'dockerinventory') }} {{ row.stack_name }}</div>
+                                            <div class="text-muted small">
+                                                {{- __('Stack', 'dockerinventory') }} {{ row.stack_name -}}
+                                            </div>
                                         {% endif %}
                                     </td>
                                     <td><code>{{ row.image }}{% if row.tag %}:{{ row.tag }}{% endif %}</code></td>
@@ -192,17 +200,21 @@
                                         {% if row.artifact %}
                                             {{ row.artifact.repository }}
                                             <code class="small">@{{ row.artifact.short_digest }}</code>
-                                            <div class="small {{ row.method == 'tag_moved' ? 'text-warning' : 'text-muted' }}">
+                                            {% set method_class = row.method == 'tag_digest_differs'
+                                                ? 'text-warning' : 'text-muted' %}
+                                            <div class="small {{ method_class }}">
                                                 {{ row.method_label }}
                                             </div>
                                         {% else %}
-                                            <span class="text-muted">{{ __('Absente de Harbor', 'dockerinventory') }}</span>
+                                            <span class="text-muted">
+                                                {{- __('Absente de Harbor', 'dockerinventory') -}}
+                                            </span>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {{ include('@dockerinventory/_severity_badge.html.twig', {
                                             severity: row.severity,
-                                            artifact: row.method != 'tag_moved' ? row.artifact : null,
+                                            artifact: row.artifact,
                                         }) }}
                                     </td>
                                     <td>
@@ -227,7 +239,9 @@
                     <i class="ti ti-package-off me-2" aria-hidden="true"></i>
                     {{ __('Aucun artefact ne correspond à ces filtres.', 'dockerinventory') }}
                     {% if deployed_only %}
-                        <a href="{{ base }}&artifacts=all" class="ms-1">{{ __('Voir tous les artefacts', 'dockerinventory') }}</a>
+                        <a href="{{ base }}&artifacts=all" class="ms-1">
+                            {{- __('Voir tous les artefacts', 'dockerinventory') -}}
+                        </a>
                     {% endif %}
                 </div>
             {% else %}
@@ -258,7 +272,9 @@
                                         {% for tag in artifact.tags %}
                                             <span class="badge bg-blue-lt me-1 mb-1">{{ tag }}</span>
                                         {% else %}
-                                            <span class="text-muted small">{{ __('sans tag', 'dockerinventory') }}</span>
+                                            <span class="text-muted small">
+                                                {{- __('sans tag', 'dockerinventory') -}}
+                                            </span>
                                         {% endfor %}
                                     </td>
                                     <td><code title="{{ artifact.digest }}">{{ artifact.short_digest }}</code></td>
@@ -276,14 +292,18 @@
                                     </td>
                                     <td class="small">
                                         {{ artifact.status_label }}
-                                        {% if artifact.scanner %}<div class="text-muted">{{ artifact.scanner }}</div>{% endif %}
+                                        {% if artifact.scanner %}
+                                            <div class="text-muted">{{ artifact.scanner }}</div>
+                                        {% endif %}
                                         {% if artifact.scan_time %}
                                             <div class="text-muted">{{ artifact.scan_time|formatted_datetime }}</div>
                                         {% endif %}
                                     </td>
                                     <td>
                                         {% for service in artifact.services %}
-                                            <a href="{{ service.url }}" class="badge bg-secondary-lt me-1 mb-1">{{ service.name }}</a>
+                                            <a href="{{ service.url }}" class="badge bg-secondary-lt me-1 mb-1">
+                                                {{- service.name -}}
+                                            </a>
                                         {% else %}
                                             <span class="text-muted">-</span>
                                         {% endfor %}

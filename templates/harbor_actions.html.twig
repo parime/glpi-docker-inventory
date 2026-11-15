@@ -117,18 +117,20 @@
     <div class="card-body">
         <p class="text-muted">
             {{ __(
-                'Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, avec le résumé de leur analyse.',
+         'Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, avec le résumé de leur analyse.',
                 'dockerinventory'
             ) }}
             {{ __(
-                'Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit d’écriture ni de lancement d’analyse.',
+     'Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit d’écriture ni de lancement d’analyse.',
                 'dockerinventory'
             ) }}
             {{ __('La lecture tourne toutes les heures ; le bouton la lance tout de suite.', 'dockerinventory') }}
         </p>
         <div class="mb-3">
             <span class="me-2">{{ __('Dernière lecture', 'dockerinventory') }} :</span>
-            <span class="badge bg-{{ status_colors[scan_status] ?? 'secondary' }} text-white">{{ scan_status_label }}</span>
+            <span class="badge bg-{{ status_colors[scan_status] ?? 'secondary' }} text-white">
+                {{- scan_status_label -}}
+            </span>
             {% if item.fields['last_scan_date'] %}
                 <span class="ms-2 text-muted">{{ item.fields['last_scan_date']|formatted_datetime }}</span>
             {% endif %}
@@ -169,7 +171,9 @@
                 <div class="alert alert-warning">
                     <ul class="mb-0">
                         {% for error in scan_report.errors %}
-                            <li><strong>{{ error.endpoint }}</strong> : {{ error_labels[error.code] ?? error.code }}</li>
+                            <li>
+                                <strong>{{ error.endpoint }}</strong> : {{ error_labels[error.code] ?? error.code -}}
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>

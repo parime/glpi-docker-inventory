@@ -50,8 +50,12 @@ msgstr ""
 
 #: templates/_harbor_service.html.twig
 msgid ""
-"L’analyse ci-dessous est celle de l’image actuelle de ce tag : redéployer le "
-"service pour l’appliquer."
+"Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde "
+"qu’une plateforme)."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag."
 msgstr ""
 
 #: templates/_harbor_service.html.twig
@@ -1160,8 +1164,13 @@ msgstr ""
 #: templates/managed_registries.html.twig
 msgid ""
 "Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
-"contrôlée : elle est signalée dans l’onglet « Images Harbor et vulnérabilités"
-" » et sur la fiche du service."
+"contrôlée."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la"
+" fiche du service."
 msgstr ""
 
 #: templates/managed_registries.html.twig
@@ -1888,6 +1897,12 @@ msgid ""
 msgstr ""
 
 #: src/HarborArtifact.php
+msgid ""
+"Pas encore de résultat d’analyse dans Harbor pour cette image : voir l’état "
+"de l’analyse."
+msgstr ""
+
+#: src/HarborArtifact.php
 msgid "Analyse réussie"
 msgstr ""
 
@@ -1920,9 +1935,7 @@ msgid "Par tag (empreinte déployée inconnue) : probablement l’image qui tour
 msgstr ""
 
 #: src/HarborArtifact.php
-msgid ""
-"Tag déplacé : l’image a été reconstruite, celle qui tourne n’est plus dans "
-"Harbor"
+msgid "Par tag : empreinte déployée différente de celle de Harbor"
 msgstr ""
 
 #: src/HarborArtifact.php

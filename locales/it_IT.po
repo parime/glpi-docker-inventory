@@ -40,8 +40,12 @@ msgid "Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire dep
 msgstr "Non è né analizzata né controllata da Harbor: ricostruirla dal registro gestito."
 
 #: templates/_harbor_service.html.twig
-msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag : redéployer le service pour l’appliquer."
-msgstr "L’analisi qui sotto è quella dell’immagine attuale di questo tag: ridistribuire il servizio per applicarla."
+msgid "Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde qu’une plateforme)."
+msgstr "Spesso un’immagine multipiattaforma inviata da un host (Harbor ne conserva una sola piattaforma)."
+
+#: templates/_harbor_service.html.twig
+msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag."
+msgstr "L’analisi qui sotto è quella dell’immagine attuale di questo tag."
 
 #: templates/_harbor_service.html.twig
 msgid "aucun résultat d’analyse pour cette image dans Harbor."
@@ -1044,8 +1048,12 @@ msgid "Images déployées hors de ces registres : signalées."
 msgstr "Immagini distribuite fuori da questi registri: segnalate."
 
 #: templates/managed_registries.html.twig
-msgid "Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni contrôlée : elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la fiche du service."
-msgstr "Un’immagine che non proviene da un registro gestito non è né analizzata né controllata: viene segnalata nella scheda «Immagini Harbor e vulnerabilità» e nella scheda del servizio."
+msgid "Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni contrôlée."
+msgstr "Un’immagine che non proviene da un registro gestito non è né analizzata né controllata."
+
+#: templates/managed_registries.html.twig
+msgid "Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la fiche du service."
+msgstr "Viene segnalata nella scheda «Immagini Harbor e vulnerabilità» e nella scheda del servizio."
 
 #: templates/managed_registries.html.twig
 msgid "Hôtes des registres maîtrisés, un par ligne"
@@ -1727,6 +1735,10 @@ msgid "Pas d’analyse réussie dans Harbor (jamais lancée, en cours ou en éch
 msgstr "Nessuna analisi riuscita in Harbor (mai avviata, in corso o non riuscita)."
 
 #: src/HarborArtifact.php
+msgid "Pas encore de résultat d’analyse dans Harbor pour cette image : voir l’état de l’analyse."
+msgstr "Ancora nessun risultato di analisi in Harbor per questa immagine: vedere lo stato dell’analisi."
+
+#: src/HarborArtifact.php
 msgid "Analyse réussie"
 msgstr "Analisi riuscita"
 
@@ -1759,8 +1771,8 @@ msgid "Par tag (empreinte déployée inconnue) : probablement l’image qui tour
 msgstr "Tramite tag (digest distribuito sconosciuto): probabilmente l’immagine in esecuzione"
 
 #: src/HarborArtifact.php
-msgid "Tag déplacé : l’image a été reconstruite, celle qui tourne n’est plus dans Harbor"
-msgstr "Tag spostato: l’immagine è stata ricostruita, quella in esecuzione non è più in Harbor"
+msgid "Par tag : empreinte déployée différente de celle de Harbor"
+msgstr "Tramite tag: digest distribuito diverso da quello di Harbor"
 
 #: src/HarborArtifact.php
 msgid "Registre maîtrisé"

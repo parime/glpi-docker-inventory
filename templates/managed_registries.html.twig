@@ -29,7 +29,11 @@
         <div class="card-body">
             <p class="text-muted">
                 {{ __(
-                    'Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni contrôlée : elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la fiche du service.',
+                    'Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni contrôlée.',
+                    'dockerinventory'
+                ) }}
+                {{ __(
+                    'Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur la fiche du service.',
                     'dockerinventory'
                 ) }}
             </p>
@@ -42,7 +46,7 @@
                           placeholder="registry.exemple.test:5000">{{ text }}</textarea>
                 <div class="form-text mb-3">
                     {{ __(
-                        'Tel qu’écrit au début des images (registry.exemple.test:5000/outils/wiki). docker.io : Docker Hub.',
+                   'Tel qu’écrit au début des images (registry.exemple.test:5000/outils/wiki). docker.io : Docker Hub.',
                         'dockerinventory'
                     ) }}
                     {{ __('Laisser vide pour utiliser les hôtes des connexions Harbor :', 'dockerinventory') }}
@@ -53,7 +57,8 @@
                     {% endfor %}
                 </div>
                 <button type="submit" name="save_managed_registries" value="1" class="btn btn-primary">
-                    <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>{{ __('Enregistrer', 'dockerinventory') }}
+                    <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
+                    {{ __('Enregistrer', 'dockerinventory') }}
                 </button>
                 <a href="{{ harbor_url }}" class="btn btn-outline-secondary ms-2">
                     <i class="ti ti-shield-search me-1" aria-hidden="true"></i>

@@ -31,7 +31,7 @@
             <i class="ti ti-shield-search me-2" aria-hidden="true"></i>
             {{ __('Vulnérabilités de l’image (Harbor)', 'dockerinventory') }}
         </h3>
-        {% if harbor.artifact and harbor.method != 'tag_moved' %}
+        {% if harbor.artifact %}
             {{ include('@dockerinventory/_severity_badge.html.twig', {
                 severity: harbor.artifact.severity, artifact: harbor.artifact,
             }) }}
@@ -54,9 +54,11 @@
                         <strong>{{ __('Image hors registre maîtrisé', 'dockerinventory') }}</strong> :
                         {{ __('elle vient de', 'dockerinventory') }} <code>{{ harbor.host ?: '-' }}</code>,
                         {{ __('qui n’est pas dans la liste des registres maîtrisés', 'dockerinventory') }}
-                        ({% for host in harbor.managed_hosts %}<code>{{ host }}</code>{% if not loop.last %}, {% endif %}{% endfor %}).
+                        ({% for host in harbor.managed_hosts -%}
+                            <code>{{ host }}</code>{% if not loop.last %}, {% endif %}
+                        {%- endfor %}).
                         {{ __(
-                            'Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le registre maîtrisé.',
+                        'Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le registre maîtrisé.',
                             'dockerinventory'
                         ) }}
                     </div>
@@ -64,12 +66,16 @@
             {% endif %}
             {% if harbor.artifact %}
                 {% set artifact = harbor.artifact %}
-                {% if harbor.method == 'tag_moved' %}
-                    <div class="alert alert-warning">
+                {% if harbor.method == 'tag_digest_differs' %}
+                    <div class="alert alert-info">
                         <i class="ti ti-arrows-shuffle me-2" aria-hidden="true"></i>
                         {{ harbor.method_label }}.
                         {{ __(
-                            'L’analyse ci-dessous est celle de l’image actuelle de ce tag : redéployer le service pour l’appliquer.',
+                'Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde qu’une plateforme).',
+                            'dockerinventory'
+                        ) }}
+                        {{ __(
+                            'L’analyse ci-dessous est celle de l’image actuelle de ce tag.',
                             'dockerinventory'
                         ) }}
                     </div>
@@ -80,7 +86,9 @@
                             {% set info = harbor.severities[code] %}
                             <div class="card card-sm" style="min-width: 8rem">
                                 <div class="card-body d-flex align-items-center gap-2 py-2">
-                                    <span class="avatar avatar-sm {{ count > 0 ? 'bg-' ~ info.color ~ ' text-white' : 'bg-secondary-lt' }}">
+                                    {% set avatar = count > 0
+                                        ? 'bg-' ~ info.color ~ ' text-white' : 'bg-secondary-lt' %}
+                                    <span class="avatar avatar-sm {{ avatar }}">
                                         <i class="{{ info.icon }}" aria-hidden="true"></i>
                                     </span>
                                     <div>
@@ -139,12 +147,18 @@
                     <i class="ti ti-package-off me-2" aria-hidden="true"></i>
                     {{ __('Image introuvable dans Harbor', 'dockerinventory') }} :
                     <code>{{ harbor.repository }}</code>
-                    {{ __('(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures.', 'dockerinventory') }}
+                    {{ __(
+                        '(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures.',
+                        'dockerinventory'
+                    ) }}
                 </div>
             {% elseif harbor.provenance_code != 'unmanaged' %}
                 <p class="text-muted mb-0">
                     {% if harbor.has_harbor %}
-                        {{ __('Image hors des registres Harbor déclarés : pas d’analyse de vulnérabilités connue.', 'dockerinventory') }}
+                        {{ __(
+                            'Image hors des registres Harbor déclarés : pas d’analyse de vulnérabilités connue.',
+                            'dockerinventory'
+                        ) }}
                     {% else %}
                         {{ __('Aucune connexion Harbor : pas d’analyse de vulnérabilités connue.', 'dockerinventory') }}
                     {% endif %}
@@ -152,7 +166,9 @@
             {% endif %}
         {% endif %}
         <p class="text-muted small mt-2 mb-0">
-            <a href="{{ harbor.page_url }}">{{ __('Voir toutes les images Harbor et leurs vulnérabilités', 'dockerinventory') }}</a>
+            <a href="{{ harbor.page_url }}">
+                {{- __('Voir toutes les images Harbor et leurs vulnérabilités', 'dockerinventory') -}}
+            </a>
         </p>
     </div>
 </div>

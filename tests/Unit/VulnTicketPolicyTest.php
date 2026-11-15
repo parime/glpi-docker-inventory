@@ -44,7 +44,7 @@ final class VulnTicketPolicyTest extends TestCase
     {
         $this->assertTrue(VulnTicketPolicy::situation(self::artifact(1, 0), 'digest')['known']);
         $this->assertTrue(VulnTicketPolicy::situation(self::artifact(1, 0), 'tag')['known']);
-        $this->assertFalse(VulnTicketPolicy::situation(self::artifact(1, 0), 'tag_moved')['known']);
+        $this->assertTrue(VulnTicketPolicy::situation(self::artifact(1, 0), 'tag_digest_differs')['known']);
         $this->assertFalse(VulnTicketPolicy::situation(self::artifact(1, 0, 'running'), 'digest')['known']);
         $this->assertFalse(VulnTicketPolicy::situation(null, '')['known']);
     }
@@ -62,7 +62,7 @@ final class VulnTicketPolicyTest extends TestCase
             [TicketPolicy::TRIGGER_VULNERABILITY],
             VulnTicketPolicy::triggers($critical, VulnTicketPolicy::THRESHOLD_CRITICAL)
         );
-        $unknown = VulnTicketPolicy::situation(self::artifact(5, 5), 'tag_moved');
+        $unknown = VulnTicketPolicy::situation(self::artifact(5, 5, 'error'), 'digest');
         $this->assertSame([], VulnTicketPolicy::triggers($unknown, VulnTicketPolicy::THRESHOLD_HIGH));
     }
 
