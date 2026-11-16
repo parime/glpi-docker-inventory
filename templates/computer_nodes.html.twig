@@ -20,6 +20,7 @@
         <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
         {{ __("Cet ordinateur n'est rattaché à aucun nœud Swarm ni hôte Docker.", 'dockerinventory') }}
         {{ __("Le rattachement se fait à l'import Portainer, par nom d'hôte.", 'dockerinventory') }}
+        {{ __("Pour Kubernetes : par nom du nœud, sinon par adresse IP.", 'dockerinventory') }}
     </div>
 {% endif %}
 {% for node in nodes %}
@@ -28,7 +29,14 @@
             <h3 class="card-title mb-0">
                 <i class="ti ti-server me-2" aria-hidden="true"></i>{{ node.hostname }}
             </h3>
-            {% if node.role == 'standalone' %}
+            {% if node.role in ['k8s_control_plane', 'k8s_worker'] %}
+                <span class="badge {{ node.role == 'k8s_control_plane' ? 'bg-purple' : 'bg-blue' }} text-white">
+                    <i class="ti ti-brand-kubernetes me-1" aria-hidden="true"></i>
+                    {{- node.role == 'k8s_control_plane'
+                        ? __('Nœud Kubernetes (control plane)', 'dockerinventory')
+                        : __('Nœud Kubernetes', 'dockerinventory') -}}
+                </span>
+            {% elseif node.role == 'standalone' %}
                 <span class="badge bg-teal text-white">
                     <i class="ti ti-box me-1" aria-hidden="true"></i>{{ __('Hôte Docker autonome', 'dockerinventory') }}
                 </span>
@@ -48,7 +56,11 @@
         </div>
         <div class="card-body">
             <dl class="row mb-0">
-                <dt class="col-sm-3">{{ __('Version de Docker', 'dockerinventory') }}</dt>
+                <dt class="col-sm-3">
+                    {{ node.role in ['k8s_control_plane', 'k8s_worker']
+                        ? __('Version du kubelet', 'dockerinventory')
+                        : __('Version de Docker', 'dockerinventory') }}
+                </dt>
                 <dd class="col-sm-9">{{ node.engine_version ?: '-' }}</dd>
                 <dt class="col-sm-3">{{ __('Adresse', 'dockerinventory') }}</dt>
                 <dd class="col-sm-9">{{ node.address ?: '-' }}</dd>

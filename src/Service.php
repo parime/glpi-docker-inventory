@@ -24,12 +24,14 @@ use CommonGLPI;
 use DbUtils;
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Compat\Base\ServiceBase;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesMapper;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
 use Session;
 
 /**
  * Service Docker importé depuis Portainer : service Swarm, service Compose d'un hôte autonome ou
- * conteneur autonome hors Compose. Lecture seule : seul l'import écrit ces fiches,
+ * conteneur autonome hors Compose ; ou conteneur d'une charge de travail Kubernetes (Deployment,
+ * StatefulSet, DaemonSet, CronJob). Lecture seule : seul l'import écrit ces fiches,
  * et ne les supprime jamais (un service disparu est marqué « retiré »).
  */
 class Service extends ServiceBase
@@ -165,6 +167,29 @@ class Service extends ServiceBase
             PortainerMapper::KIND_SWARM     => __('Service Swarm', 'dockerinventory'),
             PortainerMapper::KIND_COMPOSE   => __('Service Compose', 'dockerinventory'),
             PortainerMapper::KIND_CONTAINER => __('Conteneur autonome', 'dockerinventory'),
+            KubernetesMapper::KIND_DEPLOYMENT  => 'Deployment',
+            KubernetesMapper::KIND_STATEFULSET => 'StatefulSet',
+            KubernetesMapper::KIND_DAEMONSET   => 'DaemonSet',
+            KubernetesMapper::KIND_CRONJOB     => 'CronJob',
+        ];
+    }
+
+    /**
+     * Libellés des états d'une charge Kubernetes (colonne `state`).
+     *
+     * @return array<string, string>
+     */
+    public static function kubernetesStateLabels(): array
+    {
+        return [
+            KubernetesMapper::STATE_AVAILABLE   => __('Disponible', 'dockerinventory'),
+            KubernetesMapper::STATE_PROGRESSING => __('Mise à jour en cours', 'dockerinventory'),
+            KubernetesMapper::STATE_DEGRADED    => __('Dégradé', 'dockerinventory'),
+            KubernetesMapper::STATE_UNAVAILABLE => __('Indisponible', 'dockerinventory'),
+            KubernetesMapper::STATE_SCALED_DOWN => __('Arrêté (0 réplica)', 'dockerinventory'),
+            KubernetesMapper::STATE_SUSPENDED   => __('Suspendu', 'dockerinventory'),
+            KubernetesMapper::STATE_ACTIVE      => __('Tâche en cours', 'dockerinventory'),
+            KubernetesMapper::STATE_SCHEDULED   => __('Planifié', 'dockerinventory'),
         ];
     }
 
@@ -275,6 +300,13 @@ class Service extends ServiceBase
         $running = (int) ($row['running_replicas'] ?? 0);
         $kind = (string) ($row['kind'] ?? '') ?: PortainerMapper::KIND_SWARM;
         $states = self::split((string) ($row['state'] ?? ''));
+        $isKubernetes = in_array($kind, KubernetesMapper::workloadKinds(), true);
+        $isCronJob = $kind === KubernetesMapper::KIND_CRONJOB;
+        $replicasText = match (true) {
+            $isCronJob        => sprintf(__('%d tâche(s) active(s)', 'dockerinventory'), $running),
+            $replicas === null => sprintf(__('%d (global)', 'dockerinventory'), $running),
+            default           => sprintf('%d / %d', $running, (int) $replicas),
+        };
 
         return [
             'id'           => (int) ($row['id'] ?? 0),
@@ -286,9 +318,8 @@ class Service extends ServiceBase
             'digest'       => $digest,
             'digest_short' => strlen($digest) > 19 ? substr($digest, 0, 19) . '...' : $digest,
             'mode'         => (string) ($row['mode'] ?? ''),
-            'replicas'     => $replicas === null ? sprintf(__('%d (global)', 'dockerinventory'), $running)
-                : sprintf('%d / %d', $running, (int) $replicas),
-            'replicas_ok'  => $replicas === null ? $running > 0 : $running >= (int) $replicas,
+            'replicas'     => $replicasText,
+            'replicas_ok'  => $isCronJob || ($replicas === null ? $running > 0 : $running >= (int) $replicas),
             'ports'        => self::split((string) ($row['ports'] ?? '')),
             'networks'     => self::split((string) ($row['networks'] ?? '')),
             'secrets'      => self::split((string) ($row['secrets'] ?? '')),
@@ -301,6 +332,13 @@ class Service extends ServiceBase
             'kind'         => $kind,
             'kind_label'   => self::kindLabels()[$kind] ?? $kind,
             'is_swarm'     => $kind === PortainerMapper::KIND_SWARM,
+            'is_kubernetes' => $isKubernetes,
+            'is_cronjob'   => $isCronJob,
+            'stack_label'  => $isKubernetes ? __('Namespace', 'dockerinventory') : __('Stack', 'dockerinventory'),
+            'state_labels' => $isKubernetes ? array_map(
+                static fn (string $state): string => self::kubernetesStateLabels()[$state] ?? $state,
+                $states
+            ) : [],
             'states'       => $states,
             'restart_policy' => (string) ($row['restart_policy'] ?? ''),
             'endpoint'     => (string) ($row['endpoint_name'] ?? ''),

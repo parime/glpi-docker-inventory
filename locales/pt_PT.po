@@ -2188,3 +2188,212 @@ msgstr "volume anônimo %s"
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr "A verificar no Portainer"
+
+msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
+msgstr "Para Kubernetes: pelo nome do nó, senão pelo endereço IP."
+
+msgid "Nœud Kubernetes (control plane)"
+msgstr "Nó Kubernetes (control plane)"
+
+msgid "Nœud Kubernetes"
+msgstr "Nó Kubernetes"
+
+msgid "Version du kubelet"
+msgstr "Versão do kubelet"
+
+msgid "Import depuis Kubernetes"
+msgstr "Importação do Kubernetes"
+
+msgid "L'import lit le cluster sans rien y modifier et tourne toutes les heures."
+msgstr "A importação lê o cluster sem alterar nada e é executada a cada hora."
+
+msgid "Chaque namespace qui a des charges devient une application ; chaque conteneur, une fiche de service."
+msgstr "Cada namespace com cargas torna-se uma aplicação; cada contêiner, uma ficha de serviço."
+
+msgid "Namespaces visibles"
+msgstr "Namespaces visíveis"
+
+msgid "Namespaces avec des charges"
+msgstr "Namespaces com cargas"
+
+msgid "applications créées"
+msgstr "aplicações criadas"
+
+msgid "À vérifier dans le cluster"
+msgstr "A verificar no cluster"
+
+msgid "Créer le compte de service en lecture seule"
+msgstr "Criar a conta de serviço somente leitura"
+
+msgid "Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
+msgstr "Aplicar o manifesto do README (kubectl apply -f) e depois ler o token:"
+
+msgid "Cluster sur un réseau privé (GLPI 12)"
+msgstr "Cluster em uma rede privada (GLPI 12)"
+
+msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
+msgstr "Somente para o Kubernetes, adicionar em config/local_define.php:"
+
+msgid "Kubernetes remplace Portainer pour les applications qui tournent sur un cluster."
+msgstr "O Kubernetes substitui o Portainer para as aplicações que rodam em um cluster."
+
+msgid "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster."
+msgstr "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs e nós de um cluster."
+
+msgid "prêts / voulus"
+msgstr "prontas / desejadas"
+
+msgid "Application (namespace)"
+msgstr "Aplicação (namespace)"
+
+msgid "Cluster Kubernetes"
+msgstr "Cluster Kubernetes"
+
+msgid "Tâches"
+msgstr "Tarefas"
+
+msgid "Planification"
+msgstr "Agendamento"
+
+msgid "État"
+msgstr "Estado"
+
+msgid "Aucun pod en cours connu pour ce service."
+msgstr "Nenhum pod em execução conhecido para este serviço."
+
+msgid "Pods en cours"
+msgstr "Pods em execução"
+
+msgid "Données importées de Kubernetes en lecture seule."
+msgstr "Dados importados do Kubernetes somente leitura."
+
+msgid "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr "Um token está salvo (criptografado): deixe vazio para mantê-lo."
+
+msgid "Jeton du compte de service en lecture seule (voir README)."
+msgstr "Token da conta de serviço somente leitura (ver README)."
+
+msgid "Nom libre, par exemple « Cluster production »."
+msgstr "Nome livre, por exemplo «Cluster produção»."
+
+msgid "Adresse de l'API du cluster"
+msgstr "Endereço da API do cluster"
+
+msgid "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
+msgstr "Campo «server» do arquivo kubeconfig; HTTPS obrigatório."
+
+msgid "Jeton du compte de service"
+msgstr "Token da conta de serviço"
+
+msgid "Certificat d'autorité du cluster"
+msgstr "Certificado da autoridade do cluster"
+
+msgid "Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système."
+msgstr "Opcional: conteúdo PEM (ca.crt) se o cluster tiver sua própria autoridade; vazio: autoridades do sistema."
+
+msgid "Namespaces ignorés"
+msgstr "Namespaces ignorados"
+
+msgid "Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces du système."
+msgstr "Separados por vírgulas; «*» aceito (cattle-*). Padrão: namespaces do sistema."
+
+msgid "Namespace"
+msgstr "Namespace"
+
+#, php-format
+msgid "Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » (%2$s)."
+msgstr "Criada pelo plugin Inventário Docker para o namespace Kubernetes «%1$s» (%2$s)."
+
+msgid "Le jeton du compte de service Kubernetes est obligatoire."
+msgstr "O token da conta de serviço Kubernetes é obrigatório."
+
+msgid "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN CERTIFICATE-----...)."
+msgstr "Certificado de autoridade inválido: cole o conteúdo PEM (-----BEGIN CERTIFICATE-----...)."
+
+#, php-format
+msgid "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, %5$d retirés, %6$d nœuds."
+msgstr "Importação concluída (%1$s): %2$d namespaces, %3$d aplicações, %4$d serviços, %5$d retirados, %6$d nós."
+
+msgid "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
+msgstr "A conta não vê nenhum namespace: verifique seu ClusterRole (ver README)."
+
+msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
+msgstr "Leitura recusada à conta de serviço (403): nada foi retirado."
+
+msgid "Vérifiez son ClusterRole (voir README)."
+msgstr "Verifique seu ClusterRole (ver README)."
+
+msgid "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été retiré."
+msgstr "Nenhuma carga encontrada embora a última importação tenha encontrado: nada foi retirado."
+
+msgid "Vérifiez les droits du compte de service (voir README)."
+msgstr "Verifique os direitos da conta de serviço (ver README)."
+
+msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
+msgstr "Lista longa demais, lida em parte: nada foi retirado."
+
+#, php-format
+msgid "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce jeton."
+msgstr "Conexão bem-sucedida: Kubernetes %1$s, %2$d namespace(s) visível(is) com este token."
+
+#, php-format
+msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
+msgstr "Leitura recusada (403): %s. Complete o ClusterRole (ver README)."
+
+msgid "Jeton refusé par le cluster (401) : jeton expiré ou compte de service supprimé ?"
+msgstr "Token recusado pelo cluster (401): token expirado ou conta de serviço excluída?"
+
+msgid "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir README)."
+msgstr "Leitura recusada à conta de serviço (403): verifique seu ClusterRole (ver README)."
+
+msgid "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port 6443 en général)."
+msgstr "Endereço não encontrado (404): informe o endereço da API do cluster (geralmente porta 6443)."
+
+msgid "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
+msgstr "Lista alterada durante a leitura (410): nova tentativa na próxima importação."
+
+msgid "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain import."
+msgstr "Limite de requisições da API atingido (429): o restante é lido na próxima importação."
+
+msgid "L'API du cluster a répondu par une erreur interne (5xx)."
+msgstr "A API do cluster respondeu com um erro interno (5xx)."
+
+msgid "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README)."
+msgstr "Certificado do cluster não reconhecido: cole o certificado da autoridade do cluster (ver README)."
+
+msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
+msgstr "Resposta inesperada: é mesmo a API de um cluster Kubernetes?"
+
+msgid "Cluster injoignable (réseau, nom, délai...)."
+msgstr "Cluster inacessível (rede, nome, tempo limite...)."
+
+msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
+msgstr "Importação de namespaces, cargas de trabalho e nós do Kubernetes"
+
+msgid "Disponible"
+msgstr "Disponível"
+
+msgid "Mise à jour en cours"
+msgstr "Atualização em andamento"
+
+msgid "Dégradé"
+msgstr "Degradado"
+
+msgid "Indisponible"
+msgstr "Indisponível"
+
+msgid "Arrêté (0 réplica)"
+msgstr "Parado (0 réplicas)"
+
+msgid "Suspendu"
+msgstr "Suspenso"
+
+msgid "Tâche en cours"
+msgstr "Tarefa em andamento"
+
+msgid "Planifié"
+msgstr "Agendado"
+
+#, php-format
+msgid "%d tâche(s) active(s)"
+msgstr "%d tarefa(s) ativa(s)"

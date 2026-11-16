@@ -41,7 +41,7 @@
                     {% endif %}
                     {% if service.stack_name %}
                         <div class="small text-muted">
-                            {{ __('Stack', 'dockerinventory') }} : {{ service.stack_name }}
+                            {{ service.stack_label|default(__('Stack', 'dockerinventory')) }} : {{ service.stack_name }}
                         </div>
                     {% endif %}
                 </td>

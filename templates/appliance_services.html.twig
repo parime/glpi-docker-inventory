@@ -33,7 +33,11 @@
             {{ include('@dockerinventory/_service_rows.html.twig', {services: services}) }}
         </div>
         <div class="card-footer text-muted small">
-            {{ __('Données importées de Portainer en lecture seule.', 'dockerinventory') }}
+            {% if services[0].is_kubernetes %}
+                {{ __('Données importées de Kubernetes en lecture seule.', 'dockerinventory') }}
+            {% else %}
+                {{ __('Données importées de Portainer en lecture seule.', 'dockerinventory') }}
+            {% endif %}
             {{ __('Un service disparu est marqué « Retiré », jamais supprimé.', 'dockerinventory') }}
         </div>
     {% endif %}

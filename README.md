@@ -38,12 +38,13 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 | Registres (sans WUD) | Docker Hub et API v2 de Harbor | Même tableau des versions, calculé par le plugin |
 | Cycles de vie (endoflife.date, désactivé par défaut) | Dates de fin de support des produits des images (correspondance explicite) | Fin de support, bientôt, maintenue ou inconnue par service ; tickets de fin de support facultatifs |
 | Harbor | Projets, dépôts, artefacts, résumé d'analyse de vulnérabilités | Vulnérabilités par image, images hors registre maîtrisé signalées |
+| Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets et CronJobs (image, tag, empreinte, réplicas prêts et voulus, état), nœuds | Namespace = Application native ; fiche Service par conteneur ; nœuds rattachés aux ordinateurs (nom ou adresse IP) ; mêmes versions et vulnérabilités Harbor |
 
 ## Compatibilité
 
 - GLPI 11.0 et 12.x
 - PHP 8.2 à 8.5 (GLPI 11), 8.3 à 8.5 (GLPI 12)
-- Portainer CE ou BE (API 2.x), WUD 8.x, Harbor 2.x
+- Portainer CE ou BE (API 2.x), WUD 8.x, Harbor 2.x, Kubernetes 1.24 et plus (API `apps/v1`, `batch/v1`)
 
 ### Compte Portainer : droits minimaux et limites de CE
 
@@ -332,6 +333,122 @@ pour une image : pas de nouveau ticket pour la même empreinte. Image non analys
 
 > Écrit d'après la documentation publique de l'API de Harbor 2.x et un faux Harbor
 > (`tests/mock-harbor`, données fictives) ; **à valider sur un vrai Harbor 2.x**.
+
+## Utilisation : Kubernetes
+
+Pour les applications qui tournent sur un cluster Kubernetes (sans Portainer), le plugin lit
+directement l'API du cluster, **en lecture seule** : uniquement des requêtes `GET`, avec le jeton
+d'un compte de service limité à `get`, `list` et `watch`. Plusieurs clusters : une connexion par
+cluster.
+
+1. **Dans le cluster**, créer le compte de service et son ClusterRole en lecture seule :
+
+```yaml
+# glpi-inventaire-lecture.yaml : compte de service en lecture seule pour GLPI
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: glpi-inventaire
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: glpi-lecture
+  namespace: glpi-inventaire
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: glpi-inventaire-lecture
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "nodes", "pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: glpi-inventaire-lecture
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: glpi-inventaire-lecture
+subjects:
+  - kind: ServiceAccount
+    name: glpi-lecture
+    namespace: glpi-inventaire
+---
+# Jeton longue durée du compte de service (Kubernetes 1.24 et plus).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: glpi-lecture-jeton
+  namespace: glpi-inventaire
+  annotations:
+    kubernetes.io/service-account.name: glpi-lecture
+type: kubernetes.io/service-account-token
+```
+
+   Puis récupérer le jeton, le certificat d'autorité et l'adresse de l'API, et vérifier que le
+   compte ne peut rien modifier (la dernière commande doit répondre `no`) :
+
+```sh
+kubectl apply -f glpi-inventaire-lecture.yaml
+kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.token}' | base64 -d
+kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.ca\.crt}' | base64 -d
+kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
+kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventaire:glpi-lecture
+```
+
+2. **Dans GLPI**, *Configuration > Connexions Docker* : « Ajouter », choisir **Kubernetes**, puis
+   saisir l'adresse de l'API (`https://…:6443`, HTTPS obligatoire), le jeton (chiffré avec la clé de
+   GLPI, jamais réaffiché) et, si le cluster a sa propre autorité (cas courant), le contenu du
+   certificat d'autorité (`ca.crt`). Les namespaces du système (`kube-system`, `kube-public`,
+   `kube-node-lease`) sont ignorés par défaut ; la liste se modifie sur la connexion (`*` accepté,
+   par exemple `cattle-*`).
+3. **Tester la connexion** : affiche la version du cluster et le nombre de namespaces visibles. Si le
+   compte ne voit aucun namespace, ou ne peut pas lire l'une des ressources, le test affiche un
+   **avertissement** qui les nomme, et non un succès.
+4. **Importer maintenant** (ou attendre l'action automatique horaire `kubernetesimport`) :
+   - chaque namespace qui a au moins une charge devient une **Application** native de GLPI (celle
+     du même nom dans l'entité si elle existe, jamais modifiée ; sinon une nouvelle, avec
+     l'environnement choisi sur la connexion) ;
+   - chaque conteneur d'un **Deployment**, **StatefulSet**, **DaemonSet** ou **CronJob** devient une
+     fiche **Service** : image, tag, empreinte (lue dans le statut des pods), réplicas prêts et
+     voulus, état (disponible, mise à jour en cours, dégradé, indisponible, arrêté à 0 réplica,
+     planifié, suspendu), ports, noms des secrets et des volumes persistants ; jamais les variables
+     d'environnement ni le contenu des secrets ;
+   - les **nœuds** sont rattachés aux ordinateurs inventoriés par leur nom (complet ou court), sinon
+     par leur adresse IP, dans l'entité de la connexion et ses sous-entités ;
+   - une charge disparue passe en « **retirée** », jamais supprimée. Une liste refusée (403), limitée
+     (429) ou trop longue ne retire rien ; après une limite (429), plus aucun appel jusqu'à l'import
+     suivant (rien n'attend). Un import qui ne trouve plus rien alors que des services étaient
+     actifs ne retire rien et le signale : une perte de droits ne vide jamais l'inventaire.
+5. **Versions et vulnérabilités** : les services Kubernetes apparaissent dans la page
+   « Versions des images » comme les services Swarm (version déployée, dernière version, écart, par
+   WUD ou par les registres). Avec une connexion Harbor, leurs images sont rattachées aux artefacts
+   Harbor par l'empreinte (sinon par le tag) et leurs vulnérabilités s'affichent dans l'onglet
+   « Versions » du service et l'onglet « Images Harbor et vulnérabilités ». Les tickets de mise à
+   jour, de fin de support et de vulnérabilité se règlent sur la connexion Kubernetes, comme sur une
+   connexion Portainer (désactivés par défaut).
+
+GLPI 12 refuse par défaut les appels vers un réseau privé : pour un cluster interne, ajouter
+`GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext` à
+`GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS` (`config/local_define.php`).
+
+Limites connues : les init containers et les Jobs isolés (sans CronJob) ne sont pas inventoriés ;
+les pods sans contrôleur non plus. Un « watch » n'est jamais ouvert : chaque import est une lecture
+ponctuelle.
+
+> Testé contre un faux serveur (`tests/mock-kubernetes`, données fictives) et un vrai cluster k3s
+> de laboratoire ; retours bienvenus sur des clusters de production (volume, opérateurs, images
+> multi-architecture) dans [#31](https://github.com/parime/glpi-docker-inventory/issues/31).
 
 ## Liens avec les autres plugins
 

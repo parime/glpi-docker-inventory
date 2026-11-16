@@ -2188,3 +2188,212 @@ msgstr "anonymes Volume %s"
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr "In Portainer zu prüfen"
+
+msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
+msgstr "Für Kubernetes: nach Knotenname, sonst nach IP-Adresse."
+
+msgid "Nœud Kubernetes (control plane)"
+msgstr "Kubernetes-Knoten (Control Plane)"
+
+msgid "Nœud Kubernetes"
+msgstr "Kubernetes-Knoten"
+
+msgid "Version du kubelet"
+msgstr "Kubelet-Version"
+
+msgid "Import depuis Kubernetes"
+msgstr "Import aus Kubernetes"
+
+msgid "L'import lit le cluster sans rien y modifier et tourne toutes les heures."
+msgstr "Der Import liest den Cluster, ohne etwas zu ändern, und läuft stündlich."
+
+msgid "Chaque namespace qui a des charges devient une application ; chaque conteneur, une fiche de service."
+msgstr "Jeder Namespace mit Workloads wird zu einer Anwendung, jeder Container zu einem Diensteintrag."
+
+msgid "Namespaces visibles"
+msgstr "Sichtbare Namespaces"
+
+msgid "Namespaces avec des charges"
+msgstr "Namespaces mit Workloads"
+
+msgid "applications créées"
+msgstr "erstellte Anwendungen"
+
+msgid "À vérifier dans le cluster"
+msgstr "Im Cluster zu prüfen"
+
+msgid "Créer le compte de service en lecture seule"
+msgstr "Schreibgeschütztes Dienstkonto erstellen"
+
+msgid "Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
+msgstr "Das Manifest aus der README anwenden (kubectl apply -f), dann das Token lesen:"
+
+msgid "Cluster sur un réseau privé (GLPI 12)"
+msgstr "Cluster in einem privaten Netz (GLPI 12)"
+
+msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
+msgstr "Nur für Kubernetes in config/local_define.php hinzufügen:"
+
+msgid "Kubernetes remplace Portainer pour les applications qui tournent sur un cluster."
+msgstr "Kubernetes ersetzt Portainer für Anwendungen, die auf einem Cluster laufen."
+
+msgid "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster."
+msgstr "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs und Knoten eines Clusters."
+
+msgid "prêts / voulus"
+msgstr "bereit / gewünscht"
+
+msgid "Application (namespace)"
+msgstr "Anwendung (Namespace)"
+
+msgid "Cluster Kubernetes"
+msgstr "Kubernetes-Cluster"
+
+msgid "Tâches"
+msgstr "Jobs"
+
+msgid "Planification"
+msgstr "Zeitplan"
+
+msgid "État"
+msgstr "Zustand"
+
+msgid "Aucun pod en cours connu pour ce service."
+msgstr "Kein laufender Pod für diesen Dienst bekannt."
+
+msgid "Pods en cours"
+msgstr "Laufende Pods"
+
+msgid "Données importées de Kubernetes en lecture seule."
+msgstr "Schreibgeschützt aus Kubernetes importierte Daten."
+
+msgid "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr "Ein Token ist gespeichert (verschlüsselt): leer lassen, um es zu behalten."
+
+msgid "Jeton du compte de service en lecture seule (voir README)."
+msgstr "Token des schreibgeschützten Dienstkontos (siehe README)."
+
+msgid "Nom libre, par exemple « Cluster production »."
+msgstr "Freier Name, z. B. „Produktions-Cluster“."
+
+msgid "Adresse de l'API du cluster"
+msgstr "Adresse der Cluster-API"
+
+msgid "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
+msgstr "Feld „server“ der kubeconfig-Datei; HTTPS erforderlich."
+
+msgid "Jeton du compte de service"
+msgstr "Token des Dienstkontos"
+
+msgid "Certificat d'autorité du cluster"
+msgstr "Zertifizierungsstelle des Clusters"
+
+msgid "Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système."
+msgstr "Optional: PEM-Inhalt (ca.crt), wenn der Cluster eine eigene Zertifizierungsstelle hat; leer: System-CAs."
+
+msgid "Namespaces ignorés"
+msgstr "Ignorierte Namespaces"
+
+msgid "Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces du système."
+msgstr "Durch Kommas getrennt; „*“ erlaubt (cattle-*). Standard: System-Namespaces."
+
+msgid "Namespace"
+msgstr "Namespace"
+
+#, php-format
+msgid "Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » (%2$s)."
+msgstr "Vom Plugin Docker-Inventar für den Kubernetes-Namespace „%1$s“ (%2$s) erstellt."
+
+msgid "Le jeton du compte de service Kubernetes est obligatoire."
+msgstr "Das Token des Kubernetes-Dienstkontos ist erforderlich."
+
+msgid "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN CERTIFICATE-----...)."
+msgstr "Ungültige Zertifizierungsstelle: den PEM-Inhalt einfügen (-----BEGIN CERTIFICATE-----...)."
+
+#, php-format
+msgid "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, %5$d retirés, %6$d nœuds."
+msgstr "Import abgeschlossen (%1$s): %2$d Namespaces, %3$d Anwendungen, %4$d Dienste, %5$d entfernt, %6$d Knoten."
+
+msgid "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
+msgstr "Das Konto sieht keinen Namespace: seine ClusterRole prüfen (siehe README)."
+
+msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
+msgstr "Lesen für das Dienstkonto verweigert (403): nichts davon wurde entfernt."
+
+msgid "Vérifiez son ClusterRole (voir README)."
+msgstr "Seine ClusterRole prüfen (siehe README)."
+
+msgid "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été retiré."
+msgstr "Keine Workloads gefunden, obwohl der letzte Import welche fand: nichts wurde entfernt."
+
+msgid "Vérifiez les droits du compte de service (voir README)."
+msgstr "Die Rechte des Dienstkontos prüfen (siehe README)."
+
+msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
+msgstr "Liste zu lang, teilweise gelesen: nichts davon wurde entfernt."
+
+#, php-format
+msgid "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce jeton."
+msgstr "Verbindung erfolgreich: Kubernetes %1$s, %2$d Namespace(s) mit diesem Token sichtbar."
+
+#, php-format
+msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
+msgstr "Lesen verweigert (403): %s. Die ClusterRole ergänzen (siehe README)."
+
+msgid "Jeton refusé par le cluster (401) : jeton expiré ou compte de service supprimé ?"
+msgstr "Token vom Cluster abgelehnt (401): Token abgelaufen oder Dienstkonto gelöscht?"
+
+msgid "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir README)."
+msgstr "Lesen für das Dienstkonto verweigert (403): seine ClusterRole prüfen (siehe README)."
+
+msgid "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port 6443 en général)."
+msgstr "Adresse nicht gefunden (404): die Adresse der Cluster-API angeben (meist Port 6443)."
+
+msgid "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
+msgstr "Liste während des Lesens geändert (410): neuer Versuch beim nächsten Import."
+
+msgid "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain import."
+msgstr "Anfragelimit der API erreicht (429): der Rest wird beim nächsten Import gelesen."
+
+msgid "L'API du cluster a répondu par une erreur interne (5xx)."
+msgstr "Die Cluster-API antwortete mit einem internen Fehler (5xx)."
+
+msgid "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README)."
+msgstr "Cluster-Zertifikat nicht erkannt: die Zertifizierungsstelle des Clusters einfügen (siehe README)."
+
+msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
+msgstr "Unerwartete Antwort: Ist das wirklich die API eines Kubernetes-Clusters?"
+
+msgid "Cluster injoignable (réseau, nom, délai...)."
+msgstr "Cluster nicht erreichbar (Netz, Name, Zeitüberschreitung...)."
+
+msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
+msgstr "Import von Namespaces, Workloads und Knoten aus Kubernetes"
+
+msgid "Disponible"
+msgstr "Verfügbar"
+
+msgid "Mise à jour en cours"
+msgstr "Aktualisierung läuft"
+
+msgid "Dégradé"
+msgstr "Beeinträchtigt"
+
+msgid "Indisponible"
+msgstr "Nicht verfügbar"
+
+msgid "Arrêté (0 réplica)"
+msgstr "Angehalten (0 Replikate)"
+
+msgid "Suspendu"
+msgstr "Ausgesetzt"
+
+msgid "Tâche en cours"
+msgstr "Job läuft"
+
+msgid "Planifié"
+msgstr "Geplant"
+
+#, php-format
+msgid "%d tâche(s) active(s)"
+msgstr "%d aktive(r) Job(s)"

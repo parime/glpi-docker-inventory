@@ -1,0 +1,34 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# État d'une charge Kubernetes (Deployment, StatefulSet, DaemonSet, CronJob). #}
+{% set k8s_styles = {
+    k8s_available: ['bg-success-lt', 'ti-circle-check'],
+    k8s_progressing: ['bg-info-lt', 'ti-refresh'],
+    k8s_degraded: ['bg-warning-lt', 'ti-alert-triangle'],
+    k8s_unavailable: ['bg-danger-lt', 'ti-circle-x'],
+    k8s_scaled_down: ['bg-secondary-lt', 'ti-player-pause'],
+    k8s_suspended: ['bg-secondary-lt', 'ti-player-pause'],
+    k8s_active: ['bg-info-lt', 'ti-player-play'],
+    k8s_scheduled: ['bg-blue-lt', 'ti-clock'],
+} %}
+{% for state in service.states %}
+    {% set style = k8s_styles[state]|default(['bg-secondary-lt', 'ti-help']) %}
+    <span class="badge {{ style[0] }} me-1">
+        <i class="ti {{ style[1] }} me-1" aria-hidden="true"></i>{{ service.state_labels[loop.index0]|default(state) }}
+    </span>
+{% else %}
+    <span class="text-muted">-</span>
+{% endfor %}

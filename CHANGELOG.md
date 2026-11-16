@@ -5,6 +5,30 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Source Kubernetes en lecture seule ([#31](https://github.com/parime/glpi-docker-inventory/issues/31)) :
+  nouveau type de connexion « Kubernetes » (adresse de l'API en HTTPS, jeton d'un compte de service
+  chiffré avec la clé de GLPI, certificat d'autorité facultatif, namespaces ignorés, plusieurs
+  clusters). « Tester la connexion » affiche la version du cluster et le nombre de namespaces
+  visibles, et un avertissement, non un succès, si le compte ne voit rien ou ne peut pas lire une
+  ressource. Import (bouton et action automatique horaire `kubernetesimport`) : chaque namespace
+  qui a des charges devient une Application native, chaque conteneur d'un Deployment, StatefulSet,
+  DaemonSet ou CronJob une fiche Service (image, tag, empreinte lue dans le statut des pods,
+  réplicas prêts et voulus, état), nœuds rattachés aux ordinateurs par nom ou adresse IP. Charges
+  disparues « retirées », jamais supprimées ; un import vide ne vide jamais l'inventaire ;
+  pagination (`limit`/`continue`) et limite de requêtes (429) non bloquantes. Mêmes versions
+  (déployée, dernière, écart) et vulnérabilités Harbor que les services Swarm ; tickets réglés sur
+  la connexion Kubernetes comme sur Portainer (désactivés par défaut). Manifeste du ServiceAccount
+  et du ClusterRole en lecture seule dans les README. Faux serveur `tests/mock-kubernetes`
+  (données fictives). Mise à jour automatique depuis la 0.6.0.
+
+### Changed
+
+- Écritures communes des imports (stacks, applications, services, nœuds, retraits) regroupées dans
+  `InventoryStore`, partagé par Portainer et Kubernetes ; le rattachement d'un nœud à un ordinateur
+  sait aussi chercher par adresse IP.
+
 ## [0.6.0] - 2026-11-15
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

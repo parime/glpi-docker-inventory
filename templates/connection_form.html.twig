@@ -21,7 +21,11 @@
 
 {% block form_fields %}
     <input type="hidden" name="type" value="{{ item.fields['type'] }}">
-    {% if is_harbor %}
+    {% if is_kubernetes %}
+        {% set key_helper = has_api_key
+            ? __('Un jeton est enregistré (chiffré) : laisser vide pour le conserver.', 'dockerinventory')
+            : __('Jeton du compte de service en lecture seule (voir README).', 'dockerinventory') %}
+    {% elseif is_harbor %}
         {% set key_helper = has_api_key
             ? __('Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver.', 'dockerinventory')
             : __('Facultatif pour les projets publics.', 'dockerinventory') %}
@@ -39,8 +43,10 @@
         'dockerinventory'
     ) %}
     {% set type_html %}
-        {% set type_color = is_harbor ? 'bg-indigo' : (is_wud ? 'bg-teal' : 'bg-blue') %}
-        {% set type_icon = is_harbor ? 'ti-building-warehouse' : (is_wud ? 'ti-tags' : 'ti-brand-docker') %}
+        {% set type_color = is_kubernetes ? 'bg-azure'
+            : (is_harbor ? 'bg-indigo' : (is_wud ? 'bg-teal' : 'bg-blue')) %}
+        {% set type_icon = is_kubernetes ? 'ti-brand-kubernetes'
+            : (is_harbor ? 'ti-building-warehouse' : (is_wud ? 'ti-tags' : 'ti-brand-docker')) %}
         <span class="badge {{ type_color }} text-white">
             <i class="ti {{ type_icon }} me-1" aria-hidden="true"></i>{{ type_label }}
         </span>
@@ -49,7 +55,9 @@
     {{ fields.field('type_display', type_html, __('Type', 'dockerinventory')) }}
     {{ fields.textField('name', item.fields['name'], __('Name'), {
         required: true,
-        helper: is_harbor
+        helper: is_kubernetes
+            ? __('Nom libre, par exemple « Cluster production ».', 'dockerinventory')
+            : is_harbor
             ? __('Nom libre, par exemple « Harbor production ».', 'dockerinventory')
             : (is_wud
                 ? __('Nom libre, par exemple « WUD production ».', 'dockerinventory')
@@ -58,7 +66,47 @@
     {{ fields.dropdownYesNo('is_active', item.isNewItem() ? 1 : item.fields['is_active'], __('Active'), {
         helper: __("Une connexion inactive n'est pas importée par la tâche automatique.", 'dockerinventory'),
     }) }}
-    {% if is_harbor %}
+    {% if is_kubernetes %}
+        {{ fields.textField('url', item.fields['url'], __("Adresse de l'API du cluster", 'dockerinventory'), {
+            required: true,
+            placeholder: 'https://kubernetes.exemple.test:6443',
+            helper: __('Champ « server » du fichier kubeconfig ; HTTPS obligatoire.', 'dockerinventory'),
+        }) }}
+        {{ fields.passwordField('api_key', '', __('Jeton du compte de service', 'dockerinventory'), {
+            required: item.isNewItem(),
+            clearable: false,
+            helper: key_helper,
+        }) }}
+        {{ fields.textareaField(
+            'ca_certificate',
+            item.fields['ca_certificate'] ?? '',
+            __("Certificat d'autorité du cluster", 'dockerinventory'),
+            {
+                helper: __(
+                    'Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système.',
+                    'dockerinventory'
+                ),
+            }
+        ) }}
+        {{ fields.textareaField(
+            'k8s_excluded_namespaces',
+            item.isNewItem() ? excluded_default : (item.fields['k8s_excluded_namespaces'] ?? ''),
+            __('Namespaces ignorés', 'dockerinventory'),
+            {
+                helper: __(
+                    'Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces du système.',
+                    'dockerinventory'
+                ),
+            }
+        ) }}
+        {{ fields.dropdownField(
+            'ApplianceEnvironment',
+            'applianceenvironments_id',
+            item.fields['applianceenvironments_id'],
+            __('Environnement des applications créées', 'dockerinventory'),
+            {helper: environment_helper}
+        ) }}
+    {% elseif is_harbor %}
         {{ fields.textField('url', item.fields['url'], __('Adresse de Harbor', 'dockerinventory'), {
             required: true,
             placeholder: 'https://harbor.exemple.test',

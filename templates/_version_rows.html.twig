@@ -65,7 +65,7 @@
                         {% endif %}
                         {% if row.stack_name %}
                             <div class="small text-muted">
-                            {{ __('Stack', 'dockerinventory') }} : {{ row.stack_name }}</div>
+                            {{ row.stack_label|default(__('Stack', 'dockerinventory')) }} : {{ row.stack_name }}</div>
                         {% endif %}
                     </td>
                     {% if not hide_appliance %}

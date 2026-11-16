@@ -2188,3 +2188,212 @@ msgstr "volume anonyme %s"
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr "À vérifier dans Portainer"
+
+msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
+msgstr "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
+
+msgid "Nœud Kubernetes (control plane)"
+msgstr "Nœud Kubernetes (control plane)"
+
+msgid "Nœud Kubernetes"
+msgstr "Nœud Kubernetes"
+
+msgid "Version du kubelet"
+msgstr "Version du kubelet"
+
+msgid "Import depuis Kubernetes"
+msgstr "Import depuis Kubernetes"
+
+msgid "L'import lit le cluster sans rien y modifier et tourne toutes les heures."
+msgstr "L'import lit le cluster sans rien y modifier et tourne toutes les heures."
+
+msgid "Chaque namespace qui a des charges devient une application ; chaque conteneur, une fiche de service."
+msgstr "Chaque namespace qui a des charges devient une application ; chaque conteneur, une fiche de service."
+
+msgid "Namespaces visibles"
+msgstr "Namespaces visibles"
+
+msgid "Namespaces avec des charges"
+msgstr "Namespaces avec des charges"
+
+msgid "applications créées"
+msgstr "applications créées"
+
+msgid "À vérifier dans le cluster"
+msgstr "À vérifier dans le cluster"
+
+msgid "Créer le compte de service en lecture seule"
+msgstr "Créer le compte de service en lecture seule"
+
+msgid "Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
+msgstr "Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
+
+msgid "Cluster sur un réseau privé (GLPI 12)"
+msgstr "Cluster sur un réseau privé (GLPI 12)"
+
+msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
+msgstr "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
+
+msgid "Kubernetes remplace Portainer pour les applications qui tournent sur un cluster."
+msgstr "Kubernetes remplace Portainer pour les applications qui tournent sur un cluster."
+
+msgid "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster."
+msgstr "Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster."
+
+msgid "prêts / voulus"
+msgstr "prêts / voulus"
+
+msgid "Application (namespace)"
+msgstr "Application (namespace)"
+
+msgid "Cluster Kubernetes"
+msgstr "Cluster Kubernetes"
+
+msgid "Tâches"
+msgstr "Tâches"
+
+msgid "Planification"
+msgstr "Planification"
+
+msgid "État"
+msgstr "État"
+
+msgid "Aucun pod en cours connu pour ce service."
+msgstr "Aucun pod en cours connu pour ce service."
+
+msgid "Pods en cours"
+msgstr "Pods en cours"
+
+msgid "Données importées de Kubernetes en lecture seule."
+msgstr "Données importées de Kubernetes en lecture seule."
+
+msgid "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
+
+msgid "Jeton du compte de service en lecture seule (voir README)."
+msgstr "Jeton du compte de service en lecture seule (voir README)."
+
+msgid "Nom libre, par exemple « Cluster production »."
+msgstr "Nom libre, par exemple « Cluster production »."
+
+msgid "Adresse de l'API du cluster"
+msgstr "Adresse de l'API du cluster"
+
+msgid "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
+msgstr "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
+
+msgid "Jeton du compte de service"
+msgstr "Jeton du compte de service"
+
+msgid "Certificat d'autorité du cluster"
+msgstr "Certificat d'autorité du cluster"
+
+msgid "Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système."
+msgstr "Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système."
+
+msgid "Namespaces ignorés"
+msgstr "Namespaces ignorés"
+
+msgid "Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces du système."
+msgstr "Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces du système."
+
+msgid "Namespace"
+msgstr "Namespace"
+
+#, php-format
+msgid "Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » (%2$s)."
+msgstr "Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » (%2$s)."
+
+msgid "Le jeton du compte de service Kubernetes est obligatoire."
+msgstr "Le jeton du compte de service Kubernetes est obligatoire."
+
+msgid "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN CERTIFICATE-----...)."
+msgstr "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN CERTIFICATE-----...)."
+
+#, php-format
+msgid "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, %5$d retirés, %6$d nœuds."
+msgstr "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, %5$d retirés, %6$d nœuds."
+
+msgid "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
+msgstr "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
+
+msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
+msgstr "Lecture refusée au compte de service (403) : rien n’en a été retiré."
+
+msgid "Vérifiez son ClusterRole (voir README)."
+msgstr "Vérifiez son ClusterRole (voir README)."
+
+msgid "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été retiré."
+msgstr "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été retiré."
+
+msgid "Vérifiez les droits du compte de service (voir README)."
+msgstr "Vérifiez les droits du compte de service (voir README)."
+
+msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
+msgstr "Liste trop longue, lue en partie : rien n’en a été retiré."
+
+#, php-format
+msgid "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce jeton."
+msgstr "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce jeton."
+
+#, php-format
+msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
+msgstr "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
+
+msgid "Jeton refusé par le cluster (401) : jeton expiré ou compte de service supprimé ?"
+msgstr "Jeton refusé par le cluster (401) : jeton expiré ou compte de service supprimé ?"
+
+msgid "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir README)."
+msgstr "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir README)."
+
+msgid "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port 6443 en général)."
+msgstr "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port 6443 en général)."
+
+msgid "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
+msgstr "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
+
+msgid "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain import."
+msgstr "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain import."
+
+msgid "L'API du cluster a répondu par une erreur interne (5xx)."
+msgstr "L'API du cluster a répondu par une erreur interne (5xx)."
+
+msgid "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README)."
+msgstr "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README)."
+
+msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
+msgstr "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
+
+msgid "Cluster injoignable (réseau, nom, délai...)."
+msgstr "Cluster injoignable (réseau, nom, délai...)."
+
+msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
+msgstr "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
+
+msgid "Disponible"
+msgstr "Disponible"
+
+msgid "Mise à jour en cours"
+msgstr "Mise à jour en cours"
+
+msgid "Dégradé"
+msgstr "Dégradé"
+
+msgid "Indisponible"
+msgstr "Indisponible"
+
+msgid "Arrêté (0 réplica)"
+msgstr "Arrêté (0 réplica)"
+
+msgid "Suspendu"
+msgstr "Suspendu"
+
+msgid "Tâche en cours"
+msgstr "Tâche en cours"
+
+msgid "Planifié"
+msgstr "Planifié"
+
+#, php-format
+msgid "%d tâche(s) active(s)"
+msgstr "%d tâche(s) active(s)"

@@ -23,7 +23,9 @@ namespace GlpiPlugin\Dockerinventory\Compat;
  * Requête GET sortante par le client HTTP de GLPI lui-même, en GLPI 11 (Toolbox::getGuzzleClient())
  * comme en GLPI 12 (Glpi\Toolbox\HttpClient, qui l'a remplacé) : les deux appliquent le proxy
  * configuré dans GLPI. Les redirections ne sont jamais suivies (une redirection pourrait envoyer
- * la clé d'API vers un autre serveur).
+ * la clé d'API vers un autre serveur). Un certificat d'autorité propre à la connexion (cluster
+ * Kubernetes à autorité privée) peut être donné : il remplace alors les autorités du système pour
+ * cette requête seulement.
  */
 final class Http
 {
@@ -32,18 +34,25 @@ final class Http
      * @param array<string, string> $headers
      * @param class-string<\CommonGLPI> $context GLPI 12 : classe qu'un administrateur peut ajouter à
      *        GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS pour autoriser un réseau privé.
+     * @param string|null $caFile Fichier PEM des autorités acceptées (null : celles du système).
      * @return string Corps de la réponse.
      * @throws \Throwable En cas d'échec de transport ou de réponse hors 2xx.
      */
-    public static function get(string $url, array $query, array $headers, string $context, int $timeout = 15): string
-    {
+    public static function get(
+        string $url,
+        array $query,
+        array $headers,
+        string $context,
+        int $timeout = 15,
+        ?string $caFile = null
+    ): string {
         if (class_exists(\Glpi\Toolbox\HttpClient::class)) {
             return (new \Glpi\Toolbox\HttpClient($context))->get($url, [
                 'query'         => $query,
                 'headers'       => $headers,
                 'timeout'       => $timeout,
                 'max_redirects' => 0,
-            ])->getContent();
+            ] + ($caFile !== null ? ['cafile' => $caFile] : []))->getContent();
         }
 
         $response = \Toolbox::getGuzzleClient()->request('GET', $url, [
@@ -52,7 +61,7 @@ final class Http
             'timeout'         => $timeout,
             'allow_redirects' => false,
             'http_errors'     => true,
-        ]);
+        ] + ($caFile !== null ? ['verify' => $caFile] : []));
         // Redirection non suivie : même refus qu'en GLPI 12 (RedirectionException).
         if ($response->getStatusCode() >= 300) {
             throw new \RuntimeException(

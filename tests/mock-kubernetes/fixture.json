@@ -1,0 +1,171 @@
+{
+  "version": {"major": "1", "minor": "31", "gitVersion": "v1.31.4", "platform": "linux/amd64"},
+  "namespaces": [
+    {"metadata": {"name": "boutique", "uid": "ns-0001"}},
+    {"metadata": {"name": "intranet", "uid": "ns-0002"}},
+    {"metadata": {"name": "supervision", "uid": "ns-0003"}},
+    {"metadata": {"name": "bac-a-sable", "uid": "ns-0004"}},
+    {"metadata": {"name": "kube-system", "uid": "ns-0005"}}
+  ],
+  "nodes": [
+    {
+      "metadata": {"name": "k8s-node-01.exemple.test", "uid": "node-k8s-0001",
+                   "labels": {"node-role.kubernetes.io/control-plane": "", "kubernetes.io/os": "linux"}},
+      "spec": {},
+      "status": {
+        "conditions": [{"type": "MemoryPressure", "status": "False"}, {"type": "Ready", "status": "True"}],
+        "addresses": [{"type": "InternalIP", "address": "192.0.2.21"}, {"type": "Hostname", "address": "k8s-node-01"}],
+        "nodeInfo": {"kubeletVersion": "v1.31.4", "containerRuntimeVersion": "containerd://1.7.23"}
+      }
+    },
+    {
+      "metadata": {"name": "k8s-node-02", "uid": "node-k8s-0002", "labels": {"kubernetes.io/os": "linux"}},
+      "spec": {"unschedulable": true},
+      "status": {
+        "conditions": [{"type": "Ready", "status": "Unknown"}],
+        "addresses": [{"type": "InternalIP", "address": "192.0.2.22"}],
+        "nodeInfo": {"kubeletVersion": "v1.31.4", "containerRuntimeVersion": "containerd://1.7.23"}
+      }
+    }
+  ],
+  "replicasets": [
+    {"metadata": {"name": "vitrine-7d9f8c6b5", "namespace": "boutique",
+                  "ownerReferences": [{"kind": "Deployment", "name": "vitrine", "controller": true}]}},
+    {"metadata": {"name": "portail-5c4d3b2a1", "namespace": "intranet",
+                  "ownerReferences": [{"kind": "Deployment", "name": "portail", "controller": true}]}},
+    {"metadata": {"name": "coredns-6f7d8", "namespace": "kube-system",
+                  "ownerReferences": [{"kind": "Deployment", "name": "coredns", "controller": true}]}}
+  ],
+  "deployments": [
+    {
+      "metadata": {"name": "vitrine", "namespace": "boutique", "generation": 3},
+      "spec": {
+        "replicas": 2,
+        "template": {"spec": {
+          "containers": [{
+            "name": "api",
+            "image": "registry.exemple.test:5000/boutique/api:1.9.0",
+            "ports": [{"containerPort": 8080, "protocol": "TCP"}],
+            "env": [
+              {"name": "MODE", "value": "valeur-fictive-jamais-lue"},
+              {"name": "DB_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "vitrine-base", "key": "mot-de-passe"}}}
+            ]
+          }],
+          "imagePullSecrets": [{"name": "registre-boutique"}]
+        }}
+      },
+      "status": {"observedGeneration": 3, "replicas": 2, "updatedReplicas": 2, "readyReplicas": 2}
+    },
+    {
+      "metadata": {"name": "ancienne-api", "namespace": "boutique", "generation": 1},
+      "spec": {"replicas": 0, "template": {"spec": {"containers": [
+        {"name": "api", "image": "registry.exemple.test:5000/boutique/api:1.10.0"}
+      ]}}},
+      "status": {"observedGeneration": 1}
+    },
+    {
+      "metadata": {"name": "portail", "namespace": "intranet", "generation": 1},
+      "spec": {
+        "template": {"spec": {
+          "containers": [
+            {"name": "wiki", "image": "registry.exemple.test:5000/outils/wiki:3.2.0", "ports": [{"containerPort": 80}]},
+            {"name": "journal", "image": "busybox:1.36.1"}
+          ],
+          "volumes": [{"name": "donnees", "persistentVolumeClaim": {"claimName": "portail-donnees"}},
+                      {"name": "certificats", "secret": {"secretName": "portail-tls"}}]
+        }}
+      },
+      "status": {"observedGeneration": 1, "replicas": 1, "updatedReplicas": 1, "readyReplicas": 1}
+    },
+    {
+      "metadata": {"name": "coredns", "namespace": "kube-system", "generation": 1},
+      "spec": {"replicas": 1, "template": {"spec": {"containers": [
+        {"name": "coredns", "image": "registry.k8s.io/coredns/coredns:v1.11.3"}
+      ]}}},
+      "status": {"observedGeneration": 1, "replicas": 1, "updatedReplicas": 1, "readyReplicas": 1}
+    }
+  ],
+  "statefulsets": [
+    {
+      "metadata": {"name": "cache", "namespace": "boutique", "generation": 1},
+      "spec": {
+        "replicas": 1,
+        "template": {"spec": {"containers": [{"name": "redis", "image": "redis:7.0.15"}]}},
+        "volumeClaimTemplates": [{"metadata": {"name": "donnees-cache"}}]
+      },
+      "status": {"observedGeneration": 1, "replicas": 1, "updatedReplicas": 1, "readyReplicas": 0}
+    }
+  ],
+  "daemonsets": [
+    {
+      "metadata": {"name": "collecteur", "namespace": "supervision", "generation": 1},
+      "spec": {"template": {"spec": {"containers": [
+        {"name": "collecteur", "image": "busybox:1.36.1", "ports": [{"containerPort": 9100, "hostPort": 9100}]}
+      ]}}},
+      "status": {"observedGeneration": 1, "desiredNumberScheduled": 2, "updatedNumberScheduled": 2, "numberReady": 1}
+    }
+  ],
+  "cronjobs": [
+    {
+      "metadata": {"name": "sauvegarde", "namespace": "intranet"},
+      "spec": {
+        "schedule": "0 2 * * *",
+        "jobTemplate": {"spec": {"template": {"spec": {
+          "restartPolicy": "OnFailure",
+          "containers": [{"name": "sauvegarde", "image": "registry.exemple.test:5000/outils/sauvegarde:0.17.1"}]
+        }}}}
+      },
+      "status": {"active": [{"kind": "Job", "name": "sauvegarde-29000000"}]}
+    }
+  ],
+  "pods": [
+    {
+      "metadata": {"name": "vitrine-7d9f8c6b5-abcde", "namespace": "boutique", "labels": {"pod-template-hash": "7d9f8c6b5"},
+                   "ownerReferences": [{"kind": "ReplicaSet", "name": "vitrine-7d9f8c6b5", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-01.exemple.test"},
+      "status": {"phase": "Running", "containerStatuses": [{"name": "api",
+        "imageID": "registry.exemple.test:5000/boutique/api@sha256:a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190"}]}
+    },
+    {
+      "metadata": {"name": "vitrine-7d9f8c6b5-fghij", "namespace": "boutique", "labels": {"pod-template-hash": "7d9f8c6b5"},
+                   "ownerReferences": [{"kind": "ReplicaSet", "name": "vitrine-7d9f8c6b5", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-02"},
+      "status": {"phase": "Running", "containerStatuses": [{"name": "api",
+        "imageID": "registry.exemple.test:5000/boutique/api@sha256:a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190a190"}]}
+    },
+    {
+      "metadata": {"name": "portail-5c4d3b2a1-klmno", "namespace": "intranet", "labels": {"pod-template-hash": "5c4d3b2a1"},
+                   "ownerReferences": [{"kind": "ReplicaSet", "name": "portail-5c4d3b2a1", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-01.exemple.test"},
+      "status": {"phase": "Running", "containerStatuses": [
+        {"name": "wiki", "imageID": "registry.exemple.test:5000/outils/wiki@sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"},
+        {"name": "journal", "imageID": "docker.io/library/busybox@sha256:7c3c3cea5d4d6133d6a694d23382f6a7b32652f23855abdba3eb039ca5995447"}
+      ]}
+    },
+    {
+      "metadata": {"name": "cache-0", "namespace": "boutique",
+                   "ownerReferences": [{"kind": "StatefulSet", "name": "cache", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-02"},
+      "status": {"phase": "Pending", "containerStatuses": [{"name": "redis", "imageID": ""}]}
+    },
+    {
+      "metadata": {"name": "collecteur-x1y2z", "namespace": "supervision",
+                   "ownerReferences": [{"kind": "DaemonSet", "name": "collecteur", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-01.exemple.test"},
+      "status": {"phase": "Running", "containerStatuses": [{"name": "collecteur",
+        "imageID": "docker.io/library/busybox@sha256:7c3c3cea5d4d6133d6a694d23382f6a7b32652f23855abdba3eb039ca5995447"}]}
+    },
+    {
+      "metadata": {"name": "sauvegarde-29000000-pqrst", "namespace": "intranet",
+                   "ownerReferences": [{"kind": "Job", "name": "sauvegarde-29000000", "controller": true}]},
+      "spec": {"nodeName": "k8s-node-01.exemple.test"},
+      "status": {"phase": "Running", "containerStatuses": [{"name": "sauvegarde",
+        "imageID": "registry.exemple.test:5000/outils/sauvegarde@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}]}
+    },
+    {
+      "metadata": {"name": "outil-isole", "namespace": "bac-a-sable"},
+      "spec": {"nodeName": "k8s-node-01.exemple.test"},
+      "status": {"phase": "Running", "containerStatuses": [{"name": "outil", "imageID": "docker.io/library/busybox@sha256:7c3c3cea5d4d6133d6a694d23382f6a7b32652f23855abdba3eb039ca5995447"}]}
+    }
+  ]
+}
