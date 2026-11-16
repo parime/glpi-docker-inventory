@@ -41,6 +41,9 @@ class Menu extends CommonGLPI
         return __('Inventaire Docker', 'dockerinventory');
     }
 
+    /**
+     * @return string
+     */
     public static function getIcon()
     {
         return 'ti ti-brand-docker';
