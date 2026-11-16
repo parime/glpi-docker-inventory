@@ -127,7 +127,8 @@ final class KubernetesImporter
 
         // Listes du cluster ; une liste illisible vaut null (rien n'en est déduit ni retiré).
         $lists = [];
-        foreach (['nodes', 'pods', 'replicasets', 'cronjobs', 'deployments', 'statefulsets', 'daemonsets'] as $resource) {
+        $resources = ['nodes', 'pods', 'replicasets', 'cronjobs', 'deployments', 'statefulsets', 'daemonsets'];
+        foreach ($resources as $resource) {
             $lists[$resource] = $this->read($client, $resource, $report);
         }
 

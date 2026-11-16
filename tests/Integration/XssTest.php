@@ -388,7 +388,10 @@ final class XssTest extends TestCase
             'name'                                  => ['LIKE', '%' . self::SCRIPT],
         ]])->current();
         $this->assertIsArray($service);
-        $this->assertEscaped($this->open('front/service.form.php', ['id' => (int) $service['id']]), 'fiche service k8s');
+        $this->assertEscaped(
+            $this->open('front/service.form.php', ['id' => (int) $service['id']]),
+            'fiche service k8s'
+        );
         $this->assertEscaped($this->open('front/version.php'), 'page des versions (k8s)', false);
         $this->assertEscaped($this->open('front/service.php'), 'liste des services (k8s)', false);
         $this->assertEscaped(

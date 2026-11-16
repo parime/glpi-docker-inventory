@@ -118,8 +118,9 @@ final class KubernetesClientTest extends TestCase
         }
         $this->assertSame(
             KubernetesException::CERTIFICATE,
-            KubernetesException::fromThrowable(new \RuntimeException('SSL certificate problem: self-signed certificate'))
-                ->getMessage()
+            KubernetesException::fromThrowable(
+                new \RuntimeException('SSL certificate problem: self-signed certificate')
+            )->getMessage()
         );
         $this->assertSame(
             KubernetesException::UNREACHABLE,
@@ -153,7 +154,9 @@ final class KubernetesClientTest extends TestCase
             'https://kubernetes.exemple.test:6443',
             KubernetesFixture::TOKEN,
             '',
-            static fn (): string => (string) json_encode(['metadata' => ['continue' => 'encore'], 'items' => [['a' => 1]]])
+            static fn (): string => (string) json_encode(
+                ['metadata' => ['continue' => 'encore'], 'items' => [['a' => 1]]]
+            )
         );
         $page = $endless->list('pods');
         $this->assertFalse($page['complete']);

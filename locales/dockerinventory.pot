@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 01:00+0000\n"
+"POT-Creation-Date: 2026-11-16 01:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,8 +62,8 @@ msgstr ""
 #: templates/_service_rows.html.twig templates/vuln_ticket_content.html.twig
 #: templates/eol_ticket_content.html.twig templates/_version_rows.html.twig
 #: templates/ticket_content.html.twig templates/harbor_images.html.twig
-#: src/ImageVersion.php:244 src/ImageVersion.php:613 src/Service.php:105
-#: src/Service.php:337
+#: src/HarborArtifact.php:603 src/ImageVersion.php:244 src/ImageVersion.php:613
+#: src/Service.php:105 src/Service.php:337
 msgid "Stack"
 msgstr ""
 
@@ -586,16 +586,24 @@ msgstr ""
 msgid "conteneurs en cours / conteneurs"
 msgstr ""
 
+#: templates/service_form.html.twig
+msgid "Ports des conteneurs"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Volumes persistants (noms)"
+msgstr ""
+
+#: templates/service_form.html.twig src/Service.php:111
+msgid "Secrets (noms)"
+msgstr ""
+
 #: templates/service_form.html.twig src/Service.php:110
 msgid "Réseaux"
 msgstr ""
 
 #: templates/service_form.html.twig src/Service.php:116
 msgid "Volumes (noms)"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:111
-msgid "Secrets (noms)"
 msgstr ""
 
 #: templates/service_form.html.twig src/Service.php:113
@@ -1161,13 +1169,13 @@ msgid "Jeton du compte de service"
 msgstr ""
 
 #: templates/connection_form.html.twig
-msgid "Certificat d'autorité du cluster"
-msgstr ""
-
-#: templates/connection_form.html.twig
 msgid ""
 "Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; "
 "vide : autorités du système."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Certificat d'autorité du cluster"
 msgstr ""
 
 #: templates/connection_form.html.twig
@@ -1891,6 +1899,10 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
+#: src/HarborArtifact.php:602 src/ImageVersion.php:612 src/Service.php:337
+msgid "Namespace"
+msgstr ""
+
 #: src/ImageVersion.php:69
 msgid "Version d'image"
 msgstr ""
@@ -2002,10 +2014,6 @@ msgstr ""
 
 #: src/ImageVersion.php:366
 msgid "Versions"
-msgstr ""
-
-#: src/ImageVersion.php:612 src/Service.php:337
-msgid "Namespace"
 msgstr ""
 
 #: src/LifecycleProduct.php:140
@@ -2200,7 +2208,7 @@ msgstr ""
 msgid "Inventaire Docker"
 msgstr ""
 
-#: src/Kubernetes/KubernetesImporter.php:182
+#: src/Kubernetes/KubernetesImporter.php:183
 #, php-format
 msgid ""
 "Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » "
@@ -2454,8 +2462,8 @@ msgstr ""
 msgid "Cet environnement n'est pas un cluster Swarm."
 msgstr ""
 
-#: src/Connection.php:1085 src/Connection.php:1092 src/Connection.php:1130
-#: src/Connection.php:1162
+#: src/Connection.php:1085 src/Connection.php:1092 src/Connection.php:1131
+#: src/Connection.php:1165
 msgid "Réseau privé refusé par GLPI (voir README)."
 msgstr ""
 
@@ -2520,104 +2528,104 @@ msgstr ""
 msgid "L'API du cluster a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1132
+#: src/Connection.php:1135
 msgid ""
 "Certificat du cluster non reconnu : coller le certificat d'autorité du "
 "cluster (voir README)."
 msgstr ""
 
-#: src/Connection.php:1136
+#: src/Connection.php:1139
 msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
 msgstr ""
 
-#: src/Connection.php:1139
+#: src/Connection.php:1142
 msgid "Cluster injoignable (réseau, nom, délai...)."
 msgstr ""
 
-#: src/Connection.php:1151
+#: src/Connection.php:1154
 msgid "Compte refusé par le registre (401)."
 msgstr ""
 
-#: src/Connection.php:1152
+#: src/Connection.php:1155
 msgid "Accès refusé par le registre (403)."
 msgstr ""
 
-#: src/Connection.php:1153
+#: src/Connection.php:1156
 msgid "Image introuvable dans le registre, ou privée."
 msgstr ""
 
-#: src/Connection.php:1155
+#: src/Connection.php:1158
 msgid "Limite de requêtes du registre atteinte (429) : nouvel essai plus tard."
 msgstr ""
 
-#: src/Connection.php:1159
+#: src/Connection.php:1162
 msgid "Le registre a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1163
+#: src/Connection.php:1166
 msgid "Réponse inattendue du registre."
 msgstr ""
 
-#: src/Connection.php:1165
+#: src/Connection.php:1168
 msgid "Registre injoignable (réseau, certificat, délai...)."
 msgstr ""
 
-#: src/Connection.php:1169
+#: src/Connection.php:1172
 msgid "Registre non pris en charge : ni Docker Hub, ni un Harbor déclaré."
 msgstr ""
 
-#: src/Connection.php:1173
+#: src/Connection.php:1176
 msgid "Registre privé : renseigner un compte robot sur la connexion Harbor."
 msgstr ""
 
-#: src/Connection.php:1177
+#: src/Connection.php:1180
 msgid ""
 "Docker Hub non interrogé cette fois (limite ou réseau) : nouvel essai plus "
 "tard."
 msgstr ""
 
-#: src/Connection.php:1186
+#: src/Connection.php:1189
 msgid "HTTPS obligatoire (sauf « Autoriser HTTP »)."
 msgstr ""
 
-#: src/Connection.php:1187
+#: src/Connection.php:1190
 msgid "L'adresse ne doit pas contenir d'identifiants."
 msgstr ""
 
-#: src/Connection.php:1188
+#: src/Connection.php:1191
 #, php-format
 msgid "Adresse invalide (exemple : %s)."
 msgstr ""
 
-#: src/Connection.php:1209
+#: src/Connection.php:1212
 msgid ""
 "Dernières versions dans les registres (Docker Hub, Harbor) pour les services "
 "sans WUD"
 msgstr ""
 
-#: src/Connection.php:1215
+#: src/Connection.php:1218
 msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
 msgstr ""
 
-#: src/Connection.php:1221
+#: src/Connection.php:1224
 msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
 msgstr ""
 
-#: src/Connection.php:1226
+#: src/Connection.php:1229
 msgid "Lecture des versions des images depuis What's Up Docker"
 msgstr ""
 
-#: src/Connection.php:1230
+#: src/Connection.php:1233
 msgid ""
 "Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
 msgstr ""
 
-#: src/Connection.php:1322
+#: src/Connection.php:1325
 #, php-format
 msgid "%1$s : %2$s (%3$d conteneurs, %4$d services suivis, %5$d sans service)"
 msgstr ""
 
-#: src/Connection.php:1352
+#: src/Connection.php:1355
 #, php-format
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
 msgstr ""

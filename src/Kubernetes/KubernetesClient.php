@@ -73,7 +73,11 @@ final class KubernetesClient
         ?callable $transport = null,
         private readonly int $pageSize = self::PAGE_SIZE
     ) {
-        $this->transport = $transport ?? static function (string $url, array $query, array $headers) use (
+        $this->transport = $transport ?? static function (
+            string $url,
+            array $query,
+            array $headers
+        ) use (
             $caCertificate
         ): string {
             return Http::get($url, $query, $headers, KubernetesContext::class, 20, self::caFile($caCertificate));

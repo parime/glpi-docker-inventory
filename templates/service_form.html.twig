@@ -60,12 +60,21 @@
             {{ include('@dockerinventory/_state_badges.html.twig', {states: service.states}) }}
         {% endif %}
     {% endset %}
-    {% set lists = {
-        (__('Ports publiés', 'dockerinventory')): service.ports,
-        (__('Réseaux', 'dockerinventory')): service.networks,
-        (__('Volumes (noms)', 'dockerinventory')): service.volumes,
-        (__('Secrets (noms)', 'dockerinventory')): service.secrets,
-    } %}
+    {% if service.is_kubernetes %}
+        {# Kubernetes : ports des conteneurs, volumes persistants ; pas de réseaux nommés. #}
+        {% set lists = {
+            (__('Ports des conteneurs', 'dockerinventory')): service.ports,
+            (__('Volumes persistants (noms)', 'dockerinventory')): service.volumes,
+            (__('Secrets (noms)', 'dockerinventory')): service.secrets,
+        } %}
+    {% else %}
+        {% set lists = {
+            (__('Ports publiés', 'dockerinventory')): service.ports,
+            (__('Réseaux', 'dockerinventory')): service.networks,
+            (__('Volumes (noms)', 'dockerinventory')): service.volumes,
+            (__('Secrets (noms)', 'dockerinventory')): service.secrets,
+        } %}
+    {% endif %}
 
     {{ fields.readOnlyField('name', service.name, __('Name')) }}
     {{ fields.field('status', status_html, __('Statut', 'dockerinventory')) }}

@@ -66,7 +66,8 @@
                 </li>
                 <li class="list-inline-item">
                     <i class="ti ti-archive" aria-hidden="true"></i>
-                    {{ __('Retirés à cet import', 'dockerinventory') }} : <strong>{{ report.retired|default(0) }}</strong>
+                    {{ __('Retirés à cet import', 'dockerinventory') }} :
+                    <strong>{{ report.retired|default(0) }}</strong>
                 </li>
                 <li class="list-inline-item">
                     <i class="ti ti-server" aria-hidden="true"></i>
@@ -134,8 +135,10 @@
                     'dockerinventory'
                 ) }}
             </p>
-            <pre class="mb-0"><code>kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.token}' | base64 -d
-kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.ca\.crt}' | base64 -d</code></pre>
+            <pre class="mb-0"><code>kubectl -n glpi-inventaire get secret glpi-lecture-jeton \
+    -o jsonpath='{.data.token}' | base64 -d
+kubectl -n glpi-inventaire get secret glpi-lecture-jeton \
+    -o jsonpath='{.data.ca\.crt}' | base64 -d</code></pre>
         </details>
         <details class="mt-2 text-muted">
             <summary>{{ __('Cluster sur un réseau privé (GLPI 12)', 'dockerinventory') }}</summary>

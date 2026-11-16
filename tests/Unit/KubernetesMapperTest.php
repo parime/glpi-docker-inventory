@@ -34,7 +34,8 @@ final class KubernetesMapperTest extends TestCase
     private function workloads(string $excluded = KubernetesMapper::DEFAULT_EXCLUDED): array
     {
         $f = KubernetesFixture::load();
-        $index = KubernetesMapper::podIndex($f['pods'], $f['replicasets'], KubernetesMapper::cronJobNames($f['cronjobs']));
+        $cronJobs = KubernetesMapper::cronJobNames($f['cronjobs']);
+        $index = KubernetesMapper::podIndex($f['pods'], $f['replicasets'], $cronJobs);
         $patterns = KubernetesMapper::excludedPatterns($excluded);
         $all = [];
         foreach (KubernetesMapper::WORKLOAD_RESOURCES as $kind => $resource) {
@@ -94,7 +95,10 @@ final class KubernetesMapperTest extends TestCase
         $this->assertSame([], $cache['placement']);
 
         $collector = $all['k8s/daemonset/supervision/collecteur/collecteur'];
-        $this->assertSame([2, 1, 'global'], [$collector['replicas'], $collector['running_replicas'], $collector['mode']]);
+        $this->assertSame(
+            [2, 1, 'global'],
+            [$collector['replicas'], $collector['running_replicas'], $collector['mode']]
+        );
         $this->assertSame(KubernetesMapper::STATE_DEGRADED, $collector['state']);
         $this->assertSame('9100:9100/tcp', $collector['ports']);
 
@@ -147,7 +151,8 @@ final class KubernetesMapperTest extends TestCase
         $this->assertSame('', KubernetesMapper::digestOf($digest));
         $this->assertSame('', KubernetesMapper::digestOf('nginx@sha256:court'));
 
-        $this->assertSame('kube-system, cattle-*', KubernetesMapper::normalizeExcluded(" kube-system,\ncattle-* ; <b>"));
+        $normalized = KubernetesMapper::normalizeExcluded(" kube-system,\ncattle-* ; <b>");
+        $this->assertSame('kube-system, cattle-*', $normalized);
         $patterns = KubernetesMapper::excludedPatterns('kube-*');
         $this->assertTrue(KubernetesMapper::isExcluded('kube-public', $patterns));
         $this->assertFalse(KubernetesMapper::isExcluded('boutique', $patterns));

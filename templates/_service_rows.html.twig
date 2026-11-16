@@ -60,7 +60,11 @@
                     </span>
                     {% if not service.is_swarm %}
                         <div class="mt-1">
-                            {{ include('@dockerinventory/_state_badges.html.twig', {states: service.states}) }}
+                            {% if service.is_kubernetes %}
+                                {{ include('@dockerinventory/_k8s_state_badge.html.twig', {service: service}) }}
+                            {% else %}
+                                {{ include('@dockerinventory/_state_badges.html.twig', {states: service.states}) }}
+                            {% endif %}
                         </div>
                     {% endif %}
                 </td>

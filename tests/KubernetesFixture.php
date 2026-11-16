@@ -56,7 +56,11 @@ final class KubernetesFixture
         ?array &$log = null,
         ?array &$headersLog = null
     ): \Closure {
-        return static function (string $url, array $query, array $headers) use (
+        return static function (
+            string $url,
+            array $query,
+            array $headers
+        ) use (
             $fixture,
             $fail,
             &$log,

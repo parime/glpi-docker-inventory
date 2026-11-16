@@ -2397,3 +2397,9 @@ msgstr "Programado"
 #, php-format
 msgid "%d tâche(s) active(s)"
 msgstr "%d tarea(s) activa(s)"
+
+msgid "Ports des conteneurs"
+msgstr "Puertos de los contenedores"
+
+msgid "Volumes persistants (noms)"
+msgstr "Volúmenes persistentes (nombres)"

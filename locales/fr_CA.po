@@ -2397,3 +2397,9 @@ msgstr "Planifié"
 #, php-format
 msgid "%d tâche(s) active(s)"
 msgstr "%d tâche(s) active(s)"
+
+msgid "Ports des conteneurs"
+msgstr "Ports des conteneurs"
+
+msgid "Volumes persistants (noms)"
+msgstr "Volumes persistants (noms)"

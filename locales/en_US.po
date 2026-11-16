@@ -2397,3 +2397,9 @@ msgstr "Scheduled"
 #, php-format
 msgid "%d tâche(s) active(s)"
 msgstr "%d active job(s)"
+
+msgid "Ports des conteneurs"
+msgstr "Container ports"
+
+msgid "Volumes persistants (noms)"
+msgstr "Persistent volumes (names)"

@@ -1127,7 +1127,10 @@ class Connection extends ConnectionBase
                 "L'API du cluster a répondu par une erreur interne (5xx).",
                 'dockerinventory'
             ),
-            KubernetesException::PRIVATE_NETWORK => __('Réseau privé refusé par GLPI (voir README).', 'dockerinventory'),
+            KubernetesException::PRIVATE_NETWORK => __(
+                'Réseau privé refusé par GLPI (voir README).',
+                'dockerinventory'
+            ),
             KubernetesException::CERTIFICATE => __(
                 "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README).",
                 'dockerinventory'

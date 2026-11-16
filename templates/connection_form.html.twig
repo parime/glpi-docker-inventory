@@ -77,16 +77,15 @@
             clearable: false,
             helper: key_helper,
         }) }}
+        {% set ca_helper = __(
+            'Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système.',
+            'dockerinventory'
+        ) %}
         {{ fields.textareaField(
             'ca_certificate',
             item.fields['ca_certificate'] ?? '',
             __("Certificat d'autorité du cluster", 'dockerinventory'),
-            {
-                helper: __(
-                    'Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; vide : autorités du système.',
-                    'dockerinventory'
-                ),
-            }
+            {helper: ca_helper}
         ) }}
         {{ fields.textareaField(
             'k8s_excluded_namespaces',

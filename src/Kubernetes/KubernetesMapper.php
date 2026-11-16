@@ -456,7 +456,8 @@ final class KubernetesMapper
             }
             $host = (int) ($port['hostPort'] ?? 0);
             $protocol = self::str($port['protocol'] ?? null);
-            $ports[] = ($host > 0 ? $host . ':' : '') . $number . '/' . strtolower($protocol !== '' ? $protocol : 'TCP');
+            $protocol = strtolower($protocol !== '' ? $protocol : 'TCP');
+            $ports[] = ($host > 0 ? $host . ':' : '') . $number . '/' . $protocol;
         }
 
         return self::join($ports);

@@ -257,9 +257,11 @@ final class KubernetesImporterTest extends TestCase
 
         // Nœuds rattachés : par nom court, puis par adresse IP ; pods en cours répartis.
         $nodes = [];
-        foreach ($DB->request(['FROM' => Node::getTable(), 'WHERE' => [
+        foreach (
+            $DB->request(['FROM' => Node::getTable(), 'WHERE' => [
             'plugin_dockerinventory_connections_id' => $this->connectionId,
-        ]]) as $row) {
+            ]]) as $row
+        ) {
             $nodes[(string) $row['hostname']] = $row;
         }
         $this->assertSame($this->computerIds[0], (int) $nodes['k8s-node-01.exemple.test']['computers_id']);
@@ -348,7 +350,8 @@ final class KubernetesImporterTest extends TestCase
         $report = $this->import();
         $this->assertSame(Connection::STATUS_ERROR, $report['status']);
         $this->assertSame(KubernetesException::UNAUTHORIZED, $report['errors'][0]['code']);
-        $this->assertCount(7, array_filter($this->services(), static fn (array $r): bool => (int) $r['is_retired'] === 0));
+        $active = array_filter($this->services(), static fn (array $r): bool => (int) $r['is_retired'] === 0);
+        $this->assertCount(7, $active);
         $this->assertSame(Connection::STATUS_ERROR, (int) $this->connection()->fields['last_import_status']);
     }
 
@@ -422,7 +425,8 @@ final class KubernetesImporterTest extends TestCase
             if ($c === null) {
                 return RegistryClient::dockerHub(
                     'https://hub.exemple.test',
-                    static fn (string $url): string => throw new \RuntimeException('HTTP 404 returned for "' . $url . '"')
+                    static fn (string $url): string
+                        => throw new \RuntimeException('HTTP 404 returned for "' . $url . '"')
                 );
             }
 
@@ -433,7 +437,9 @@ final class KubernetesImporterTest extends TestCase
                 static function (string $url) use ($harborFixture): string {
                     $path = (string) parse_url($url, PHP_URL_PATH);
                     if ($path === '/v2/boutique/api/tags/list') {
-                        return (string) json_encode(['name' => 'boutique/api', 'tags' => ['1.9.0', '1.10.0', 'latest']]);
+                        return (string) json_encode(
+                            ['name' => 'boutique/api', 'tags' => ['1.9.0', '1.10.0', 'latest']]
+                        );
                     }
 
                     return HarborFixture::respond($harborFixture, $path, []);
