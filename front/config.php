@@ -95,13 +95,19 @@ $tab = ConfigPage::tab((string) ($_GET['tab'] ?? ''));
 $renderer = TemplateRenderer::getInstance();
 Html::header(Menu::getTypeName(), '', 'config', 'plugin');
 $tabs = ConfigPage::tabs($tab);
+$navTitle = sprintf('%s : %s', Menu::getTypeName(), __('Setup'));
 
 if ($tab === ConfigPage::TAB_CONNECTIONS) {
-    $renderer->display('@dockerinventory/config_connections.html.twig', ['tabs' => $tabs]);
+    $renderer->display('@dockerinventory/config_connections.html.twig', [
+        'tabs'      => $tabs,
+        'nav_title' => $navTitle,
+        'add_url'   => Connection::getFormURL(),
+    ]);
     Search::show(Connection::class);
 } elseif ($tab === ConfigPage::TAB_REGISTRIES) {
     $renderer->display('@dockerinventory/managed_registries.html.twig', [
         'tabs'         => $tabs,
+        'nav_title'    => $navTitle,
         'text'         => HarborSettings::text(),
         // Hôtes des connexions Harbor des entités actives seulement (#48).
         'harbor_hosts' => HarborArtifact::visibleHarborHosts(),
@@ -139,6 +145,7 @@ if ($tab === ConfigPage::TAB_CONNECTIONS) {
     }
     $renderer->display('@dockerinventory/lifecycle.html.twig', [
         'tabs'         => $tabs,
+        'nav_title'    => $navTitle,
         'settings'     => Settings::get(),
         'source_url'   => LifecycleClient::configuredUrl(),
         'is_default_source' => LifecycleClient::configuredUrl() === LifecycleClient::DEFAULT_URL,

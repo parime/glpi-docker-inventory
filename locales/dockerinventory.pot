@@ -2833,3 +2833,6 @@ msgstr ""
 
 msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
 msgstr ""
+
+msgid "Ajouter une connexion"
+msgstr ""

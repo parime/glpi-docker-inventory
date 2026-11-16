@@ -16,6 +16,10 @@
 {# Onglets des écrans regroupés : sous-pages de la seule entrée de menu Parc > Inventaire Docker
    (Menu::tabs()) ou onglets de la page de configuration du plugin (ConfigPage::tabs()), charte
    commune section 9. tabs : liste de {label, icon, url, active}. #}
+{# nav_title (facultatif) : titre au-dessus des onglets (page de configuration). #}
+{% if nav_title is defined and nav_title %}
+<h2 class="mb-2"><i class="ti ti-settings me-2" aria-hidden="true"></i>{{ nav_title }}</h2>
+{% endif %}
 {% if tabs|length > 1 %}
 <ul class="nav nav-tabs mb-3">
     {% for tab in tabs %}

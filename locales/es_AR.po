@@ -2484,3 +2484,6 @@ msgstr "Ver las imágenes afectadas"
 
 msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
 msgstr "«Soporte desconocido»: imagen sin correspondencia con un producto, o rama ausente de la fuente."
+
+msgid "Ajouter une connexion"
+msgstr "Añadir una conexión"
