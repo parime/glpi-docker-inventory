@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-11-16
+
 ### Added
 
 - Source Kubernetes en lecture seule ([#31](https://github.com/parime/glpi-docker-inventory/issues/31)) :
