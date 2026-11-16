@@ -242,7 +242,7 @@ final class Evidence
         }
 
         return [
-            'has_harbor'     => HarborArtifact::harborTargets() !== [],
+            'has_harbor'     => HarborArtifact::visibleHarborHosts() !== [],
             'counts'         => $overview['deployed_counts'],
             'severities'     => HarborArtifact::severityInfos(),
             'services'       => array_slice($rows, 0, max(0, $limit)),

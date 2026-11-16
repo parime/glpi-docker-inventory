@@ -17,6 +17,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   l'import Portainer, et date du dernier import réussi de chaque connexion (nouvelle table et
   nouvelle colonne, créées à la mise à jour du plugin).
 
+## [0.6.0] - 2026-11-15
+
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Fixed
 
 - Portainer : un compte sans droits ne donne plus un import « Réussi » avec 0 élément
@@ -57,6 +61,11 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Security
 
+- Registres maîtrisés cloisonnés par entité ([#48](https://github.com/parime/glpi-docker-inventory/issues/48)) :
+  l'onglet « Images Harbor », la carte Harbor des services et la page des connexions n'affichent
+  plus que les hôtes des connexions Harbor des entités actives (ils montraient ceux de toutes les
+  entités) ; la provenance des images reste évaluée avec tous les registres maîtrisés. Cas ajouté à
+  la matrice d'accès (objet d'une autre entité).
 - Contrôles d'accès et échappement imposés en CI ([#43](https://github.com/parime/glpi-docker-inventory/issues/43),
   [#38](https://github.com/parime/glpi-docker-inventory/issues/38)) : chaque page de `front/` doit
   appeler un contrôle de droits (`check-entrypoints-auth.sh`) et figurer dans la matrice d'accès

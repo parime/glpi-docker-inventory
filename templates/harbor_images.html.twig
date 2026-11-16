@@ -94,8 +94,10 @@
             <p class="text-muted small">
                 <i class="ti ti-building-warehouse me-1" aria-hidden="true"></i>
                 {{ __('Registres maîtrisés', 'dockerinventory') }} :
-                {% if managed_hosts is empty %}
+                {% if managed_hosts is empty and managed_hidden|default(0) == 0 %}
                     {{ __('aucun (provenance des images non évaluée)', 'dockerinventory') }}
+                {% elseif managed_hosts is empty %}
+                    <code>-</code>
                 {% else %}
                     {% for host in managed_hosts %}<code class="me-1">{{ host }}</code>{% endfor %}
                 {% endif %}

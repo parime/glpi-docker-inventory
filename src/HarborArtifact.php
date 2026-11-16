@@ -306,6 +306,59 @@ class HarborArtifact extends CommonDBTM
     }
 
     /**
+     * Registres maîtrisés à afficher : ceux de managedHosts(), sans les hôtes qui n'appartiennent
+     * qu'à des connexions Harbor hors des entités actives (cloisonnement par entité, #48). La
+     * provenance des images reste évaluée avec la liste complète.
+     *
+     * @return list<string>
+     */
+    public static function visibleManagedHosts(): array
+    {
+        $visible = array_flip(self::visibleHarborHosts());
+        $hidden = [];
+        foreach (self::harborTargets() as $target) {
+            if ($target['host'] !== '' && !isset($visible[$target['host']])) {
+                $hidden[$target['host']] = true;
+            }
+        }
+
+        return array_values(array_filter(
+            self::managedHosts(),
+            static fn (string $host): bool => isset($visible[$host]) || !isset($hidden[$host])
+        ));
+    }
+
+    /**
+     * Hôtes des connexions Harbor actives visibles dans les entités actives.
+     *
+     * @return list<string>
+     */
+    public static function visibleHarborHosts(): array
+    {
+        global $DB;
+
+        $ids = [];
+        foreach (
+            $DB->request([
+                'SELECT' => ['id'],
+                'FROM'   => Connection::getTable(),
+                'WHERE'  => ['is_active' => 1, 'type' => Connection::TYPE_HARBOR]
+                    + (new DbUtils())->getEntitiesRestrictCriteria(Connection::getTable(), '', '', true),
+            ]) as $row
+        ) {
+            $ids[(int) $row['id']] = true;
+        }
+        $hosts = [];
+        foreach (self::harborTargets() as $target) {
+            if (isset($ids[$target['id']]) && $target['host'] !== '') {
+                $hosts[] = $target['host'];
+            }
+        }
+
+        return array_values(array_unique($hosts));
+    }
+
+    /**
      * Relire les connexions et les artefacts (tests, après une lecture dans la même requête).
      */
     public static function resetCache(): void
@@ -487,7 +540,7 @@ class HarborArtifact extends CommonDBTM
             'method_label'  => self::methodLabels()[$link['method']] ?? '',
             'provenance'    => self::provenanceInfos()[$provenance],
             'provenance_code' => $provenance,
-            'managed_hosts' => $managed,
+            'managed_hosts' => self::visibleManagedHosts(),
             'has_harbor'    => self::harborTargets() !== [],
             'ticket'        => $ticket,
             'page_url'      => self::getPageURL(),
@@ -516,7 +569,7 @@ class HarborArtifact extends CommonDBTM
      * @param bool $deployedOnly Seulement les artefacts déployés.
      * @return array{deployed: list<array<string, mixed>>, artifacts: list<array<string, mixed>>,
      *     counts: array<string, int>, deployed_counts: array<string, int>, projects: list<string>,
-     *     unmanaged: int, managed_hosts: list<string>}
+     *     unmanaged: int, managed_hosts: list<string>, managed_hidden: int}
      */
     public static function overview(string $severity, bool $unmanagedOnly, string $project, bool $deployedOnly): array
     {
@@ -604,7 +657,8 @@ class HarborArtifact extends CommonDBTM
             'deployed_counts' => $deployedCounts,
             'projects'        => $projectNames,
             'unmanaged'       => $unmanaged,
-            'managed_hosts'   => $managed,
+            'managed_hosts'   => self::visibleManagedHosts(),
+            'managed_hidden'  => count($managed) - count(self::visibleManagedHosts()),
         ];
     }
 

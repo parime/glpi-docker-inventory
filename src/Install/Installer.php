@@ -510,7 +510,7 @@ final class Installer
             $migration->addField($table, $field, $definition, ['after' => $after]);
             $after = $field;
         }
-        // 0.6.0 => date du dernier import réussi (#10), preuve de fraîcheur de l'inventaire.
+        // 0.7.0 => date du dernier import réussi (#10), preuve de fraîcheur de l'inventaire.
         $hadSuccessDate = $DB->fieldExists($table, 'last_success_date', false);
         $migration->addField($table, 'last_success_date', 'timestamp NULL DEFAULT NULL', [
             'after' => 'last_import_report',
