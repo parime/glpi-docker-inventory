@@ -39,6 +39,7 @@ use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Tests\HarborFixture;
 use GlpiPlugin\Dockerinventory\Tests\KubernetesFixture;
+use GlpiPlugin\Dockerinventory\Version\VersionChange;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use PHPUnit\Framework\TestCase;
 
@@ -292,6 +293,26 @@ final class KubernetesImporterTest extends TestCase
         $this->fixture = $kept;
         $this->import();
         $this->assertSame(0, (int) $this->services()['k8s/statefulset/boutique/cache/redis']['is_retired']);
+    }
+
+    public function testNewTagIsRecordedInTheVersionJournal(): void
+    {
+        global $DB;
+
+        $this->import();
+        $this->fixture['deployments'][0]['spec']['template']['spec']['containers'][0]['image']
+            = 'registry.exemple.test:5000/boutique/api:1.10.0';
+        $this->import();
+        $vitrine = $this->services()['k8s/deployment/boutique/vitrine/api'];
+        $this->assertSame('1.10.0', $vitrine['tag']);
+        $change = $DB->request(['FROM' => VersionChange::TABLE, 'WHERE' => [
+            'plugin_dockerinventory_services_id' => (int) $vitrine['id'],
+        ]])->current();
+        $this->assertIsArray($change);
+        $this->assertSame(VersionChange::KIND_TAG, $change['kind']);
+        $this->assertSame('1.9.0', $change['old_tag']);
+        $this->assertNotNull($this->connection()->fields['last_success_date']);
+        $DB->delete(VersionChange::TABLE, ['plugin_dockerinventory_connections_id' => $this->connectionId]);
     }
 
     public function testForbiddenListWarnsAndRetiresNothingOfIt(): void
