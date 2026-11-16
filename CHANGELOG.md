@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.8.0] - 2026-11-16
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Added
 
 - Source Kubernetes en lecture seule ([#31](https://github.com/parime/glpi-docker-inventory/issues/31)) :
