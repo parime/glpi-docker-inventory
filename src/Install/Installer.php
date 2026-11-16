@@ -62,6 +62,7 @@ final class Installer
     public const CRON_WUD = 'wudimport';
     public const CRON_REGISTRY = 'registrycheck';
     public const CRON_HARBOR = 'harborimport';
+    public const CRON_KUBERNETES = 'kubernetesimport';
 
     /** Colonnes affichées par défaut dans la liste des services (options de recherche de Service). */
     private const DEFAULT_COLUMNS = [8, 3, 4, 6, 7, 10, 11];
@@ -96,7 +97,8 @@ final class Installer
             }
         }
 
-        foreach ([self::CRON_NAME, self::CRON_WUD, self::CRON_REGISTRY, self::CRON_HARBOR] as $cron) {
+        $crons = [self::CRON_NAME, self::CRON_WUD, self::CRON_REGISTRY, self::CRON_HARBOR, self::CRON_KUBERNETES];
+        foreach ($crons as $cron) {
             CronTask::register(Connection::class, $cron, HOUR_TIMESTAMP, [
                 'state'         => CronTask::STATE_WAITING,
                 'logs_lifetime' => 30,
@@ -154,6 +156,8 @@ final class Installer
                 `username` varchar(255) NOT NULL DEFAULT '',
                 `api_key` text,
                 `registry_host` varchar(255) NOT NULL DEFAULT '',
+                `ca_certificate` text,
+                `k8s_excluded_namespaces` text,
                 `allow_http` tinyint NOT NULL DEFAULT '0',
                 `applianceenvironments_id` int {$sign} NOT NULL DEFAULT '0',
                 `ticket_enabled` tinyint NOT NULL DEFAULT '0',
@@ -478,6 +482,9 @@ final class Installer
         $migration->addField($table, 'type', "varchar(32) NOT NULL DEFAULT 'portainer'", ['after' => 'is_active']);
         $migration->addField($table, 'username', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'url']);
         $migration->addField($table, 'registry_host', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'api_key']);
+        // 0.7.0 => connexions Kubernetes (#31) : certificat d'autorité, namespaces ignorés.
+        $migration->addField($table, 'ca_certificate', 'text', ['after' => 'registry_host']);
+        $migration->addField($table, 'k8s_excluded_namespaces', 'text', ['after' => 'ca_certificate']);
         // Tickets de mise à jour (désactivés par défaut).
         $sign = DBConnection::getDefaultPrimaryKeySignOption();
         $ticketFields = [

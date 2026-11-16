@@ -595,6 +595,12 @@ class HarborArtifact extends CommonDBTM
                 'name'        => (string) $row['name'],
                 'url'         => Service::getFormURLWithID((int) $row['id']),
                 'stack_name'  => (string) $row['stack_name'],
+                'stack_label' => in_array(
+                    (string) ($row['kind'] ?? ''),
+                    Kubernetes\KubernetesMapper::workloadKinds(),
+                    true
+                ) ? __('Namespace', 'dockerinventory')
+                    : __('Stack', 'dockerinventory'),
                 'image'       => (string) $row['image'],
                 'tag'         => (string) $row['tag'],
                 'provenance'  => self::provenanceInfos()[$provenance],
@@ -688,7 +694,7 @@ class HarborArtifact extends CommonDBTM
         $rows = [];
         foreach (
             $DB->request([
-                'SELECT' => ['id', 'name', 'stack_name', 'image', 'tag', 'digest', 'entities_id'],
+                'SELECT' => ['id', 'name', 'stack_name', 'kind', 'image', 'tag', 'digest', 'entities_id'],
                 'FROM'   => Service::getTable(),
                 'WHERE'  => ['is_retired' => 0, ['NOT' => ['image' => '']]]
                     + (new DbUtils())->getEntitiesRestrictCriteria(Service::getTable(), '', '', true),

@@ -456,6 +456,7 @@ class ImageVersion extends CommonDBTM
                 'v.*',
                 's.name AS service_name',
                 's.stack_name',
+                's.kind AS service_kind',
                 's.appliances_id',
                 's.is_retired AS service_retired',
                 'a.name AS appliance_name',
@@ -604,6 +605,12 @@ class ImageVersion extends CommonDBTM
                 'is_retired' => (bool) ($row['service_retired'] ?? false),
             ] : null,
             'stack_name'       => (string) ($row['stack_name'] ?? ''),
+            'stack_label'      => in_array(
+                (string) ($row['service_kind'] ?? ''),
+                Kubernetes\KubernetesMapper::workloadKinds(),
+                true
+            ) ? __('Namespace', 'dockerinventory')
+                : __('Stack', 'dockerinventory'),
             'appliance'        => $applianceId > 0 && ($row['appliance_name'] ?? null) !== null ? [
                 'name' => (string) $row['appliance_name'],
                 'url'  => Appliance::canView() ? Appliance::getFormURLWithID($applianceId) : '',

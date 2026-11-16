@@ -127,7 +127,7 @@ final class UpdateTickets
             'WHERE'      => [
                 's.id'             => $serviceIds,
                 's.is_retired'     => 0,
-                'c.type'           => Connection::TYPE_PORTAINER,
+                'c.type'           => Connection::WORKLOAD_TYPES,
                 'c.is_active'      => 1,
                 'c.ticket_enabled' => 1,
             ],

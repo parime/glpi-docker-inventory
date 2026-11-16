@@ -36,6 +36,9 @@ dockerinventory/
 │   │                          rendu ; tâches automatiques horaires
 │   ├── Importer.php           import Portainer : stacks, services, nœuds, tâches en cours, retraits ;
 │   │                          hôtes autonomes : stacks et projets Compose, conteneurs, hôte
+│   ├── InventoryStore.php     écritures communes des imports (Portainer, Kubernetes) : stacks et
+│   │                          applications, services, nœuds rattachés (nom ou adresse IP), répartition,
+│   │                          retraits, compte rendu
 │   ├── ImageVersion.php       version d'image d'un service (ou d'un conteneur sans service) ; onglet
 │   │                          « Versions » des services et des applications, page et recherche
 │   ├── Service.php            service Swarm, service Compose ou conteneur autonome (lecture seule) ;
@@ -64,6 +67,16 @@ dockerinventory/
 │   │   ├── PortainerException.php  codes d'erreur stables, jamais le texte d'origine ni la clé
 │   │   ├── PortainerMapper.php     réponse Docker → valeurs enregistrées (fonctions pures)
 │   │   └── UrlPolicy.php           HTTPS obligatoire sauf autorisation, ni identifiants ni requête
+│   ├── Kubernetes/            source Kubernetes (#31)
+│   │   ├── KubernetesClient.php    lecture seule : GET /version, /api/v1/{namespaces,nodes,pods},
+│   │   │                           /apis/apps/v1/{deployments,statefulsets,daemonsets,replicasets},
+│   │   │                           /apis/batch/v1/cronjobs ; jeton Bearer, limit/continue, certificat
+│   │   │                           d'autorité de la connexion, transport injectable
+│   │   ├── KubernetesContext.php   contexte réseau (réseaux privés autorisés sous GLPI 12)
+│   │   ├── KubernetesException.php codes stables, jamais le texte d'origine ni le jeton
+│   │   ├── KubernetesMapper.php    réponses => nœuds, charges (une par conteneur), pods => empreintes et
+│   │   │                           répartition, états (fonctions pures)
+│   │   └── KubernetesImporter.php  lecture d'une connexion Kubernetes, retraits, garde-fous
 │   ├── Wud/
 │   │   ├── WudClient.php      lecture seule de /api/app et /api/containers, authentification basique
 │   │   ├── WudContext.php     contexte réseau (réseaux privés autorisés sous GLPI 12)
@@ -110,6 +123,7 @@ dockerinventory/
     ├── mock-wud/              faux WUD (Python, format WUD 8.x) et jeu de données fictif
     ├── mock-registry/         faux registre (Python) : tags façon Docker Hub, /v2/.../tags/list façon Harbor
     ├── mock-harbor/           faux Harbor 2.x (Python) : projets, dépôts, artefacts, analyses, tags
+    ├── mock-kubernetes/       faux API Kubernetes (Python, HTTPS facultatif) : listes paginées, 403, 429
     └── mock-lifecycle/        fausse source des cycles de vie (Python, API v1 et ancienne API), dates
                                relatives (+30d) et cycles fictifs
 ```
@@ -118,7 +132,7 @@ dockerinventory/
 
 | Table | Contenu |
 | --- | --- |
-| `glpi_plugin_dockerinventory_connections` | Connexion Portainer, WUD ou Harbor (`type`) : URL, clé ou mot de passe chiffré, utilisateur (WUD) ou compte robot (Harbor), hôte du registre dans les images (Harbor), HTTP autorisé ou non, entité, environnement des applications créées (Portainer), dernier import et son compte rendu |
+| `glpi_plugin_dockerinventory_connections` | Connexion Portainer, WUD, Harbor ou Kubernetes (`type`) : URL, clé, jeton ou mot de passe chiffré, certificat d'autorité et namespaces ignorés (Kubernetes), utilisateur (WUD) ou compte robot (Harbor), hôte du registre dans les images (Harbor), HTTP autorisé ou non, entité, environnement des applications créées (Portainer), dernier import et son compte rendu |
 | `glpi_plugin_dockerinventory_stacks` | Stack Swarm ou Compose de Portainer (`stack_uid`), ou projet Compose hors Portainer (`stack_uid` 0, `compose_project`) ↔ Application GLPI, nature (`kind`), état « retiré » |
 | `glpi_plugin_dockerinventory_services` | Service Swarm, service Compose ou conteneur autonome (`kind`) : stack, Application, image, tag, empreinte, réplicas voulus et en cours (conteneurs et conteneurs en cours hors Swarm), ports, réseaux, volumes et secrets par leur nom, état des conteneurs, politique de redémarrage, identifiants et noms des conteneurs (rattachement WUD), état « retiré » |
 | `glpi_plugin_dockerinventory_nodes` | Nœud Swarm ou hôte autonome (rôle `standalone`) : nom d'hôte, rôle, état, version de Docker, ordinateur GLPI rattaché |
@@ -294,9 +308,39 @@ dockerinventory/
 - Désinstallation : tables et réglage supprimés, tickets gardés.
 - Corrélation des vulnérabilités de GRC Manager : #10.
 
+## Kubernetes (#31)
+
+- Lecture seule de l'API du cluster avec le jeton d'un compte de service (ClusterRole `get`, `list`,
+  `watch` sur namespaces, nodes, pods, deployments, statefulsets, daemonsets, replicasets,
+  cronjobs) : uniquement des GET, jamais de « watch ». Jeton chiffré dans `api_key` (champ
+  sécurisé), jamais réaffiché ; HTTPS obligatoire ; certificat d'autorité facultatif
+  (`ca_certificate`, PEM vérifié par OpenSSL, écrit dans un fichier temporaire nommé d'après son
+  empreinte et passé au client HTTP de GLPI : `cafile` sous GLPI 12, `verify` sous GLPI 11).
+- Listes de tout le cluster paginées (`limit=500`, `continue`), 40 pages au plus (au-delà : lue en
+  partie, rien n'en est retiré). 403 sur une liste : avertissement, rien n'en est retiré ; 429 :
+  plus aucun appel jusqu'à l'import suivant, import « partiel » ; 401 ou namespaces illisibles :
+  échec, rien n'est modifié.
+- Mêmes tables que Portainer : namespace = stack de nature `namespace` (`endpoint_uid` 0,
+  `compose_project` = nom), application créée seulement pour un namespace qui a des charges ;
+  conteneur d'une charge = service (`kind` : `deployment`, `statefulset`, `daemonset`, `cronjob` ;
+  `service_uid` « k8s/nature/namespace/nom/conteneur », `stack_name` = namespace, `mode` =
+  planification d'un CronJob, `state` = état `k8s_*`) ; nœud = nœud (rôle `k8s_control_plane` ou
+  `k8s_worker`, version du kubelet), rattaché à l'ordinateur du même nom, sinon de la même adresse
+  IP (`glpi_ipaddresses`). Pods rattachés à leur charge par leurs propriétaires (ReplicaSet =>
+  Deployment, Job « <cronjob>-<minutes> » => CronJob) : empreinte la plus vue (imageID) et pods en
+  cours par nœud. Init containers, Jobs isolés et pods sans contrôleur ignorés.
+- Namespaces ignorés (`k8s_excluded_namespaces`, défaut `kube-system, kube-public,
+  kube-node-lease`, `*` accepté) : leurs charges ne sont pas importées (retirées si elles l'étaient).
+- Retraits : services des natures lues en entier ; namespaces si toutes les natures sont lues ; nœuds
+  si leur liste est lue ; aucun si l'import ne trouve plus aucune charge alors que des services
+  étaient actifs (avertissement). Pods illisibles : l'empreinte enregistrée est gardée.
+- Versions (WUD, registres), Harbor et tickets : rien de propre à Kubernetes ; les services sont
+  traités comme ceux de Portainer, tickets réglés sur la connexion Kubernetes
+  (`Connection::WORKLOAD_TYPES`).
+
 ## Règles communes
 
-- Aucune action d'écriture vers Portainer, WUD, Harbor ou un registre (uniquement des GET).
+- Aucune action d'écriture vers Portainer, WUD, Harbor, Kubernetes ou un registre (uniquement des GET).
 - Aucun changement automatique de statut, priorité, affectation ou droits dans GLPI.
 - Pas de SQL brut hors de l'installateur ; Twig pour tout l'affichage.
 - Appels HTTP par le client de GLPI ; sous GLPI 12, les adresses privées ne sont joignables que si

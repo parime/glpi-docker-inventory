@@ -316,6 +316,116 @@ the same digest. Image not scanned or failed scan: no ticket.
 > Written from the public documentation of the Harbor 2.x API and a fake Harbor
 > (`tests/mock-harbor`, fictitious data); **to be validated on a real Harbor 2.x**.
 
+## Usage: Kubernetes
+
+For applications running on a Kubernetes cluster (without Portainer), the plugin reads the cluster
+API directly, **read-only**: only `GET` requests, with the token of a service account limited to
+`get`, `list` and `watch`. Several clusters: one connection per cluster.
+
+1. **In the cluster**, create the service account and its read-only ClusterRole:
+
+```yaml
+# glpi-inventaire-lecture.yaml : compte de service en lecture seule pour GLPI
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: glpi-inventaire
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: glpi-lecture
+  namespace: glpi-inventaire
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: glpi-inventaire-lecture
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "nodes", "pods"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: glpi-inventaire-lecture
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: glpi-inventaire-lecture
+subjects:
+  - kind: ServiceAccount
+    name: glpi-lecture
+    namespace: glpi-inventaire
+---
+# Jeton longue durée du compte de service (Kubernetes 1.24 et plus).
+apiVersion: v1
+kind: Secret
+metadata:
+  name: glpi-lecture-jeton
+  namespace: glpi-inventaire
+  annotations:
+    kubernetes.io/service-account.name: glpi-lecture
+type: kubernetes.io/service-account-token
+```
+
+   Then get the token, the certificate authority and the API address, and check that the account
+   cannot change anything (the last command must answer `no`):
+
+```sh
+kubectl apply -f glpi-inventaire-lecture.yaml
+kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.token}' | base64 -d
+kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.ca\.crt}' | base64 -d
+kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
+kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventaire:glpi-lecture
+```
+
+2. **In GLPI**, *Setup > Docker connections*: "Add", choose **Kubernetes**, then enter the API
+   address (`https://…:6443`, HTTPS required), the token (encrypted with the GLPI key, never shown
+   again) and, if the cluster has its own authority (usual case), the content of the certificate
+   authority (`ca.crt`). System namespaces (`kube-system`, `kube-public`, `kube-node-lease`) are
+   ignored by default; the list can be changed on the connection (`*` accepted, e.g. `cattle-*`).
+3. **Test the connection**: shows the cluster version and the number of visible namespaces. If the
+   account sees no namespace, or cannot read one of the resources, the test shows a **warning**
+   naming them, not a success.
+4. **Import now** (or wait for the hourly automatic action `kubernetesimport`):
+   - each namespace with at least one workload becomes a native GLPI **Appliance** (the one with the
+     same name in the entity if it exists, never modified; otherwise a new one, with the
+     environment chosen on the connection);
+   - each container of a **Deployment**, **StatefulSet**, **DaemonSet** or **CronJob** becomes a
+     **Service** record: image, tag, digest (read from the pod status), ready and desired replicas,
+     state, ports, names of secrets and persistent volumes; never environment variables nor secret
+     contents;
+   - **nodes** are linked to inventoried computers by name (full or short), otherwise by IP address,
+     in the connection entity and its sub-entities;
+   - a vanished workload becomes "**retired**", never deleted. A refused (403), rate-limited (429)
+     or too long list retires nothing; after a rate limit (429), no more calls until the next
+     import (nothing waits). An import that finds nothing while services were active retires
+     nothing and says so: losing rights never empties the inventory.
+5. **Versions and vulnerabilities**: Kubernetes services appear on the "Image versions" page like
+   Swarm services. With a Harbor connection, their images are linked to Harbor artifacts by digest
+   (otherwise by tag) and their vulnerabilities are shown in the service "Versions" tab and the
+   "Harbor images and vulnerabilities" tab. Update, end-of-support and vulnerability tickets are set
+   on the Kubernetes connection, like on a Portainer connection (disabled by default).
+
+GLPI 12 refuses calls to private networks by default: for an internal cluster, add
+`GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext` to
+`GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS` (`config/local_define.php`).
+
+Known limits: init containers, standalone Jobs (without CronJob) and pods without a controller are
+not inventoried. No watch is ever opened: each import is a one-off read.
+
+> Tested against a fake server (`tests/mock-kubernetes`, fictitious data) and a real k3s lab
+> cluster; feedback on production clusters (volume, operators, multi-architecture images) welcome in
+> [#31](https://github.com/parime/glpi-docker-inventory/issues/31).
+
 ## Links with the other plugins
 
 - **GRC Manager** ([glpi-iso27001-management](https://github.com/parime/glpi-iso27001-management)):

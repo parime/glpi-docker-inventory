@@ -71,6 +71,8 @@ final class AccessControlTest extends TestCase
 
     private int $connectionB = 0;
 
+    private int $kubernetesB = 0;
+
     /** @var array<string, int> Connexions Harbor des entités A et B, par lettre. */
     private array $harbors = [];
 
@@ -170,7 +172,14 @@ final class AccessControlTest extends TestCase
                 'digest'      => 'sha256:' . str_repeat($letter, 64),
             ]);
         }
-        foreach ([$this->serviceA, $this->serviceB, $this->connectionB, $this->applianceB] as $id) {
+        $this->kubernetesB = (int) (new Connection())->add([
+            'name'        => 'kubernetes-b-' . $this->suffix,
+            'type'        => Connection::TYPE_KUBERNETES,
+            'entities_id' => $this->entityB,
+            'url'         => 'https://kubernetes-b.exemple.test:6443',
+            'api_key'     => 'jeton_fictif_kubernetes',
+        ]);
+        foreach ([$this->serviceA, $this->serviceB, $this->connectionB, $this->kubernetesB, $this->applianceB] as $id) {
             $this->assertGreaterThan(0, $id);
         }
         foreach (['a' => $this->entityA, 'b' => $this->entityB] as $letter => $entity) {
@@ -207,6 +216,7 @@ final class AccessControlTest extends TestCase
         (new Service())->delete(['id' => $this->serviceA], true);
         (new Service())->delete(['id' => $this->serviceB], true);
         (new Connection())->delete(['id' => $this->connectionB], true);
+        (new Connection())->delete(['id' => $this->kubernetesB], true);
         foreach ($this->harbors as $id) {
             (new Connection())->delete(['id' => $id], true);
         }
@@ -291,6 +301,7 @@ final class AccessControlTest extends TestCase
             'front/connection.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
         ];
         yield 'nouvelle connexion' => ['front/connection.form.php', [], []];
+        yield 'nouvelle connexion Kubernetes' => ['front/connection.form.php', ['type' => 'kubernetes'], []];
         foreach (['add', 'update', 'purge', 'test', 'import', 'harbor_import', 'registry_check'] as $action) {
             yield 'connexion : ' . $action => ['front/connection.form.php', [], [$action => 1, 'id' => 1]];
         }
@@ -326,6 +337,8 @@ final class AccessControlTest extends TestCase
             $this->assertRefused($page);
         }
         $this->assertRefused('front/connection.form.php', [], ['import' => 1, 'id' => $this->connectionB]);
+        $this->assertRefused('front/connection.form.php', [], ['test' => 1, 'id' => $this->kubernetesB]);
+        $this->assertRefused('front/connection.form.php', ['type' => 'kubernetes']);
         $this->assertFalse(Connection::canView());
         $this->assertFalse(LifecycleProduct::canView());
 
@@ -365,6 +378,20 @@ final class AccessControlTest extends TestCase
         $connection = new Connection();
         $this->assertTrue($connection->getFromDB($this->connectionB));
         $this->assertSame('portainer-b-' . $this->suffix, $connection->fields['name']);
+
+        // Connexion Kubernetes d'une autre entité : ni fiche, ni test, ni import (#31).
+        $this->assertFalse((new Connection())->can($this->kubernetesB, READ));
+        $this->assertRefused('front/connection.form.php', ['id' => $this->kubernetesB]);
+        foreach (['update', 'test', 'import', 'purge'] as $action) {
+            $this->assertRefused(
+                'front/connection.form.php',
+                [],
+                [$action => 1, 'id' => $this->kubernetesB, 'name' => $renamed]
+            );
+        }
+        $this->assertTrue($connection->getFromDB($this->kubernetesB));
+        $this->assertSame('kubernetes-b-' . $this->suffix, $connection->fields['name']);
+        $this->assertNull($connection->fields['last_import_date']);
 
         // Listes et onglets : rien de l'entité B.
         $versions = $this->open('front/version.php');

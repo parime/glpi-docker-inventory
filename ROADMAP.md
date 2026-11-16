@@ -44,6 +44,13 @@ Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 e
   défaut). Fait, à valider sur un vrai Harbor 2.x. Le versement dans la corrélation des
   vulnérabilités de grcmanager suit avec #10.
 
+## Kubernetes
+
+- [#31](https://github.com/parime/glpi-docker-inventory/issues/31) Source Kubernetes en lecture seule :
+  namespaces en Applications, Deployments, StatefulSets, DaemonSets et CronJobs en services, nœuds
+  rattachés aux ordinateurs, mêmes versions et vulnérabilités Harbor. Fait, testé contre un cluster
+  k3s de laboratoire ; à valider sur un cluster de production (demandeur de l'issue).
+
 ## Intégration
 
 - [#10](https://github.com/parime/glpi-docker-inventory/issues/10) Preuves grcmanager (A.5.9, A.8.8, A.8.9,
@@ -52,4 +59,3 @@ Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 e
 ## Hors périmètre
 
 - Redéployer, redémarrer ou mettre à jour un service : le plugin reste en lecture seule.
-- Kubernetes : à étudier s'il y a une demande, avec une source dédiée.

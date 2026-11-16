@@ -13,11 +13,15 @@
  # -------------------------------------------------------------------------
  #}
 
-{# Nature d'un service : Swarm, Compose ou conteneur autonome. #}
+{# Nature d'un service : Swarm, Compose, conteneur autonome ou charge Kubernetes. #}
 {% set kind_styles = {
     swarm: ['bg-indigo-lt', 'ti-topology-star-3'],
     compose: ['bg-cyan-lt', 'ti-stack-2'],
     container: ['bg-orange-lt', 'ti-box'],
+    deployment: ['bg-blue-lt', 'ti-brand-kubernetes'],
+    statefulset: ['bg-purple-lt', 'ti-database'],
+    daemonset: ['bg-teal-lt', 'ti-server-2'],
+    cronjob: ['bg-yellow-lt', 'ti-clock-play'],
 } %}
 {% set style = kind_styles[service.kind]|default(['bg-secondary-lt', 'ti-brand-docker']) %}
 <span class="badge {{ style[0] }} ms-1">

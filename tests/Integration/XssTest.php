@@ -26,9 +26,12 @@ use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesClient;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesImporter;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Tests\HarborFixture;
+use GlpiPlugin\Dockerinventory\Tests\KubernetesFixture;
 use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
 use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudImporter;
@@ -58,6 +61,8 @@ final class XssTest extends TestCase
     private int $wudId = 0;
 
     private int $harborId = 0;
+
+    private int $kubernetesId = 0;
 
     /** Session de connexion enregistrée par le test (GLPI 12), supprimée au tearDown. */
     private ?string $trackedSession = null;
@@ -129,7 +134,14 @@ final class XssTest extends TestCase
             'username'      => 'robot$lecture',
             'api_key'       => 'robot_mot_de_passe_fictif',
         ]);
-        foreach ([$this->portainerId, $this->wudId, $this->harborId] as $id) {
+        $this->kubernetesId = (int) (new Connection())->add([
+            'name'        => 'Kubernetes XSS ' . $suffix,
+            'type'        => Connection::TYPE_KUBERNETES,
+            'entities_id' => $this->entityId,
+            'url'         => 'https://kubernetes.exemple.test:6443',
+            'api_key'     => KubernetesFixture::TOKEN,
+        ]);
+        foreach ([$this->portainerId, $this->wudId, $this->harborId, $this->kubernetesId] as $id) {
             $this->assertGreaterThan(0, $id);
         }
         HarborArtifact::resetCache();
@@ -139,8 +151,9 @@ final class XssTest extends TestCase
     {
         global $DB;
 
+        $sources = [$this->portainerId, $this->kubernetesId];
         $serviceIds = array_column(iterator_to_array($DB->request(['SELECT' => ['id'], 'FROM' => Service::getTable(),
-            'WHERE' => ['plugin_dockerinventory_connections_id' => $this->portainerId]]), false), 'id');
+            'WHERE' => ['plugin_dockerinventory_connections_id' => $sources]]), false), 'id');
         if ($serviceIds !== []) {
             $DB->delete(
                 'glpi_plugin_dockerinventory_services_nodes',
@@ -149,19 +162,19 @@ final class XssTest extends TestCase
         }
         foreach (
             $DB->request(['SELECT' => ['appliances_id'], 'FROM' => 'glpi_plugin_dockerinventory_stacks',
-            'WHERE' => ['plugin_dockerinventory_connections_id' => $this->portainerId]]) as $row
+            'WHERE' => ['plugin_dockerinventory_connections_id' => $sources]]) as $row
         ) {
             (new Appliance())->delete(['id' => (int) $row['appliances_id']], true);
         }
         foreach (
             [Service::getTable(), 'glpi_plugin_dockerinventory_nodes', 'glpi_plugin_dockerinventory_stacks'] as $table
         ) {
-            $DB->delete($table, ['plugin_dockerinventory_connections_id' => $this->portainerId]);
+            $DB->delete($table, ['plugin_dockerinventory_connections_id' => $sources]);
         }
         $DB->delete(ImageVersion::getTable(), ['plugin_dockerinventory_connections_id' => $this->wudId]);
         $DB->delete(HarborArtifact::getTable(), ['plugin_dockerinventory_connections_id' => $this->harborId]);
         $DB->delete(HarborImporter::PROJECTS_TABLE, ['plugin_dockerinventory_connections_id' => $this->harborId]);
-        foreach ([$this->portainerId, $this->wudId, $this->harborId] as $id) {
+        foreach ([$this->portainerId, $this->wudId, $this->harborId, $this->kubernetesId] as $id) {
             (new Connection())->delete(['id' => $id], true);
         }
         (new \Entity())->delete(['id' => $this->entityId], true);
@@ -341,6 +354,57 @@ final class XssTest extends TestCase
                 false
             );
         }
+    }
+
+    /**
+     * Noms piégés lus dans un cluster Kubernetes : namespace, charge, conteneur, nœud, secret.
+     */
+    public function testKubernetesNamesAreEscaped(): void
+    {
+        global $DB;
+
+        $k8s = KubernetesFixture::load();
+        foreach ($k8s['deployments'] as $i => $deployment) {
+            if ($deployment['metadata']['name'] === 'vitrine') {
+                $k8s['deployments'][$i]['metadata']['name'] = 'vitrine' . self::SCRIPT;
+                $k8s['deployments'][$i]['metadata']['namespace'] = 'boutique' . self::IMG;
+                $k8s['deployments'][$i]['spec']['template']['spec']['imagePullSecrets'][0]['name']
+                    = 'registre' . self::IMG;
+            }
+        }
+        $k8s['nodes'][0]['metadata']['name'] = 'k8s-node-01' . self::SCRIPT;
+        $k8s['namespaces'][] = ['metadata' => ['name' => 'boutique' . self::IMG]];
+        $transport = KubernetesFixture::transport($k8s);
+        $report = (new KubernetesImporter(static fn (Connection $c): KubernetesClient => new KubernetesClient(
+            'https://kubernetes.exemple.test:6443',
+            KubernetesFixture::TOKEN,
+            '',
+            $transport
+        )))->import($this->connection($this->kubernetesId));
+        $this->assertGreaterThan(0, $report['services']);
+
+        $service = $DB->request(['FROM' => Service::getTable(), 'WHERE' => [
+            'plugin_dockerinventory_connections_id' => $this->kubernetesId,
+            'name'                                  => ['LIKE', '%' . self::SCRIPT],
+        ]])->current();
+        $this->assertIsArray($service);
+        $this->assertEscaped(
+            $this->open('front/service.form.php', ['id' => (int) $service['id']]),
+            'fiche service k8s'
+        );
+        $this->assertEscaped($this->open('front/version.php'), 'page des versions (k8s)', false);
+        $this->assertEscaped($this->open('front/service.php'), 'liste des services (k8s)', false);
+        $this->assertEscaped(
+            $this->open('front/connection.form.php', ['id' => $this->kubernetesId]),
+            'connexion Kubernetes',
+            false
+        );
+        $appliance = new Appliance();
+        $this->assertTrue($appliance->getFromDB((int) $service['appliances_id']));
+        $this->assertEscaped(
+            $this->capture(static fn () => Service::displayTabContentForItem($appliance)),
+            'onglet Services du namespace'
+        );
     }
 
     public function testTemplatesNeverDisableAutoescape(): void

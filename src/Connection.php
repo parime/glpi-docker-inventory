@@ -25,6 +25,11 @@ use GLPIKey;
 use GlpiPlugin\Dockerinventory\Compat\Base\ConnectionBase;
 use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesClient;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesException;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesImporter;
+use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesMapper;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
@@ -53,7 +58,10 @@ use Session;
  * - Harbor : adresse, compte robot en lecture seule facultatif (mot de passe chiffré de la même
  *   façon), hôte du registre dans les images s'il diffère de l'adresse. Sert au repli sans WUD
  *   (liste des tags par l'API v2 des registres) et à la lecture des projets, dépôts, artefacts et
- *   analyses de vulnérabilités par l'API REST de Harbor (#9).
+ *   analyses de vulnérabilités par l'API REST de Harbor (#9) ;
+ * - Kubernetes : adresse de l'API du cluster (HTTPS), jeton d'un compte de service en lecture seule
+ *   (chiffré dans la même colonne, jamais réaffiché), certificat d'autorité facultatif, namespaces
+ *   ignorés, environnement des applications créées et tickets, comme Portainer (#31).
  * Le type se choisit à la création et ne change plus.
  *
  * Réservé aux administrateurs de la configuration de GLPI (droit « Configuration » en
@@ -81,6 +89,13 @@ class Connection extends ConnectionBase
     public const TYPE_PORTAINER = 'portainer';
     public const TYPE_WUD = 'wud';
     public const TYPE_HARBOR = 'harbor';
+    public const TYPE_KUBERNETES = 'kubernetes';
+
+    /** Types dont l'import donne des services (applications, tickets réglés sur la connexion). */
+    public const WORKLOAD_TYPES = [self::TYPE_PORTAINER, self::TYPE_KUBERNETES];
+
+    /** Taille maximale du certificat d'autorité (PEM, chaîne comprise). */
+    private const CA_MAX = 65535;
 
     public static function getTypeName($nb = 0)
     {
@@ -96,6 +111,7 @@ class Connection extends ConnectionBase
             self::TYPE_PORTAINER => 'Portainer',
             self::TYPE_WUD       => "What's Up Docker (WUD)",
             self::TYPE_HARBOR    => 'Harbor',
+            self::TYPE_KUBERNETES => 'Kubernetes',
         ];
     }
 
@@ -129,6 +145,11 @@ class Connection extends ConnectionBase
             VulnTicketPolicy::THRESHOLD_CRITICAL => __('Vulnérabilités critiques', 'dockerinventory'),
             VulnTicketPolicy::THRESHOLD_HIGH     => __('Vulnérabilités critiques ou hautes', 'dockerinventory'),
         ];
+    }
+
+    public function isKubernetes(): bool
+    {
+        return ($this->fields['type'] ?? self::TYPE_PORTAINER) === self::TYPE_KUBERNETES;
     }
 
     public function isHarbor(): bool
@@ -297,6 +318,7 @@ class Connection extends ConnectionBase
         $actions = match (true) {
             $this->isWud()    => 'wud_actions',
             $this->isHarbor() => 'harbor_actions',
+            $this->isKubernetes() => 'kubernetes_actions',
             default           => 'connection_actions',
         };
 
@@ -305,6 +327,8 @@ class Connection extends ConnectionBase
             'params'      => $options,
             'is_wud'      => $this->isWud(),
             'is_harbor'   => $this->isHarbor(),
+            'is_kubernetes' => $this->isKubernetes(),
+            'excluded_default' => KubernetesMapper::DEFAULT_EXCLUDED,
             'type_label'  => self::typeLabels()[(string) $this->fields['type']] ?? '',
             'has_api_key' => trim((string) ($this->fields['api_key'] ?? '')) !== '',
             'thresholds'  => self::ticketThresholdLabels(),
@@ -326,6 +350,7 @@ class Connection extends ConnectionBase
                 'context_class' => match (true) {
                     $this->isWud()    => WudContext::class,
                     $this->isHarbor() => RegistryContext::class,
+                    $this->isKubernetes() => KubernetesContext::class,
                     default           => Portainer\PortainerContext::class,
                 },
                 'registry_host' => $this->isHarbor() ? RegistryResolver::harborHost(
@@ -352,6 +377,17 @@ class Connection extends ConnectionBase
                 ERROR
             );
             return false;
+        }
+        if ($input['type'] === self::TYPE_KUBERNETES) {
+            if (trim((string) ($input['api_key'] ?? '')) === '') {
+                Session::addMessageAfterRedirect(
+                    htmlescape(__('Le jeton du compte de service Kubernetes est obligatoire.', 'dockerinventory')),
+                    false,
+                    ERROR
+                );
+                return false;
+            }
+            $input['k8s_excluded_namespaces'] ??= KubernetesMapper::DEFAULT_EXCLUDED;
         }
 
         return $this->prepareInput($input, true);
@@ -391,6 +427,33 @@ class Connection extends ConnectionBase
                 return false;
             }
         }
+        $type = $isNew ? (string) ($input['type'] ?? '') : (string) ($this->fields['type'] ?? '');
+        if ($type === self::TYPE_KUBERNETES) {
+            // API Kubernetes : HTTPS seulement (le jeton ne circule jamais en clair).
+            $input['allow_http'] = 0;
+            if (array_key_exists('ca_certificate', $input)) {
+                $pem = trim(str_replace("\r\n", "\n", (string) $input['ca_certificate']));
+                if ($pem !== '' && !self::isCertificate($pem)) {
+                    Session::addMessageAfterRedirect(
+                        htmlescape(__(
+                            "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN CERTIFICATE-----...).",
+                            'dockerinventory'
+                        )),
+                        false,
+                        ERROR
+                    );
+                    return false;
+                }
+                $input['ca_certificate'] = $pem;
+            }
+            if (array_key_exists('k8s_excluded_namespaces', $input)) {
+                $input['k8s_excluded_namespaces'] = KubernetesMapper::normalizeExcluded(
+                    (string) $input['k8s_excluded_namespaces']
+                );
+            }
+        } else {
+            unset($input['ca_certificate'], $input['k8s_excluded_namespaces']);
+        }
         if (array_key_exists('url', $input) || $isNew) {
             $input['url'] = UrlPolicy::normalize((string) ($input['url'] ?? ''));
             $allowHttp = (bool) ($input['allow_http'] ?? ($this->fields['allow_http'] ?? false));
@@ -418,8 +481,8 @@ class Connection extends ConnectionBase
         } else {
             $input['api_key'] = (new GLPIKey())->encrypt($key);
         }
-        $isPortainer = ($isNew ? (string) ($input['type'] ?? '') : (string) ($this->fields['type'] ?? ''))
-            === self::TYPE_PORTAINER;
+        // Tickets : réglés sur la connexion (Portainer ou Kubernetes) qui importe les services.
+        $isPortainer = in_array($type, self::WORKLOAD_TYPES, true);
         $ticketFields = ['ticket_enabled', 'ticket_threshold', 'ticket_itilcategories_id', 'ticket_groups_id',
             'ticket_tickettemplates_id', 'ticket_eol_enabled', 'ticket_eol_days', 'ticket_vuln_enabled',
             'ticket_vuln_severity'];
@@ -461,6 +524,42 @@ class Connection extends ConnectionBase
         $where = ['plugin_dockerinventory_connections_id' => (int) $this->getID()];
         $DB->delete(HarborArtifact::getTable(), $where);
         $DB->delete(HarborImporter::PROJECTS_TABLE, $where);
+    }
+
+    /**
+     * Un ou plusieurs certificats PEM lisibles par OpenSSL.
+     */
+    public static function isCertificate(string $pem): bool
+    {
+        if (strlen($pem) > self::CA_MAX || !str_contains($pem, '-----BEGIN CERTIFICATE-----')) {
+            return false;
+        }
+        $found = preg_match_all('/-----BEGIN CERTIFICATE-----.+?-----END CERTIFICATE-----/s', $pem, $matches);
+        if ($found === false || $found === 0) {
+            return false;
+        }
+        if (!function_exists('openssl_x509_read')) {
+            return true;
+        }
+        foreach ($matches[0] as $certificate) {
+            if (@openssl_x509_read($certificate) === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Client de lecture de l'API de ce cluster Kubernetes.
+     */
+    public function getKubernetesClient(): KubernetesClient
+    {
+        return new KubernetesClient(
+            (string) $this->fields['url'],
+            $this->getDecryptedApiKey(),
+            (string) ($this->fields['ca_certificate'] ?? '')
+        );
     }
 
     public function getDecryptedApiKey(): string
@@ -570,6 +669,7 @@ class Connection extends ConnectionBase
             $this->isWud()    => (new WudImporter())->import($this),
             // Harbor : vérification de tous les registres (Docker Hub compris).
             $this->isHarbor() => (new RegistryImporter())->run(),
+            $this->isKubernetes() => (new KubernetesImporter())->import($this),
             default           => (new Importer())->import($this),
         };
     }
@@ -589,6 +689,9 @@ class Connection extends ConnectionBase
         }
         if ($this->isHarbor()) {
             return self::registryMessage($report);
+        }
+        if ($this->isKubernetes()) {
+            return self::kubernetesMessage($report);
         }
         if ($this->isWud()) {
             return sprintf(
@@ -630,7 +733,49 @@ class Connection extends ConnectionBase
     }
 
     /**
-     * Avertissements d'un import Portainer (Importer::WARNING_*).
+     * Message du compte rendu d'un import Kubernetes.
+     *
+     * @param array<string, mixed> $report
+     */
+    public static function kubernetesMessage(array $report): string
+    {
+        return sprintf(
+            __(
+                'Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, %5$d retirés, %6$d nœuds.',
+                'dockerinventory'
+            ),
+            self::statusLabel((int) $report['status']),
+            (int) ($report['namespaces'] ?? 0),
+            (int) ($report['stacks'] ?? 0),
+            (int) ($report['services'] ?? 0),
+            (int) ($report['retired'] ?? 0),
+            (int) ($report['nodes'] ?? 0)
+        ) . self::warningsMessage($report) . self::errorsMessage($report);
+    }
+
+    /**
+     * Fin du message d'un import partiel : ses erreurs, ressource par ressource.
+     *
+     * @param array<string, mixed> $report
+     */
+    public static function errorsMessage(array $report): string
+    {
+        if ((int) ($report['status'] ?? 0) !== self::STATUS_PARTIAL) {
+            return '';
+        }
+        $message = '';
+        foreach (is_array($report['errors'] ?? null) ? $report['errors'] : [] as $error) {
+            $code = is_array($error) ? (string) ($error['code'] ?? '') : '';
+            $endpoint = is_array($error) ? (string) ($error['endpoint'] ?? '') : '';
+            $label = self::errorLabels()[$code] ?? $code;
+            $message .= ' ' . ($endpoint !== '' ? $endpoint . ' : ' . $label : $label);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Avertissements d'un import Portainer (Importer::WARNING_*) ou Kubernetes.
      *
      * @return array<string, string>
      */
@@ -652,6 +797,22 @@ class Connection extends ConnectionBase
                 "Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été retiré.",
                 'dockerinventory'
             ) . ' ' . __('Vérifiez les accès du compte dans Portainer (voir README).', 'dockerinventory'),
+            KubernetesImporter::WARNING_NO_NAMESPACE => __(
+                'Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README).',
+                'dockerinventory'
+            ),
+            KubernetesImporter::WARNING_FORBIDDEN => __(
+                'Lecture refusée au compte de service (403) : rien n’en a été retiré.',
+                'dockerinventory'
+            ) . ' ' . __('Vérifiez son ClusterRole (voir README).', 'dockerinventory'),
+            KubernetesImporter::WARNING_EMPTY_KEPT => __(
+                "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été retiré.",
+                'dockerinventory'
+            ) . ' ' . __('Vérifiez les droits du compte de service (voir README).', 'dockerinventory'),
+            KubernetesImporter::WARNING_INCOMPLETE => __(
+                'Liste trop longue, lue en partie : rien n’en a été retiré.',
+                'dockerinventory'
+            ),
         ];
     }
 
@@ -751,6 +912,62 @@ class Connection extends ConnectionBase
     }
 
     /**
+     * « Tester la connexion » Kubernetes : version du cluster, namespaces visibles, et chaque liste
+     * que l'import lit (une requête limit=1 par ressource). Avertissement, et non succès, si le
+     * compte ne voit aucun namespace ou ne peut pas lire une ressource.
+     *
+     * @return array{ok: bool, message: string, warning?: bool}
+     */
+    public function testKubernetesConnection(?KubernetesClient $client = null): array
+    {
+        $client ??= $this->getKubernetesClient();
+        try {
+            $version = $client->version();
+            $forbidden = [];
+            $namespaces = 0;
+            if ($client->canList('namespaces')) {
+                $namespaces = count($client->list('namespaces')['items']);
+            } else {
+                $forbidden[] = 'namespaces';
+            }
+            foreach (array_keys(KubernetesClient::RESOURCES) as $resource) {
+                if ($resource !== 'namespaces' && !$client->canList($resource)) {
+                    $forbidden[] = $resource;
+                }
+            }
+        } catch (KubernetesException $e) {
+            return ['ok' => false, 'message' => self::errorLabels()[$e->getMessage()] ?? $e->getMessage()];
+        }
+        $message = sprintf(
+            __('Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce jeton.', 'dockerinventory'),
+            $version !== '' ? $version : '?',
+            $namespaces
+        );
+        if ($forbidden === [] && $namespaces > 0) {
+            return ['ok' => true, 'warning' => false, 'message' => $message];
+        }
+        $checks = [];
+        if ($namespaces === 0 && !in_array('namespaces', $forbidden, true)) {
+            $checks[] = self::warningLabels()[KubernetesImporter::WARNING_NO_NAMESPACE];
+        }
+        if ($forbidden !== []) {
+            $checks[] = sprintf(
+                __('Lecture refusée (403) : %s. Complétez le ClusterRole (voir README).', 'dockerinventory'),
+                implode(', ', $forbidden)
+            );
+        }
+
+        return [
+            'ok'      => true,
+            'warning' => true,
+            'message' => sprintf(
+                __('Connexion établie, mais à vérifier : %s', 'dockerinventory'),
+                $message . ' ' . implode(' ', $checks)
+            ),
+        ];
+    }
+
+    /**
      * « Tester la connexion » WUD : version de WUD et nombre de conteneurs suivis.
      *
      * @return array{ok: bool, message: string}
@@ -789,6 +1006,9 @@ class Connection extends ConnectionBase
         }
         if ($this->isHarbor()) {
             return $this->testHarborConnection();
+        }
+        if ($this->isKubernetes()) {
+            return $this->testKubernetesConnection();
         }
         $client ??= $this->getClient();
         try {
@@ -903,7 +1123,55 @@ class Connection extends ConnectionBase
             WudException::PRIVATE_NETWORK => __('Réseau privé refusé par GLPI (voir README).', 'dockerinventory'),
             WudException::UNEXPECTED => __("Réponse inattendue : est-ce bien What's Up Docker ?", 'dockerinventory'),
             WudException::UNREACHABLE => __('WUD injoignable (réseau, certificat, délai...).', 'dockerinventory'),
-        ] + self::registryErrorLabels();
+        ] + self::kubernetesErrorLabels() + self::registryErrorLabels();
+    }
+
+    /**
+     * Erreurs d'un appel à l'API Kubernetes (KubernetesException).
+     *
+     * @return array<string, string>
+     */
+    public static function kubernetesErrorLabels(): array
+    {
+        return [
+            KubernetesException::UNAUTHORIZED => __(
+                'Jeton refusé par le cluster (401) : jeton expiré ou compte de service supprimé ?',
+                'dockerinventory'
+            ),
+            KubernetesException::FORBIDDEN => __(
+                'Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir README).',
+                'dockerinventory'
+            ),
+            KubernetesException::NOT_FOUND => __(
+                "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port 6443 en général).",
+                'dockerinventory'
+            ),
+            KubernetesException::EXPIRED => __(
+                'Liste modifiée pendant la lecture (410) : nouvel essai au prochain import.',
+                'dockerinventory'
+            ),
+            KubernetesException::RATE_LIMITED => __(
+                "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain import.",
+                'dockerinventory'
+            ),
+            KubernetesException::SERVER_ERROR => __(
+                "L'API du cluster a répondu par une erreur interne (5xx).",
+                'dockerinventory'
+            ),
+            KubernetesException::PRIVATE_NETWORK => __(
+                'Réseau privé refusé par GLPI (voir README).',
+                'dockerinventory'
+            ),
+            KubernetesException::CERTIFICATE => __(
+                "Certificat du cluster non reconnu : coller le certificat d'autorité du cluster (voir README).",
+                'dockerinventory'
+            ),
+            KubernetesException::UNEXPECTED => __(
+                "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?",
+                'dockerinventory'
+            ),
+            KubernetesException::UNREACHABLE => __('Cluster injoignable (réseau, nom, délai...).', 'dockerinventory'),
+        ];
     }
 
     /**
@@ -960,6 +1228,7 @@ class Connection extends ConnectionBase
         return match (true) {
             $this->isWud()    => 'https://wud.exemple.test:3000',
             $this->isHarbor() => 'https://harbor.exemple.test',
+            $this->isKubernetes() => 'https://kubernetes.exemple.test:6443',
             default           => 'https://portainer.exemple.test:9443',
         };
     }
@@ -978,6 +1247,12 @@ class Connection extends ConnectionBase
         if ($name === Install\Installer::CRON_HARBOR) {
             return ['description' => __(
                 'Projets, artefacts et analyses de vulnérabilités depuis Harbor',
+                'dockerinventory'
+            )];
+        }
+        if ($name === Install\Installer::CRON_KUBERNETES) {
+            return ['description' => __(
+                'Import des namespaces, charges de travail et nœuds depuis Kubernetes',
                 'dockerinventory'
             )];
         }
@@ -1026,6 +1301,34 @@ class Connection extends ConnectionBase
             $task->log($connection->fields['name'] . ' : ' . self::harborMessage($report));
             foreach ($report['errors'] as $error) {
                 $task->log($error['endpoint'] . ' : ' . (self::errorLabels()[$error['code']] ?? $error['code']));
+            }
+            $done++;
+        }
+
+        return $done > 0 ? 1 : 0;
+    }
+
+    /**
+     * Tâche automatique (toutes les heures) : import de chaque connexion Kubernetes active.
+     */
+    public static function cronKubernetesimport(CronTask $task): int
+    {
+        global $DB;
+
+        $done = 0;
+        $where = ['is_active' => 1, 'type' => self::TYPE_KUBERNETES];
+        foreach ($DB->request(['FROM' => static::getTable(), 'WHERE' => $where]) as $row) {
+            $connection = new self();
+            if (!$connection->getFromDB((int) $row['id'])) {
+                continue;
+            }
+            $report = (new KubernetesImporter())->import($connection);
+            $task->addVolume($report['services']);
+            $task->log($connection->fields['name'] . ' : ' . self::kubernetesMessage($report));
+            if ($report['status'] === self::STATUS_ERROR) {
+                foreach ($report['errors'] as $error) {
+                    $task->log(self::errorLabels()[$error['code']] ?? $error['code']);
+                }
             }
             $done++;
         }

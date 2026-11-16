@@ -20,9 +20,10 @@
         {{ __('Le plugin lit ces outils sans jamais rien y modifier.', 'dockerinventory') }}
         {{ __('Commencez par Portainer : WUD complète les services que Portainer a importés.', 'dockerinventory') }}
         {{ __('Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos projets.', 'dockerinventory') }}
+        {{ __('Kubernetes remplace Portainer pour les applications qui tournent sur un cluster.', 'dockerinventory') }}
     </p>
     <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-6 col-xl-3">
             <a class="card card-link card-link-pop h-100 text-reset text-decoration-none"
                href="{{ form_url }}?type=portainer">
                 <div class="card-body">
@@ -41,7 +42,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-xl-3">
             <a class="card card-link card-link-pop h-100 text-reset text-decoration-none"
                href="{{ form_url }}?type=wud">
                 <div class="card-body">
@@ -57,7 +58,7 @@
                 </div>
             </a>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6 col-xl-3">
             <a class="card card-link card-link-pop h-100 text-reset text-decoration-none"
                href="{{ form_url }}?type=harbor">
                 <div class="card-body">
@@ -69,6 +70,25 @@
                     </div>
                     <p class="text-muted mb-0">
                         {{ __('Registre privé : dernières versions de vos images, sans WUD.', 'dockerinventory') }}
+                    </p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <a class="card card-link card-link-pop h-100 text-reset text-decoration-none"
+               href="{{ form_url }}?type=kubernetes">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar bg-azure text-white me-3">
+                            <i class="ti ti-brand-kubernetes fs-2" aria-hidden="true"></i>
+                        </span>
+                        <h4 class="card-title mb-0">Kubernetes</h4>
+                    </div>
+                    <p class="text-muted mb-0">
+                        {{ __(
+                            'Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster.',
+                            'dockerinventory'
+                        ) }}
                     </p>
                 </div>
             </a>

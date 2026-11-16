@@ -186,7 +186,8 @@
                                         <a href="{{ row.url }}">{{ row.name }}</a>
                                         {% if row.stack_name %}
                                             <div class="text-muted small">
-                                                {{- __('Stack', 'dockerinventory') }} {{ row.stack_name -}}
+                                                {{- row.stack_label|default(__('Stack', 'dockerinventory')) }}
+                                                {{ row.stack_name -}}
                                             </div>
                                         {% endif %}
                                     </td>
