@@ -38,7 +38,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
  * Session::checkRight() et CommonDBTM::check(). Assertions sur des codes et des marqueurs, jamais
  * sur des libellés traduits (CI en anglais, instance de développement en français).
  *
- * Toute page de front/ doit figurer dans PAGES : .github/scripts/check-security-matrix-coverage.sh
+ * Toute page de front/ doit figurer dans PAGES : le contrôle commun check-security-matrix-coverage.sh
  * le vérifie en CI, testEveryFrontPageIsInTheMatrix() aussi.
  */
 final class AccessControlTest extends TestCase

@@ -13,9 +13,11 @@ permissions:
 
 jobs:
   security:
-    uses: parime/glpi-plugin-security/.github/workflows/plugin-security.yml@v1.7.1
+    uses: parime/glpi-plugin-security/.github/workflows/plugin-security.yml@v1.8.1
     with:
       plugin-key: dockerinventory
       seed-command: php plugins/dockerinventory/tests/security/setup.php
       # Charte commune bloquante : licence, en-têtes, documentation et langues conformes (#43).
       charter-mode: error
+      # Matrice d'accès écrite en PHPUnit (#43) : la couverture des pages reste bloquante.
+      access-matrix-file: tests/Integration/AccessControlTest.php
