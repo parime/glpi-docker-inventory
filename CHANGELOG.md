@@ -7,6 +7,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Changed
 
+- CI : contrôles de sécurité communs v1.8.2 (scripts communs bien pris à la version appelée).
 - CI : contrôles de sécurité communs v1.8.1 ([parime/glpi-plugin-security#15](https://github.com/parime/glpi-plugin-security/issues/15)). Les points d'entrée,
   la couverture de la matrice d'accès (toujours bloquante, `access-matrix-file`) et les exigences marketplace
   sont vérifiés par le job commun ; les trois copies de `.github/scripts/` sont retirées.
