@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-11-16
+
 ### Changed
 
 - Une seule entrée de menu, réglages dans la page du plugin ([#35](https://github.com/parime/glpi-docker-inventory/issues/35),
