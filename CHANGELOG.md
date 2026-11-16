@@ -7,6 +7,9 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Added
 
+- Encadré « À quoi sert cette page ? » en tête des pages d'usage ([#39](https://github.com/parime/glpi-docker-inventory/issues/39)) :
+  Services de conteneurs, Versions des images, Images Harbor et vulnérabilités, Fin de support des images et
+  Connexions Docker expliquent ce que fait la page et ce qui est attendu (repliable, choix mémorisé ; charte commune).
 - Langue des chaînes sources ([#37](https://github.com/parime/glpi-docker-inventory/issues/37)) : règle écrite
   (msgid en français, sans mélange, `.pot` source unique de Hosted Weblate) et plan de migration vers
   l'anglais dans `ROADMAP.md`, à engager seulement sur retour des traducteurs. Rapport en lecture
