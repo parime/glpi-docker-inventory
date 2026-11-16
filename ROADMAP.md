@@ -56,6 +56,31 @@ Ordre conseillé : #8 et #2 (on peut tester), puis #3 et #4, puis #6, enfin #5 e
 - [#10](https://github.com/parime/glpi-docker-inventory/issues/10) Preuves grcmanager (A.5.9, A.8.8, A.8.9,
   A.8.32) et étape de l'assistant de Configuration GLPI Auto.
 
+## Langue des chaînes sources (msgid)
+
+[#37](https://github.com/parime/glpi-docker-inventory/issues/37). Les msgid sont en français ; la
+charte commune retient l'anglais pour les nouveaux plugins, sans imposer de migration (section 2).
+Règle d'ici là : **toute nouvelle chaîne s'écrit en français**, jamais de mélange ;
+`locales/dockerinventory.pot` reste la source unique de Hosted Weblate (langue source « français »,
+anglais en langue secondaire).
+
+Si la migration est décidée (retours des traducteurs), ce plugin passe en premier, idéalement
+avant la version 1.0.0, dans une version mineure dédiée sans autre changement :
+
+1. `php tools/msgid-report.php` (lecture seule) : nombre de chaînes, chaînes sans traduction
+   `en_GB`, collisions. État au 16/11/2026 : 609 chaînes (1 au pluriel, aucune à contexte), toutes
+   traduites en `en_GB`, 17 identiques dans les deux langues (msgid inchangé), 4 collisions à
+   trancher avant la migration : « Empreinte (digest) » et « Empreinte » (Digest), « Retiré » et
+   « Retirés » (Retired), « Tous » et « Toutes » (All), « Version de l’image » et « Version
+   d'image » (Image version). Une collision se règle en ajoutant un contexte (`_x()`) ou en
+   distinguant les deux traductions anglaises.
+2. Script de correspondance : la traduction `en_GB` de chaque msgid devient le nouveau msgid,
+   appliqué au code PHP (`__()`, `_n()`, `_x()`), aux gabarits Twig et à tous les `.po` (msgid
+   remplacé, msgstr conservé) ; `fr_FR.po` reçoit les anciens msgid comme traductions et `en_GB.po`
+   des traductions identiques aux msgid.
+3. Tests qui comparent des libellés adaptés ; `.pot` régénéré, `sync-locale-variants.sh`,
+   complétude vérifiée, `.mo` recompilés ; ligne de CHANGELOG.
+
 ## Hors périmètre
 
 - Redéployer, redémarrer ou mettre à jour un service : le plugin reste en lecture seule.

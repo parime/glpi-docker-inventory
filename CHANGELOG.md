@@ -5,6 +5,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Langue des chaînes sources ([#37](https://github.com/parime/glpi-docker-inventory/issues/37)) : règle écrite
+  (msgid en français, sans mélange, `.pot` source unique de Hosted Weblate) et plan de migration vers
+  l'anglais dans `ROADMAP.md`, à engager seulement sur retour des traducteurs. Rapport en lecture
+  seule `tools/msgid-report.php` (chaînes, traductions anglaises manquantes, collisions), affiché par
+  le job « Traductions complètes ».
+
 ## [0.8.0] - 2026-11-16
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
