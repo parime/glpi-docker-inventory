@@ -16,6 +16,17 @@
 {# Page de configuration du plugin (liste des connexions) : registres maîtrisés, d'où les images
    déployées doivent venir. Repliée par défaut, au-dessus de la liste des connexions. #}
 <div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'connections',
+        purpose: __(
+            'Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up Docker et Harbor.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin les lit seulement, sans rien y modifier.', 'dockerinventory'),
+        expected: __(
+            'Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis lancez un import.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Les imports tournent ensuite tout seuls.', 'dockerinventory'),
+    }) }}
     <details class="card mb-3" id="managed-registries">
         <summary class="card-header d-flex flex-wrap align-items-center gap-2" style="cursor: pointer">
             <h2 class="card-title mb-0">

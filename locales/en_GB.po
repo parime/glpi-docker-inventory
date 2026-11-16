@@ -2412,3 +2412,60 @@ msgstr "Container ports"
 
 msgid "Volumes persistants (noms)"
 msgstr "Persistent volumes (names)"
+
+msgid "À quoi sert cette page ?"
+msgstr "What is this page for?"
+
+msgid "Ce qui est attendu :"
+msgstr "What is expected:"
+
+msgid "Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs autonomes et Kubernetes."
+msgstr "All inventoried container services: Swarm, Compose, standalone containers and Kubernetes."
+
+msgid "Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa version et son état."
+msgstr "Search or filter, then open a service to see its image, version and state."
+
+msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
+msgstr "A service that has disappeared from the source is marked \"retired\", never deleted."
+
+msgid "Repérer les images à mettre à jour : version déployée, dernière version, écart, fin de support."
+msgstr "Spot the images to update: deployed version, latest version, gap, end of support."
+
+msgid "Cliquez sur un compteur ou filtrez par écart ou par environnement, puis planifiez les mises à jour."
+msgstr "Click a counter or filter by gap or by environment, then plan the updates."
+
+msgid "Le plugin ne met rien à jour lui-même."
+msgstr "The plugin does not update anything itself."
+
+msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
+msgstr "See the vulnerabilities of the deployed images, read from Harbor."
+
+msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
+msgstr "Spot the images that do not come from a managed registry."
+
+msgid "Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités critiques et hautes."
+msgstr "Filter by severity or by project; deal with critical and high vulnerabilities first."
+
+msgid "Faites reconstruire ou remplacer les images non maîtrisées."
+msgstr "Have unmanaged images rebuilt or replaced."
+
+msgid "Savoir quelles images tournent sur une branche qui ne reçoit plus de correctifs."
+msgstr "Know which images run on a branch that no longer receives fixes."
+
+msgid "Activez la source, puis associez chaque image sans correspondance au produit qui lui convient."
+msgstr "Enable the source, then map each unmatched image to the product that suits it."
+
+msgid "Le résultat apparaît dans « Versions des images »."
+msgstr "The result appears in \"Image versions\"."
+
+msgid "Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up Docker et Harbor."
+msgstr "Declare the sources read by the plugin: Portainer, Kubernetes, What’s Up Docker and Harbor."
+
+msgid "Le plugin les lit seulement, sans rien y modifier."
+msgstr "The plugin only reads them, without changing anything there."
+
+msgid "Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis lancez un import."
+msgstr "Add a connection with a least-privilege account, test it, then start an import."
+
+msgid "Les imports tournent ensuite tout seuls."
+msgstr "Imports then run on their own."

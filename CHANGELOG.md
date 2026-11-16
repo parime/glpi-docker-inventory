@@ -5,6 +5,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Encadré d'aide « À quoi sert cette page ? » ([#39](https://github.com/parime/glpi-docker-inventory/issues/39)) en
+  tête des pages Services de conteneurs, Versions des images, Images Harbor et vulnérabilités, Fin de
+  support des images et Connexions Docker : ce que fait la page et ce qui est attendu, repliable, choix
+  mémorisé par page (charte commune, section 8). Textes traduits dans les 18 langues.
+
 ## [0.8.0] - 2026-11-16
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

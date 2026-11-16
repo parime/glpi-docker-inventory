@@ -2412,3 +2412,60 @@ msgstr "Puertos de los contenedores"
 
 msgid "Volumes persistants (noms)"
 msgstr "Volúmenes persistentes (nombres)"
+
+msgid "À quoi sert cette page ?"
+msgstr "¿Para qué sirve esta página?"
+
+msgid "Ce qui est attendu :"
+msgstr "Qué se espera:"
+
+msgid "Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs autonomes et Kubernetes."
+msgstr "Todos los servicios de contenedores inventariados: Swarm, Compose, contenedores autónomos y Kubernetes."
+
+msgid "Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa version et son état."
+msgstr "Busque o filtre y luego abra un servicio para ver su imagen, su versión y su estado."
+
+msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
+msgstr "Un servicio desaparecido de la fuente se marca como «retirado», nunca se elimina."
+
+msgid "Repérer les images à mettre à jour : version déployée, dernière version, écart, fin de support."
+msgstr "Detectar las imágenes que hay que actualizar: versión desplegada, última versión, diferencia, fin de soporte."
+
+msgid "Cliquez sur un compteur ou filtrez par écart ou par environnement, puis planifiez les mises à jour."
+msgstr "Haga clic en un contador o filtre por diferencia o por entorno y luego planifique las actualizaciones."
+
+msgid "Le plugin ne met rien à jour lui-même."
+msgstr "El plugin no actualiza nada por sí mismo."
+
+msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
+msgstr "Ver las vulnerabilidades de las imágenes desplegadas, leídas en Harbor."
+
+msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
+msgstr "Detectar las imágenes que no proceden de un registro gestionado."
+
+msgid "Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités critiques et hautes."
+msgstr "Filtre por gravedad o por proyecto; trate primero las vulnerabilidades críticas y altas."
+
+msgid "Faites reconstruire ou remplacer les images non maîtrisées."
+msgstr "Haga reconstruir o sustituir las imágenes no gestionadas."
+
+msgid "Savoir quelles images tournent sur une branche qui ne reçoit plus de correctifs."
+msgstr "Saber qué imágenes se ejecutan en una rama que ya no recibe correcciones."
+
+msgid "Activez la source, puis associez chaque image sans correspondance au produit qui lui convient."
+msgstr "Active la fuente y luego asocie cada imagen sin correspondencia al producto que le corresponda."
+
+msgid "Le résultat apparaît dans « Versions des images »."
+msgstr "El resultado aparece en «Versiones de las imágenes»."
+
+msgid "Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up Docker et Harbor."
+msgstr "Declarar las fuentes que lee el plugin: Portainer, Kubernetes, What’s Up Docker y Harbor."
+
+msgid "Le plugin les lit seulement, sans rien y modifier."
+msgstr "El plugin solo las lee, sin modificar nada en ellas."
+
+msgid "Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis lancez un import."
+msgstr "Añada una conexión con una cuenta de derechos mínimos, pruébela y luego inicie una importación."
+
+msgid "Les imports tournent ensuite tout seuls."
+msgstr "Después, las importaciones se ejecutan solas."

@@ -2724,3 +2724,97 @@ msgstr ""
 #, php-format
 msgid "volume anonyme %s"
 msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités "
+"critiques et hautes."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Faites reconstruire ou remplacer les images non maîtrisées."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Savoir quelles images tournent sur une branche qui ne reçoit plus de "
+"correctifs."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Activez la source, puis associez chaque image sans correspondance au produit "
+"qui lui convient."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Le résultat apparaît dans « Versions des images »."
+msgstr ""
+
+#: templates/_page_help.html.twig
+msgid "À quoi sert cette page ?"
+msgstr ""
+
+#: templates/_page_help.html.twig
+msgid "Ce qui est attendu :"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up "
+"Docker et Harbor."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Le plugin les lit seulement, sans rien y modifier."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis "
+"lancez un import."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Les imports tournent ensuite tout seuls."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Repérer les images à mettre à jour : version déployée, dernière version, "
+"écart, fin de support."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Cliquez sur un compteur ou filtrez par écart ou par environnement, puis "
+"planifiez les mises à jour."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Le plugin ne met rien à jour lui-même."
+msgstr ""
+
+#: front/service.php:29
+msgid ""
+"Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs "
+"autonomes et Kubernetes."
+msgstr ""
+
+#: front/service.php:33
+msgid ""
+"Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa "
+"version et son état."
+msgstr ""
+
+#: front/service.php:35
+msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
+msgstr ""
