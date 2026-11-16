@@ -15,11 +15,24 @@
  * -------------------------------------------------------------------------
  */
 
+use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Service;
 
 // Liste des services : droit de lecture du plugin ; la recherche filtre par entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
 Html::header(Service::getTypeName(2), '', 'assets', Service::class);
+// Encadré d'aide commun (charte, section 8 ; #39) : texte fixe, rendu après le contrôle de droit.
+TemplateRenderer::getInstance()->display('@dockerinventory/_page_help.html.twig', [
+    'page'     => 'services',
+    'purpose'  => __(
+        'Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs autonomes et Kubernetes.',
+        'dockerinventory'
+    ),
+    'expected' => __(
+        'Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa version et son état.',
+        'dockerinventory'
+    ) . ' ' . __('Un service disparu de la source est marqué « retiré », jamais supprimé.', 'dockerinventory'),
+]);
 Search::show(Service::class);
 Html::footer();

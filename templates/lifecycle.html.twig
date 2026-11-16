@@ -16,6 +16,17 @@
 {# Page « Fin de support des images » (configuration) : source des cycles de vie, correspondances
    image => produit, images en service sans correspondance. #}
 <div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'lifecycle',
+        purpose: __(
+            'Savoir quelles images tournent sur une branche qui ne reçoit plus de correctifs.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Activez la source, puis associez chaque image sans correspondance au produit qui lui convient.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le résultat apparaît dans « Versions des images ».', 'dockerinventory'),
+    }) }}
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap align-items-center gap-2">
             <h2 class="card-title mb-0">

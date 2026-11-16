@@ -18,6 +18,17 @@
 {% set outdated_count = counts['major'] + counts['minor'] + counts['patch']
     + counts['prerelease'] + counts['digest'] %}
 <div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'versions',
+        purpose: __(
+            'Repérer les images à mettre à jour : version déployée, dernière version, écart, fin de support.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Cliquez sur un compteur ou filtrez par écart ou par environnement, puis planifiez les mises à jour.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin ne met rien à jour lui-même.', 'dockerinventory'),
+    }) }}
     {{ include('@dockerinventory/_versions_tabs.html.twig') }}
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap align-items-center gap-2">

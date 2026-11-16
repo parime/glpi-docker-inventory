@@ -18,6 +18,15 @@
    artefacts lus dans Harbor. Lecture seule (GET). #}
 {% set base = harbor_url %}
 <div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'harbor',
+        purpose: __('Voir les vulnérabilités des images déployées, lues dans Harbor.', 'dockerinventory')
+            ~ ' ' ~ __('Repérer les images qui ne viennent pas d’un registre maîtrisé.', 'dockerinventory'),
+        expected: __(
+            'Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités critiques et hautes.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Faites reconstruire ou remplacer les images non maîtrisées.', 'dockerinventory'),
+    }) }}
     {{ include('@dockerinventory/_versions_tabs.html.twig') }}
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap align-items-center gap-2">
