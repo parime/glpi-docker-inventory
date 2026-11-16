@@ -2376,3 +2376,12 @@ msgstr ""
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr ""
+
+msgid "Autre image"
+msgstr ""
+
+msgid "Nouveau tag"
+msgstr ""
+
+msgid "Image reconstruite (même tag)"
+msgstr ""

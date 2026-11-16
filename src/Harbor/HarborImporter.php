@@ -384,6 +384,8 @@ final class HarborImporter
             'last_scan_date'   => $this->now,
             'last_scan_status' => $report['status'],
             'last_scan_report' => (string) json_encode($report),
-        ], ['id' => $connectionId]);
+        ] + Connection::successValues((int) $report['status'], $this->now), [
+            'id' => $connectionId,
+        ]);
     }
 }

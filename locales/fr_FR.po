@@ -2188,3 +2188,12 @@ msgstr "volume anonyme %s"
 #: templates/connection_actions.html.twig
 msgid "À vérifier dans Portainer"
 msgstr "À vérifier dans Portainer"
+
+msgid "Autre image"
+msgstr "Autre image"
+
+msgid "Nouveau tag"
+msgstr "Nouveau tag"
+
+msgid "Image reconstruite (même tag)"
+msgstr "Image reconstruite (même tag)"

@@ -28,6 +28,7 @@ use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
+use GlpiPlugin\Dockerinventory\Version\VersionChange;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -97,7 +98,8 @@ final class ImporterTest extends TestCase
                 ['plugin_dockerinventory_services_id' => $serviceIds]
             );
         }
-        foreach ([Service::getTable(), Node::getTable(), 'glpi_plugin_dockerinventory_stacks'] as $table) {
+        $tables = [Service::getTable(), Node::getTable(), 'glpi_plugin_dockerinventory_stacks', VersionChange::TABLE];
+        foreach ($tables as $table) {
             $DB->delete($table, ['plugin_dockerinventory_connections_id' => $this->connectionId]);
         }
         (new Connection())->delete(['id' => $this->connectionId], true);
@@ -244,6 +246,47 @@ final class ImporterTest extends TestCase
         $appliance = new Appliance();
         $appliance->getFromDB($applianceId);
         $this->assertSame('complétée par un utilisateur', $appliance->fields['comment']);
+    }
+
+    /**
+     * #10 : un nouveau tag est journalisé (preuve A.8.32), un réimport identique n'ajoute rien, et la
+     * date du dernier import réussi avance seulement quand l'import réussit.
+     */
+    public function testVersionChangeIsJournaledAndSuccessDateKept(): void
+    {
+        global $DB;
+
+        $this->importer()->import($this->connection());
+        $this->assertNotEmpty($this->connection()->fields['last_success_date']);
+        $this->importer()->import($this->connection());
+        $where = ['plugin_dockerinventory_connections_id' => $this->connectionId];
+        $this->assertSame(0, countElementsInTable(VersionChange::TABLE, $where), 'Réimport identique.');
+
+        $spec = &$this->fixture['docker']['1']['services'][0]['Spec']['TaskTemplate']['ContainerSpec'];
+        $this->assertSame('svc-boutique-web', $this->fixture['docker']['1']['services'][0]['ID']);
+        $spec['Image'] = 'boutique/web:2.5.0@sha256:' . str_repeat('ab', 32);
+        unset($spec);
+        $this->importer()->import($this->connection());
+
+        $rows = iterator_to_array($DB->request(['FROM' => VersionChange::TABLE, 'WHERE' => $where]), false);
+        $this->assertCount(1, $rows);
+        $this->assertSame(VersionChange::KIND_TAG, $rows[0]['kind']);
+        $this->assertSame('2.4.1', $rows[0]['old_tag']);
+        $this->assertSame('2.5.0', $rows[0]['new_tag']);
+        $this->assertSame('boutique_web', $rows[0]['service_name']);
+        $this->assertSame($this->entityId, (int) $rows[0]['entities_id']);
+        $this->assertSame(
+            (int) $this->services()['boutique_web']['id'],
+            (int) $rows[0]['plugin_dockerinventory_services_id']
+        );
+
+        // Un import en échec ne change pas la date du dernier import réussi.
+        $old = '2020-01-01 00:00:00';
+        $DB->update(Connection::getTable(), ['last_success_date' => $old], ['id' => $this->connectionId]);
+        $this->failingPath = '/api/endpoints';
+        $this->importer()->import($this->connection());
+        $this->assertSame(Connection::STATUS_ERROR, (int) $this->connection()->fields['last_import_status']);
+        $this->assertSame($old, $this->connection()->fields['last_success_date']);
     }
 
     public function testVanishedServiceIsRetiredNeverDeletedAndComesBack(): void

@@ -445,7 +445,7 @@ final class RegistryImporter
                 'last_import_date'   => $this->now,
                 'last_import_status' => $status,
                 'last_import_report' => (string) json_encode(['status' => $status] + $part),
-            ], ['id' => $id]);
+            ] + Connection::successValues($status, $this->now), ['id' => $id]);
             $harbor->getFromDB($id);
         }
     }
