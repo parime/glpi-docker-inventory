@@ -1,0 +1,176 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Fin de support des images » de l'entrée Inventaire Docker (#35) : services dont la
+   branche déployée n'est plus, ou bientôt plus, maintenue. Lecture seule (GET), entités actives ;
+   les réglages et correspondances sont dans la page de configuration du plugin. #}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'eol',
+        purpose: __(
+            'Savoir quelles images tournent sur une branche qui ne reçoit plus de correctifs.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin ne met rien à jour lui-même.', 'dockerinventory'),
+    }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+    <div class="card mb-3">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
+            <h2 class="card-title mb-0">
+                <i class="ti ti-calendar-x me-2" aria-hidden="true"></i>
+                {{ __('Fin de support des images', 'dockerinventory') }}
+            </h2>
+            {% if eol_enabled %}
+                <span class="badge bg-success text-white">
+                    <i class="ti ti-circle-check me-1" aria-hidden="true"></i>{{ __('Activée', 'dockerinventory') }}
+                </span>
+            {% else %}
+                <span class="badge bg-secondary text-white">
+                    <i class="ti ti-circle-off me-1" aria-hidden="true"></i>{{ __('Désactivée', 'dockerinventory') }}
+                </span>
+            {% endif %}
+            {% if can_configure_lifecycle %}
+                <a href="{{ lifecycle_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
+                    <i class="ti ti-settings me-1" aria-hidden="true"></i>
+                    {{ __('Réglages et correspondances', 'dockerinventory') }}
+                </a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <p class="text-muted">
+                {{ __(
+                    'Une image peut être à jour dans sa branche alors que cette branche ne reçoit plus de correctifs.',
+                    'dockerinventory'
+                ) }}
+                {{ __(
+                'Le plugin compare la branche déployée aux dates de fin de support publiées par une source ouverte.',
+                    'dockerinventory'
+                ) }}
+            </p>
+            {% if not eol_enabled %}
+                <div class="empty">
+                    <div class="empty-icon"><i class="ti ti-calendar-off" aria-hidden="true"></i></div>
+                    <p class="empty-title">{{ __('Fin de support des images : désactivée.', 'dockerinventory') }}</p>
+                    <p class="empty-subtitle text-muted">
+                        {% if can_configure_lifecycle %}
+                            {{ __(
+                                'Une fois activée, chaque image indique si sa branche est encore maintenue.',
+                                'dockerinventory'
+                            ) }}
+                        {% else %}
+                            {{ __(
+                                'Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin.',
+                                'dockerinventory'
+                            ) }}
+                        {% endif %}
+                    </p>
+                    {% if can_configure_lifecycle %}
+                        <div class="empty-action">
+                            <a href="{{ lifecycle_url }}" class="btn btn-primary">
+                                <i class="ti ti-settings me-1" aria-hidden="true"></i>
+                                {{ __('Activer', 'dockerinventory') }}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                {# Compteurs : un clic filtre sur l'état du support. #}
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a href="{{ page_url }}&eol={{ eol_watch }}"
+                       class="btn btn-sm {{ eol == eol_watch ? 'btn-danger' : 'btn-outline-danger' }}">
+                        <i class="ti ti-alert-octagon me-1" aria-hidden="true"></i>
+                        {{ __('À surveiller', 'dockerinventory') }}
+                        <span class="badge bg-white text-danger ms-1">
+                            {{ eol_counts['eol']|default(0) + eol_counts['soon']|default(0) }}
+                        </span>
+                    </a>
+                    {% for code, info in eol_statuses %}
+                        <a href="{{ page_url }}&eol={{ code }}" title="{{ info.help }}"
+                           class="btn btn-sm {{ eol == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
+                            <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
+                            <span class="badge bg-{{ info.color }}-lt ms-1">{{ eol_counts[code]|default(0) }}</span>
+                        </a>
+                    {% endfor %}
+                    <a href="{{ page_url }}&eol={{ eol_all }}"
+                       class="btn btn-sm {{ eol == '' ? 'btn-dark' : 'btn-outline-dark' }}">
+                        {{ __('Tous', 'dockerinventory') }}
+                    </a>
+                </div>
+                <p class="small text-muted mb-0">
+                    {% if eol_source.last_success %}
+                        {{ __('Cycles de vie mis à jour le', 'dockerinventory') }}
+                        {{ eol_source.last_success|formatted_datetime }}
+                        ({{ eol_source_host }}).
+                    {% else %}
+                        {{ __(
+                            'Cycles de vie pas encore lus : prochaine mise à jour par la tâche automatique.',
+                            'dockerinventory'
+                        ) }}
+                    {% endif %}
+                    {% if eol_source.errors is not empty %}
+                        <span class="text-warning">
+                            <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                            {{ __(
+                                'Dernière mise à jour incomplète : les données en cache restent utilisées.',
+                                'dockerinventory'
+                            ) }}
+                        </span>
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if eol_enabled %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h3 class="card-title">
+                    <i class="ti ti-brand-docker me-2" aria-hidden="true"></i>{{ __('Services', 'dockerinventory') }}
+                    <span class="badge bg-secondary-lt ms-2">{{ rows|length }}</span>
+                </h3>
+            </div>
+            {% if rows is empty %}
+                <div class="card-body">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <i class="ti ti-shield-check text-success" aria-hidden="true"></i>
+                        </div>
+                        <p class="empty-title">
+                            {{ __('Aucun service ne correspond à ces filtres.', 'dockerinventory') }}
+                        </p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="table-responsive">
+                    {{ include('@dockerinventory/_version_rows.html.twig', {rows: rows, eol_enabled: true}) }}
+                </div>
+            {% endif %}
+        </div>
+        <p class="text-muted small">
+            <i class="ti ti-help-circle me-1" aria-hidden="true"></i>
+            {{ __(
+                '« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source.',
+                'dockerinventory'
+            ) }}
+            {% if can_configure_lifecycle %}
+                <a href="{{ lifecycle_url }}" class="ms-1">
+                {{ __('Ajouter une correspondance', 'dockerinventory') }}</a>
+            {% endif %}
+        </p>
+    {% endif %}
+</div>

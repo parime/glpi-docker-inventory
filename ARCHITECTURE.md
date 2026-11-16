@@ -13,22 +13,29 @@ dockerinventory/
 ├── hook.php                   installation, mise à jour, désinstallation
 ├── composer.json
 ├── front/                     pages (une par écran)
-│   ├── connection.php         page de configuration du plugin : registres maîtrisés, liste des connexions
-│   │                          Portainer, WUD et Harbor (droit Configuration en modification)
+│   ├── config.php             page de configuration du plugin (Configuration > Plugins), en onglets :
+│   │                          connexions, registres maîtrisés, fin de support (droit Configuration en
+│   │                          modification) ; seul endroit où le plugin se règle (#35)
+│   ├── connection.php         ancienne adresse de la liste des connexions : redirige vers config.php
 │   ├── connection.form.php    choix du type, formulaire, « Tester la connexion », « Importer maintenant »,
 │   │                          « Vérifier les registres maintenant »
-│   ├── service.php            liste des services importés (recherche GLPI)
+│   ├── service.php            liste des services importés (recherche GLPI) : page d'accueil de la seule
+│   │                          entrée de menu, Parc > Inventaire Docker
 │   ├── service.form.php       fiche d'un service, en lecture seule
 │   ├── version.php            « Versions des images » : compteurs, filtres, badges (Twig) ;
-│   │                          onglet « Images Harbor et vulnérabilités » (?view=harbor)
+│   │                          sous-pages « Images Harbor et vulnérabilités » (?view=harbor) et
+│   │                          « Fin de support des images » (?view=eol, lecture seule)
 │   ├── imageversion.php       recherche GLPI sur les versions (vues enregistrées, exports)
-│   └── lifecycle.php          « Fin de support des images » : source, correspondances image → produit
-│                              (droit Configuration en modification)
+│   └── lifecycle.php          ancienne adresse de la fin de support : redirige vers l'onglet de
+│                              config.php (administrateurs) ou vers la sous-page de lecture (autres)
 ├── src/
 │   ├── Compat/
 │   │   ├── GlpiVersion.php    GLPI 11 ou 12
 │   │   ├── Http.php           GET par le client HTTP de GLPI, sans redirection
 │   │   └── Base/              classes parentes : propriétés typées (GLPI 12) ou non (GLPI 11)
+│   ├── Menu.php               seule entrée de menu d'usage (Parc > Inventaire Docker) et onglets de
+│   │                          ses sous-pages (templates/_section_nav.html.twig)
+│   ├── ConfigPage.php         onglets et adresses de la page de configuration du plugin
 │   ├── Install/Installer.php  tables, droit, tâche automatique, préférences d'affichage ; désinstallation
 │   ├── Connection.php         connexion Portainer, WUD ou Harbor (type figé à la création) : URL, clé ou
 │   │                          mot de passe chiffré (GLPIKey), utilisateur WUD ou compte robot Harbor, hôte
@@ -46,9 +53,9 @@ dockerinventory/
 │   ├── Node.php               nœud Swarm ou hôte autonome ; onglet « Services du nœud » des ordinateurs
 │   ├── Profile.php            onglet « Inventaire Docker » des profils (droit plugin_dockerinventory_service)
 │   ├── HarborArtifact.php     artefact Harbor (lecture seule) : rattachement d'un service, provenance,
-│   │                          carte de l'onglet « Versions », onglet « Images Harbor » de la page des versions
+│   │                          carte de l'onglet « Versions », sous-page « Images Harbor » de l'entrée de menu
 │   ├── LifecycleProduct.php   correspondance image → produit (table modifiable), états du support,
-│   │                          menu Configuration, tâche automatique quotidienne `lifecyclecheck`
+│   │                          onglet de la configuration du plugin, tâche quotidienne `lifecyclecheck`
 │   ├── Lifecycle/             fin de support des images (#26)
 │   │   ├── LifecycleClient.php     lecture seule : GET d'un produit (API v1 d'endoflife.date ou
 │   │   │                           ancienne API), transport injectable, adresse changeable
@@ -298,7 +305,7 @@ dockerinventory/
 - Provenance : hôte de l'image comparé aux registres maîtrisés (réglage `harbor_managed_registries`
   du contexte `plugin:dockerinventory`, saisi sur la page de configuration du plugin ; vide : hôtes
   des connexions Harbor actives ; aucun : « non évaluée »).
-- Affichage sans nouvelle entrée de menu : onglet de la page des versions (`?view=harbor`) et carte
+- Affichage sans nouvelle entrée de menu : sous-page de Parc > Inventaire Docker (`?view=harbor`) et carte
   de l'onglet « Versions » des services, droit de lecture des services ; entités actives.
 - Tickets (`VulnTickets`, désactivés par défaut : `ticket_vuln_enabled`, `ticket_vuln_severity` sur
   la connexion Portainer) après chaque lecture de Harbor ; mêmes catégorie, groupe et modèle que les

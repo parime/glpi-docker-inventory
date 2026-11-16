@@ -99,26 +99,19 @@ class ImageVersion extends CommonDBTM
         return false;
     }
 
-    /**
-     * Menu Parc : la page des versions (filtres, badges) ; la loupe mène à la recherche GLPI.
-     *
-     * @return array<string, mixed>|false
-     */
-    public static function getMenuContent()
-    {
-        $menu = parent::getMenuContent();
-        if (is_array($menu) && isset($menu['page'])) {
-            $menu['page'] = self::getOverviewURL(false);
-        }
-
-        return $menu;
-    }
-
     public static function getOverviewURL(bool $full = true): string
     {
         global $CFG_GLPI;
 
         return ($full ? (string) $CFG_GLPI['root_doc'] : '') . '/plugins/dockerinventory/front/version.php';
+    }
+
+    /**
+     * Onglet « Fin de support des images » de l'entrée Inventaire Docker (lecture seule).
+     */
+    public static function getEolURL(bool $full = true): string
+    {
+        return self::getOverviewURL($full) . '?view=' . Menu::TAB_EOL;
     }
 
     /**

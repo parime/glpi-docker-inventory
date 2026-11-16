@@ -16,12 +16,13 @@
  */
 
 use GlpiPlugin\Dockerinventory\ImageVersion;
+use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 
 // Recherche GLPI sur les versions (vues enregistrées, exports) : droit de lecture du plugin ; la
 // recherche filtre par entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
-Html::header(ImageVersion::getTypeName(2), '', 'assets', ImageVersion::class);
+Html::header(ImageVersion::getTypeName(2), '', 'assets', Menu::class, Menu::TAB_VERSIONS);
 Search::show(ImageVersion::class);
 Html::footer();

@@ -81,12 +81,23 @@ unzip glpi-docker-inventory-X.Y.Z.zip   # creates the dockerinventory/ folder
 
 Then **Setup > Plugins**, install and enable "Docker Inventory".
 
+**Where to find the plugin** (a single menu entry, to keep GLPI light):
+
+- **Assets > Docker Inventory** (plugin read right): **Services**, **Image versions**, **Harbor images
+  and vulnerabilities** and **Image end of support** sub-pages, linked by tabs;
+- **Setup > Plugins > Docker Inventory** (GLPI configuration right): every setting, in tabs: **Docker
+  connections** (Portainer, Kubernetes, WUD, Harbor), **Managed registries** and **Image end of
+  support** (source and image → product mapping).
+
+The former addresses (*Setup > Docker connections*, *Setup > Image end of support*, up to version
+0.8.0) redirect to the new ones: bookmarks keep working.
+
 ## Usage (batch 1: Portainer)
 
 1. **In Portainer**, create a dedicated user with minimal rights (read-only on the environments to
    inventory) and an access token for it (*My account > Access tokens*). With Portainer CE, first
    read [the CE limits](#portainer-account-minimal-rights-and-ce-limits).
-2. **In GLPI**, *Setup > Docker connections* (or the plugin name in *Setup > Plugins*): "Add",
+2. **In GLPI**, *Setup > Plugins > Docker Inventory*, "Docker connections" tab: "Add",
    choose **Portainer**, then enter the Portainer address (`https://portainer.exemple.test:9443`)
    and the key. Pick
    the environment (Production, Staging...) given to the appliances the import will create. "Test
@@ -95,7 +106,7 @@ Then **Setup > Plugins**, install and enable "Docker Inventory".
 
 What you get:
 
-- *Assets > Container services*: every service, with image, tag, digest, replicas, status;
+- *Assets > Docker Inventory*, "Services" sub-page: every service, with image, tag, digest, replicas, status;
 - on each **Appliance** created for a stack, the "Services" tab;
 - on each **computer** whose name matches a Swarm node or a standalone Docker host, the "Node
   services" tab.
@@ -128,7 +139,7 @@ WUD** (no trigger, no update) and links it to the services imported from Portain
 1. **Import Portainer first**: containers seen by WUD are linked to the imported services (by
    container ID or name for standalone hosts, then by image digest, then by Swarm service name,
    then by image and tag).
-2. **In GLPI**, *Setup > Docker connections*: "Add", choose **What's Up Docker**, enter the WUD
+2. **In GLPI**, *Setup > Plugins > Docker Inventory*, "Docker connections" tab: "Add", choose **What's Up Docker**, enter the WUD
    address (`https://wud.exemple.test:3000`) and, if WUD requires authentication, the user and
    password (encrypted with the GLPI key, never shown again). "Test the connection" shows the WUD
    version and the number of watched containers, then "Read WUD now".
@@ -136,7 +147,7 @@ WUD** (no trigger, no update) and links it to the services imported from Portain
 
 What you get:
 
-- *Assets > Image versions*: for each service, deployed version, latest version and gap (coloured
+- *Assets > Docker Inventory*, "Image versions" sub-page: for each service, deployed version, latest version and gap (coloured
   badges: major, minor, patch, digest only, not trackable, up to date), filters by gap and by
   appliance environment, containers without a service listed separately; "Advanced search and
   export" opens the GLPI search on the same columns;
@@ -169,8 +180,8 @@ in the registry, **read-only** (GET requests on the tag list), and fills the sam
   read per image per day (cache), and no more calls during the check as soon as Docker Hub refuses
   (rate limit) or does not answer. Only the names of the public images in use are sent to Docker
   Hub.
-- **Harbor** (registry API v2, `/v2/<project>/<repository>/tags/list`): *Setup > Docker
-  connections*, "Add", choose **Harbor**, enter the address (`https://harbor.exemple.test`), a
+- **Harbor** (registry API v2, `/v2/<project>/<repository>/tags/list`): *Setup > Plugins > Docker Inventory*, "Docker
+  connections" tab, "Add", choose **Harbor**, enter the address (`https://harbor.exemple.test`), a
   **read-only robot account** (*pull* right on the useful projects; password encrypted with the
   GLPI key, never shown again) and, if it differs from the address, the host as written in the
   images (`registry.exemple.test:5000`). The connection covers the services of its entity and its
@@ -183,7 +194,7 @@ components as the deployed tag (`16` follows `17`, not `16.4`), same variant (`-
 pre-releases (`-rc1`, `-beta2`) ignored unless a pre-release is deployed, `latest` "not trackable".
 
 The check runs **every hour** (*Setup > Automatic actions*, `registrycheck`); "Check the registries
-now" is available on the *Assets > Image versions* page and on each Harbor connection. For a Docker
+now" is available on the *Assets > Docker Inventory > Image versions* page and on each Harbor connection. For a Docker
 Hub mirror, define `PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL` in `config/local_define.php`. To never
 query Docker Hub, disable the `registrycheck` automatic action.
 
@@ -233,7 +244,9 @@ example a database on 13.x when branch 13 no longer receives fixes). The plugin 
 [endoflife.date](https://endoflife.date) (API v1, JSON over HTTPS).
 
 **Disabled by default: no outgoing call until the source is enabled.** Settings in
-*Setup > Image end of support* (configuration administrators):
+*Setup > Plugins > Docker Inventory*, "Image end of support" tab (configuration administrators). The
+result is shown in *Assets > Docker Inventory*, "Image end of support" sub-page (services to watch
+first):
 
 1. Tick "Read lifecycles (end of support)" and choose the "end of support soon" threshold (90 days
    by default), then "Save".
@@ -276,12 +289,12 @@ requests only**: the plugin never starts a scan, never changes or deletes anythi
 
 1. Read-only robot account: read projects, repositories and artifacts (and the tag list for the
    fallback without WUD); no write, delete or scan permission.
-2. On the Harbor connection (*Setup > Docker connections*), "Test the connection" also shows the
+2. On the Harbor connection ("Docker connections" tab of the plugin configuration), "Test the connection" also shows the
    number of projects visible through the API; "**Read Harbor now**" starts the reading, otherwise
    the automatic action `harborimport` (every hour). The report (projects, repositories, artifacts,
    scanned, retired, requests, errors) is shown on the connection.
-3. Result: **"Harbor images and vulnerabilities"** tab of the *Assets > Image versions* page (no new
-   menu entry) and a "Image vulnerabilities (Harbor)" card in the "Versions" tab of each service.
+3. Result: **"Harbor images and vulnerabilities"** sub-page of *Assets > Docker
+   Inventory* and a "Image vulnerabilities (Harbor)" card in the "Versions" tab of each service.
 
 **Linking a service to its artifact**: by the **digest** of the running image (or of one of its
 per-platform images), the only proof that the scan is the one of the deployed image; otherwise by
@@ -292,8 +305,7 @@ case without any rebuild: Docker 29 (containerd image store) keeps the digest of
 the image may also have been rebuilt since the deployment. A scan still "running" or "pending" in
 Harbor is shown as such, not as "not scanned".
 
-**Managed registries**: at the top of *Setup > Docker connections* (the plugin configuration page),
-list of the hosts images must come from (`registry.exemple.test:5000`, `docker.io` for Docker Hub).
+**Managed registries**: "Managed registries" tab of the plugin configuration page, list of the hosts images must come from (`registry.exemple.test:5000`, `docker.io` for Docker Hub).
 Empty list: the hosts of the Harbor connections. A deployed image coming from elsewhere is flagged
 "**Outside managed registry**" (counter and filter of the tab, alert on the service).
 
@@ -387,7 +399,7 @@ kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
 kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventaire:glpi-lecture
 ```
 
-2. **In GLPI**, *Setup > Docker connections*: "Add", choose **Kubernetes**, then enter the API
+2. **In GLPI**, *Setup > Plugins > Docker Inventory*, "Docker connections" tab: "Add", choose **Kubernetes**, then enter the API
    address (`https://…:6443`, HTTPS required), the token (encrypted with the GLPI key, never shown
    again) and, if the cluster has its own authority (usual case), the content of the certificate
    authority (`ca.crt`). System namespaces (`kube-system`, `kube-public`, `kube-node-lease`) are

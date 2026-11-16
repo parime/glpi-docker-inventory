@@ -19,6 +19,7 @@ use Glpi\Plugin\Hooks;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
+use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Profile;
 use GlpiPlugin\Dockerinventory\Service;
@@ -56,14 +57,15 @@ function plugin_init_dockerinventory(): void
     Plugin::registerClass(Connection::class);
     Plugin::registerClass(LifecycleProduct::class);
 
-    // Services et versions des images dans Parc ; connexions (Portainer, WUD, Harbor) et fin de
-    // support des images dans Configuration
-    // (et depuis le nom du plugin dans Configuration > Plugins).
+    // Charte commune, section 9 (#35) : une seule entrée de menu d'usage, Parc > Inventaire Docker
+    // (services, versions des images, images Harbor, fin de support, en sous-pages), et tous les
+    // réglages dans la page de configuration du plugin (Configuration > Plugins > Inventaire
+    // Docker : connexions, registres maîtrisés, fin de support, en onglets). Les anciennes adresses
+    // (front/connection.php, front/lifecycle.php) redirigent vers les nouvelles.
     $PLUGIN_HOOKS[Hooks::MENU_TOADD]['dockerinventory'] = [
-        'assets' => [Service::class, ImageVersion::class],
-        'config' => [Connection::class, LifecycleProduct::class],
+        'assets' => [Menu::class],
     ];
-    $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['dockerinventory'] = 'front/connection.php';
+    $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['dockerinventory'] = 'front/config.php';
 }
 
 /**

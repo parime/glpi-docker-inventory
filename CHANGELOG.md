@@ -7,6 +7,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Changed
 
+- Une seule entrée de menu, réglages dans la page du plugin ([#35](https://github.com/parime/glpi-docker-inventory/issues/35),
+  charte commune section 9) : **Parc > Inventaire Docker** remplace les quatre entrées précédentes et regroupe
+  en onglets les sous-pages Services, Versions des images, Images Harbor et vulnérabilités, et une nouvelle
+  sous-page **Fin de support des images** en lecture seule (services à surveiller d'abord). Les connexions,
+  les registres maîtrisés et la fin de support (source et correspondances) se règlent dans
+  **Configuration > Plugins > Inventaire Docker**, en onglets, avec le droit de configuration comme avant.
+  Les anciennes adresses (`front/connection.php`, `front/lifecycle.php`) redirigent vers les nouvelles :
+  les favoris restent valables. Droits par écran et onglets des ordinateurs et applications inchangés.
 - CI : contrôles de sécurité communs v1.8.2 (scripts communs bien pris à la version appelée).
 - CI : contrôles de sécurité communs v1.8.1 ([parime/glpi-plugin-security#15](https://github.com/parime/glpi-plugin-security/issues/15)). Les points d'entrée,
   la couverture de la matrice d'accès (toujours bloquante, `access-matrix-file`) et les exigences marketplace

@@ -333,7 +333,15 @@ final class XssTest extends TestCase
         $this->assertEscaped($this->open('front/service.form.php', ['id' => (int) $service['id']]), 'fiche service');
         $this->assertEscaped($this->open('front/service.php'), 'liste des services', false);
         $this->assertEscaped($this->open('front/imageversion.php'), 'recherche des versions', false);
-        $this->assertEscaped($this->open('front/connection.php'), 'liste des connexions', false);
+        $this->assertEscaped(
+            $this->open('front/version.php', ['view' => 'eol', 'eol' => 'all']),
+            'fin de support',
+            false
+        );
+        // Page de configuration du plugin, chaque onglet (#35).
+        foreach (['connections', 'registries', 'lifecycle'] as $tab) {
+            $this->assertEscaped($this->open('front/config.php', ['tab' => $tab]), 'configuration : ' . $tab, false);
+        }
 
         $item = new Service();
         $this->assertTrue($item->getFromDB((int) $service['id']));

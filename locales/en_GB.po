@@ -2469,3 +2469,21 @@ msgstr "Add a connection with a least-privilege account, test it, then start an 
 
 msgid "Les imports tournent ensuite tout seuls."
 msgstr "Imports then run on their own."
+
+msgid "Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin."
+msgstr "Ask your GLPI administrator to enable it in the plugin configuration."
+
+msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+msgstr "Enter the hosts of your registries, one per line, then save."
+
+msgid "Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue."
+msgstr "First plan to move end-of-life images to a branch that is still maintained."
+
+msgid "Voir les images concernées"
+msgstr "See the affected images"
+
+msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
+msgstr "“Support unknown”: image not mapped to a product, or branch missing from the source."
+
+msgid "Ajouter une connexion"
+msgstr "Add a connection"
