@@ -20,6 +20,8 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
+use Glpi\Exception\RedirectException;
+use Glpi\Plugin\Hooks;
 use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
@@ -31,8 +33,6 @@ use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Glpi\Exception\RedirectException;
-use Glpi\Plugin\Hooks;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
