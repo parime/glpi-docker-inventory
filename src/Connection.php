@@ -162,6 +162,15 @@ class Connection extends ConnectionBase
         return 'ti ti-plug-connected';
     }
 
+    /**
+     * Liste des connexions : onglet « Connexions Docker » de la page de configuration du plugin
+     * (#35). L'ancienne adresse front/connection.php y redirige.
+     */
+    public static function getSearchURL($full = true)
+    {
+        return ConfigPage::url(ConfigPage::TAB_CONNECTIONS, [], (bool) $full);
+    }
+
     public static function canView(): bool
     {
         return (bool) Session::haveRight(self::RIGHTNAME, UPDATE);

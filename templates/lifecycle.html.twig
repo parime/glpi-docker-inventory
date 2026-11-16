@@ -13,8 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
-{# Page « Fin de support des images » (configuration) : source des cycles de vie, correspondances
-   image => produit, images en service sans correspondance. #}
+{# Onglet « Fin de support des images » de la page de configuration du plugin (#35) : source des
+   cycles de vie, correspondances image => produit, images en service sans correspondance. #}
 <div class="container-fluid">
     {{ include('@dockerinventory/_page_help.html.twig', {
         page: 'lifecycle',
@@ -27,6 +27,7 @@
             'dockerinventory'
         ) ~ ' ' ~ __('Le résultat apparaît dans « Versions des images ».', 'dockerinventory'),
     }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap align-items-center gap-2">
             <h2 class="card-title mb-0">
@@ -43,7 +44,8 @@
                 </span>
             {% endif %}
             <a href="{{ versions_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
-                <i class="ti ti-tags me-1" aria-hidden="true"></i>{{ __('Versions des images', 'dockerinventory') }}
+                <i class="ti ti-calendar-x me-1" aria-hidden="true"></i>
+                {{ __('Voir les images concernées', 'dockerinventory') }}
             </a>
         </div>
         <div class="card-body">
@@ -207,7 +209,7 @@
                                 <td><code>{{ item.image }}</code></td>
                                 <td>{{ item.count }}</td>
                                 <td class="text-end">
-                                    <a href="{{ page_url }}?add={{ item.image|url_encode }}#dockerinventory-new-mapping"
+                                    <a href="{{ page_url }}&add={{ item.image|url_encode }}#dockerinventory-new-mapping"
                                        class="btn btn-sm btn-outline-primary">
                                         <i class="ti ti-plus me-1" aria-hidden="true"></i>
                                         {{ __('Ajouter une correspondance', 'dockerinventory') }}

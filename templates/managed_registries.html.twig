@@ -13,22 +13,20 @@
  # -------------------------------------------------------------------------
  #}
 
-{# Page de configuration du plugin (liste des connexions) : registres maîtrisés, d'où les images
-   déployées doivent venir. Repliée par défaut, au-dessus de la liste des connexions. #}
+{# Onglet « Registres maîtrisés » de la page de configuration du plugin (#35) : d'où les images
+   déployées doivent venir. #}
 <div class="container-fluid">
     {{ include('@dockerinventory/_page_help.html.twig', {
-        page: 'connections',
+        page: 'registries',
         purpose: __(
-            'Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up Docker et Harbor.',
+            'Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni contrôlée.',
             'dockerinventory'
-        ) ~ ' ' ~ __('Le plugin les lit seulement, sans rien y modifier.', 'dockerinventory'),
-        expected: __(
-            'Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis lancez un import.',
-            'dockerinventory'
-        ) ~ ' ' ~ __('Les imports tournent ensuite tout seuls.', 'dockerinventory'),
+        ),
+        expected: __('Indiquez les hôtes de vos registres, un par ligne, puis enregistrez.', 'dockerinventory'),
     }) }}
-    <details class="card mb-3" id="managed-registries">
-        <summary class="card-header d-flex flex-wrap align-items-center gap-2" style="cursor: pointer">
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+    <div class="card mb-3" id="managed-registries">
+        <div class="card-header d-flex flex-wrap align-items-center gap-2">
             <h2 class="card-title mb-0">
                 <i class="ti ti-building-warehouse me-2" aria-hidden="true"></i>
                 {{ __('Registres maîtrisés', 'dockerinventory') }}
@@ -36,7 +34,7 @@
             <span class="text-muted small">
                 {{ __('Images déployées hors de ces registres : signalées.', 'dockerinventory') }}
             </span>
-        </summary>
+        </div>
         <div class="card-body">
             <p class="text-muted">
                 {{ __(
@@ -77,5 +75,5 @@
                 </a>
             </form>
         </div>
-    </details>
+    </div>
 </div>

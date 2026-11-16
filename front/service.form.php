@@ -15,6 +15,7 @@
  * -------------------------------------------------------------------------
  */
 
+use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 
 // Fiche en lecture seule : aucune action POST. check() contrôle le droit ET l'entité de la fiche.
@@ -22,6 +23,6 @@ $service = new Service();
 $id = (int) ($_GET['id'] ?? 0);
 $service->check($id, READ);
 
-Html::header(Service::getTypeName(2), '', 'assets', Service::class);
+Html::header(Service::getTypeName(2), '', 'assets', Menu::class, Menu::TAB_SERVICES);
 $service->display(['id' => $id]);
 Html::footer();

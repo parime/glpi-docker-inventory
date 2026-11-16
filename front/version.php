@@ -25,20 +25,56 @@ use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
+use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 
-// Page « Versions des images » : lecture seule, droit de lecture du plugin, entités actives.
-// Onglets : versions (par défaut) et images Harbor (?view=harbor), sans entrée de menu à part.
+// Sous-pages « Versions des images » (par défaut), « Images Harbor et vulnérabilités »
+// (?view=harbor) et « Fin de support des images » (?view=eol) de l'entrée Parc > Inventaire Docker :
+// lecture seule, droit de lecture du plugin, entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
 $hasHarbor = countElementsInTable(Connection::getTable(), ['type' => Connection::TYPE_HARBOR]) > 0;
+$view = (string) ($_GET['view'] ?? '');
 $tabs = [
     'versions_url' => ImageVersion::getOverviewURL(),
     'harbor_url'   => HarborArtifact::getPageURL(),
+    'tabs'         => Menu::tabs(in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL], true) ? $view : Menu::TAB_VERSIONS),
+];
+$eolSource = [
+    'eol_statuses'   => LifecycleProduct::statusInfos(),
+    'eol_watch'      => ImageVersion::FILTER_EOL_WATCH,
+    'eol_source'     => LifecycleChecker::current()->sourceState(),
+    'eol_source_host' => (string) parse_url(LifecycleClient::configuredUrl(), PHP_URL_HOST),
+    'eol_errors'     => LifecycleProduct::errorLabels(),
+    'lifecycle_url'  => LifecycleProduct::getPageURL(),
+    'can_configure_lifecycle' => LifecycleProduct::canView(),
 ];
 
-if (($_GET['view'] ?? '') === 'harbor') {
+if ($view === Menu::TAB_EOL) {
+    // Fin de support : « À surveiller » par défaut, « all » pour tout voir.
+    $eol = (string) ($_GET['eol'] ?? ImageVersion::FILTER_EOL_WATCH);
+    if ($eol !== ImageVersion::FILTER_EOL_WATCH && !in_array($eol, CycleMatcher::STATUSES, true)) {
+        $eol = '';
+    }
+    $eolEnabled = Settings::enabled();
+    $data = $eolEnabled ? ImageVersion::overview('', 0, $eol) : ['services' => [], 'eol_counts' => []];
+
+    Html::header(__('Fin de support des images', 'dockerinventory'), '', 'assets', Menu::class, Menu::TAB_EOL);
+    TemplateRenderer::getInstance()->display('@dockerinventory/eol.html.twig', $tabs + $eolSource + [
+        'eol_enabled' => $eolEnabled,
+        'eol'         => $eol,
+        'eol_all'     => 'all',
+        'rows'        => $data['services'],
+        'eol_counts'  => $data['eol_counts'],
+        'page_url'    => ImageVersion::getEolURL(),
+    ]);
+    Html::footer();
+
+    return;
+}
+
+if ($view === Menu::TAB_HARBOR) {
     $severity = (string) ($_GET['severity'] ?? '');
     $known = array_merge(
         HarborMapper::SEVERITIES,
@@ -56,9 +92,8 @@ if (($_GET['view'] ?? '') === 'harbor') {
         $project = '';
     }
 
-    Html::header(ImageVersion::getTypeName(2), '', 'assets', ImageVersion::class);
+    Html::header(HarborArtifact::getTypeName(2), '', 'assets', Menu::class, Menu::TAB_HARBOR);
     TemplateRenderer::getInstance()->display('@dockerinventory/harbor_images.html.twig', $tabs + [
-        'active_tab'     => 'harbor',
         'deployed'       => $data['deployed'],
         'artifacts'      => $data['artifacts'],
         'counts'         => $data['counts'],
@@ -99,9 +134,8 @@ if (!$eolEnabled) {
 }
 $data = ImageVersion::overview($gap, $environment, $eol);
 
-Html::header(ImageVersion::getTypeName(2), '', 'assets', ImageVersion::class);
-TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', $tabs + [
-    'active_tab'     => 'versions',
+Html::header(ImageVersion::getTypeName(2), '', 'assets', Menu::class, Menu::TAB_VERSIONS);
+TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', $tabs + $eolSource + [
     'rows'           => $data['services'],
     'unmatched'      => $data['unmatched'],
     'counts'         => $data['counts'],
@@ -120,12 +154,5 @@ TemplateRenderer::getInstance()->display('@dockerinventory/versions.html.twig', 
     'eol_enabled'    => $eolEnabled,
     'eol'            => $eol,
     'eol_counts'     => $data['eol_counts'],
-    'eol_statuses'   => LifecycleProduct::statusInfos(),
-    'eol_watch'      => ImageVersion::FILTER_EOL_WATCH,
-    'eol_source'     => LifecycleChecker::current()->sourceState(),
-    'eol_source_host' => (string) parse_url(LifecycleClient::configuredUrl(), PHP_URL_HOST),
-    'eol_errors'     => LifecycleProduct::errorLabels(),
-    'lifecycle_url'  => LifecycleProduct::getPageURL(),
-    'can_configure_lifecycle' => LifecycleProduct::canView(),
 ]);
 Html::footer();

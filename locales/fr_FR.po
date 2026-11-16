@@ -2469,3 +2469,18 @@ msgstr "Ajoutez une connexion avec un compte aux droits minimaux, testez-la, pui
 
 msgid "Les imports tournent ensuite tout seuls."
 msgstr "Les imports tournent ensuite tout seuls."
+
+msgid "Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin."
+msgstr "Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin."
+
+msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+msgstr "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+
+msgid "Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue."
+msgstr "Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue."
+
+msgid "Voir les images concernées"
+msgstr "Voir les images concernées"
+
+msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
+msgstr "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."

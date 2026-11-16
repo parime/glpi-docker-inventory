@@ -82,13 +82,25 @@ unzip glpi-docker-inventory-X.Y.Z.zip   # crée le dossier dockerinventory/
 
 Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 
+**Où trouver le plugin** (une seule entrée de menu, pour ne pas alourdir GLPI) :
+
+- **Parc > Inventaire Docker** (droit de lecture du plugin) : sous-pages **Services**, **Versions des
+  images**, **Images Harbor et vulnérabilités** et **Fin de support des images**, reliées par des
+  onglets ;
+- **Configuration > Plugins > Inventaire Docker** (droit de configuration de GLPI) : tous les
+  réglages, en onglets : **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres
+  maîtrisés** et **Fin de support des images** (source et correspondances image → produit).
+
+Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
+images*, jusqu'à la version 0.8.0) redirigent vers les nouvelles : les favoris restent valables.
+
 ## Utilisation (lot 1 : Portainer)
 
 1. **Dans Portainer**, créer un utilisateur dédié aux droits minimaux (lecture seule sur les
    environnements à inventorier) et un jeton d'accès pour lui (*My account > Access tokens*). Sous
    Portainer CE, lire d'abord [les limites de CE](#compte-portainer--droits-minimaux-et-limites-de-ce).
-2. **Dans GLPI**, *Configuration > Connexions Docker* (ou le nom du plugin dans *Configuration >
-   Plugins*) : « Ajouter », choisir **Portainer**, puis saisir l'adresse de Portainer
+2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » :
+   « Ajouter », choisir **Portainer**, puis saisir l'adresse de Portainer
    (`https://portainer.exemple.test:9443`) et la clé. Choisir l'environnement (Production, Préproduction...) à donner aux applications que
    l'import créera. « Tester la connexion », puis « Importer maintenant ».
 3. L'import tourne ensuite **toutes les heures** (*Configuration > Actions automatiques*,
@@ -96,7 +108,7 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 
 Ce qui apparaît :
 
-- *Parc > Services de conteneurs* : tous les services, avec image, tag, empreinte, réplicas, état ;
+- *Parc > Inventaire Docker*, sous-page « Services » : tous les services, avec image, tag, empreinte, réplicas, état ;
 - sur chaque **Application** créée pour une stack, l'onglet « Services » ;
 - sur chaque **ordinateur** dont le nom correspond à un nœud du Swarm ou à un hôte Docker autonome,
   l'onglet « Services du nœud ».
@@ -132,7 +144,7 @@ Portainer.
 1. **Importer d'abord Portainer** : les conteneurs vus par WUD sont rattachés aux services
    importés (par l'identifiant ou le nom du conteneur pour les hôtes autonomes, puis par
    l'empreinte de l'image, puis par le nom du service Swarm, puis par image et tag).
-2. **Dans GLPI**, *Configuration > Connexions Docker* : « Ajouter », choisir **What's Up Docker**,
+2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » : « Ajouter », choisir **What's Up Docker**,
    saisir l'adresse de WUD (`https://wud.exemple.test:3000`) et, si WUD demande une
    authentification, l'utilisateur et le mot de passe (chiffré avec la clé de GLPI, jamais
    réaffiché). « Tester la connexion » affiche la version de WUD et le nombre de conteneurs suivis,
@@ -142,7 +154,7 @@ Portainer.
 
 Ce qui apparaît :
 
-- *Parc > Versions des images* : pour chaque service, version déployée, dernière version et écart
+- *Parc > Inventaire Docker*, sous-page « Versions des images » : pour chaque service, version déployée, dernière version et écart
   (badges colorés : version majeure, mineure, correctif, empreinte seule, non suivable, à jour),
   filtres par écart et par environnement de l'application, conteneurs sans service listés à part ;
   « Recherche avancée et export » ouvre la recherche GLPI sur les mêmes colonnes ;
@@ -175,8 +187,8 @@ remplit le même tableau des versions (source « Registre de l'image »).
   plus une lecture par image et par jour (cache), et plus aucun appel pendant la vérification dès
   que Docker Hub refuse (limite de requêtes) ou ne répond pas. Seuls les noms des images publiques
   utilisées sont envoyés à Docker Hub.
-- **Harbor** (API v2 des registres, `/v2/<projet>/<dépôt>/tags/list`) : *Configuration >
-  Connexions Docker*, « Ajouter », choisir **Harbor**, saisir l'adresse
+- **Harbor** (API v2 des registres, `/v2/<projet>/<dépôt>/tags/list`) : *Configuration > Plugins > Inventaire Docker*, onglet « Connexions
+  Docker », « Ajouter », choisir **Harbor**, saisir l'adresse
   (`https://harbor.exemple.test`), un **compte robot en lecture seule** (droit *pull* sur les
   projets utiles ; mot de passe chiffré avec la clé de GLPI, jamais réaffiché) et, s'il diffère de
   l'adresse, l'hôte tel qu'il est écrit dans les images (`registry.exemple.test:5000`). La connexion
@@ -190,7 +202,7 @@ composantes que le tag déployé (`16` suit `17`, pas `16.4`), même variante (`
 (`-rc1`, `-beta2`) ignorées sauf si une préversion est déployée, `latest` « non suivable ».
 
 La vérification tourne **toutes les heures** (*Configuration > Actions automatiques*,
-`registrycheck`) ; « Vérifier les registres maintenant » existe sur la page *Parc > Versions des
+`registrycheck`) ; « Vérifier les registres maintenant » existe sur la page *Parc > Inventaire Docker > Versions des
 images* et sur chaque connexion Harbor. Pour un miroir de Docker Hub, définir
 `PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL` dans `config/local_define.php`. Pour ne jamais interroger
 Docker Hub, désactiver l'action automatique `registrycheck`.
@@ -243,7 +255,9 @@ compare la **branche déployée** aux dates de fin de support publiées par une 
 [endoflife.date](https://endoflife.date) (API v1, JSON en HTTPS).
 
 **Désactivé par défaut : aucun appel sortant tant que la source n'est pas activée.** Réglages dans
-*Configuration > Fin de support des images* (administrateurs de la configuration) :
+*Configuration > Plugins > Inventaire Docker*, onglet « Fin de support des images » (administrateurs de la
+configuration). Le résultat se lit dans *Parc > Inventaire Docker*, sous-page « Fin de support des
+images » (services à surveiller d'abord) :
 
 1. Cocher « Lire les cycles de vie (fin de support) » et choisir le seuil de « bientôt en fin de
    support » (90 jours par défaut), puis « Enregistrer ».
@@ -290,12 +304,12 @@ modifie ni ne supprime rien dans Harbor.
 
 1. Compte robot en lecture seule : lecture des projets, dépôts et artefacts (et de la liste des
    tags pour le repli sans WUD) ; aucun droit d'écriture, de suppression ni de lancement d'analyse.
-2. Sur la connexion Harbor (*Configuration > Connexions Docker*), « Tester la connexion » indique
+2. Sur la connexion Harbor (onglet « Connexions Docker » de la configuration du plugin), « Tester la connexion » indique
    aussi le nombre de projets visibles par l'API ; « **Lire Harbor maintenant** » lance la lecture,
    sinon l'action automatique `harborimport` (toutes les heures). Le compte rendu (projets, dépôts,
    artefacts, analysés, retirés, requêtes, erreurs) s'affiche sur la connexion.
-3. Résultat : onglet **« Images Harbor et vulnérabilités »** de la page *Parc > Versions des images*
-   (pas de nouvelle entrée de menu) et carte « Vulnérabilités de l'image (Harbor) » dans l'onglet
+3. Résultat : sous-page **« Images Harbor et vulnérabilités »** de *Parc > Inventaire
+   Docker* et carte « Vulnérabilités de l'image (Harbor) » dans l'onglet
    « Versions » de chaque service.
 
 **Rattachement d'un service à son artefact** : par l'**empreinte** de l'image qui tourne (ou de
@@ -308,8 +322,8 @@ manifeste de la plateforme de l'hôte qui a poussé l'image ; l'image a aussi pu
 depuis le déploiement. Une analyse restée « en cours » ou « en attente » dans Harbor est affichée
 comme telle, pas comme « non analysée ».
 
-**Registres maîtrisés** : en haut de *Configuration > Connexions Docker* (page de configuration du
-plugin), liste des hôtes d'où les images doivent venir (`registry.exemple.test:5000`, `docker.io`
+**Registres maîtrisés** : onglet « Registres maîtrisés » de la page de configuration du plugin,
+liste des hôtes d'où les images doivent venir (`registry.exemple.test:5000`, `docker.io`
 pour Docker Hub). Liste vide : les hôtes des connexions Harbor. Une image déployée venant d'ailleurs
 est signalée « **Hors registre maîtrisé** » (compteur et filtre de l'onglet, alerte sur le service).
 
@@ -406,7 +420,7 @@ kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
 kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventaire:glpi-lecture
 ```
 
-2. **Dans GLPI**, *Configuration > Connexions Docker* : « Ajouter », choisir **Kubernetes**, puis
+2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » : « Ajouter », choisir **Kubernetes**, puis
    saisir l'adresse de l'API (`https://…:6443`, HTTPS obligatoire), le jeton (chiffré avec la clé de
    GLPI, jamais réaffiché) et, si le cluster a sa propre autorité (cas courant), le contenu du
    certificat d'autorité (`ca.crt`). Les namespaces du système (`kube-system`, `kube-public`,

@@ -2469,3 +2469,18 @@ msgstr "Añada una conexión con una cuenta de derechos mínimos, pruébela y lu
 
 msgid "Les imports tournent ensuite tout seuls."
 msgstr "Después, las importaciones se ejecutan solas."
+
+msgid "Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin."
+msgstr "Pida al administrador de GLPI que la active en la configuración del plugin."
+
+msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+msgstr "Indique los hosts de sus registros, uno por línea, y guarde."
+
+msgid "Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue."
+msgstr "Planifique primero el paso de las imágenes sin soporte a una rama todavía mantenida."
+
+msgid "Voir les images concernées"
+msgstr "Ver las imágenes afectadas"
+
+msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
+msgstr "«Soporte desconocido»: imagen sin correspondencia con un producto, o rama ausente de la fuente."

@@ -15,109 +15,18 @@
  * -------------------------------------------------------------------------
  */
 
-use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\ImageVersion;
-use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
-use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
-use GlpiPlugin\Dockerinventory\Lifecycle\ProductMap;
-use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
+use GlpiPlugin\Dockerinventory\Service;
 
-// Page « Fin de support des images » : administrateurs de la configuration de GLPI seulement.
-Session::checkRight(LifecycleProduct::RIGHTNAME, UPDATE);
+// Ancienne adresse de la page « Fin de support des images » (menu Configuration, jusqu'à la version
+// 0.8.0), gardée pour les favoris (#35) : les administrateurs de la configuration vont à l'onglet
+// « Fin de support des images » de la page de configuration du plugin, les autres à la sous-page de
+// lecture de Parc > Inventaire Docker. Aucune action ici.
+Session::checkSeveralRightsOr([LifecycleProduct::RIGHTNAME => UPDATE, Service::RIGHTNAME => READ]);
 
-if (isset($_POST['save_settings'])) {
-    Settings::save(!empty($_POST['enabled']), (int) ($_POST['warning_days'] ?? Settings::DEFAULT_WARNING_DAYS));
-    Session::addMessageAfterRedirect(htmlescape(__('Réglages enregistrés.', 'dockerinventory')), false, INFO);
-    Html::back();
-} elseif (isset($_POST['refresh'])) {
-    $report = (new LifecycleChecker())->refresh();
-    Session::addMessageAfterRedirect(
-        htmlescape(LifecycleProduct::refreshMessage($report)),
-        false,
-        $report['status'] === LifecycleChecker::REPORT_PARTIAL ? WARNING : INFO
-    );
-    Html::back();
-} elseif (isset($_POST['save_mappings'])) {
-    $mapping = new LifecycleProduct();
-    $rows = is_array($_POST['rows'] ?? null) ? $_POST['rows'] : [];
-    $failed = false;
-    foreach ($rows as $id => $row) {
-        if (!is_array($row) || !$mapping->getFromDB((int) $id)) {
-            continue;
-        }
-        if (!empty($row['delete'])) {
-            $mapping->delete(['id' => (int) $id], true);
-            continue;
-        }
-        $image = trim((string) ($row['image'] ?? ''));
-        $product = trim((string) ($row['product'] ?? ''));
-        if ($image !== $mapping->fields['image'] || $product !== $mapping->fields['product']) {
-            $values = ['id' => (int) $id, 'image' => $image, 'product' => $product, 'is_default' => 0];
-            $failed = !$mapping->update($values) || $failed;
-        }
-    }
-    $newImage = trim((string) ($_POST['new_image'] ?? ''));
-    $newProduct = trim((string) ($_POST['new_product'] ?? ''));
-    $keep = '';
-    if ($newImage !== '' || $newProduct !== '') {
-        if ((new LifecycleProduct())->add(['image' => $newImage, 'product' => $newProduct]) === false) {
-            $failed = true;
-            // Nouvelle ligne refusée : l'image saisie reste dans le formulaire.
-            $keep = $newImage;
-        }
-    }
-    if (!$failed) {
-        Session::addMessageAfterRedirect(
-            htmlescape(__('Correspondances enregistrées.', 'dockerinventory')),
-            false,
-            INFO
-        );
-    }
-    Html::redirect(LifecycleProduct::getPageURL() . ($keep !== '' ? '?add=' . rawurlencode($keep) : ''));
+if (!LifecycleProduct::canView()) {
+    Html::redirect(ImageVersion::getEolURL());
 }
-
-$checker = LifecycleChecker::current();
-$map = $checker->map();
-$images = $checker->imagesInUse();
-$cache = $checker->cache();
-$mappings = [];
-foreach ((new LifecycleProduct())->find([], ['image']) as $row) {
-    $product = (string) $row['product'];
-    $mappings[] = [
-        'id'         => (int) $row['id'],
-        'image'      => (string) $row['image'],
-        'product'    => $product,
-        'is_default' => (bool) $row['is_default'],
-        'in_use'     => $images[(string) $row['image']] ?? 0,
-        'checked'    => $cache[$product]['date_success'] ?? '',
-        'error'      => $cache[$product]['error'] ?? '',
-    ];
-}
-// Images en service d'abord, puis les autres (ordre alphabétique conservé dans chaque groupe).
-usort(
-    $mappings,
-    static fn (array $a, array $b): int => [$b['in_use'] > 0, $a['image']] <=> [$a['in_use'] > 0, $b['image']]
-);
-$unmapped = [];
-foreach ($images as $image => $count) {
-    if (!isset($map[$image])) {
-        $unmapped[] = ['image' => $image, 'count' => $count];
-    }
-}
-
-Html::header(LifecycleProduct::getTypeName(2), '', 'config', LifecycleProduct::class);
-TemplateRenderer::getInstance()->display('@dockerinventory/lifecycle.html.twig', [
-    'settings'     => Settings::get(),
-    'source_url'   => LifecycleClient::configuredUrl(),
-    'is_default_source' => LifecycleClient::configuredUrl() === LifecycleClient::DEFAULT_URL,
-    'source'       => $checker->sourceState(),
-    'error_labels' => LifecycleProduct::errorLabels(),
-    'mappings'     => $mappings,
-    'unmapped'     => $unmapped,
-    'add_image'    => ProductMap::normalizeImage((string) ($_GET['add'] ?? '')),
-    'page_url'     => LifecycleProduct::getPageURL(),
-    'versions_url' => ImageVersion::getOverviewURL(),
-    'max_days'     => Settings::MAX_DAYS,
-]);
-Html::footer();
+$add = (string) ($_GET['add'] ?? '');
+Html::redirect(LifecycleProduct::getPageURL(true, $add !== '' ? ['add' => $add] : []));

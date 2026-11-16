@@ -77,7 +77,7 @@ if (isset($_POST['add'])) {
 }
 
 $connection->check($id > 0 ? $id : -1, $id > 0 ? READ : CREATE);
-Html::header(Connection::getTypeName(2), '', 'config', Connection::class);
+Html::header(Connection::getTypeName(2), '', 'config', 'plugin');
 // Nouvelle connexion : type choisi sur la première page (Portainer ou WUD).
 $connection->display(['id' => $id, 'type' => (string) ($_GET['type'] ?? '')]);
 Html::footer();

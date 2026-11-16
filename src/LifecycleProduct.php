@@ -80,29 +80,15 @@ class LifecycleProduct extends CommonDBTM
         return self::canView();
     }
 
-    public static function getPageURL(bool $full = true): string
-    {
-        global $CFG_GLPI;
-
-        return ($full ? (string) $CFG_GLPI['root_doc'] : '') . '/plugins/dockerinventory/front/lifecycle.php';
-    }
-
     /**
-     * Menu Configuration : la page de réglage (pas de recherche GLPI sur cette petite table).
+     * Réglages et correspondances : onglet « Fin de support des images » de la page de configuration
+     * du plugin (#35). L'ancienne adresse front/lifecycle.php y redirige.
      *
-     * @return array<string, mixed>|false
+     * @param array<string, string> $params
      */
-    public static function getMenuContent()
+    public static function getPageURL(bool $full = true, array $params = []): string
     {
-        if (!self::canView()) {
-            return false;
-        }
-
-        return [
-            'title' => self::getTypeName(2),
-            'page'  => self::getPageURL(false),
-            'icon'  => self::getIcon(),
-        ];
+        return ConfigPage::url(ConfigPage::TAB_LIFECYCLE, $params, $full);
     }
 
     /**

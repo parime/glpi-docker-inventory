@@ -1,0 +1,31 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Connexions Docker » de la page de configuration du plugin (#35) : encadré d'aide et
+   onglets, au-dessus de la recherche GLPI des connexions (Search::show). #}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'connections',
+        purpose: __(
+            'Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up Docker et Harbor.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin les lit seulement, sans rien y modifier.', 'dockerinventory'),
+        expected: __(
+            'Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis lancez un import.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Les imports tournent ensuite tout seuls.', 'dockerinventory'),
+    }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+</div>

@@ -20,15 +20,19 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
+use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
+use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Glpi\Exception\RedirectException;
+use Glpi\Plugin\Hooks;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 /**
@@ -45,6 +49,7 @@ final class AccessControlTest extends TestCase
 {
     /** Pages du plugin, toutes exercées ci-dessous. */
     private const PAGES = [
+        'front/config.php',
         'front/connection.form.php',
         'front/connection.php',
         'front/imageversion.php',
@@ -55,7 +60,7 @@ final class AccessControlTest extends TestCase
     ];
 
     /** Pages réservées aux administrateurs de la configuration (droit config, UPDATE). */
-    private const CONFIG_PAGES = ['front/connection.form.php', 'front/connection.php', 'front/lifecycle.php'];
+    private const CONFIG_PAGES = ['front/config.php', 'front/connection.form.php', 'front/connection.php'];
 
     private string $suffix = '';
 
@@ -272,6 +277,22 @@ final class AccessControlTest extends TestCase
         $this->fail($page . ' ' . json_encode($get + $post) . ' : page ouverte au lieu d\'être refusée');
     }
 
+    /**
+     * Adresse vers laquelle une page redirige (Html::redirect() lève RedirectException).
+     *
+     * @param array<string, mixed> $get
+     * @param array<string, mixed> $post
+     */
+    private function redirectionOf(string $page, array $get = [], array $post = []): string
+    {
+        try {
+            $this->open($page, $get, $post);
+        } catch (RedirectException $e) {
+            return $e->getResponse()->getTargetUrl();
+        }
+        $this->fail($page . ' : pas de redirection');
+    }
+
     private function setRights(int $service, int $config): void
     {
         $_SESSION['glpiactiveprofile'][Service::RIGHTNAME] = $service;
@@ -296,8 +317,17 @@ final class AccessControlTest extends TestCase
      */
     public static function requests(): iterable
     {
-        yield 'liste des connexions' => ['front/connection.php', [], []];
-        yield 'registres maîtrisés' => [
+        foreach (['', 'connections', 'registries', 'lifecycle', 'inconnu'] as $tab) {
+            yield 'configuration : onglet ' . $tab => ['front/config.php', ['tab' => $tab], []];
+        }
+        yield 'configuration : registres maîtrisés' => [
+            'front/config.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
+        ];
+        foreach (['save_settings', 'refresh', 'save_mappings'] as $action) {
+            yield 'configuration : ' . $action => ['front/config.php', [], [$action => 1, 'enabled' => 1]];
+        }
+        yield 'ancienne liste des connexions' => ['front/connection.php', [], []];
+        yield 'ancienne liste des connexions (POST)' => [
             'front/connection.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
         ];
         yield 'nouvelle connexion' => ['front/connection.form.php', [], []];
@@ -306,14 +336,16 @@ final class AccessControlTest extends TestCase
             yield 'connexion : ' . $action => ['front/connection.form.php', [], [$action => 1, 'id' => 1]];
         }
         yield 'recherche des versions' => ['front/imageversion.php', [], []];
-        yield 'fin de support' => ['front/lifecycle.php', [], []];
+        yield 'ancienne fin de support' => ['front/lifecycle.php', [], []];
         foreach (['save_settings', 'refresh', 'save_mappings'] as $action) {
-            yield 'fin de support : ' . $action => ['front/lifecycle.php', [], [$action => 1, 'enabled' => 1]];
+            yield 'ancienne fin de support : ' . $action => ['front/lifecycle.php', [], [$action => 1, 'enabled' => 1]];
         }
         yield 'fiche service' => ['front/service.form.php', ['id' => 1], []];
         yield 'liste des services' => ['front/service.php', [], []];
         yield 'page des versions' => ['front/version.php', [], []];
         yield 'images Harbor' => ['front/version.php', ['view' => 'harbor'], []];
+        yield 'fin de support' => ['front/version.php', ['view' => 'eol'], []];
+        yield 'fin de support, tous les états' => ['front/version.php', ['view' => 'eol', 'eol' => 'all'], []];
     }
 
     /**
@@ -341,6 +373,25 @@ final class AccessControlTest extends TestCase
         $this->assertRefused('front/connection.form.php', ['type' => 'kubernetes']);
         $this->assertFalse(Connection::canView());
         $this->assertFalse(LifecycleProduct::canView());
+        foreach (ConfigPage::TABS as $tab) {
+            $this->assertRefused('front/config.php', ['tab' => $tab]);
+        }
+        // Ancien favori de la fin de support : la sous-page de lecture, sans aucune action (#35).
+        $settings = \Config::getConfigurationValues(Settings::CONTEXT);
+        $this->assertSame(ImageVersion::getEolURL(), $this->redirectionOf('front/lifecycle.php'));
+        $this->assertSame(
+            ImageVersion::getEolURL(),
+            $this->redirectionOf('front/lifecycle.php', [], ['save_settings' => 1, 'enabled' => 1])
+        );
+        $this->assertSame($settings, \Config::getConfigurationValues(Settings::CONTEXT));
+        // Une seule entrée de menu ; aucun lien vers la configuration pour ce profil.
+        $menu = Menu::getMenuContent();
+        $this->assertIsArray($menu);
+        $this->assertStringEndsWith('/front/service.php', $menu['page']);
+        $eol = $this->open('front/version.php', ['view' => 'eol']);
+        $this->assertStringContainsString('ti-calendar-x', $eol);
+        $this->assertStringNotContainsString('front/config.php', $eol);
+        $this->assertStringNotContainsString('front/config.php', $this->open('front/version.php'));
 
         $this->assertStringContainsString('service-a-' . $this->suffix, $this->open('front/version.php'));
         $this->assertStringContainsString(
@@ -353,6 +404,60 @@ final class AccessControlTest extends TestCase
         );
         $this->assertNotSame('', $this->open('front/service.php'));
         $this->assertNotSame('', $this->open('front/imageversion.php'));
+    }
+
+    /**
+     * Charte commune, section 9 (#35) : une seule entrée de menu d'usage, réglages dans la page de
+     * configuration du plugin, anciennes adresses redirigées (favoris).
+     */
+    public function testSingleMenuEntryAndOldAddressesRedirect(): void
+    {
+        global $PLUGIN_HOOKS;
+
+        $this->assertSame(['assets' => [Menu::class]], $PLUGIN_HOOKS[Hooks::MENU_TOADD]['dockerinventory']);
+        $this->assertSame('front/config.php', $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['dockerinventory']);
+
+        $this->setRights(READ, READ | UPDATE);
+        $this->assertSame(ConfigPage::url(), $this->redirectionOf('front/connection.php'));
+        $this->assertSame(
+            ConfigPage::url() . '?is_deleted=0&start=20',
+            $this->redirectionOf('front/connection.php', ['is_deleted' => '0', 'start' => '20', 'tab' => 'x'])
+        );
+        $this->assertSame(LifecycleProduct::getPageURL(), $this->redirectionOf('front/lifecycle.php'));
+        $this->assertSame(
+            LifecycleProduct::getPageURL(true, ['add' => 'postgres']),
+            $this->redirectionOf('front/lifecycle.php', ['add' => 'postgres'])
+        );
+        $this->assertStringContainsString('tab=lifecycle', LifecycleProduct::getPageURL());
+        $this->assertSame(ConfigPage::url(), Connection::getSearchURL());
+
+        // Page de configuration : chaque onglet s'ouvre, avec la barre d'onglets.
+        foreach (ConfigPage::TABS as $tab) {
+            $html = $this->open('front/config.php', ['tab' => $tab]);
+            $this->assertStringContainsString('aria-current="page"', $html, $tab);
+            foreach (ConfigPage::TABS as $other) {
+                $this->assertStringContainsString(htmlescape(ConfigPage::url($other)), $html, $tab);
+            }
+        }
+
+        // Sous-pages de l'entrée Parc > Inventaire Docker : la même barre d'onglets partout.
+        $pages = [
+            ['front/service.php', []],
+            ['front/version.php', []],
+            ['front/version.php', ['view' => 'harbor']],
+            ['front/version.php', ['view' => 'eol']],
+        ];
+        foreach ($pages as [$page, $get]) {
+            $html = $this->open($page, $get);
+            foreach (Menu::tabs('') as $tab) {
+                $this->assertStringContainsString(htmlescape($tab['url']), $html, $page . json_encode($get));
+            }
+        }
+
+        // Administrateur sans droit sur l'inventaire : pas d'entrée Parc, mais la configuration.
+        $this->setRights(0, READ | UPDATE);
+        $this->assertFalse(Menu::getMenuContent());
+        $this->assertSame(LifecycleProduct::getPageURL(), $this->redirectionOf('front/lifecycle.php'));
     }
 
     public function testObjectOfAnotherEntityIsRefused(): void
@@ -404,7 +509,10 @@ final class AccessControlTest extends TestCase
         // Registres maîtrisés (#48) : seuls les hôtes des connexions Harbor de l'entité A sont
         // affichés ; la provenance des images reste évaluée avec tous les hôtes.
         $this->assertStringNotContainsString($this->harborHost('b'), $harbor);
-        $this->assertStringNotContainsString($this->harborHost('b'), $this->open('front/connection.php'));
+        $this->assertStringNotContainsString(
+            $this->harborHost('b'),
+            $this->open('front/config.php', ['tab' => ConfigPage::TAB_REGISTRIES])
+        );
         $this->assertContains($this->harborHost('a'), HarborArtifact::visibleHarborHosts());
         $this->assertNotContains($this->harborHost('b'), HarborArtifact::visibleHarborHosts());
         $this->assertNotContains($this->harborHost('b'), HarborArtifact::visibleManagedHosts());
