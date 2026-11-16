@@ -2189,6 +2189,15 @@ msgstr "anonymous volume %s"
 msgid "À vérifier dans Portainer"
 msgstr "To check in Portainer"
 
+msgid "Autre image"
+msgstr "Other image"
+
+msgid "Nouveau tag"
+msgstr "New tag"
+
+msgid "Image reconstruite (même tag)"
+msgstr "Rebuilt image (same tag)"
+
 msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
 msgstr "For Kubernetes: by node name, otherwise by IP address."
 

@@ -80,6 +80,12 @@ class Connection extends ConnectionBase
     /** Lu sans erreur, mais à vérifier : par exemple un compte Portainer qui ne voit rien. */
     public const STATUS_WARNING = 4;
 
+    /**
+     * Lectures qui ont rafraîchi l'inventaire (#10) : réussies, même en partie. Un avertissement (compte
+     * qui ne voit rien) ou un échec ne change pas la date du dernier import réussi.
+     */
+    public const SUCCESS_STATUSES = [self::STATUS_OK, self::STATUS_PARTIAL];
+
     public const TYPE_PORTAINER = 'portainer';
     public const TYPE_WUD = 'wud';
     public const TYPE_HARBOR = 'harbor';
@@ -1059,6 +1065,31 @@ class Connection extends ConnectionBase
                 self::warningLabels()[Importer::WARNING_HIDDEN]
             ),
         ];
+    }
+
+    /**
+     * Colonnes à ajouter à l'enregistrement d'une lecture : la date du dernier import réussi (#10)
+     * avance seulement si la lecture a réussi, même en partie.
+     *
+     * @return array<string, string>
+     */
+    public static function successValues(int $status, string $now): array
+    {
+        if (!in_array($status, self::SUCCESS_STATUSES, true) || !self::hasSuccessDate()) {
+            return [];
+        }
+
+        return ['last_success_date' => $now];
+    }
+
+    /**
+     * La colonne existe-t-elle ? Absente tant que la mise à jour du plugin n'a pas été lancée.
+     */
+    public static function hasSuccessDate(): bool
+    {
+        global $DB;
+
+        return $DB->fieldExists(self::getTable(), 'last_success_date');
     }
 
     public static function statusLabel(int $status): string

@@ -55,6 +55,7 @@ final class Installer
         'glpi_plugin_dockerinventory_harborprojects',
         'glpi_plugin_dockerinventory_harborartifacts',
         'glpi_plugin_dockerinventory_vulntickets',
+        'glpi_plugin_dockerinventory_versionchanges',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -171,6 +172,7 @@ final class Installer
                 `last_import_date` timestamp NULL DEFAULT NULL,
                 `last_import_status` tinyint NOT NULL DEFAULT '0',
                 `last_import_report` text,
+                `last_success_date` timestamp NULL DEFAULT NULL,
                 `last_scan_date` timestamp NULL DEFAULT NULL,
                 `last_scan_status` tinyint NOT NULL DEFAULT '0',
                 `last_scan_report` text,
@@ -430,6 +432,30 @@ final class Installer
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`),
                 KEY `tickets_id` (`tickets_id`)",
+            // Changements de version observés par l'import Portainer (#10) : tag, empreinte ou image
+            // d'un service qui changent d'un import à l'autre. Journal en lecture seule, jamais purgé
+            // automatiquement (preuve de gestion des changements, A.8.32).
+            'glpi_plugin_dockerinventory_versionchanges' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `is_recursive` tinyint NOT NULL DEFAULT '0',
+                `plugin_dockerinventory_connections_id` int {$sign} NOT NULL DEFAULT '0',
+                `plugin_dockerinventory_services_id` int {$sign} NOT NULL DEFAULT '0',
+                `service_name` varchar(255) NOT NULL DEFAULT '',
+                `stack_name` varchar(255) NOT NULL DEFAULT '',
+                `kind` varchar(16) NOT NULL DEFAULT '',
+                `old_image` varchar(255) NOT NULL DEFAULT '',
+                `new_image` varchar(255) NOT NULL DEFAULT '',
+                `old_tag` varchar(255) NOT NULL DEFAULT '',
+                `new_tag` varchar(255) NOT NULL DEFAULT '',
+                `old_digest` varchar(255) NOT NULL DEFAULT '',
+                `new_digest` varchar(255) NOT NULL DEFAULT '',
+                `date_change` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                KEY `entities_id` (`entities_id`),
+                KEY `is_recursive` (`is_recursive`),
+                KEY `plugin_dockerinventory_services_id` (`plugin_dockerinventory_services_id`),
+                KEY `date_change` (`date_change`)",
         ];
 
         $created = [];
@@ -450,11 +476,13 @@ final class Installer
      */
     private function migrate(Migration $migration): void
     {
+        global $DB;
+
         $table = Connection::getTable();
         $migration->addField($table, 'type', "varchar(32) NOT NULL DEFAULT 'portainer'", ['after' => 'is_active']);
         $migration->addField($table, 'username', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'url']);
         $migration->addField($table, 'registry_host', "varchar(255) NOT NULL DEFAULT ''", ['after' => 'api_key']);
-        // 0.6.0 => connexions Kubernetes (#31) : certificat d'autorité, namespaces ignorés.
+        // 0.7.0 => connexions Kubernetes (#31) : certificat d'autorité, namespaces ignorés.
         $migration->addField($table, 'ca_certificate', 'text', ['after' => 'registry_host']);
         $migration->addField($table, 'k8s_excluded_namespaces', 'text', ['after' => 'ca_certificate']);
         // Tickets de mise à jour (désactivés par défaut).
@@ -489,10 +517,40 @@ final class Installer
             $migration->addField($table, $field, $definition, ['after' => $after]);
             $after = $field;
         }
+        // 0.7.0 => date du dernier import réussi (#10), preuve de fraîcheur de l'inventaire.
+        $hadSuccessDate = $DB->fieldExists($table, 'last_success_date', false);
+        $migration->addField($table, 'last_success_date', 'timestamp NULL DEFAULT NULL', [
+            'after' => 'last_import_report',
+        ]);
         $migration->addKey($table, 'type');
         $migration->migrationOneTable($table);
+        if (!$hadSuccessDate) {
+            $this->initSuccessDates();
+        }
 
         $this->migrateStandaloneHosts($migration);
+    }
+
+    /**
+     * Connexions existantes : leur dernier import, s'il a réussi (même en partie), est le dernier réussi connu.
+     */
+    private function initSuccessDates(): void
+    {
+        global $DB;
+
+        $table = Connection::getTable();
+        foreach (
+            $DB->request([
+                'SELECT' => ['id', 'last_import_date'],
+                'FROM'   => $table,
+                'WHERE'  => [
+                    'NOT' => ['last_import_date' => null],
+                    'last_import_status' => Connection::SUCCESS_STATUSES,
+                ],
+            ]) as $row
+        ) {
+            $DB->update($table, ['last_success_date' => $row['last_import_date']], ['id' => (int) $row['id']]);
+        }
     }
 
     /**

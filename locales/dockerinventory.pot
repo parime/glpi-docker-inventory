@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 01:16+0000\n"
+"POT-Creation-Date: 2026-11-16 01:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,7 +104,7 @@ msgstr ""
 msgid "Version de Docker"
 msgstr ""
 
-#: templates/computer_nodes.html.twig src/Connection.php:199
+#: templates/computer_nodes.html.twig src/Connection.php:205
 msgid "Adresse"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgid ""
 msgstr ""
 
 #: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig src/Connection.php:222
+#: templates/connection_actions.html.twig src/Connection.php:228
 msgid "Dernier import"
 msgstr ""
 
@@ -258,7 +258,7 @@ msgid ""
 msgstr ""
 
 #: templates/versions.html.twig templates/version_tab.html.twig
-#: src/Connection.php:96
+#: src/Connection.php:102
 msgid "Connexions Docker"
 msgstr ""
 
@@ -1132,7 +1132,7 @@ msgid ""
 "applications existantes."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:206
+#: templates/connection_form.html.twig src/Connection.php:212
 msgid "Type"
 msgstr ""
 
@@ -1188,7 +1188,7 @@ msgid ""
 "du système."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:230
+#: templates/connection_form.html.twig src/Connection.php:236
 msgid "Environnement des applications créées"
 msgstr ""
 
@@ -1277,7 +1277,7 @@ msgstr ""
 msgid "Déconseillé : la clé d'API circule alors en clair."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:237
+#: templates/connection_form.html.twig src/Connection.php:243
 msgid "Tickets de mise à jour"
 msgstr ""
 
@@ -1351,7 +1351,7 @@ msgstr ""
 msgid "Réglages communs"
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:245
+#: templates/connection_form.html.twig src/Connection.php:251
 msgid "Tickets de vulnérabilité"
 msgstr ""
 
@@ -2208,6 +2208,18 @@ msgstr ""
 msgid "Inventaire Docker"
 msgstr ""
 
+#: src/Api/Evidence.php:371
+msgid "Autre image"
+msgstr ""
+
+#: src/Api/Evidence.php:372
+msgid "Nouveau tag"
+msgstr ""
+
+#: src/Api/Evidence.php:373
+msgid "Image reconstruite (même tag)"
+msgstr ""
+
 #: src/Kubernetes/KubernetesImporter.php:183
 #, php-format
 msgid ""
@@ -2227,405 +2239,405 @@ msgstr ""
 msgid "Services du nœud"
 msgstr ""
 
-#: src/Connection.php:96
+#: src/Connection.php:102
 msgid "Connexion Docker"
 msgstr ""
 
-#: src/Connection.php:125
+#: src/Connection.php:131
 msgid "Version majeure seulement"
 msgstr ""
 
-#: src/Connection.php:126
+#: src/Connection.php:132
 msgid "Version mineure ou majeure"
 msgstr ""
 
-#: src/Connection.php:127
+#: src/Connection.php:133
 msgid "Tout écart de version, correctifs compris"
 msgstr ""
 
-#: src/Connection.php:139
+#: src/Connection.php:145
 msgid "Vulnérabilités critiques"
 msgstr ""
 
-#: src/Connection.php:140
+#: src/Connection.php:146
 msgid "Vulnérabilités critiques ou hautes"
 msgstr ""
 
-#: src/Connection.php:369
+#: src/Connection.php:375
 msgid "La clé d'API Portainer est obligatoire."
 msgstr ""
 
-#: src/Connection.php:378
+#: src/Connection.php:384
 msgid "Le jeton du compte de service Kubernetes est obligatoire."
 msgstr ""
 
-#: src/Connection.php:416
+#: src/Connection.php:422
 msgid "Hôte du registre invalide (exemple : registry.exemple.test:5000)."
 msgstr ""
 
-#: src/Connection.php:433
+#: src/Connection.php:439
 msgid ""
 "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN "
 "CERTIFICATE-----...)."
 msgstr ""
 
-#: src/Connection.php:623 src/Connection.php:682
+#: src/Connection.php:629 src/Connection.php:688
 #, php-format
 msgid "Échec : %s"
 msgstr ""
 
-#: src/Connection.php:631
+#: src/Connection.php:637
 #, php-format
 msgid ""
 "Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d "
 "analysés, %6$d retirés."
 msgstr ""
 
-#: src/Connection.php:641
+#: src/Connection.php:647
 #, php-format
 msgid "Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
-#: src/Connection.php:700
+#: src/Connection.php:706
 #, php-format
 msgid ""
 "Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds "
 "ou hôtes."
 msgstr ""
 
-#: src/Connection.php:738
+#: src/Connection.php:744
 #, php-format
 msgid ""
 "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, "
 "%5$d retirés, %6$d nœuds."
 msgstr ""
 
-#: src/Connection.php:780
+#: src/Connection.php:786
 msgid ""
 "Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer "
 "(voir README)."
 msgstr ""
 
-#: src/Connection.php:784
+#: src/Connection.php:790
 msgid ""
 "Portainer annonce des services ou des conteneurs que ce compte ne voit pas."
 msgstr ""
 
-#: src/Connection.php:787
+#: src/Connection.php:793
 msgid ""
 "Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir "
 "README)."
 msgstr ""
 
-#: src/Connection.php:791
+#: src/Connection.php:797
 msgid ""
 "Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été "
 "retiré."
 msgstr ""
 
-#: src/Connection.php:793
+#: src/Connection.php:799
 msgid "Vérifiez les accès du compte dans Portainer (voir README)."
 msgstr ""
 
-#: src/Connection.php:795
+#: src/Connection.php:801
 msgid ""
 "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:799
+#: src/Connection.php:805
 msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
 msgstr ""
 
-#: src/Connection.php:801
+#: src/Connection.php:807
 msgid "Vérifiez son ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:803
+#: src/Connection.php:809
 msgid ""
 "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été "
 "retiré."
 msgstr ""
 
-#: src/Connection.php:805
+#: src/Connection.php:811
 msgid "Vérifiez les droits du compte de service (voir README)."
 msgstr ""
 
-#: src/Connection.php:807
+#: src/Connection.php:813
 msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
 msgstr ""
 
-#: src/Connection.php:827
+#: src/Connection.php:833
 #, php-format
 msgid "Tickets de mise à jour : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
-#: src/Connection.php:840
+#: src/Connection.php:846
 #, php-format
 msgid ""
 "Lecture de WUD terminée (%1$s) : %2$d conteneurs, %3$d services suivis, %4$d "
 "sans service."
 msgstr ""
 
-#: src/Connection.php:859
+#: src/Connection.php:865
 #, php-format
 msgid ""
 "Registres lus (%1$s) : %2$d versions trouvées, %3$d non suivables, %4$d non "
 "vérifiées, %5$d requêtes."
 msgstr ""
 
-#: src/Connection.php:886
+#: src/Connection.php:892
 msgid "Connexion réussie : le registre Harbor accepte ce compte."
 msgstr ""
 
-#: src/Connection.php:888
+#: src/Connection.php:894
 msgid ""
 "Connexion réussie : registre joignable sans compte (projets publics "
 "seulement)."
 msgstr ""
 
-#: src/Connection.php:894
+#: src/Connection.php:900
 #, php-format
 msgid "API de Harbor : %d projet(s) visible(s) avec ce compte."
 msgstr ""
 
-#: src/Connection.php:899
+#: src/Connection.php:905
 #, php-format
 msgid "API de Harbor non lue (projets, analyses) : %s"
 msgstr ""
 
-#: src/Connection.php:936
+#: src/Connection.php:942
 #, php-format
 msgid ""
 "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce "
 "jeton."
 msgstr ""
 
-#: src/Connection.php:949
+#: src/Connection.php:955
 #, php-format
 msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:958 src/Connection.php:1018
+#: src/Connection.php:964 src/Connection.php:1024
 #, php-format
 msgid "Connexion établie, mais à vérifier : %s"
 msgstr ""
 
-#: src/Connection.php:982
+#: src/Connection.php:988
 #, php-format
 msgid "Connexion réussie : WUD %1$s, %2$d conteneur(s) suivi(s)."
 msgstr ""
 
-#: src/Connection.php:1046
+#: src/Connection.php:1052
 #, php-format
 msgid ""
 "Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé."
 msgstr ""
 
-#: src/Connection.php:1057
+#: src/Connection.php:1063
 #, php-format
 msgid "À vérifier (%1$s) : %2$s"
 msgstr ""
 
-#: src/Connection.php:1067
+#: src/Connection.php:1098
 msgid "Réussi"
 msgstr ""
 
-#: src/Connection.php:1068
+#: src/Connection.php:1099
 msgid "Partiel"
 msgstr ""
 
-#: src/Connection.php:1069
+#: src/Connection.php:1100
 msgid "Échec"
 msgstr ""
 
-#: src/Connection.php:1070
+#: src/Connection.php:1101
 msgid "Avertissement"
 msgstr ""
 
-#: src/Connection.php:1071
+#: src/Connection.php:1102
 msgid "Jamais lancé"
 msgstr ""
 
-#: src/Connection.php:1081
+#: src/Connection.php:1112
 msgid "Clé d'API refusée par Portainer (401)."
 msgstr ""
 
-#: src/Connection.php:1082
+#: src/Connection.php:1113
 msgid "Accès refusé par Portainer (403) pour cette clé."
 msgstr ""
 
-#: src/Connection.php:1083 src/Connection.php:1090
+#: src/Connection.php:1114 src/Connection.php:1121
 msgid "Adresse introuvable (404) : vérifier l'adresse."
 msgstr ""
 
-#: src/Connection.php:1084
+#: src/Connection.php:1115
 msgid "Cet environnement n'est pas un cluster Swarm."
 msgstr ""
 
-#: src/Connection.php:1085 src/Connection.php:1092 src/Connection.php:1131
-#: src/Connection.php:1165
+#: src/Connection.php:1116 src/Connection.php:1123 src/Connection.php:1162
+#: src/Connection.php:1196
 msgid "Réseau privé refusé par GLPI (voir README)."
 msgstr ""
 
-#: src/Connection.php:1086
+#: src/Connection.php:1117
 msgid "Réponse inattendue : est-ce bien Portainer ?"
 msgstr ""
 
-#: src/Connection.php:1087
+#: src/Connection.php:1118
 msgid "Portainer injoignable (réseau, certificat...)."
 msgstr ""
 
-#: src/Connection.php:1088
+#: src/Connection.php:1119
 msgid "Identifiants refusés par WUD (401)."
 msgstr ""
 
-#: src/Connection.php:1089
+#: src/Connection.php:1120
 msgid "Accès refusé par WUD (403)."
 msgstr ""
 
-#: src/Connection.php:1091
+#: src/Connection.php:1122
 msgid "WUD a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1093
+#: src/Connection.php:1124
 msgid "Réponse inattendue : est-ce bien What's Up Docker ?"
 msgstr ""
 
-#: src/Connection.php:1094
+#: src/Connection.php:1125
 msgid "WUD injoignable (réseau, certificat, délai...)."
 msgstr ""
 
-#: src/Connection.php:1107
+#: src/Connection.php:1138
 msgid ""
 "Jeton refusé par le cluster (401) : jeton expiré ou compte de service "
 "supprimé ?"
 msgstr ""
 
-#: src/Connection.php:1111
+#: src/Connection.php:1142
 msgid ""
 "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir "
 "README)."
 msgstr ""
 
-#: src/Connection.php:1115
+#: src/Connection.php:1146
 msgid ""
 "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port "
 "6443 en général)."
 msgstr ""
 
-#: src/Connection.php:1119
+#: src/Connection.php:1150
 msgid ""
 "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
 msgstr ""
 
-#: src/Connection.php:1123
+#: src/Connection.php:1154
 msgid ""
 "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain "
 "import."
 msgstr ""
 
-#: src/Connection.php:1127
+#: src/Connection.php:1158
 msgid "L'API du cluster a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1135
+#: src/Connection.php:1166
 msgid ""
 "Certificat du cluster non reconnu : coller le certificat d'autorité du "
 "cluster (voir README)."
 msgstr ""
 
-#: src/Connection.php:1139
+#: src/Connection.php:1170
 msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
 msgstr ""
 
-#: src/Connection.php:1142
+#: src/Connection.php:1173
 msgid "Cluster injoignable (réseau, nom, délai...)."
 msgstr ""
 
-#: src/Connection.php:1154
+#: src/Connection.php:1185
 msgid "Compte refusé par le registre (401)."
 msgstr ""
 
-#: src/Connection.php:1155
+#: src/Connection.php:1186
 msgid "Accès refusé par le registre (403)."
 msgstr ""
 
-#: src/Connection.php:1156
+#: src/Connection.php:1187
 msgid "Image introuvable dans le registre, ou privée."
 msgstr ""
 
-#: src/Connection.php:1158
+#: src/Connection.php:1189
 msgid "Limite de requêtes du registre atteinte (429) : nouvel essai plus tard."
 msgstr ""
 
-#: src/Connection.php:1162
+#: src/Connection.php:1193
 msgid "Le registre a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1166
+#: src/Connection.php:1197
 msgid "Réponse inattendue du registre."
 msgstr ""
 
-#: src/Connection.php:1168
+#: src/Connection.php:1199
 msgid "Registre injoignable (réseau, certificat, délai...)."
 msgstr ""
 
-#: src/Connection.php:1172
+#: src/Connection.php:1203
 msgid "Registre non pris en charge : ni Docker Hub, ni un Harbor déclaré."
 msgstr ""
 
-#: src/Connection.php:1176
+#: src/Connection.php:1207
 msgid "Registre privé : renseigner un compte robot sur la connexion Harbor."
 msgstr ""
 
-#: src/Connection.php:1180
+#: src/Connection.php:1211
 msgid ""
 "Docker Hub non interrogé cette fois (limite ou réseau) : nouvel essai plus "
 "tard."
 msgstr ""
 
-#: src/Connection.php:1189
+#: src/Connection.php:1220
 msgid "HTTPS obligatoire (sauf « Autoriser HTTP »)."
 msgstr ""
 
-#: src/Connection.php:1190
+#: src/Connection.php:1221
 msgid "L'adresse ne doit pas contenir d'identifiants."
 msgstr ""
 
-#: src/Connection.php:1191
+#: src/Connection.php:1222
 #, php-format
 msgid "Adresse invalide (exemple : %s)."
 msgstr ""
 
-#: src/Connection.php:1212
+#: src/Connection.php:1243
 msgid ""
 "Dernières versions dans les registres (Docker Hub, Harbor) pour les services "
 "sans WUD"
 msgstr ""
 
-#: src/Connection.php:1218
+#: src/Connection.php:1249
 msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
 msgstr ""
 
-#: src/Connection.php:1224
+#: src/Connection.php:1255
 msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
 msgstr ""
 
-#: src/Connection.php:1229
+#: src/Connection.php:1260
 msgid "Lecture des versions des images depuis What's Up Docker"
 msgstr ""
 
-#: src/Connection.php:1233
+#: src/Connection.php:1264
 msgid ""
 "Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
 msgstr ""
 
-#: src/Connection.php:1325
+#: src/Connection.php:1356
 #, php-format
 msgid "%1$s : %2$s (%3$d conteneurs, %4$d services suivis, %5$d sans service)"
 msgstr ""
 
-#: src/Connection.php:1355
+#: src/Connection.php:1386
 #, php-format
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
 msgstr ""

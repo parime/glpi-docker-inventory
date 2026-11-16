@@ -21,13 +21,29 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   (déployée, dernière, écart) et vulnérabilités Harbor que les services Swarm ; tickets réglés sur
   la connexion Kubernetes comme sur Portainer (désactivés par défaut). Manifeste du ServiceAccount
   et du ClusterRole en lecture seule dans les README. Faux serveur `tests/mock-kubernetes`
-  (données fictives). Mise à jour automatique depuis la 0.6.0.
+  (données fictives). Mise à jour automatique depuis la 0.7.0.
 
 ### Changed
 
 - Écritures communes des imports (stacks, applications, services, nœuds, retraits) regroupées dans
   `InventoryStore`, partagé par Portainer et Kubernetes ; le rattachement d'un nœud à un ordinateur
   sait aussi chercher par adresse IP.
+
+## [0.7.0] - 2026-11-16
+
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
+### Added
+
+- Preuves pour GRC Manager ([#10](https://github.com/parime/glpi-docker-inventory/issues/10)) :
+  API de lecture publique `GlpiPlugin\Dockerinventory\Api\Evidence` (version 1, lecture seule),
+  qui ne renvoie que ce que l'utilisateur voit dans le plugin (droit de lecture des services,
+  entités actives ; connexions réservées au droit « Configuration ») : inventaire (services, stacks,
+  nœuds, dernier import réussi de chaque connexion), écarts de version, vulnérabilités Harbor des
+  images déployées, configuration et provenance des images, changements de version. Journal des
+  changements de version (autre image, autre tag, image reconstruite sous le même tag) écrit par
+  l'import Portainer, et date du dernier import réussi de chaque connexion (nouvelle table et
+  nouvelle colonne, créées à la mise à jour du plugin).
 
 ## [0.6.0] - 2026-11-15
 

@@ -2190,6 +2190,15 @@ msgstr "wolumen anonimowy %s"
 msgid "À vérifier dans Portainer"
 msgstr "Do sprawdzenia w Portainerze"
 
+msgid "Autre image"
+msgstr "Inny obraz"
+
+msgid "Nouveau tag"
+msgstr "Nowy tag"
+
+msgid "Image reconstruite (même tag)"
+msgstr "Przebudowany obraz (ten sam tag)"
+
 msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
 msgstr "Dla Kubernetes: według nazwy węzła, w przeciwnym razie według adresu IP."
 

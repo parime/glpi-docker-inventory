@@ -328,8 +328,8 @@ pour une image : pas de nouveau ticket pour la même empreinte. Image non analys
 - **Erreurs non bloquantes** : une erreur sur un dépôt n'empêche pas la lecture des autres (lecture
   « partielle ») ; une limite de requêtes (429) arrête les appels jusqu'à la lecture suivante, les
   données déjà lues restent affichées.
-- Les vulnérabilités ne sont pas encore versées dans la corrélation des vulnérabilités de GRC
-  Manager : c'est l'objet de [#10](https://github.com/parime/glpi-docker-inventory/issues/10).
+- Les services dont l'image a des vulnérabilités critiques ou hautes apparaissent aussi sur la
+  page des vulnérabilités du parc de GRC Manager (voir « Liens avec les autres plugins »).
 
 > Écrit d'après la documentation publique de l'API de Harbor 2.x et un faux Harbor
 > (`tests/mock-harbor`, données fictives) ; **à valider sur un vrai Harbor 2.x**.
@@ -455,7 +455,16 @@ ponctuelle.
 - **GRC Manager** ([glpi-iso27001-management](https://github.com/parime/glpi-iso27001-management)) :
   preuves pour les mesures A.5.9 (inventaire), A.8.8 (vulnérabilités techniques), A.8.9
   (configuration) et A.8.32 (changements) ; vulnérabilités des images Harbor dans la corrélation
-  des vulnérabilités.
+  des vulnérabilités ([#10](https://github.com/parime/glpi-docker-inventory/issues/10)). GRC lit
+  ces preuves par l'**API de lecture** `GlpiPlugin\Dockerinventory\Api\Evidence` (version 1,
+  lecture seule) : chaque méthode ne renvoie que ce que l'utilisateur voit dans ce plugin (droit de
+  lecture des services, entités actives), et rien sans ce droit. Les dates d'import des connexions
+  ne sont données qu'aux personnes qui peuvent voir les connexions (droit « Configuration »).
+- **Changements de version** : chaque import Portainer note, pour chaque service, le passage à une
+  autre image, à un autre tag, ou à une autre empreinte sous le même tag (image reconstruite). Ce
+  journal, en lecture seule et jamais purgé automatiquement, sert de preuve de gestion des
+  changements (A.8.32). Chaque connexion garde aussi la **date de son dernier import réussi**
+  (réussi, même en partie ; un échec ou un avertissement ne la change pas).
 - **Configuration GLPI Auto** ([Configuration-glpi-auto](https://github.com/parime/Configuration-glpi-auto)) :
   étape de l'assistant pour déclarer les connexions Portainer, WUD et Harbor.
 
