@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.9.0] - 2026-11-16
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Changed
 
 - Une seule entrée de menu, réglages dans la page du plugin ([#35](https://github.com/parime/glpi-docker-inventory/issues/35),
