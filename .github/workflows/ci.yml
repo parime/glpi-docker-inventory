@@ -187,6 +187,11 @@ jobs:
           done
           exit $status
 
+      # #37 : état d'une éventuelle migration des msgid vers l'anglais (lecture seule, non bloquant
+      # tant que la migration n'est pas décidée ; plan dans ROADMAP.md).
+      - name: "Rapport sur la langue des msgid (information)"
+        run: php tools/msgid-report.php
+
   marketplace:
     name: "Marketplace GLPI : SQL brut, Twig, lignes de 120 caractères"
     runs-on: ubuntu-latest
