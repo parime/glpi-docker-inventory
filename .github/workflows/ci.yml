@@ -193,15 +193,13 @@ jobs:
         run: php tools/msgid-report.php
 
   marketplace:
-    name: "Marketplace GLPI : SQL brut, Twig, lignes de 120 caractères"
+    name: "Gabarits Twig : lignes de 120 caractères"
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout"
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7 (SHA pinned)
 
-      - name: "Pas de SQL brut hors installation, pas de nouveau HTML en PHP"
-        run: php .github/scripts/check-marketplace-readiness.php
-
+      # SQL brut et HTML écrit en PHP : contrôle commun de glpi-plugin-security (security.yml).
       - name: "Gabarits Twig : lignes de 120 caractères au plus"
         shell: python
         run: |
@@ -213,25 +211,13 @@ jobs:
               print('::error::lignes de plus de 120 caractères : ' + ', '.join(long))
               sys.exit(1)
 
-  access-control:
-    name: "Contrôle d'accès : points d'entrée et matrice d'accès"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7 (SHA pinned)
-      # Chaque point d'entrée front/ajax appelle un contrôle d'autorisation explicite, ou figure avec
-      # sa justification dans .github/security-entrypoints-allowlist.txt.
-      - name: "Points d'entrée : contrôle d'autorisation présent"
-        run: sh .github/scripts/check-entrypoints-auth.sh
-      # Chaque page front/ajax est exercée par la matrice d'accès PHPUnit
-      # (tests/Integration/AccessControlTest.php), ou justifiée dans tests/security/not-covered.txt.
-      - name: "Matrice d'accès : toutes les pages couvertes"
-        run: sh .github/scripts/check-security-matrix-coverage.sh
+  # Points d'entrée et couverture de la matrice d'accès : contrôles communs de
+  # glpi-plugin-security (security.yml, access-matrix-file = tests/Integration/AccessControlTest.php).
 
   quality-gate:
     name: "Quality Gate"
     runs-on: ubuntu-latest
-    needs: [ci, glpi12, php-compat, locales, marketplace, access-control]
+    needs: [ci, glpi12, php-compat, locales, marketplace]
     steps:
       - name: "Tous les contrôles sont passés"
         run: echo "OK"

@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- CI : contrôles de sécurité communs v1.8.1 ([parime/glpi-plugin-security#15](https://github.com/parime/glpi-plugin-security/issues/15)). Les points d'entrée,
+  la couverture de la matrice d'accès (toujours bloquante, `access-matrix-file`) et les exigences marketplace
+  sont vérifiés par le job commun ; les trois copies de `.github/scripts/` sont retirées.
+
 ### Added
 
 - Encadré « À quoi sert cette page ? » en tête des pages d'usage ([#39](https://github.com/parime/glpi-docker-inventory/issues/39)) :
