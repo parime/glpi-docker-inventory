@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-17
+
 ### Changed
 
 - Documentation par rôle ([#44](https://github.com/parime/glpi-docker-inventory/issues/44)) : les README
