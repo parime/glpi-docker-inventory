@@ -15,7 +15,7 @@
 
 {# Nouvelle connexion : choix du type, dont dépendent les champs du formulaire. #}
 <div class="container-fluid py-3">
-    <h3 class="mb-1">{{ __('Quelle source voulez-vous connecter ?', 'dockerinventory') }}</h3>
+    <h1 class="h3 mb-1">{{ __('Quelle source voulez-vous connecter ?', 'dockerinventory') }}</h1>
     <p class="text-muted mb-4">
         {{ __('Le plugin lit ces outils sans jamais rien y modifier.', 'dockerinventory') }}
         {{ __('Commencez par Portainer : WUD complète les services que Portainer a importés.', 'dockerinventory') }}
@@ -31,7 +31,7 @@
                         <span class="avatar bg-blue text-white me-3">
                             <i class="ti ti-brand-docker fs-2" aria-hidden="true"></i>
                         </span>
-                        <h4 class="card-title mb-0">Portainer</h4>
+                        <h2 class="h4 card-title mb-0">Portainer</h2>
                     </div>
                     <p class="text-muted mb-0">
                         {{ __(
@@ -50,7 +50,7 @@
                         <span class="avatar bg-teal text-white me-3">
                             <i class="ti ti-tags fs-2" aria-hidden="true"></i>
                         </span>
-                        <h4 class="card-title mb-0">What's Up Docker (WUD)</h4>
+                        <h2 class="h4 card-title mb-0">What's Up Docker (WUD)</h2>
                     </div>
                     <p class="text-muted mb-0">
                         {{ __('Version déployée et dernière version disponible de chaque image.', 'dockerinventory') }}
@@ -66,7 +66,7 @@
                         <span class="avatar bg-indigo text-white me-3">
                             <i class="ti ti-building-warehouse fs-2" aria-hidden="true"></i>
                         </span>
-                        <h4 class="card-title mb-0">Harbor</h4>
+                        <h2 class="h4 card-title mb-0">Harbor</h2>
                     </div>
                     <p class="text-muted mb-0">
                         {{ __('Registre privé : dernières versions de vos images, sans WUD.', 'dockerinventory') }}
@@ -82,7 +82,7 @@
                         <span class="avatar bg-azure text-white me-3">
                             <i class="ti ti-brand-kubernetes fs-2" aria-hidden="true"></i>
                         </span>
-                        <h4 class="card-title mb-0">Kubernetes</h4>
+                        <h2 class="h4 card-title mb-0">Kubernetes</h2>
                     </div>
                     <p class="text-muted mb-0">
                         {{ __(

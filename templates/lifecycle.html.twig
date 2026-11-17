@@ -35,7 +35,7 @@
                 {{ __('Fin de support des images', 'dockerinventory') }}
             </h2>
             {% if settings.enabled %}
-                <span class="badge bg-success text-white">
+                <span class="badge bg-success-subtle text-success-emphasis">
                     <i class="ti ti-circle-check me-1" aria-hidden="true"></i>{{ __('Activée', 'dockerinventory') }}
                 </span>
             {% else %}
@@ -73,7 +73,7 @@
                     <div class="mt-1">
                         {{ __('Source', 'dockerinventory') }} : <code>{{ source_url }}</code>
                         {% if is_default_source %}
-                            (<a href="https://endoflife.date" target="_blank"
+                            (<a href="https://endoflife.date" class="text-decoration-underline" target="_blank"
                                 rel="noopener noreferrer">endoflife.date</a>)
                         {% endif %}
                     </div>
@@ -184,7 +184,7 @@
                 <h3 class="card-title">
                     <i class="ti ti-link-off me-2 text-warning" aria-hidden="true"></i>
                     {{ __('Images en service sans correspondance', 'dockerinventory') }}
-                    <span class="badge bg-warning-lt ms-2">{{ unmapped|length }}</span>
+                    <span class="badge bg-warning-subtle text-warning-emphasis ms-2">{{ unmapped|length }}</span>
                 </h3>
             </div>
             <div class="card-body pb-0 text-muted">
@@ -200,7 +200,7 @@
                         <tr>
                             <th>{{ __('Image', 'dockerinventory') }}</th>
                             <th>{{ __('Services ou conteneurs', 'dockerinventory') }}</th>
-                            <th></th>
+                            <th><span class="visually-hidden">{{ __('Actions') }}</span></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -228,7 +228,7 @@
             <h3 class="card-title">
                 <i class="ti ti-arrows-exchange me-2" aria-hidden="true"></i>
                 {{ __('Correspondance image → produit', 'dockerinventory') }}
-                <span class="badge bg-secondary-lt ms-2">{{ mappings|length }}</span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2">{{ mappings|length }}</span>
             </h3>
         </div>
         <div class="card-body pb-0 text-muted">
@@ -287,18 +287,19 @@
                                 </td>
                                 <td>
                                     {% if mapping.in_use %}
-                                        <span class="badge bg-blue-lt">{{ mapping.in_use }}</span>
+                                        <span class="badge bg-info-subtle text-info-emphasis">
+                                            {{ mapping.in_use }}</span>
                                     {% else %}
                                         <span class="text-muted">-</span>
                                     {% endif %}
                                     {% if mapping.is_default %}
-                                        <span class="badge bg-secondary-lt ms-1">
+                                        <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">
                                         {{ __('Fournie', 'dockerinventory') }}</span>
                                     {% endif %}
                                 </td>
                                 <td class="small">
                                     {% if mapping.error %}
-                                        <span class="text-warning">
+                                        <span class="text-warning-emphasis">
                                             <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
                                             {{ error_labels[mapping.error]|default(mapping.error) }}
                                         </span>

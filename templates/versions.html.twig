@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Page « Versions des images » : compteurs par écart (cliquables), filtres par écart et par
    environnement, tableau des services, conteneurs sans service à part. Lecture seule (GET). #}
 {% set outdated_count = counts['major'] + counts['minor'] + counts['patch']
@@ -92,14 +94,14 @@
                    class="btn btn-sm {{ gap == outdated ? 'btn-danger' : 'btn-outline-danger' }}">
                     <i class="ti ti-arrow-big-up-lines me-1" aria-hidden="true"></i>
                     {{ __('À mettre à jour', 'dockerinventory') }}
-                    <span class="badge bg-white text-danger ms-1">{{ outdated_count }}</span>
+                    <span class="badge bg-white text-danger-emphasis ms-1">{{ outdated_count }}</span>
                 </a>
                 {% for code, info in gaps %}
                     <a href="{{ page_url }}?gap={{ code }}&environment={{ environment }}&eol={{ eol }}"
                        title="{{ info.help }}"
-                       class="btn btn-sm {{ gap == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
+                       class="btn btn-sm {{ gap == code ? 'btn-secondary' : 'btn-outline-secondary' }}">
                         <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
-                        <span class="badge bg-{{ info.color }}-lt ms-1">{{ counts[code]|default(0) }}</span>
+                        <span class="badge {{ tone.badge(info.color) }} ms-1">{{ counts[code]|default(0) }}</span>
                     </a>
                 {% endfor %}
             </div>
@@ -115,16 +117,17 @@
                        class="btn btn-sm {{ eol == eol_watch ? 'btn-danger' : 'btn-outline-danger' }}">
                         <i class="ti ti-alert-octagon me-1" aria-hidden="true"></i>
                         {{ __('À surveiller', 'dockerinventory') }}
-                        <span class="badge bg-white text-danger ms-1">
+                        <span class="badge bg-white text-danger-emphasis ms-1">
                             {{ eol_counts['eol']|default(0) + eol_counts['soon']|default(0) }}
                         </span>
                     </a>
                     {% for code, info in eol_statuses %}
                         <a href="{{ page_url }}?eol={{ code }}&gap={{ gap }}&environment={{ environment }}"
                            title="{{ info.help }}"
-                           class="btn btn-sm {{ eol == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
+                           class="btn btn-sm {{ eol == code ? 'btn-secondary' : 'btn-outline-secondary' }}">
                             <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
-                            <span class="badge bg-{{ info.color }}-lt ms-1">{{ eol_counts[code]|default(0) }}</span>
+                            <span class="badge {{ tone.badge(info.color) }} ms-1">
+                                {{ eol_counts[code]|default(0) }}</span>
                         </a>
                     {% endfor %}
                 </div>
@@ -140,7 +143,7 @@
                         ) }}
                     {% endif %}
                     {% if eol_source.errors is not empty %}
-                        <span class="text-warning">
+                        <span class="text-warning-emphasis">
                             <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
                             {{ __(
                                 'Dernière mise à jour incomplète : les données en cache restent utilisées.',
@@ -224,7 +227,7 @@
         <div class="card-header">
             <h3 class="card-title">
                 <i class="ti ti-brand-docker me-2" aria-hidden="true"></i>{{ __('Services', 'dockerinventory') }}
-                <span class="badge bg-secondary-lt ms-2">{{ rows|length }}</span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2">{{ rows|length }}</span>
             </h3>
         </div>
         {% if rows is empty %}
@@ -243,7 +246,7 @@
                 <h3 class="card-title">
                     <i class="ti ti-unlink me-2" aria-hidden="true"></i>
                     {{ __('Conteneurs sans service importé', 'dockerinventory') }}
-                    <span class="badge bg-secondary-lt ms-2">{{ unmatched|length }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2">{{ unmatched|length }}</span>
                 </h3>
             </div>
             <div class="card-body pb-0 text-muted">

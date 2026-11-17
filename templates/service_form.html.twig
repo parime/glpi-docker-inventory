@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Fiche d'un service, en lecture seule : tenue à jour par l'import Portainer ou Kubernetes. #}
 {% extends 'generic_show_form.html.twig' %}
 {% import 'components/form/fields_macros.html.twig' as fields %}
@@ -28,7 +30,7 @@
     {% endset %}
     {% set appliance_html %}
         {% if appliance %}
-            <a href="{{ appliance.url }}"><i class="ti ti-apps me-1"></i>{{ appliance.name }}</a>
+            <a href="{{ appliance.url }}"><i class="ti ti-apps me-1" aria-hidden="true"></i>{{ appliance.name }}</a>
         {% elseif service.stack_name and service.is_kubernetes %}
             {{ service.stack_name }}
         {% elseif service.stack_name %}
@@ -39,8 +41,8 @@
         {% endif %}
     {% endset %}
     {% set replicas_html %}
-        {% set replicas_class = service.replicas_ok ? 'bg-success' : 'bg-warning' %}
-        <span class="badge {{ replicas_class }} text-white">{{ service.replicas }}</span>
+        {% set replicas_class = tone.badge(service.replicas_ok ? 'success' : 'warning') %}
+        <span class="badge {{ replicas_class }}">{{ service.replicas }}</span>
         {% if service.is_cronjob %}
         {% elseif service.is_kubernetes %}
             <span class="ms-2 text-muted">{{ __('prêts / voulus', 'dockerinventory') }}</span>
@@ -112,7 +114,7 @@
     {% for label, values in lists %}
         {% set list_html %}
             {% for value in values %}
-                <span class="badge bg-blue-lt me-1 mb-1">{{ value }}</span>
+                <span class="badge bg-info-subtle text-info-emphasis me-1 mb-1">{{ value }}</span>
             {% else %}
                 <span class="text-muted">-</span>
             {% endfor %}
@@ -163,7 +165,8 @@
                             <td>
                                 {% if node.computer %}
                                     <a href="{{ node.computer.url }}">
-                                        <i class="ti ti-device-desktop me-1"></i>{{ node.computer.name }}
+                                        <i class="ti ti-device-desktop me-1" aria-hidden="true"></i>
+                                        {{- node.computer.name }}
                                     </a>
                                 {% else %}
                                     <span class="text-muted">{{ __('Non rattaché', 'dockerinventory') }}</span>

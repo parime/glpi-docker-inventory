@@ -15,15 +15,15 @@
 
 {# Nature d'un service : Swarm, Compose, conteneur autonome ou charge Kubernetes. #}
 {% set kind_styles = {
-    swarm: ['bg-indigo-lt', 'ti-topology-star-3'],
-    compose: ['bg-cyan-lt', 'ti-stack-2'],
-    container: ['bg-orange-lt', 'ti-box'],
-    deployment: ['bg-blue-lt', 'ti-brand-kubernetes'],
-    statefulset: ['bg-purple-lt', 'ti-database'],
-    daemonset: ['bg-teal-lt', 'ti-server-2'],
-    cronjob: ['bg-yellow-lt', 'ti-clock-play'],
+    swarm: ['bg-info-subtle text-info-emphasis', 'ti-topology-star-3'],
+    compose: ['bg-info-subtle text-info-emphasis', 'ti-stack-2'],
+    container: ['bg-warning-subtle text-warning-emphasis', 'ti-box'],
+    deployment: ['bg-info-subtle text-info-emphasis', 'ti-brand-kubernetes'],
+    statefulset: ['bg-secondary-subtle text-secondary-emphasis', 'ti-database'],
+    daemonset: ['bg-success-subtle text-success-emphasis', 'ti-server-2'],
+    cronjob: ['bg-warning-subtle text-warning-emphasis', 'ti-clock-play'],
 } %}
-{% set style = kind_styles[service.kind]|default(['bg-secondary-lt', 'ti-brand-docker']) %}
+{% set style = kind_styles[service.kind]|default(['bg-secondary-subtle text-secondary-emphasis', 'ti-brand-docker']) %}
 <span class="badge {{ style[0] }} ms-1">
     <i class="ti {{ style[1] }} me-1" aria-hidden="true"></i>{{ service.kind_label }}
 </span>

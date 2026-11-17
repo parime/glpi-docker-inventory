@@ -17,8 +17,14 @@
    (Menu::tabs()) ou onglets de la page de configuration du plugin (ConfigPage::tabs()), charte
    commune section 9. tabs : liste de {label, icon, url, active}. #}
 {# nav_title (facultatif) : titre au-dessus des onglets (page de configuration). #}
+{# Accessibilité (#42) : chaque page a un titre de niveau 1, visible (nav_title) ou réservé aux
+   lecteurs d'écran (nom de l'onglet actif), avant les titres de niveau 2 des cartes. #}
 {% if nav_title is defined and nav_title %}
-<h2 class="mb-2"><i class="ti ti-settings me-2" aria-hidden="true"></i>{{ nav_title }}</h2>
+<h1 class="h2 mb-2"><i class="ti ti-settings me-2" aria-hidden="true"></i>{{ nav_title }}</h1>
+{% else %}
+    {% for tab in tabs|filter(t => t.active) %}
+<h1 class="visually-hidden">{{ tab.label }}</h1>
+    {% endfor %}
 {% endif %}
 {% if tabs|length > 1 %}
 <ul class="nav nav-tabs mb-3">

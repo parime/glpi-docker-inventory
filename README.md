@@ -143,6 +143,7 @@ Règles communes à tous les plugins de parime, à lire avant de contribuer : [c
 - [Guide du technicien](docs/technicien.md) : services, versions, vulnérabilités, tickets
 - [Guide du responsable sécurité et de l'auditeur](docs/securite.md) : preuves GRC Manager, fin de
   support, images hors registre maîtrisé
+- [Accessibilité](docs/ACCESSIBILITE.md) : audit des écrans du plugin, corrections et points restants
 - [ARCHITECTURE.md](ARCHITECTURE.md) : arborescence, classes, tests
 - [ROADMAP.md](ROADMAP.md) : lots et issues
 - [CHANGELOG.md](CHANGELOG.md)

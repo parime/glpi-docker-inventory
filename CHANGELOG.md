@@ -13,6 +13,16 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   **Configuration > Plugins > Inventaire Docker**). Le détail passe dans des guides par rôle :
   `docs/administrateur.md`, `docs/technicien.md`, `docs/securite.md` et leur traduction dans `docs/en/`.
 
+### Fixed
+
+- Accessibilité, audit initial ([#42](https://github.com/parime/glpi-docker-inventory/issues/42)) : axe-core
+  et contrôle manuel (clavier, libellés, contraste, icônes, titres, tableaux) sur 18 écrans et onglets du plugin,
+  rapport dans `docs/ACCESSIBILITE.md`. Badges et textes colorés au contraste de 4,5:1
+  (`bg-*-subtle text-*-emphasis` au lieu de `bg-*-lt` et `bg-* text-white`), boutons de filtre neutres,
+  titre de niveau 1 sur chaque page et niveaux de titres sans saut, en-tête de colonne vide nommé, icône
+  décorative masquée, liens distinguables sans la couleur. Les points du cœur de GLPI sont listés dans le
+  rapport, sans correction.
+
 ## [0.9.0] - 2026-11-16
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

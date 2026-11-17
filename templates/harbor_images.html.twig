@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Onglet « Images Harbor et vulnérabilités » de la page des versions : compteurs des images
    déployées par gravité (cliquables), filtres, images déployées (provenance, artefact, analyse),
    artefacts lus dans Harbor. Lecture seule (GET). #}
@@ -74,7 +76,7 @@
                        class="card card-sm text-decoration-none {{ severity == filter_value ? 'border-primary' : '' }}"
                        style="min-width: 9rem" title="{{ info.help }}" data-bs-toggle="tooltip">
                         <div class="card-body d-flex align-items-center gap-2 py-2">
-                            <span class="avatar avatar-sm bg-{{ info.color }} text-white">
+                            <span class="avatar avatar-sm {{ tone.badge(info.color) }}">
                                 <i class="{{ info.icon }}" aria-hidden="true"></i>
                             </span>
                             <div>
@@ -192,7 +194,7 @@
                             {% for row in deployed %}
                                 <tr>
                                     <td>
-                                        <a href="{{ row.url }}">{{ row.name }}</a>
+                                        <a href="{{ row.url }}" class="fw-semibold">{{ row.name }}</a>
                                         {% if row.stack_name %}
                                             <div class="text-muted small">
                                                 {{- row.stack_label|default(__('Stack', 'dockerinventory')) }}
@@ -202,7 +204,7 @@
                                     </td>
                                     <td><code>{{ row.image }}{% if row.tag %}:{{ row.tag }}{% endif %}</code></td>
                                     <td>
-                                        <span class="badge bg-{{ row.provenance.color }}-lt text-nowrap"
+                                        <span class="badge {{ tone.badge(row.provenance.color) }} text-nowrap"
                                               title="{{ row.provenance.help }}" data-bs-toggle="tooltip">
                                             <i class="{{ row.provenance.icon }} me-1" aria-hidden="true"></i>
                                             {{ row.provenance.label }}
@@ -213,7 +215,7 @@
                                             {{ row.artifact.repository }}
                                             <code class="small">@{{ row.artifact.short_digest }}</code>
                                             {% set method_class = row.method == 'tag_digest_differs'
-                                                ? 'text-warning' : 'text-muted' %}
+                                                ? 'text-warning-emphasis' : 'text-muted' %}
                                             <div class="small {{ method_class }}">
                                                 {{ row.method_label }}
                                             </div>
@@ -282,7 +284,8 @@
                                     </td>
                                     <td>
                                         {% for tag in artifact.tags %}
-                                            <span class="badge bg-blue-lt me-1 mb-1">{{ tag }}</span>
+                                            <span class="badge bg-info-subtle text-info-emphasis me-1 mb-1">
+                                                {{ tag }}</span>
                                         {% else %}
                                             <span class="text-muted small">
                                                 {{- __('sans tag', 'dockerinventory') -}}
@@ -313,7 +316,8 @@
                                     </td>
                                     <td>
                                         {% for service in artifact.services %}
-                                            <a href="{{ service.url }}" class="badge bg-secondary-lt me-1 mb-1">
+                                            <a href="{{ service.url }}"
+                                               class="badge bg-secondary-subtle text-secondary-emphasis me-1 mb-1">
                                                 {{- service.name -}}
                                             </a>
                                         {% else %}

@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Onglet « Versions » d'un service : provenance de l'image, artefact Harbor rattaché et résumé de son
    analyse de vulnérabilités (HarborArtifact::forService()). #}
 {% if harbor.ticket %}
@@ -21,23 +23,23 @@
         <div>
             {{ __('Ticket de vulnérabilité', 'dockerinventory') }} :
             <a href="{{ harbor.ticket.url }}">#{{ harbor.ticket.id }} {{ harbor.ticket.name }}</a>
-            <span class="badge bg-secondary-lt ms-1">{{ harbor.ticket.status }}</span>
+            <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">{{ harbor.ticket.status }}</span>
         </div>
     </div>
 {% endif %}
 <div class="card mb-3">
     <div class="card-header d-flex flex-wrap align-items-center gap-2">
-        <h3 class="card-title mb-0">
+        <h2 class="card-title mb-0">
             <i class="ti ti-shield-search me-2" aria-hidden="true"></i>
             {{ __('Vulnérabilités de l’image (Harbor)', 'dockerinventory') }}
-        </h3>
+        </h2>
         {% if harbor.artifact %}
             {{ include('@dockerinventory/_severity_badge.html.twig', {
                 severity: harbor.artifact.severity, artifact: harbor.artifact,
             }) }}
         {% endif %}
         {% if harbor.has_image %}
-            <span class="badge bg-{{ harbor.provenance.color }}-lt ms-auto" title="{{ harbor.provenance.help }}"
+            <span class="badge {{ tone.badge(harbor.provenance.color) }} ms-auto" title="{{ harbor.provenance.help }}"
                   data-bs-toggle="tooltip">
                 <i class="{{ harbor.provenance.icon }} me-1" aria-hidden="true"></i>{{ harbor.provenance.label }}
             </span>
@@ -89,7 +91,7 @@
                             <div class="card card-sm" style="min-width: 8rem">
                                 <div class="card-body d-flex align-items-center gap-2 py-2">
                                     {% set avatar = count > 0
-                                        ? 'bg-' ~ info.color ~ ' text-white' : 'bg-secondary-lt' %}
+                                        ? tone.badge(info.color) : 'bg-secondary-subtle text-secondary-emphasis' %}
                                     <span class="avatar avatar-sm {{ avatar }}">
                                         <i class="{{ info.icon }}" aria-hidden="true"></i>
                                     </span>
@@ -121,7 +123,7 @@
                     <dt class="col-sm-3">{{ __('Tags', 'dockerinventory') }}</dt>
                     <dd class="col-sm-9">
                         {% for tag in artifact.tags %}
-                            <span class="badge bg-blue-lt me-1">{{ tag }}</span>
+                            <span class="badge bg-info-subtle text-info-emphasis me-1">{{ tag }}</span>
                         {% else %}
                             <span class="text-muted">{{ __('sans tag', 'dockerinventory') }}</span>
                         {% endfor %}

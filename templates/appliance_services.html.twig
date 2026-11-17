@@ -16,10 +16,10 @@
 {# Onglet « Services » d'une application : services Swarm ou Compose de la stack correspondante. #}
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">
+        <h2 class="card-title">
             <i class="ti ti-brand-docker me-2" aria-hidden="true"></i>
             {{ __('Services Docker de cette stack', 'dockerinventory') }}
-        </h3>
+        </h2>
     </div>
     {% if services is empty %}
         <div class="card-body">

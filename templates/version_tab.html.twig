@@ -43,7 +43,7 @@
             <div>
                 {{ __('Ticket de mise à jour', 'dockerinventory') }} :
                 <a href="{{ update_ticket.url }}">#{{ update_ticket.id }} {{ update_ticket.name }}</a>
-                <span class="badge bg-secondary-lt ms-1">{{ update_ticket.status }}</span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">{{ update_ticket.status }}</span>
             </div>
         </div>
     {% endif %}
@@ -53,23 +53,23 @@
             <div>
                 {{ __('Ticket de fin de support', 'dockerinventory') }} :
                 <a href="{{ eol_ticket.url }}">#{{ eol_ticket.id }} {{ eol_ticket.name }}</a>
-                <span class="badge bg-secondary-lt ms-1">{{ eol_ticket.status }}</span>
+                <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">{{ eol_ticket.status }}</span>
             </div>
         </div>
     {% endif %}
     {% for row in rows %}
         <div class="card mb-3">
             <div class="card-header d-flex flex-wrap align-items-center gap-2">
-                <h3 class="card-title mb-0">
+                <h2 class="card-title mb-0">
                     <i class="ti ti-tags me-2" aria-hidden="true"></i>
                     {{ __('Version de l’image', 'dockerinventory') }}
-                </h3>
+                </h2>
                 {{ include('@dockerinventory/_version_badge.html.twig', {gap: row.gap}) }}
                 {% if eol_enabled %}
                     {{ include('@dockerinventory/_eol_badge.html.twig', {eol: row.eol, compact: true}) }}
                 {% endif %}
                 {% if row.is_out_of_sync %}
-                    <span class="badge bg-warning text-white">
+                    <span class="badge bg-warning-subtle text-warning-emphasis">
                         <i class="ti ti-arrows-split me-1" aria-hidden="true"></i>
                         {{ __('Réplicas désynchronisés', 'dockerinventory') }}
                     </span>
@@ -77,9 +77,9 @@
             </div>
             <div class="card-body">
                 <div class="d-flex flex-wrap align-items-center gap-3 mb-3 fs-3">
-                    <span class="badge bg-blue-lt fs-3">{{ row.deployed_tag ?: '-' }}</span>
+                    <span class="badge bg-info-subtle text-info-emphasis fs-3">{{ row.deployed_tag ?: '-' }}</span>
                     <i class="ti ti-arrow-right text-muted" aria-hidden="true"></i>
-                    <span class="badge bg-green-lt fs-3">{{ row.latest_tag ?: '-' }}</span>
+                    <span class="badge bg-success-subtle text-success-emphasis fs-3">{{ row.latest_tag ?: '-' }}</span>
                     <span class="text-muted fs-5">{{ row.gap.help }}</span>
                 </div>
                 {% if row.is_out_of_sync %}
@@ -131,7 +131,8 @@
                         <dt class="col-sm-3">{{ __('Conteneurs WUD', 'dockerinventory') }}</dt>
                         <dd class="col-sm-9">
                             {% for name in row.containers %}
-                                <span class="badge bg-secondary-lt me-1 mb-1">{{ name }}</span>
+                                <span class="badge bg-secondary-subtle text-secondary-emphasis me-1 mb-1">
+                                    {{ name }}</span>
                             {% endfor %}
                         </dd>
                         <dt class="col-sm-3">{{ __('Rattachement', 'dockerinventory') }}</dt>
@@ -187,10 +188,10 @@
                     {% if row.error %}
                         {% if row.source_code == 'registry' %}
                             <dt class="col-sm-3">{{ __('Pourquoi non vérifié', 'dockerinventory') }}</dt>
-                            <dd class="col-sm-9 text-warning">{{ row.error }}</dd>
+                            <dd class="col-sm-9 text-warning-emphasis">{{ row.error }}</dd>
                         {% else %}
                             <dt class="col-sm-3">{{ __('Erreur WUD', 'dockerinventory') }}</dt>
-                            <dd class="col-sm-9 text-danger">{{ row.error }}</dd>
+                            <dd class="col-sm-9 text-danger-emphasis">{{ row.error }}</dd>
                         {% endif %}
                     {% endif %}
                 </dl>
@@ -200,10 +201,10 @@
 {% else %}
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">
+            <h2 class="card-title">
                 <i class="ti ti-tags me-2" aria-hidden="true"></i>
                 {{ __('Versions des images de cette application', 'dockerinventory') }}
-            </h3>
+            </h2>
         </div>
         <div class="table-responsive">
             {{ include('@dockerinventory/_version_rows.html.twig', {
@@ -217,5 +218,7 @@
         'Versions lues dans What’s Up Docker ou dans le registre de l’image, sans rien y modifier.',
         'dockerinventory'
     ) }}
-    <a href="{{ overview_url }}">{{ __('Voir toutes les versions des images', 'dockerinventory') }}</a>
+    <a href="{{ overview_url }}" class="text-decoration-underline">
+        {{- __('Voir toutes les versions des images', 'dockerinventory') -}}
+    </a>
 </p>

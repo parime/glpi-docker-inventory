@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Onglet « Services du nœud » d'un ordinateur : nœud(s) Swarm ou hôte Docker autonome rattachés, et
    leurs services. #}
 {% if nodes is empty %}
@@ -26,29 +28,29 @@
 {% for node in nodes %}
     <div class="card mb-3">
         <div class="card-header d-flex flex-wrap align-items-center gap-2">
-            <h3 class="card-title mb-0">
+            <h2 class="card-title mb-0">
                 <i class="ti ti-server me-2" aria-hidden="true"></i>{{ node.hostname }}
-            </h3>
+            </h2>
             {% if node.role in ['k8s_control_plane', 'k8s_worker'] %}
-                <span class="badge {{ node.role == 'k8s_control_plane' ? 'bg-purple' : 'bg-blue' }} text-white">
+                <span class="badge {{ tone.badge(node.role == 'k8s_control_plane' ? 'secondary' : 'info') }}">
                     <i class="ti ti-brand-kubernetes me-1" aria-hidden="true"></i>
                     {{- node.role == 'k8s_control_plane'
                         ? __('Nœud Kubernetes (control plane)', 'dockerinventory')
                         : __('Nœud Kubernetes', 'dockerinventory') -}}
                 </span>
             {% elseif node.role == 'standalone' %}
-                <span class="badge bg-teal text-white">
+                <span class="badge bg-success-subtle text-success-emphasis">
                     <i class="ti ti-box me-1" aria-hidden="true"></i>{{ __('Hôte Docker autonome', 'dockerinventory') }}
                 </span>
             {% else %}
-                <span class="badge {{ node.role == 'manager' ? 'bg-purple' : 'bg-blue' }} text-white">
+                <span class="badge {{ tone.badge(node.role == 'manager' ? 'secondary' : 'info') }}">
                     {{ node.role }}
                 </span>
             {% endif %}
-            {% set state_class = node.state == 'ready' ? 'bg-success' : 'bg-danger' %}
-            <span class="badge {{ state_class }} text-white">{{ node.state }}</span>
+            {% set state_class = tone.badge(node.state == 'ready' ? 'success' : 'danger') %}
+            <span class="badge {{ state_class }}">{{ node.state }}</span>
             {% if node.availability and node.availability != 'active' %}
-                <span class="badge bg-warning text-white">{{ node.availability }}</span>
+                <span class="badge bg-warning-subtle text-warning-emphasis">{{ node.availability }}</span>
             {% endif %}
             {% if node.is_retired %}
                 <span class="badge bg-secondary text-white">{{ __('Retiré', 'dockerinventory') }}</span>
