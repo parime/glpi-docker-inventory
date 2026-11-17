@@ -5,6 +5,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- Documentation par rôle ([#44](https://github.com/parime/glpi-docker-inventory/issues/44)) : les README
+  (français et anglais) donnent un parcours en quelques étapes pour l'administrateur, le technicien et le
+  responsable sécurité ou l'auditeur, avec les chemins des menus de la 0.9.0 (**Parc > Inventaire Docker**,
+  **Configuration > Plugins > Inventaire Docker**). Le détail passe dans des guides par rôle :
+  `docs/administrateur.md`, `docs/technicien.md`, `docs/securite.md` et leur traduction dans `docs/en/`.
+
 ## [0.9.0] - 2026-11-16
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

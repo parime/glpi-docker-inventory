@@ -13,10 +13,9 @@ Il répond à la question « qu'est-ce qui tourne, en quelle version, est-ce à 
 vulnérable ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
 conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 
-> **État** : version 0.5.0 publiée : Portainer (Swarm et hôtes Docker autonomes avec leurs stacks
-> Compose), versions des images par What's Up Docker ou les registres (Docker Hub, Harbor), tickets
-> de mise à jour selon des seuils. En cours : Harbor (lot 3, projets, artefacts, vulnérabilités).
-> Voir [ROADMAP.md](ROADMAP.md).
+> **État** : version 0.9.0 publiée : Portainer (Swarm et hôtes Docker autonomes), Kubernetes, versions
+> des images par What's Up Docker ou les registres, Harbor (artefacts et vulnérabilités), fin de
+> support des images, tickets selon des seuils, preuves pour GRC Manager. Voir [ROADMAP.md](ROADMAP.md).
 
 ## Principes
 
@@ -46,29 +45,8 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 - PHP 8.2 à 8.5 (GLPI 11), 8.3 à 8.5 (GLPI 12)
 - Portainer CE ou BE (API 2.x), WUD 8.x, Harbor 2.x, Kubernetes 1.24 et plus (API `apps/v1`, `batch/v1`)
 
-### Compte Portainer : droits minimaux et limites de CE
-
-Le plugin n'envoie que des requêtes `GET` à Portainer, mais ce que l'API renvoie dépend des droits
-du compte qui porte le jeton :
-
-- **Portainer BE** : donner au compte dédié le rôle **Read-only user** sur chaque environnement à
-  inventorier (*Environments > Manage access*), puis créer son jeton d'accès.
-- **Portainer CE n'a pas de rôle en lecture seule.** Un utilisateur standard doit d'abord recevoir
-  l'accès aux environnements (*Environments > Manage access*). Même alors, il ne voit que les
-  ressources dont le contrôle d'accès est « Public » ou qui lui sont attribuées (à lui ou à son
-  équipe) : les stacks, services et conteneurs déployés par un administrateur, ou hors de Portainer,
-  lui restent invisibles, et l'API lui répond par des listes vides sans erreur.
-- Pour un inventaire complet sous CE, deux choix : passer les ressources à inventorier en accès
-  « Public » ou les attribuer à l'équipe du compte dédié, ou utiliser le jeton d'un **compte
-  administrateur dédié** à GLPI. Ce jeton donne tous les droits dans Portainer : le réserver à GLPI,
-  le garder secret (il est chiffré dans GLPI) et le révoquer au moindre doute.
-
-Le plugin détecte un compte qui ne voit rien : « Tester la connexion » et l'import affichent alors un
-**avertissement** (statut « Avertissement »), et non un succès, quand le compte ne voit aucun
-environnement, ou quand Portainer annonce des services ou des conteneurs dans un environnement (ses
-instantanés) alors que le compte n'en voit aucun. Rien n'est alors retiré de l'inventaire. De même,
-un import qui ne trouve plus rien alors que des services étaient actifs ne retire rien et le
-signale : une perte de droits ne vide jamais l'inventaire.
+Le compte à utiliser dans chaque source (Portainer BE ou CE, WUD, Harbor, Kubernetes) est décrit
+dans le [guide de l'administrateur](docs/administrateur.md#droits-minimaux-dans-les-sources).
 
 ## Installation
 
@@ -84,385 +62,60 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 
 **Où trouver le plugin** (une seule entrée de menu, pour ne pas alourdir GLPI) :
 
-- **Parc > Inventaire Docker** (droit de lecture du plugin) : sous-pages **Services**, **Versions des
-  images**, **Images Harbor et vulnérabilités** et **Fin de support des images**, reliées par des
-  onglets ;
-- **Configuration > Plugins > Inventaire Docker** (droit de configuration de GLPI) : tous les
-  réglages, en onglets : **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres
-  maîtrisés** et **Fin de support des images** (source et correspondances image → produit).
+| Écran | Chemin | Droit |
+| --- | --- | --- |
+| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Fin de support des images** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
+| Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres maîtrisés**, **Fin de support des images** | Configuration de GLPI en modification |
 
 Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
 images*, jusqu'à la version 0.8.0) redirigent vers les nouvelles : les favoris restent valables.
 
-## Utilisation (lot 1 : Portainer)
+## Utilisation par rôle
 
-1. **Dans Portainer**, créer un utilisateur dédié aux droits minimaux (lecture seule sur les
-   environnements à inventorier) et un jeton d'accès pour lui (*My account > Access tokens*). Sous
-   Portainer CE, lire d'abord [les limites de CE](#compte-portainer--droits-minimaux-et-limites-de-ce).
-2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » :
-   « Ajouter », choisir **Portainer**, puis saisir l'adresse de Portainer
-   (`https://portainer.exemple.test:9443`) et la clé. Choisir l'environnement (Production, Préproduction...) à donner aux applications que
-   l'import créera. « Tester la connexion », puis « Importer maintenant ».
-3. L'import tourne ensuite **toutes les heures** (*Configuration > Actions automatiques*,
-   `portainerimport`).
+Chaque rôle a son parcours ci-dessous et son guide détaillé dans [`docs/`](docs/).
 
-Ce qui apparaît :
+### Administrateur GLPI : première configuration
 
-- *Parc > Inventaire Docker*, sous-page « Services » : tous les services, avec image, tag, empreinte, réplicas, état ;
-- sur chaque **Application** créée pour une stack, l'onglet « Services » ;
-- sur chaque **ordinateur** dont le nom correspond à un nœud du Swarm ou à un hôte Docker autonome,
-  l'onglet « Services du nœud ».
+Guide complet : [docs/administrateur.md](docs/administrateur.md) (droits minimaux, chaque
+connexion, manifeste Kubernetes, tickets, actions automatiques, réseaux privés sous GLPI 12).
 
-**Hôtes Docker autonomes et stacks Compose** ([#25](https://github.com/parime/glpi-docker-inventory/issues/25)) :
-une même connexion peut mêler environnements Swarm et environnements Docker sans Swarm. Pour ces
-derniers, l'import lit l'hôte (nom, version de Docker), ses conteneurs (arrêtés compris) et ses
-images, toujours en lecture seule :
+1. **Configuration > Plugins** : installer et activer « Inventaire Docker ».
+2. Dans Portainer (ou Kubernetes), créer un **compte dédié en lecture seule** et son jeton.
+3. **Configuration > Plugins > Inventaire Docker**, onglet **Connexions Docker** : « Ajouter une
+   connexion », **Portainer** (ou **Kubernetes**), adresse, jeton, environnement des applications.
+4. Sur la connexion : « **Tester la connexion** », puis « **Importer maintenant** ».
+5. Facultatif : connexions **What's Up Docker** et **Harbor** (versions, vulnérabilités), onglets
+   **Registres maîtrisés** et **Fin de support des images** (désactivée par défaut), tickets
+   automatiques sur la connexion Portainer ou Kubernetes (désactivés par défaut).
+6. **Administration > Profils**, onglet **Inventaire Docker** : droit **Lire** pour les techniciens
+   et les responsables sécurité.
 
-- chaque stack Compose de Portainer, et chaque projet Compose déployé hors Portainer (étiquette
-  `com.docker.compose.project` des conteneurs), devient une Application, comme une stack Swarm ;
-- chaque service Compose (un ou plusieurs conteneurs) et chaque conteneur hors Compose devient un
-  service, de nature « Service Compose » ou « Conteneur autonome » : image, tag, empreinte, état
-  des conteneurs, politique de redémarrage, ports publiés, réseaux, volumes et secrets par leur
-  nom seulement. Les valeurs des variables d'environnement et le contenu des secrets ne sont
-  jamais lus ni enregistrés ;
-- l'hôte est rattaché à l'ordinateur du même nom, comme un nœud Swarm ;
-- un conteneur ou un projet disparu est marqué « retiré », jamais supprimé.
+### Technicien : suivre les services et les mises à jour
 
-Ce que le plugin écrit **hors de ses propres tables** : uniquement la création, une fois, de
-l'Application d'une stack quand aucune application de ce nom n'existe dans l'entité de la
-connexion. Une application existante, un ordinateur ou un environnement ne sont jamais modifiés ni
-créés. Le droit de lecture des services se donne dans *Administration > Profils*, onglet
-« Inventaire Docker » ; les connexions sont réservées au droit *Configuration* en modification.
+Guide complet : [docs/technicien.md](docs/technicien.md) (sens des badges, règles de comparaison
+des versions, onglets des applications et des ordinateurs, fonctionnement des tickets).
 
-## Utilisation (lot 2 : What's Up Docker)
+1. **Parc > Inventaire Docker**, sous-page **Services** : ce qui tourne, avec image, tag, réplicas
+   et état.
+2. Sous-page **Versions des images** : filtrer sur « Version majeure » ou « Version mineure ».
+3. Sous-page **Images Harbor et vulnérabilités** : images aux vulnérabilités critiques ou hautes.
+4. Sous-page **Fin de support des images** : branches qui ne reçoivent plus de correctifs.
+5. **Assistance > Tickets** : traiter les tickets de mise à jour, de fin de support et de
+   vulnérabilité créés par le plugin (un par service, jamais modifiés automatiquement).
 
-[What's Up Docker](https://github.com/getwud/wud) (WUD) surveille les images des conteneurs et
-connaît, pour chacune, la dernière version publiée. Le plugin lit ce résultat **sans rien modifier
-dans WUD** (aucun déclencheur, aucune mise à jour) et le rattache aux services importés de
-Portainer.
+### Responsable sécurité ou auditeur : preuves et écarts
 
-1. **Importer d'abord Portainer** : les conteneurs vus par WUD sont rattachés aux services
-   importés (par l'identifiant ou le nom du conteneur pour les hôtes autonomes, puis par
-   l'empreinte de l'image, puis par le nom du service Swarm, puis par image et tag).
-2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » : « Ajouter », choisir **What's Up Docker**,
-   saisir l'adresse de WUD (`https://wud.exemple.test:3000`) et, si WUD demande une
-   authentification, l'utilisateur et le mot de passe (chiffré avec la clé de GLPI, jamais
-   réaffiché). « Tester la connexion » affiche la version de WUD et le nombre de conteneurs suivis,
-   puis « Lire WUD maintenant ».
-3. La lecture tourne ensuite **toutes les heures** (*Configuration > Actions automatiques*,
-   `wudimport`).
+Guide complet : [docs/securite.md](docs/securite.md) (preuves par mesure, garanties de l'API de
+lecture, ce que l'auditeur peut vérifier).
 
-Ce qui apparaît :
-
-- *Parc > Inventaire Docker*, sous-page « Versions des images » : pour chaque service, version déployée, dernière version et écart
-  (badges colorés : version majeure, mineure, correctif, empreinte seule, non suivable, à jour),
-  filtres par écart et par environnement de l'application, conteneurs sans service listés à part ;
-  « Recherche avancée et export » ouvre la recherche GLPI sur les mêmes colonnes ;
-- sur chaque **service** et chaque **application**, l'onglet « Versions ».
-
-Règles de lecture :
-
-- l'écart calculé par WUD est repris tel quel ; le plugin ne le recalcule que si WUD ne le donne pas ;
-- un tag mobile (`latest`, `stable`...) ou sans numéro de version est « non suivable » : seule
-  l'empreinte dit si l'image a changé ;
-- plusieurs conteneurs d'un même service donnent une seule ligne ; des réplicas dans des versions
-  différentes (mise à jour en cours ou bloquée) sont signalés ;
-- un conteneur sans service correspondant (hôte absent de Portainer, ou plusieurs services possibles) n'est pas
-  ignoré : il est listé à part avec la raison.
-
-> La correspondance avec l'API de WUD (`/api/containers`, `/api/app`) suit la documentation
-> publique de WUD 8.x et un faux WUD (`tests/mock-wud`) ; elle reste à valider sur une vraie
-> instance WUD 8.x ([#2](https://github.com/parime/glpi-docker-inventory/issues/2)).
-
-Le droit de lecture des services (*Administration > Profils*, onglet « Inventaire Docker ») donne
-aussi accès aux versions.
-
-## Utilisation (lot 2 : registres, sans WUD)
-
-Pour les services qu'**aucune connexion WUD ne couvre**, le plugin lit lui-même la liste des tags
-de leur image dans le registre, **uniquement en lecture** (requêtes GET de la liste des tags), et
-remplit le même tableau des versions (source « Registre de l'image »).
-
-- **Docker Hub** (images `postgres`, `grafana/grafana`, `docker.io/...`) : sans compte, avec au
-  plus une lecture par image et par jour (cache), et plus aucun appel pendant la vérification dès
-  que Docker Hub refuse (limite de requêtes) ou ne répond pas. Seuls les noms des images publiques
-  utilisées sont envoyés à Docker Hub.
-- **Harbor** (API v2 des registres, `/v2/<projet>/<dépôt>/tags/list`) : *Configuration > Plugins > Inventaire Docker*, onglet « Connexions
-  Docker », « Ajouter », choisir **Harbor**, saisir l'adresse
-  (`https://harbor.exemple.test`), un **compte robot en lecture seule** (droit *pull* sur les
-  projets utiles ; mot de passe chiffré avec la clé de GLPI, jamais réaffiché) et, s'il diffère de
-  l'adresse, l'hôte tel qu'il est écrit dans les images (`registry.exemple.test:5000`). La connexion
-  couvre les services de son entité et de ses sous-entités ; « Tester la connexion », puis
-  « Vérifier les registres maintenant ».
-- **Registre inconnu** (ni Docker Hub, ni un Harbor déclaré) ou **privé sans identifiants** :
-  version « non vérifiée », avec la raison, sans erreur bloquante.
-
-Même comparaison qu'avec WUD : versions SemVer (`1.2`, `v1.2.3`, `2024.10.1`), même nombre de
-composantes que le tag déployé (`16` suit `17`, pas `16.4`), même variante (`-alpine`), préversions
-(`-rc1`, `-beta2`) ignorées sauf si une préversion est déployée, `latest` « non suivable ».
-
-La vérification tourne **toutes les heures** (*Configuration > Actions automatiques*,
-`registrycheck`) ; « Vérifier les registres maintenant » existe sur la page *Parc > Inventaire Docker > Versions des
-images* et sur chaque connexion Harbor. Pour un miroir de Docker Hub, définir
-`PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL` dans `config/local_define.php`. Pour ne jamais interroger
-Docker Hub, désactiver l'action automatique `registrycheck`.
-
-> L'appel à Harbor suit la spécification de l'API v2 des registres (authentification basique du
-> compte robot) et un faux registre (`tests/mock-registry`) ; il reste à valider sur un vrai Harbor
-> 2.x.
-
-## Utilisation (lot 2 : tickets de mise à jour)
-
-**Désactivés par défaut.** Sur la connexion **Portainer** des services, section « Tickets de mise à
-jour » : « Créer des tickets de mise à jour », le **seuil** (version majeure seulement, mineure ou
-majeure, tout écart correctifs compris), la **catégorie**, le **groupe chargé du ticket** et un
-**modèle de ticket** (ses champs prédéfinis : type, urgence, demandeur... servent de départ).
-
-Après chaque lecture de WUD ou des registres (tâches automatiques et boutons), pour chaque service
-au-delà du seuil : un ticket « Mettre à jour le service X de la stack Y : 1.2 → 1.4 », rattaché à
-l'application de la stack, avec l'image, les versions, l'écart et un lien vers le service.
-
-- **Un ticket par service** : tant qu'il est ouvert, un **suivi** est ajouté quand la situation
-  change (nouvelle version, autre version déployée, écart résolu), jamais un second ticket.
-- **Rien n'est changé automatiquement** sur un ticket existant : ni statut (pas de réouverture, pas
-  de clôture quand l'écart est résolu), ni priorité, ni affectation (le groupe n'est donné qu'à la
-  création).
-- Ticket résolu ou clos : un nouveau ticket seulement pour une nouvelle dernière version.
-- Sous le seuil, préversion, empreinte seule, tag non suivable ou version non vérifiée : pas de
-  ticket.
-- Le lien vers le ticket apparaît dans l'onglet « Versions » du service ; le compte rendu (tickets
-  créés, suivis ajoutés) dans le message de lecture et le journal des actions automatiques.
-- Vulnérabilités de l'image (Harbor) : tickets à part, voir « Harbor, vulnérabilités et registres
-  maîtrisés ».
-
-**Portainer, WUD ou Harbor sur un réseau privé (GLPI 12).** GLPI 12 refuse par défaut les appels
-vers une adresse privée. Pour les autoriser pour ces sources seulement, ajouter dans
-`config/local_define.php` :
-
-```php
-define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
-    \GlpiPlugin\Dockerinventory\Portainer\PortainerContext::class,
-    \GlpiPlugin\Dockerinventory\Wud\WudContext::class,
-    \GlpiPlugin\Dockerinventory\Registry\RegistryContext::class,
-]);
-```
-
-## Utilisation : fin de support des images
-
-Une image peut être « à jour » dans sa branche alors que cette branche n'est plus maintenue (par
-exemple une base de données en 13.x quand la branche 13 ne reçoit plus de correctifs). Le plugin
-compare la **branche déployée** aux dates de fin de support publiées par une source ouverte,
-[endoflife.date](https://endoflife.date) (API v1, JSON en HTTPS).
-
-**Désactivé par défaut : aucun appel sortant tant que la source n'est pas activée.** Réglages dans
-*Configuration > Plugins > Inventaire Docker*, onglet « Fin de support des images » (administrateurs de la
-configuration). Le résultat se lit dans *Parc > Inventaire Docker*, sous-page « Fin de support des
-images » (services à surveiller d'abord) :
-
-1. Cocher « Lire les cycles de vie (fin de support) » et choisir le seuil de « bientôt en fin de
-   support » (90 jours par défaut), puis « Enregistrer ».
-2. « Mettre à jour maintenant », ou attendre l'action automatique `lifecyclecheck` (une fois par
-   jour). Seul le **nom du produit** est envoyé (`postgresql`, `nodejs`...), jamais un nom de service,
-   d'image privée ou d'hôte ; chaque produit est lu **au plus une fois par jour** (cache).
-3. Vérifier la **correspondance image → produit** : une table de 33 images officielles courantes
-   est fournie (`postgres` → `postgresql`, `node` → `nodejs`, `httpd` → `apache-http-server`...),
-   modifiable et complétable. Les **images en service sans correspondance** sont listées avec un
-   bouton « Ajouter une correspondance ». Le produit n'est **jamais deviné** : une image sans
-   correspondance reste « Support inconnu », jamais « Maintenue ».
-
-Affichage (page *Versions des images* et onglet « Versions ») : badge **Fin de support** (rouge),
-**Bientôt en fin de support** (orange, « dans N jours »), **Maintenue** (vert) ou **Support inconnu**
-(gris, avec la raison : pas de correspondance, tag `latest`, produit inconnu de la source, branche
-absente, source pas encore lue), avec le produit, la branche et la date. Sur la page des versions,
-compteurs cliquables et filtre « Fin de support » (dont « À surveiller » : fin de support passée ou
-proche).
-
-- Branche d'un tag : la plus précise qui commence la version (`1.24` pour `1.24.0-alpine`, `13` pour
-  `13.4`) ; un tag moins précis (`7`) suit la branche la plus récente (`7.4`) ; un nom de code
-  (`bookworm`, `bookworm-slim`) donne la branche de ce nom.
-- **Hors ligne** : si la source ne répond pas (panne, limite 429), les cycles déjà en cache restent
-  utilisés et la date de leur dernière mise à jour est affichée ; sans cache, « non vérifié ». Rien
-  n'est bloquant et aucun objet GLPI n'est modifié.
-- **Tickets de fin de support**, désactivés par défaut, sur la connexion Portainer des services :
-  « Créer des tickets de fin de support » et le **délai** (ticket quand la fin de support est dans
-  moins de N jours, ou passée ; 90 par défaut). Catégorie, groupe et modèle sont ceux des tickets de
-  mise à jour. Même principe : un ticket par service, des suivis quand la branche change, jamais de
-  doublon ni de changement de statut ; ticket clos pour une branche : pas de nouveau ticket pour la
-  même branche.
-- Miroir interne de la source ou tests : constante `PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (modèle
-  avec `{product}`) dans `config/local_define.php`, et contexte
-  `\GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext` pour une adresse privée sous GLPI 12.
-
-## Utilisation : Harbor, vulnérabilités et registres maîtrisés (lot 3)
-
-La connexion **Harbor** (compte robot) sert aussi à lire, par l'**API REST de Harbor 2.x**
-(`/api/v2.0`), les **projets**, **dépôts** et **artefacts** visibles par le compte (empreinte, tags,
-date de publication, taille) avec le **résumé de leur analyse de vulnérabilités**
-(`with_scan_overview=true` : état, analyseur, date, nombre de vulnérabilités critiques, hautes,
-moyennes, basses, corrigibles). **Uniquement des GET** : le plugin ne lance aucune analyse, ne
-modifie ni ne supprime rien dans Harbor.
-
-1. Compte robot en lecture seule : lecture des projets, dépôts et artefacts (et de la liste des
-   tags pour le repli sans WUD) ; aucun droit d'écriture, de suppression ni de lancement d'analyse.
-2. Sur la connexion Harbor (onglet « Connexions Docker » de la configuration du plugin), « Tester la connexion » indique
-   aussi le nombre de projets visibles par l'API ; « **Lire Harbor maintenant** » lance la lecture,
-   sinon l'action automatique `harborimport` (toutes les heures). Le compte rendu (projets, dépôts,
-   artefacts, analysés, retirés, requêtes, erreurs) s'affiche sur la connexion.
-3. Résultat : sous-page **« Images Harbor et vulnérabilités »** de *Parc > Inventaire
-   Docker* et carte « Vulnérabilités de l'image (Harbor) » dans l'onglet
-   « Versions » de chaque service.
-
-**Rattachement d'un service à son artefact** : par l'**empreinte** de l'image qui tourne (ou de
-l'une de ses images par plateforme), seule preuve que l'analyse est celle de l'image déployée ;
-sinon par le **tag** si l'empreinte déployée n'est pas connue. Empreinte connue mais absente de
-Harbor alors que le tag existe : « **empreinte différente de celle de Harbor** », rattaché par le
-tag avec la gravité de son analyse. Cas courant sans reconstruction : Docker 29 (stockage containerd)
-garde l'empreinte de l'**index multi-plateforme** d'origine, alors que Harbor ne reçoit que le
-manifeste de la plateforme de l'hôte qui a poussé l'image ; l'image a aussi pu être reconstruite
-depuis le déploiement. Une analyse restée « en cours » ou « en attente » dans Harbor est affichée
-comme telle, pas comme « non analysée ».
-
-**Registres maîtrisés** : onglet « Registres maîtrisés » de la page de configuration du plugin,
-liste des hôtes d'où les images doivent venir (`registry.exemple.test:5000`, `docker.io`
-pour Docker Hub). Liste vide : les hôtes des connexions Harbor. Une image déployée venant d'ailleurs
-est signalée « **Hors registre maîtrisé** » (compteur et filtre de l'onglet, alerte sur le service).
-
-**Tickets de vulnérabilité**, désactivés par défaut, sur la connexion **Portainer** des services :
-« Créer des tickets de vulnérabilité » et le **seuil** (vulnérabilités critiques, ou critiques et
-hautes) ; catégorie, groupe et modèle des tickets de mise à jour. Après chaque lecture de Harbor :
-un ticket par service dont l'image qui tourne (rattachée par l'empreinte, ou le tag) a une analyse
-réussie au-delà du seuil, puis des **suivis** quand le nombre de vulnérabilités ou l'image change ;
-jamais de doublon, **jamais de changement de statut, de priorité ni d'affectation** ; ticket clos
-pour une image : pas de nouveau ticket pour la même empreinte. Image non analysée ou analyse en
-échec : pas de ticket.
-
-- **Pagination** de Harbor (pages de 100, 20 pages au plus par liste) ; un artefact, un dépôt ou un
-  projet absent d'une liste lue en entier est **« retiré »**, jamais supprimé ; une liste en erreur
-  ou incomplète ne retire rien.
-- **Erreurs non bloquantes** : une erreur sur un dépôt n'empêche pas la lecture des autres (lecture
-  « partielle ») ; une limite de requêtes (429) arrête les appels jusqu'à la lecture suivante, les
-  données déjà lues restent affichées.
-- Les services dont l'image a des vulnérabilités critiques ou hautes apparaissent aussi sur la
-  page des vulnérabilités du parc de GRC Manager (voir « Liens avec les autres plugins »).
-
-> Écrit d'après la documentation publique de l'API de Harbor 2.x et un faux Harbor
-> (`tests/mock-harbor`, données fictives) ; **à valider sur un vrai Harbor 2.x**.
-
-## Utilisation : Kubernetes
-
-Pour les applications qui tournent sur un cluster Kubernetes (sans Portainer), le plugin lit
-directement l'API du cluster, **en lecture seule** : uniquement des requêtes `GET`, avec le jeton
-d'un compte de service limité à `get`, `list` et `watch`. Plusieurs clusters : une connexion par
-cluster.
-
-1. **Dans le cluster**, créer le compte de service et son ClusterRole en lecture seule :
-
-```yaml
-# glpi-inventaire-lecture.yaml : compte de service en lecture seule pour GLPI
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: glpi-inventaire
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: glpi-lecture
-  namespace: glpi-inventaire
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: glpi-inventaire-lecture
-rules:
-  - apiGroups: [""]
-    resources: ["namespaces", "nodes", "pods"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["batch"]
-    resources: ["cronjobs"]
-    verbs: ["get", "list", "watch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: glpi-inventaire-lecture
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: glpi-inventaire-lecture
-subjects:
-  - kind: ServiceAccount
-    name: glpi-lecture
-    namespace: glpi-inventaire
----
-# Jeton longue durée du compte de service (Kubernetes 1.24 et plus).
-apiVersion: v1
-kind: Secret
-metadata:
-  name: glpi-lecture-jeton
-  namespace: glpi-inventaire
-  annotations:
-    kubernetes.io/service-account.name: glpi-lecture
-type: kubernetes.io/service-account-token
-```
-
-   Puis récupérer le jeton, le certificat d'autorité et l'adresse de l'API, et vérifier que le
-   compte ne peut rien modifier (la dernière commande doit répondre `no`) :
-
-```sh
-kubectl apply -f glpi-inventaire-lecture.yaml
-kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.token}' | base64 -d
-kubectl -n glpi-inventaire get secret glpi-lecture-jeton -o jsonpath='{.data.ca\.crt}' | base64 -d
-kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}'
-kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventaire:glpi-lecture
-```
-
-2. **Dans GLPI**, *Configuration > Plugins > Inventaire Docker*, onglet « Connexions Docker » : « Ajouter », choisir **Kubernetes**, puis
-   saisir l'adresse de l'API (`https://…:6443`, HTTPS obligatoire), le jeton (chiffré avec la clé de
-   GLPI, jamais réaffiché) et, si le cluster a sa propre autorité (cas courant), le contenu du
-   certificat d'autorité (`ca.crt`). Les namespaces du système (`kube-system`, `kube-public`,
-   `kube-node-lease`) sont ignorés par défaut ; la liste se modifie sur la connexion (`*` accepté,
-   par exemple `cattle-*`).
-3. **Tester la connexion** : affiche la version du cluster et le nombre de namespaces visibles. Si le
-   compte ne voit aucun namespace, ou ne peut pas lire l'une des ressources, le test affiche un
-   **avertissement** qui les nomme, et non un succès.
-4. **Importer maintenant** (ou attendre l'action automatique horaire `kubernetesimport`) :
-   - chaque namespace qui a au moins une charge devient une **Application** native de GLPI (celle
-     du même nom dans l'entité si elle existe, jamais modifiée ; sinon une nouvelle, avec
-     l'environnement choisi sur la connexion) ;
-   - chaque conteneur d'un **Deployment**, **StatefulSet**, **DaemonSet** ou **CronJob** devient une
-     fiche **Service** : image, tag, empreinte (lue dans le statut des pods), réplicas prêts et
-     voulus, état (disponible, mise à jour en cours, dégradé, indisponible, arrêté à 0 réplica,
-     planifié, suspendu), ports, noms des secrets et des volumes persistants ; jamais les variables
-     d'environnement ni le contenu des secrets ;
-   - les **nœuds** sont rattachés aux ordinateurs inventoriés par leur nom (complet ou court), sinon
-     par leur adresse IP, dans l'entité de la connexion et ses sous-entités ;
-   - une charge disparue passe en « **retirée** », jamais supprimée. Une liste refusée (403), limitée
-     (429) ou trop longue ne retire rien ; après une limite (429), plus aucun appel jusqu'à l'import
-     suivant (rien n'attend). Un import qui ne trouve plus rien alors que des services étaient
-     actifs ne retire rien et le signale : une perte de droits ne vide jamais l'inventaire.
-5. **Versions et vulnérabilités** : les services Kubernetes apparaissent dans la page
-   « Versions des images » comme les services Swarm (version déployée, dernière version, écart, par
-   WUD ou par les registres). Avec une connexion Harbor, leurs images sont rattachées aux artefacts
-   Harbor par l'empreinte (sinon par le tag) et leurs vulnérabilités s'affichent dans l'onglet
-   « Versions » du service et l'onglet « Images Harbor et vulnérabilités ». Les tickets de mise à
-   jour, de fin de support et de vulnérabilité se règlent sur la connexion Kubernetes, comme sur une
-   connexion Portainer (désactivés par défaut).
-
-GLPI 12 refuse par défaut les appels vers un réseau privé : pour un cluster interne, ajouter
-`GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext` à
-`GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS` (`config/local_define.php`).
-
-Limites connues : les init containers et les Jobs isolés (sans CronJob) ne sont pas inventoriés ;
-les pods sans contrôleur non plus. Un « watch » n'est jamais ouvert : chaque import est une lecture
-ponctuelle.
-
-> Testé contre un faux serveur (`tests/mock-kubernetes`, données fictives) et un vrai cluster k3s
-> de laboratoire ; retours bienvenus sur des clusters de production (volume, opérateurs, images
-> multi-architecture) dans [#31](https://github.com/parime/glpi-docker-inventory/issues/31).
+1. **GRC & Conformité > Conformité** (GRC Manager), mesures **A.5.9**, **A.8.8**, **A.8.9** et
+   **A.8.32** : section « **Preuves de l'inventaire Docker** », lue en direct.
+2. **GRC & Conformité > Sécurité technique > Vulnérabilités du parc** : services dont l'image a
+   des vulnérabilités critiques ou hautes.
+3. **Parc > Inventaire Docker**, sous-page **Fin de support des images** : images dont la branche
+   n'est plus maintenue.
+4. Sous-page **Images Harbor et vulnérabilités**, filtre « **Seulement hors registre maîtrisé** » :
+   images venues d'un registre non autorisé.
 
 ## Liens avec les autres plugins
 
@@ -486,6 +139,10 @@ ponctuelle.
 
 Règles communes à tous les plugins de parime, à lire avant de contribuer : [charte commune des plugins](https://github.com/parime/glpi-plugin-template/blob/main/CHARTE.md).
 
+- [Guide de l'administrateur](docs/administrateur.md) : installation, connexions, droits, réglages
+- [Guide du technicien](docs/technicien.md) : services, versions, vulnérabilités, tickets
+- [Guide du responsable sécurité et de l'auditeur](docs/securite.md) : preuves GRC Manager, fin de
+  support, images hors registre maîtrisé
 - [ARCHITECTURE.md](ARCHITECTURE.md) : arborescence, classes, tests
 - [ROADMAP.md](ROADMAP.md) : lots et issues
 - [CHANGELOG.md](CHANGELOG.md)
