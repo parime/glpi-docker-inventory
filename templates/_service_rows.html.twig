@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Tableau de services (onglet des applications et des ordinateurs). `show_tasks` : colonne des
    tâches en cours sur le nœud affiché. #}
 {% set latest_title = __('Tag mobile : la version réelle est donnée par l’empreinte.', 'dockerinventory') %}
@@ -35,7 +37,9 @@
         {% for service in services %}
             <tr class="{{ service.is_retired ? 'text-muted' : '' }}">
                 <td>
-                    <a href="{{ service.url }}"><i class="ti ti-brand-docker me-1"></i>{{ service.name }}</a>
+                    <a href="{{ service.url }}">
+                        <i class="ti ti-brand-docker me-1" aria-hidden="true"></i>{{ service.name }}
+                    </a>
                     {% if not service.is_swarm %}
                         {{ include('@dockerinventory/_kind_badge.html.twig', {service: service}) }}
                     {% endif %}
@@ -48,14 +52,15 @@
                 <td>
                     <div>{{ service.image }}</div>
                     {% if service.tag == 'latest' %}
-                        <span class="badge bg-warning text-white" title="{{ latest_title }}">latest</span>
+                        <span class="badge bg-warning-subtle text-warning-emphasis"
+                              title="{{ latest_title }}">latest</span>
                     {% else %}
-                        <span class="badge bg-blue-lt">{{ service.tag ?: '-' }}</span>
+                        <span class="badge bg-info-subtle text-info-emphasis">{{ service.tag ?: '-' }}</span>
                     {% endif %}
                 </td>
                 <td><code title="{{ service.digest }}">{{ service.digest_short ?: '-' }}</code></td>
                 <td>
-                    <span class="badge {{ service.replicas_ok ? 'bg-success' : 'bg-warning' }} text-white">
+                    <span class="badge {{ tone.badge(service.replicas_ok ? 'success' : 'warning') }}">
                         {{ service.replicas }}
                     </span>
                     {% if not service.is_swarm %}
@@ -73,7 +78,7 @@
                 {% endif %}
                 <td>
                     {% for port in service.ports %}
-                        <span class="badge bg-secondary-lt me-1">{{ port }}</span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis me-1">{{ port }}</span>
                     {% else %}
                         <span class="text-muted">-</span>
                     {% endfor %}

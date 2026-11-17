@@ -143,6 +143,7 @@ Rules shared by all parime plugins, to read before contributing: [common plugin 
 - [Technician guide](docs/en/technician.md): services, versions, vulnerabilities, tickets
 - [Security officer and auditor guide](docs/en/security.md): GRC Manager evidence, end of support,
   images outside managed registries
+- [Accessibility](docs/ACCESSIBILITE.md) (in French): audit of the plugin screens, fixes and remaining points
 - [ARCHITECTURE.md](ARCHITECTURE.md): tree, classes, tests
 - [ROADMAP.md](ROADMAP.md): lots and issues
 - [CHANGELOG.md](CHANGELOG.md)

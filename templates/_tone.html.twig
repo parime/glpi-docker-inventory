@@ -1,0 +1,40 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Accessibilité (#42) : classes de badge et de texte au contraste suffisant (WCAG 1.4.3, 4,5:1).
+   Les badges bg-X-lt et bg-X text-white de Tabler descendent à 2:1 pour le vert, l'orange ou le
+   jaune ; bg-S-subtle text-S-emphasis (Bootstrap 5.3, variantes claire et sombre fournies par
+   Tabler) garde la même couleur de sens avec un texte foncé. X : couleur Tabler, S : couleur
+   sémantique. #}
+{% macro semantic(color) -%}
+    {{- {
+        success: 'success', green: 'success', teal: 'success', lime: 'success',
+        info: 'info', blue: 'info', azure: 'info', cyan: 'info', indigo: 'info', primary: 'info',
+        warning: 'warning', orange: 'warning', yellow: 'warning',
+        danger: 'danger', red: 'danger',
+        secondary: 'secondary', purple: 'secondary', muted: 'secondary'
+    }[color]|default('secondary') -}}
+{%- endmacro %}
+
+{% macro badge(color) -%}
+    {%- import _self as tone -%}
+    {%- set s = tone.semantic(color) -%}
+    bg-{{ s }}-subtle text-{{ s }}-emphasis
+{%- endmacro %}
+
+{% macro text(color) -%}
+    {%- import _self as tone -%}
+    text-{{ tone.semantic(color) }}-emphasis
+{%- endmacro %}

@@ -13,15 +13,17 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Sous le formulaire d'une connexion enregistrée : test, import immédiat, dernier compte rendu. #}
 {% set status_colors = {0: 'secondary', 1: 'success', 2: 'warning', 3: 'danger', 4: 'warning'} %}
 {% set status = item.fields['last_import_status']|default(0) %}
 
 <div class="card mt-3">
     <div class="card-header">
-        <h3 class="card-title">
+        <h2 class="card-title">
             <i class="ti ti-refresh me-2" aria-hidden="true"></i>{{ __('Import depuis Portainer', 'dockerinventory') }}
-        </h3>
+        </h2>
     </div>
     <div class="card-body">
         <p class="text-muted">
@@ -31,7 +33,7 @@
 
         <div class="mb-3">
             <span class="me-2">{{ __('Dernier import', 'dockerinventory') }} :</span>
-            <span class="badge bg-{{ status_colors[status] ?? 'secondary' }} text-white">{{ status_label }}</span>
+            <span class="badge {{ tone.badge(status_colors[status] ?? 'secondary') }}">{{ status_label }}</span>
             {% if item.fields['last_import_date'] %}
                 <span class="ms-2 text-muted">{{ item.fields['last_import_date']|formatted_datetime }}</span>
             {% endif %}

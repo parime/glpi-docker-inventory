@@ -15,17 +15,17 @@
 
 {# État d'une charge Kubernetes (Deployment, StatefulSet, DaemonSet, CronJob). #}
 {% set k8s_styles = {
-    k8s_available: ['bg-success-lt', 'ti-circle-check'],
-    k8s_progressing: ['bg-info-lt', 'ti-refresh'],
-    k8s_degraded: ['bg-warning-lt', 'ti-alert-triangle'],
-    k8s_unavailable: ['bg-danger-lt', 'ti-circle-x'],
-    k8s_scaled_down: ['bg-secondary-lt', 'ti-player-pause'],
-    k8s_suspended: ['bg-secondary-lt', 'ti-player-pause'],
-    k8s_active: ['bg-info-lt', 'ti-player-play'],
-    k8s_scheduled: ['bg-blue-lt', 'ti-clock'],
+    k8s_available: ['bg-success-subtle text-success-emphasis', 'ti-circle-check'],
+    k8s_progressing: ['bg-info-subtle text-info-emphasis', 'ti-refresh'],
+    k8s_degraded: ['bg-warning-subtle text-warning-emphasis', 'ti-alert-triangle'],
+    k8s_unavailable: ['bg-danger-subtle text-danger-emphasis', 'ti-circle-x'],
+    k8s_scaled_down: ['bg-secondary-subtle text-secondary-emphasis', 'ti-player-pause'],
+    k8s_suspended: ['bg-secondary-subtle text-secondary-emphasis', 'ti-player-pause'],
+    k8s_active: ['bg-info-subtle text-info-emphasis', 'ti-player-play'],
+    k8s_scheduled: ['bg-info-subtle text-info-emphasis', 'ti-clock'],
 } %}
 {% for state in service.states %}
-    {% set style = k8s_styles[state]|default(['bg-secondary-lt', 'ti-help']) %}
+    {% set style = k8s_styles[state]|default(['bg-secondary-subtle text-secondary-emphasis', 'ti-help']) %}
     <span class="badge {{ style[0] }} me-1">
         <i class="ti {{ style[1] }} me-1" aria-hidden="true"></i>{{ service.state_labels[loop.index0]|default(state) }}
     </span>

@@ -13,6 +13,8 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Onglet « Fin de support des images » de l'entrée Inventaire Docker (#35) : services dont la
    branche déployée n'est plus, ou bientôt plus, maintenue. Lecture seule (GET), entités actives ;
    les réglages et correspondances sont dans la page de configuration du plugin. #}
@@ -36,7 +38,7 @@
                 {{ __('Fin de support des images', 'dockerinventory') }}
             </h2>
             {% if eol_enabled %}
-                <span class="badge bg-success text-white">
+                <span class="badge bg-success-subtle text-success-emphasis">
                     <i class="ti ti-circle-check me-1" aria-hidden="true"></i>{{ __('Activée', 'dockerinventory') }}
                 </span>
             {% else %}
@@ -95,15 +97,16 @@
                        class="btn btn-sm {{ eol == eol_watch ? 'btn-danger' : 'btn-outline-danger' }}">
                         <i class="ti ti-alert-octagon me-1" aria-hidden="true"></i>
                         {{ __('À surveiller', 'dockerinventory') }}
-                        <span class="badge bg-white text-danger ms-1">
+                        <span class="badge bg-white text-danger-emphasis ms-1">
                             {{ eol_counts['eol']|default(0) + eol_counts['soon']|default(0) }}
                         </span>
                     </a>
                     {% for code, info in eol_statuses %}
                         <a href="{{ page_url }}&eol={{ code }}" title="{{ info.help }}"
-                           class="btn btn-sm {{ eol == code ? 'btn-' ~ info.color : 'btn-outline-' ~ info.color }}">
+                           class="btn btn-sm {{ eol == code ? 'btn-secondary' : 'btn-outline-secondary' }}">
                             <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
-                            <span class="badge bg-{{ info.color }}-lt ms-1">{{ eol_counts[code]|default(0) }}</span>
+                            <span class="badge {{ tone.badge(info.color) }} ms-1">
+                                {{ eol_counts[code]|default(0) }}</span>
                         </a>
                     {% endfor %}
                     <a href="{{ page_url }}&eol={{ eol_all }}"
@@ -123,7 +126,7 @@
                         ) }}
                     {% endif %}
                     {% if eol_source.errors is not empty %}
-                        <span class="text-warning">
+                        <span class="text-warning-emphasis">
                             <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
                             {{ __(
                                 'Dernière mise à jour incomplète : les données en cache restent utilisées.',
@@ -141,7 +144,7 @@
             <div class="card-header">
                 <h3 class="card-title">
                     <i class="ti ti-brand-docker me-2" aria-hidden="true"></i>{{ __('Services', 'dockerinventory') }}
-                    <span class="badge bg-secondary-lt ms-2">{{ rows|length }}</span>
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2">{{ rows|length }}</span>
                 </h3>
             </div>
             {% if rows is empty %}

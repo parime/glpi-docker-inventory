@@ -13,7 +13,9 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Pastille d'écart de version (ImageVersion::gapInfo()) : couleur, icône, libellé, aide au survol. #}
-<span class="badge bg-{{ gap.color }} text-white text-nowrap" title="{{ gap.help }}" data-bs-toggle="tooltip">
+<span class="badge {{ tone.badge(gap.color) }} text-nowrap" title="{{ gap.help }}" data-bs-toggle="tooltip">
     <i class="{{ gap.icon }} me-1" aria-hidden="true"></i>{{ gap.label }}
 </span>

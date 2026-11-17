@@ -43,11 +43,10 @@
         'dockerinventory'
     ) %}
     {% set type_html %}
-        {% set type_color = is_kubernetes ? 'bg-azure'
-            : (is_harbor ? 'bg-indigo' : (is_wud ? 'bg-teal' : 'bg-blue')) %}
+        {% set type_color = is_wud ? 'bg-success-subtle text-success-emphasis' : 'bg-info-subtle text-info-emphasis' %}
         {% set type_icon = is_kubernetes ? 'ti-brand-kubernetes'
             : (is_harbor ? 'ti-building-warehouse' : (is_wud ? 'ti-tags' : 'ti-brand-docker')) %}
-        <span class="badge {{ type_color }} text-white">
+        <span class="badge {{ type_color }}">
             <i class="ti {{ type_icon }} me-1" aria-hidden="true"></i>{{ type_label }}
         </span>
     {% endset %}

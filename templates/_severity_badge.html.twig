@@ -13,9 +13,11 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Pastille de gravité (HarborArtifact::severityInfo()) ; avec « artifact », nombre de vulnérabilités
    par gravité à côté (C critiques, H hautes, M moyennes, B basses). #}
-<span class="badge bg-{{ severity.color }} text-white text-nowrap" title="{{ severity.help }}" data-bs-toggle="tooltip">
+<span class="badge {{ tone.badge(severity.color) }} text-nowrap" title="{{ severity.help }}" data-bs-toggle="tooltip">
     <i class="{{ severity.icon }} me-1" aria-hidden="true"></i>{{ severity.label }}
 </span>
 {% if artifact is defined and artifact and artifact.scanned and artifact.total > 0 %}
@@ -28,7 +30,7 @@
     <span class="text-nowrap ms-1">
         {% for code, count in artifact.counts %}
             {% set info = letters[code] %}
-            <span class="badge {{ count > 0 ? 'bg-' ~ info.color ~ '-lt' : 'bg-secondary-lt text-muted' }}"
+            <span class="badge {{ count > 0 ? tone.badge(info.color) : 'bg-secondary-subtle text-secondary-emphasis' }}"
                   title="{{ count }} {{ info.label }}" data-bs-toggle="tooltip">{{ info.letter }} {{ count }}</span>
         {% endfor %}
     </span>
