@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- CI : contrôles de sécurité communs glpi-plugin-security v1.9.0 (charte commune et contrôle des menus bloquants par défaut).
+
 ## [0.10.0] - 2026-11-17
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
