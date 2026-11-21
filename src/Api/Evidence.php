@@ -21,6 +21,8 @@ namespace GlpiPlugin\Dockerinventory\Api;
 
 use DbUtils;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure;
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborLinker;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
@@ -307,6 +309,69 @@ final class Evidence
             'provenance_counts' => $counts,
             'provenances'       => HarborArtifact::provenanceInfos(),
             'services_url'      => Service::getSearchURL(),
+        ];
+    }
+
+    /**
+     * Exposition des services actifs (#72, matrice des flux de GRC Manager) : ports publiés, routes
+     * Traefik, ingress et services Kubernetes exposés, avec leur portée (internet, host, internal,
+     * local). Seuls les services qui ont au moins une exposition sont renvoyés.
+     *
+     * @return array{services: list<array{service: string, url: string, stack: string, appliances_id: int,
+     *     exposures: list<array{source: string, host: string, path: string, tls: bool, port: int,
+     *     protocol: string, scope: string}>, internet: bool, entities_id: int}>, services_total: int,
+     *     internet_total: int, page_url: string}|null
+     */
+    public static function exposure(int $limit = 50): ?array
+    {
+        global $DB;
+
+        if (!self::canRead()) {
+            return null;
+        }
+        $rows = [];
+        $internet = 0;
+        foreach (
+            $DB->request([
+                'FROM'  => Service::getTable(),
+                'WHERE' => ['is_retired' => 0] + self::entityCriteria(Service::getTable()),
+                'ORDER' => ['stack_name', 'name'],
+            ]) as $row
+        ) {
+            $exposures = [];
+            $public = false;
+            foreach (Exposure::exposuresOf($row) as $exposure) {
+                $public = $public || $exposure['scope'] === ExposureMapper::SCOPE_INTERNET;
+                $exposures[] = [
+                    'source'   => $exposure['source'],
+                    'host'     => $exposure['host'],
+                    'path'     => $exposure['path'],
+                    'tls'      => $exposure['tls'],
+                    'port'     => $exposure['port'],
+                    'protocol' => $exposure['protocol'],
+                    'scope'    => $exposure['scope'],
+                ];
+            }
+            if ($exposures === []) {
+                continue;
+            }
+            $internet += $public ? 1 : 0;
+            $rows[] = [
+                'service'       => (string) $row['name'],
+                'url'           => Service::getFormURLWithID((int) $row['id']),
+                'stack'         => (string) $row['stack_name'],
+                'appliances_id' => (int) $row['appliances_id'],
+                'exposures'     => $exposures,
+                'internet'      => $public,
+                'entities_id'   => (int) $row['entities_id'],
+            ];
+        }
+
+        return [
+            'services'       => array_slice($rows, 0, max(0, $limit)),
+            'services_total' => count($rows),
+            'internet_total' => $internet,
+            'page_url'       => Exposure::getPageURL(),
         ];
     }
 

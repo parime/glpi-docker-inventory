@@ -50,6 +50,8 @@ RESOURCES = {
     '/apis/apps/v1/daemonsets': 'daemonsets',
     '/apis/apps/v1/replicasets': 'replicasets',
     '/apis/batch/v1/cronjobs': 'cronjobs',
+    '/api/v1/services': 'services',
+    '/apis/networking.k8s.io/v1/ingresses': 'ingresses',
 }
 
 

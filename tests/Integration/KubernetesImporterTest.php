@@ -23,6 +23,8 @@ use Appliance;
 use ApplianceEnvironment;
 use Computer;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure;
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\Harbor\HarborLinker;
@@ -277,6 +279,46 @@ final class KubernetesImporterTest extends TestCase
         $this->assertSame(0, $again['retired']);
         $this->assertSame(0, $again['appliances_created']);
         $this->assertCount(7, $this->services());
+    }
+
+    /**
+     * Exposition (#72) : ingress et services NodePort rattachés aux charges par leurs sélecteurs ;
+     * une liste refusée garde les routes du dernier import.
+     */
+    public function testIngressesAndNodePortsAreRecorded(): void
+    {
+        $this->import();
+        $services = $this->services();
+        $shop = ExposureMapper::decode((string) $services['k8s/deployment/boutique/vitrine/api']['routes']);
+        $this->assertCount(1, $shop);
+        $this->assertSame(ExposureMapper::SOURCE_INGRESS, $shop[0]['source']);
+        $this->assertSame('boutique.exemple.test', $shop[0]['host']);
+        $this->assertTrue($shop[0]['tls']);
+        // Les deux conteneurs du portail reçoivent le port du nœud.
+        foreach (['wiki', 'journal'] as $container) {
+            $uid = 'k8s/deployment/intranet/portail/' . $container;
+            $portal = ExposureMapper::decode((string) $services[$uid]['routes']);
+            $this->assertSame([30080], array_column($portal, 'port'), $container);
+        }
+        $this->assertSame('', (string) $services['k8s/statefulset/boutique/cache/redis']['routes']);
+
+        $exposures = Exposure::exposuresOf($services['k8s/deployment/boutique/vitrine/api']);
+        $this->assertSame([ExposureMapper::SCOPE_INTERNET], array_column($exposures, 'scope'));
+        // Ports des conteneurs Kubernetes : pas des ports publiés.
+        $this->assertSame([], Exposure::exposuresOf(['kind' => 'deployment', 'ports' => '8080/tcp']));
+
+        $this->fixture['ingresses'] = [];
+        $report = $this->import(['ingresses' => 403]);
+        $this->assertSame(Connection::STATUS_WARNING, $report['status']);
+        $this->assertSame(
+            [['endpoint' => 'ingresses', 'code' => KubernetesImporter::WARNING_FORBIDDEN]],
+            $report['warnings']
+        );
+        $kept = ExposureMapper::decode((string) $this->services()['k8s/deployment/boutique/vitrine/api']['routes']);
+        $this->assertSame('boutique.exemple.test', $kept[0]['host'] ?? '');
+
+        $this->import();
+        $this->assertSame('', (string) $this->services()['k8s/deployment/boutique/vitrine/api']['routes']);
     }
 
     public function testVanishedWorkloadIsRetiredThenRevived(): void
