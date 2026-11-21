@@ -531,7 +531,7 @@ final class Installer
                 KEY `image_key` (`image_key`),
                 KEY `users_id` (`users_id`),
                 KEY `scan_date` (`scan_date`)",
-            // 0.14.0 => exploitation connue (#84) : signaux CISA KEV et EPSS des CVE des analyses
+            // 0.15.0 => exploitation connue (#84) : signaux CISA KEV et EPSS des CVE des analyses
             // importées, refaits depuis les fichiers en cache (ExploitSignal::rebuild()).
             'glpi_plugin_dockerinventory_exploitsignals' => "
                 `id` int {$sign} NOT NULL AUTO_INCREMENT,
