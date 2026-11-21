@@ -24,7 +24,7 @@ use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Profile;
 use GlpiPlugin\Dockerinventory\Service;
 
-define('PLUGIN_DOCKERINVENTORY_VERSION', '0.10.0');
+define('PLUGIN_DOCKERINVENTORY_VERSION', '0.11.0');
 define('PLUGIN_DOCKERINVENTORY_MIN_GLPI', '11.0.0');
 // GLPI 11 et 12 depuis un seul code source (voir src/Compat/).
 define('PLUGIN_DOCKERINVENTORY_MAX_GLPI', '12.99.99');
