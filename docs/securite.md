@@ -110,6 +110,32 @@ propriétaire, puis enregistre. Le plugin n'écrit jamais dans GRC.
 La portée est déduite du nom d'hôte ou de l'adresse : un nom public n'est pas forcément joignable
 (pare-feu, DNS interne). À vérifier avec l'équipe réseau.
 
+## Configuration à risque (A.8.9)
+
+**Parc > Inventaire Docker**, sous-page **Configuration à risque** (et onglet du même nom de chaque
+service) : réglages de sécurité relevés à chaque import, sans requête de plus que l'inventaire.
+
+| Gravité | Écarts |
+| --- | --- |
+| Critique | Mode privilégié ; socket d'un moteur de conteneurs monté (`docker.sock`, `containerd.sock`…) |
+| Haute | Réseau ou processus de l'hôte partagés ; capacités dangereuses (`SYS_ADMIN`, `NET_ADMIN`…) ; répertoire sensible de l'hôte monté (`/etc`, `/`, `/var/lib/docker`…) |
+| Moyenne | Mémoire partagée (IPC) de l'hôte ; autres capacités ajoutées ; exécution en root (aucun utilisateur défini) |
+| Basse | Aucune limite de mémoire ; aucune limite de processeur ; système de fichiers en écriture |
+
+Swarm ne connaît ni le mode privilégié ni le partage des processus de l'hôte : ces écarts ne
+concernent que les hôtes autonomes et Kubernetes. Un conteneur sans utilisateur défini est compté en
+root : l'image peut en définir un, à vérifier.
+
+Pour un écart voulu (agent de supervision qui lit le socket, par exemple), **Accepter le risque**
+enregistre une exception : la raison et une date de fin (366 jours au plus). Après cette date,
+l'écart compte de nouveau ; **Renouveler l'exception** prolonge après réexamen. Droit
+**Exceptions de configuration** (enregistrer, supprimer) dans **Administration > Profils**, onglet
+**Inventaire Docker**. Le plugin ne modifie jamais rien sur les plateformes.
+
+La carte de synthèse donne la part des services analysés sans écart ouvert et sans écart critique
+ni haut (les écarts couverts par une exception en cours ne comptent pas). GRC Manager peut la lire
+par `Evidence::hardening()` comme preuve de la mesure A.8.9.
+
 ## Ce que l'auditeur peut vérifier
 
 - **Lecture seule** : le plugin n'envoie que des requêtes de lecture aux sources, avec des comptes

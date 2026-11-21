@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 05:57+0000\n"
+"POT-Creation-Date: 2026-11-21 06:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,1986 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-
-#: templates/_page_help.html.twig
-msgid "À quoi sert cette page ?"
-msgstr ""
-
-#: templates/_page_help.html.twig
-msgid "Ce qui est attendu :"
-msgstr ""
-
-#: templates/_service_rows.html.twig
-msgid "Tag mobile : la version réelle est donnée par l’empreinte."
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/vuln_ticket_content.html.twig
-#: templates/eol_ticket_content.html.twig templates/_version_rows.html.twig
-#: templates/ticket_content.html.twig templates/harbor_images.html.twig
-#: templates/_exposure_head.html.twig
-msgid "Service"
-msgstr ""
-
-#: templates/_service_rows.html.twig
-msgid "Image et tag"
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/service_form.html.twig
-#: src/Service.php:103
-msgid "Empreinte (digest)"
-msgstr ""
-
-#: templates/_service_rows.html.twig
-msgid "Réplicas ou conteneurs"
-msgstr ""
-
-#: templates/_service_rows.html.twig
-msgid "En cours sur ce nœud"
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/service_form.html.twig
-#: src/Service.php:110
-msgid "Ports publiés"
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/service_form.html.twig
-msgid "Statut"
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/computer_nodes.html.twig
-#: templates/service_form.html.twig src/Service.php:108
-msgid "Vu la dernière fois"
-msgstr ""
-
-#: templates/_service_rows.html.twig templates/vuln_ticket_content.html.twig
-#: templates/eol_ticket_content.html.twig templates/_version_rows.html.twig
-#: templates/ticket_content.html.twig templates/harbor_images.html.twig
-#: src/HarborArtifact.php:603 src/ImageVersion.php:237 src/ImageVersion.php:606
-#: src/Service.php:106 src/Service.php:338
-msgid "Stack"
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid ""
-"Voir ce qui est réellement joignable : ports publiés, routes Traefik, "
-"ingress et services Kubernetes."
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid ""
-"Vérifiez que chaque service exposé sur Internet est voulu et documenté dans "
-"la matrice des flux."
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid "Le plugin ne modifie rien, ni dans les plateformes ni dans GRC Manager."
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid "Services exposés"
-msgstr ""
-
-#: templates/exposure.html.twig templates/versions.html.twig
-#: templates/eol.html.twig templates/harbor_images.html.twig
-msgid "Tous"
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid "Exposés sur Internet"
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid "Sans flux documenté"
-msgstr ""
-
-#: templates/exposure.html.twig templates/versions.html.twig
-#: templates/eol.html.twig
-msgid "Aucun service ne correspond à ces filtres."
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid ""
-"Les ports et les routes sont relevés à chaque import Portainer ou Kubernetes."
-msgstr ""
-
-#: templates/exposure.html.twig
-msgid ""
-"Une route HTTP est comptée sur le port 443 avec TLS, 80 sinon : le port réel "
-"est celui du point d’entrée."
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Cet ordinateur n'est rattaché à aucun nœud Swarm ni hôte Docker."
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Le rattachement se fait à l'import Portainer, par nom d'hôte."
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Nœud Kubernetes (control plane)"
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Nœud Kubernetes"
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Hôte Docker autonome"
-msgstr ""
-
-#: templates/computer_nodes.html.twig templates/_status_badge.html.twig
-#: templates/_version_rows.html.twig src/Service.php:107
-msgid "Retiré"
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Version du kubelet"
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Version de Docker"
-msgstr ""
-
-#: templates/computer_nodes.html.twig src/Connection.php:214
-msgid "Adresse"
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Aucun conteneur en cours sur cet hôte."
-msgstr ""
-
-#: templates/computer_nodes.html.twig
-msgid "Aucune tâche de service en cours sur ce nœud."
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Import depuis Kubernetes"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid ""
-"L'import lit le cluster sans rien y modifier et tourne toutes les heures."
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig
-msgid "Le bouton « Importer maintenant » le lance tout de suite."
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid ""
-"Chaque namespace qui a des charges devient une application ; chaque "
-"conteneur, une fiche de service."
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig src/Connection.php:237
-msgid "Dernier import"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Namespaces visibles"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Namespaces avec des charges"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "applications créées"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig templates/versions.html.twig
-#: templates/connection_actions.html.twig templates/eol.html.twig
-#: src/Menu.php:101 src/Service.php:255
-msgid "Services"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig
-msgid "Retirés à cet import"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig templates/service_form.html.twig
-msgid "Nœuds"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig
-msgid "rattachés à un ordinateur"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig templates/harbor_actions.html.twig
-msgid "Requêtes"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "À vérifier dans le cluster"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig templates/wud_actions.html.twig
-#: templates/harbor_actions.html.twig
-msgid "Tester la connexion"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig
-msgid "Importer maintenant"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig templates/wud_actions.html.twig
-#: templates/harbor_actions.html.twig
-msgid "Voir les versions des images"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Créer le compte de service en lecture seule"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid ""
-"Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Cluster sur un réseau privé (GLPI 12)"
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig templates/wud_actions.html.twig
-#: templates/harbor_actions.html.twig
-msgid "GLPI 12 refuse par défaut les appels vers un réseau privé."
-msgstr ""
-
-#: templates/kubernetes_actions.html.twig
-msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Repérer les images à mettre à jour : version déployée, dernière version, "
-"écart, fin de support."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Cliquez sur un compteur ou filtrez par écart ou par environnement, puis "
-"planifiez les mises à jour."
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid "Le plugin ne met rien à jour lui-même."
-msgstr ""
-
-#: templates/versions.html.twig src/ImageVersion.php:69
-msgid "Versions des images"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Docker Hub au plus une fois par jour et par image."
-msgstr ""
-
-#: templates/versions.html.twig templates/harbor_actions.html.twig
-msgid "Vérifier les registres maintenant"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Recherche avancée et export"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Pour chaque service : version déployée, dernière version disponible et écart."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Source : What’s Up Docker, sinon le registre de l’image (Docker Hub, "
-"Harbor), sans rien y modifier."
-msgstr ""
-
-#: templates/versions.html.twig templates/version_tab.html.twig
-msgid "Aucune version connue pour le moment."
-msgstr ""
-
-#: templates/versions.html.twig templates/version_tab.html.twig
-msgid ""
-"Ajoutez une connexion WUD, ou lancez la vérification des registres (toutes "
-"les heures)."
-msgstr ""
-
-#: templates/versions.html.twig templates/version_tab.html.twig
-#: src/Connection.php:102
-msgid "Connexions Docker"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "À mettre à jour"
-msgstr ""
-
-#: templates/versions.html.twig templates/eol_ticket_content.html.twig
-#: templates/_version_rows.html.twig templates/eol_ticket_followup.html.twig
-#: templates/version_tab.html.twig src/LifecycleProduct.php:200
-msgid "Fin de support"
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid "À surveiller"
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid "Cycles de vie mis à jour le"
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid ""
-"Cycles de vie pas encore lus : prochaine mise à jour par la tâche "
-"automatique."
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid ""
-"Dernière mise à jour incomplète : les données en cache restent utilisées."
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid "Réglages et correspondances"
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid "Fin de support des images : désactivée."
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-msgid ""
-"Une fois activée, chaque image indique si sa branche est encore maintenue."
-msgstr ""
-
-#: templates/versions.html.twig templates/eol.html.twig
-#: templates/version_tab.html.twig
-msgid "Activer"
-msgstr ""
-
-#: templates/versions.html.twig templates/_version_rows.html.twig
-#: templates/ticket_content.html.twig src/ImageVersion.php:269
-msgid "Écart"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Environnement"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Sans environnement"
-msgstr ""
-
-#: templates/versions.html.twig templates/harbor_images.html.twig
-msgid "Filtrer"
-msgstr ""
-
-#: templates/versions.html.twig templates/harbor_images.html.twig
-msgid "Réinitialiser"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Conteneurs sans service importé"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Conteneurs suivis par WUD qui ne correspondent à aucun service importé de "
-"Portainer."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Ils ne sont pas ignorés : leur version est suivie ici."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "« Non suivable » : tag mobile (latest...) ou sans numéro de version."
-msgstr ""
-
-#: templates/versions.html.twig templates/version_tab.html.twig
-msgid "Préférer un tag versionné (1.2.3) pour savoir ce qui tourne vraiment."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
-"contrôlée."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
-msgstr ""
-
-#: templates/managed_registries.html.twig templates/harbor_images.html.twig
-#: src/ConfigPage.php:70
-msgid "Registres maîtrisés"
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Images déployées hors de ces registres : signalées."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur "
-"la fiche du service."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Hôtes des registres maîtrisés, un par ligne"
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Tel qu’écrit au début des images (registry.exemple.test:5000/outils/wiki). "
-"docker.io : Docker Hub."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Laisser vide pour utiliser les hôtes des connexions Harbor :"
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "aucune connexion Harbor"
-msgstr ""
-
-#: templates/managed_registries.html.twig templates/lifecycle.html.twig
-msgid "Enregistrer"
-msgstr ""
-
-#: templates/managed_registries.html.twig templates/harbor_images.html.twig
-#: templates/harbor_actions.html.twig src/Menu.php:111
-msgid "Images Harbor et vulnérabilités"
-msgstr ""
-
-#: templates/_status_badge.html.twig
-msgid "Actif"
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid "Quelle source voulez-vous connecter ?"
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid "Le plugin lit ces outils sans jamais rien y modifier."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid ""
-"Commencez par Portainer : WUD complète les services que Portainer a importés."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid ""
-"Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos "
-"projets."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid ""
-"Kubernetes remplace Portainer pour les applications qui tournent sur un "
-"cluster."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid ""
-"Stacks Swarm et Compose, services, conteneurs et hôtes : ce qui tourne, et "
-"où."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid "Version déployée et dernière version disponible de chaque image."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid "Registre privé : dernières versions de vos images, sans WUD."
-msgstr ""
-
-#: templates/connection_type_choice.html.twig
-msgid ""
-"Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un "
-"cluster."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Ticket de vulnérabilité"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Vulnérabilités de l’image (Harbor)"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Ce service n’a pas d’image connue."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Image hors registre maîtrisé"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "elle vient de"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "qui n’est pas dans la liste des registres maîtrisés"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid ""
-"Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le "
-"registre maîtrisé."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid ""
-"Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde "
-"qu’une plateforme)."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "aucun résultat d’analyse pour cette image dans Harbor."
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
-msgid "Artefact Harbor"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:277
-msgid "Rattachement"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/vuln_ticket_content.html.twig
-#: templates/harbor_images.html.twig
-msgid "Empreinte"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
-msgid "Tags"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
-msgid "sans tag"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
-msgid "Publié le"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/vuln_ticket_content.html.twig
-#: templates/harbor_images.html.twig
-msgid "Analyse"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Total"
-msgstr ""
-
-#: templates/_harbor_service.html.twig templates/vuln_ticket_content.html.twig
-#: templates/harbor_images.html.twig
-msgid "corrigibles"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Image introuvable dans Harbor"
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid ""
-"(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid ""
-"Image hors des registres Harbor déclarés : pas d’analyse de vulnérabilités "
-"connue."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Aucune connexion Harbor : pas d’analyse de vulnérabilités connue."
-msgstr ""
-
-#: templates/_harbor_service.html.twig
-msgid "Voir toutes les images Harbor et leurs vulnérabilités"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "depuis le"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "stack hors Portainer"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Aucune stack"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "prêts / voulus"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "en cours / voulus"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "conteneurs en cours / conteneurs"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Ports des conteneurs"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Volumes persistants (noms)"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:112
-msgid "Secrets (noms)"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:111
-msgid "Réseaux"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:117
-msgid "Volumes (noms)"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:114
-msgid "Nature"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Application (namespace)"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Cluster Kubernetes"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Application (stack)"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:109
-msgid "Environnement Portainer"
-msgstr ""
-
-#: templates/service_form.html.twig templates/vuln_ticket_content.html.twig
-#: templates/eol_ticket_content.html.twig templates/lifecycle.html.twig
-#: templates/_version_rows.html.twig templates/ticket_content.html.twig
-#: templates/harbor_images.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:272 src/Service.php:101
-msgid "Image"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Tag (version déployée)"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Tâches"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Réplicas"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Conteneurs"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Planification"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "État"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:115
-msgid "État des conteneurs"
-msgstr ""
-
-#: templates/service_form.html.twig src/Service.php:116
-msgid "Politique de redémarrage"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Hôte Docker"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Aucun pod en cours connu pour ce service."
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Aucune tâche en cours connue pour ce service."
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Aucun conteneur en cours pour ce service."
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Nom d'hôte"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Ordinateur"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Pods en cours"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Tâches en cours"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Conteneurs en cours"
-msgstr ""
-
-#: templates/service_form.html.twig
-msgid "Non rattaché"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Import depuis Portainer"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid ""
-"L'import lit Portainer sans rien y modifier et tourne toutes les heures."
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Stacks"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Nœuds Swarm et hôtes Docker"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Applications créées"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "À vérifier dans Portainer"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Portainer sur un réseau privé (GLPI 12)"
-msgstr ""
-
-#: templates/connection_actions.html.twig
-msgid "Pour Portainer seulement, ajouter dans config/local_define.php :"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig
-msgid ""
-"L’analyse Harbor de l’image déployée par ce service signale des "
-"vulnérabilités au-delà du seuil choisi."
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig
-msgid ""
-"Prévoir une image corrigée (version plus récente ou image reconstruite), "
-"puis la redéployer."
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig
-#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
-msgid "Application"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/harbor_images.html.twig
-msgid "Vulnérabilités"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/_severity_badge.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid "critiques"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/_severity_badge.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid "hautes"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/_severity_badge.html.twig
-msgid "moyennes"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/_severity_badge.html.twig
-msgid "basses"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/ticket_followup.html.twig
-#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
-#: templates/eol_ticket_followup.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid "Voir le service dans GLPI"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig templates/ticket_content.html.twig
-msgid "Ticket créé par Inventaire Docker, seuil choisi :"
-msgstr ""
-
-#: templates/vuln_ticket_content.html.twig
-#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
-msgid ""
-"Un suivi sera ajouté si la situation change ; jamais de changement de "
-"statut, de priorité ni d’affectation."
-msgstr ""
-
-#: templates/ticket_followup.html.twig
-msgid "Écart résolu"
-msgstr ""
-
-#: templates/ticket_followup.html.twig
-msgid "le service est à jour en version"
-msgstr ""
-
-#: templates/ticket_followup.html.twig
-msgid "Écart sous le seuil"
-msgstr ""
-
-#: templates/ticket_followup.html.twig templates/eol_ticket_followup.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid "Nouvelle situation"
-msgstr ""
-
-#: templates/ticket_followup.html.twig templates/eol_ticket_followup.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid "Situation précédente"
-msgstr ""
-
-#: templates/ticket_followup.html.twig templates/eol_ticket_followup.html.twig
-#: templates/vuln_ticket_followup.html.twig
-msgid ""
-"Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié."
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Services Docker de cette stack"
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Aucun service importé pour cette application."
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Elle n'est peut-être liée à aucune stack Portainer."
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Données importées de Kubernetes en lecture seule."
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Données importées de Portainer en lecture seule."
-msgstr ""
-
-#: templates/appliance_services.html.twig
-msgid "Un service disparu est marqué « Retiré », jamais supprimé."
-msgstr ""
-
-#: templates/eol_ticket_content.html.twig
-msgid ""
-"La branche de l’image déployée par ce service arrive en fin de support, ou "
-"l’a dépassée."
-msgstr ""
-
-#: templates/eol_ticket_content.html.twig
-msgid ""
-"Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une "
-"branche maintenue."
-msgstr ""
-
-#: templates/eol_ticket_content.html.twig templates/version_tab.html.twig
-msgid "Branche"
-msgstr ""
-
-#: templates/eol_ticket_content.html.twig
-msgid "atteinte (date non publiée)"
-msgstr ""
-
-#: templates/eol_ticket_content.html.twig
-msgid "Ticket créé par Inventaire Docker, délai choisi (jours) :"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid ""
-"Savoir quelles images tournent sur une branche qui ne reçoit plus de "
-"correctifs."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Activez la source, puis associez chaque image sans correspondance au produit "
-"qui lui convient."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Le résultat apparaît dans « Versions des images »."
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig front/version.php:96
-#: src/LifecycleProduct.php:50 src/Menu.php:116
-msgid "Fin de support des images"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid "Activée"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid "Désactivée"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Voir les images concernées"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid ""
-"Une image peut être à jour dans sa branche alors que cette branche ne reçoit "
-"plus de correctifs."
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid ""
-"Le plugin compare la branche déployée aux dates de fin de support publiées "
-"par une source ouverte."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Appel sortant, désactivé par défaut : une requête par produit et par jour au "
-"plus."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Seul le nom du produit est envoyé (postgresql, nodejs...), jamais vos "
-"services ni vos hôtes."
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/ticket_content.html.twig
-#: templates/version_tab.html.twig templates/_exposure_head.html.twig
-#: src/ImageVersion.php:270
-msgid "Source"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Lire les cycles de vie (fin de support)"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Signaler « bientôt en fin de support » (jours avant)"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Dernière mise à jour"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Chaque produit au plus une fois par jour."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Mettre à jour maintenant"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Données en cache du"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "dernier essai"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Aucune donnée pour le moment."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Cliquez sur « Mettre à jour maintenant » ou attendez la tâche automatique "
-"(une fois par jour)."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Activez la lecture des cycles de vie ci-dessus."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Produits non lus à la dernière mise à jour (les données déjà en cache "
-"restent utilisées) :"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "données du"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Images en service sans correspondance"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Leur fin de support reste « inconnue » : le plugin ne devine jamais le "
-"produit d’une image."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Ajoutez une correspondance pour celles qui ont un cycle de vie publié."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Services ou conteneurs"
-msgstr ""
-
-#: templates/lifecycle.html.twig templates/eol.html.twig
-msgid "Ajouter une correspondance"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Correspondance image → produit"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Image : nom sans tag (postgres, bitnami/redis, registry.exemple.test/outils/"
-"api)."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Produit : son nom dans la source, en minuscules (postgresql, nodejs, apache-"
-"http-server)."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Produit"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "En service"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Cycles de vie"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Supprimer"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Nouvelle image"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Produit de la nouvelle image"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Nouvelle correspondance"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Fournie"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Pas encore lus"
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Enregistrer les correspondances"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/version_tab.html.twig
-msgid "Page du registre"
-msgstr ""
-
-#: templates/_version_rows.html.twig
-msgid "Conteneur WUD"
-msgstr ""
-
-#: templates/_version_rows.html.twig
-msgid "Pourquoi sans service"
-msgstr ""
-
-#: templates/_version_rows.html.twig
-msgid "Application et environnement"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/ticket_content.html.twig
-#: src/ImageVersion.php:267
-msgid "Version déployée"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/ticket_content.html.twig
-#: src/ImageVersion.php:268
-msgid "Dernière version"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:271
-msgid "Vérifié le"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:278
-msgid "Registre"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/wud_actions.html.twig
-#: templates/version_tab.html.twig src/ImageVersion.php:273
-msgid "Réplicas désynchronisés"
-msgstr ""
-
-#: templates/_version_rows.html.twig
-msgid "Nouvelle empreinte disponible"
-msgstr ""
-
-#: templates/_version_rows.html.twig templates/version_tab.html.twig
-msgid "Erreur WUD"
-msgstr ""
-
-#: templates/eol.html.twig
-msgid ""
-"Planifiez d’abord le passage des images en fin de support vers une branche "
-"encore maintenue."
-msgstr ""
-
-#: templates/eol.html.twig
-msgid ""
-"Demandez à l’administrateur de GLPI de l’activer dans la configuration du "
-"plugin."
-msgstr ""
-
-#: templates/eol.html.twig
-msgid ""
-"« Support inconnu » : image sans correspondance avec un produit, ou branche "
-"absente de la source."
-msgstr ""
-
-#: templates/ticket_content.html.twig
-msgid "Une version plus récente de l’image de ce service est disponible."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Jeton du compte de service en lecture seule (voir README)."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Facultatif pour les projets publics."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Facultatif : seulement si WUD demande une authentification."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Une clé est enregistrée (chiffrée) : laisser vide pour la conserver."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Jeton d'accès d'un utilisateur Portainer dédié, aux droits de lecture seuls."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Appliqué seulement aux applications créées par l'import, jamais aux "
-"applications existantes."
-msgstr ""
-
-#: templates/connection_form.html.twig src/Connection.php:221
-msgid "Type"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Nom libre, par exemple « Cluster production »."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Nom libre, par exemple « Harbor production »."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Nom libre, par exemple « WUD production »."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Nom libre, par exemple « Portainer production »."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Une connexion inactive n'est pas importée par la tâche automatique."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de l'API du cluster"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Jeton du compte de service"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; "
-"vide : autorités du système."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Certificat d'autorité du cluster"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Namespaces ignorés"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces "
-"du système."
-msgstr ""
-
-#: templates/connection_form.html.twig src/Connection.php:245
-msgid "Environnement des applications créées"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de Harbor"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse du registre Harbor, sans /v2 ni /api à la fin."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Hôte dans les images"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Seulement s’il diffère de l’adresse : début des images "
-"(registry.exemple.test:5000/...)."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Compte robot"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Compte robot Harbor avec le seul droit de lecture (pull) ; vide pour les "
-"projets publics."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Mot de passe"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Effacer le mot de passe"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Oui : le mot de passe enregistré est supprimé (projets publics seulement)."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Autoriser HTTP"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Déconseillé : le mot de passe circule alors en clair."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de WUD"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de l'interface de What's Up Docker, sans /api à la fin."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Utilisateur"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Laisser vide si WUD n'a pas d'authentification."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Oui : le mot de passe enregistré est supprimé (WUD sans mot de passe)."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de Portainer"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Adresse de l'interface Portainer, sans /api à la fin."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Clé d'API"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Déconseillé : la clé d'API circule alors en clair."
-msgstr ""
-
-#: templates/connection_form.html.twig src/Connection.php:252
-msgid "Tickets de mise à jour"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Créer des tickets de mise à jour"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Désactivé par défaut. Un ticket par service, puis des suivis : jamais de "
-"doublon."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Seuil"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Écart minimal entre la version déployée et la dernière version."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Catégorie"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Groupe chargé du ticket"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Affecté à la création seulement ; jamais modifié ensuite."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Modèle de ticket"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Ses champs prédéfinis (type, urgence, demandeur...) servent de départ."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Tickets de fin de support"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Créer des tickets de fin de support"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Désactivé par défaut. La source des cycles de vie doit aussi être activée."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Délai avant la fin de support (jours)"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Ticket quand la branche déployée arrive en fin de support dans ce délai (0 : "
-"une fois atteinte)."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Catégorie, groupe et modèle : ceux des tickets de mise à jour ci-dessus."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Réglages communs"
-msgstr ""
-
-#: templates/connection_form.html.twig src/Connection.php:260
-msgid "Tickets de vulnérabilité"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Créer des tickets de vulnérabilité"
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid ""
-"Désactivé par défaut. Selon l’analyse Harbor de l’image qui tourne : un "
-"ticket par service, puis des suivis."
-msgstr ""
-
-#: templates/connection_form.html.twig
-msgid "Gravité minimale des vulnérabilités qui donne un ticket."
-msgstr ""
-
-#: templates/eol_ticket_followup.html.twig
-msgid "Branche maintenue"
-msgstr ""
-
-#: templates/eol_ticket_followup.html.twig
-msgid "le service utilise maintenant"
-msgstr ""
-
-#: templates/_severity_badge.html.twig
-msgid "C"
-msgstr ""
-
-#: templates/_severity_badge.html.twig
-msgid "H"
-msgstr ""
-
-#: templates/_severity_badge.html.twig
-msgid "M"
-msgstr ""
-
-#: templates/_severity_badge.html.twig
-msgid "B"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Sans TLS"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Aucun flux à documenter"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Flux documenté"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Aucun flux documenté"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid ""
-"Ouvre le formulaire d’un nouveau flux dans GRC Manager : relisez puis "
-"enregistrez."
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Proposer le flux"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Publié sur Internet (entrant)"
-msgstr ""
-
-#: templates/_exposure_rows.html.twig
-msgid "Flux interne"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Versions depuis What’s Up Docker"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid ""
-"La lecture de WUD ne modifie rien dans WUD (aucun déclencheur) et tourne "
-"toutes les heures."
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Le bouton « Lire WUD maintenant » la lance tout de suite."
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid ""
-"Les conteneurs vus par WUD sont rattachés aux services importés de Portainer."
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid ""
-"Lancez d’abord l’import Portainer, sinon ils seront tous listés « sans "
-"service »."
-msgstr ""
-
-#: templates/wud_actions.html.twig templates/harbor_actions.html.twig
-msgid "Dernière lecture"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Conteneurs suivis"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Services rattachés"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Conteneurs sans service"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Lire WUD maintenant"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "WUD sur un réseau privé (GLPI 12)"
-msgstr ""
-
-#: templates/wud_actions.html.twig
-msgid "Pour WUD seulement, ajouter dans config/local_define.php :"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid ""
-"Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités "
-"critiques et hautes."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Faites reconstruire ou remplacer les images non maîtrisées."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Connexions et registres maîtrisés"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid ""
-"Pour chaque image déployée : l’artefact Harbor qui lui correspond et le "
-"résumé de son analyse de vulnérabilités."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Données lues dans Harbor toutes les heures, sans rien y modifier."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Aucune connexion Harbor pour le moment."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid ""
-"Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la "
-"configuration du plugin."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Ajouter une connexion Harbor"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Images déployées"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Images qui ne viennent d’aucun registre maîtrisé."
-msgstr ""
-
-#: templates/harbor_images.html.twig src/HarborArtifact.php:234
-msgid "Hors registre maîtrisé"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "aucun (provenance des images non évaluée)"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Gravité"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Toutes"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Critique ou haute"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Projet Harbor"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Artefacts listés"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Seulement ceux déployés"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Seulement hors registre maîtrisé"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Aucune image déployée ne correspond à ces filtres."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Provenance"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Analysée le"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Absente de Harbor"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Artefacts Harbor"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Aucun artefact ne correspond à ces filtres."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Voir tous les artefacts"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Dépôt"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Taille"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Déployé par"
-msgstr ""
-
-#: templates/_exposure_grc.html.twig
-msgid ""
-"GRC Manager est installé : chaque exposition est comparée aux flux actifs de "
-"sa matrice des flux."
-msgstr ""
-
-#: templates/_exposure_grc.html.twig
-msgid ""
-"« Proposer le flux » ouvre un nouveau flux dans GRC : rien n’est enregistré "
-"sans vous."
-msgstr ""
-
-#: templates/_exposure_grc.html.twig
-msgid "Ouvrir la matrice des flux"
-msgstr ""
-
-#: templates/_exposure_grc.html.twig
-msgid ""
-"Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un "
-"flux est proposé."
-msgstr ""
-
-#: templates/vuln_ticket_followup.html.twig
-msgid "Plus de vulnérabilité au seuil"
-msgstr ""
-
-#: templates/vuln_ticket_followup.html.twig
-msgid "Image redéployée ou reconstruite"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Aucune version connue pour ce service (ni WUD, ni registre)."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid ""
-"Les registres sont vérifiés toutes les heures pour les services sans WUD."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Aucune version connue pour les services de cette application."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Ticket de mise à jour"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Ticket de fin de support"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Version de l’image"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid ""
-"Conteneurs dans des versions différentes (mise à jour en cours ou bloquée) :"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Ce tag ne désigne pas une version précise."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Une nouvelle empreinte est disponible pour ce tag."
-msgstr ""
-
-#: templates/version_tab.html.twig src/ImageVersion.php:275
-msgid "Empreinte déployée"
-msgstr ""
-
-#: templates/version_tab.html.twig src/ImageVersion.php:276
-msgid "Dernière empreinte"
-msgstr ""
-
-#: templates/version_tab.html.twig src/ImageVersion.php:274
-msgid "Conteneurs WUD"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "dernière version de la branche"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Ajouter ou corriger la correspondance"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Non vérifiée : source des cycles de vie désactivée."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Pourquoi non vérifié"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Versions des images de cette application"
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid ""
-"Versions lues dans What’s Up Docker ou dans le registre de l’image, sans "
-"rien y modifier."
-msgstr ""
-
-#: templates/version_tab.html.twig
-msgid "Voir toutes les versions des images"
-msgstr ""
-
-#: templates/exposure_tab.html.twig src/Exposure.php:60
-msgid "Exposition"
-msgstr ""
-
-#: templates/exposure_tab.html.twig
-msgid "Tous les services exposés"
-msgstr ""
-
-#: templates/exposure_tab.html.twig
-msgid ""
-"Ports publiés par Docker, routes Traefik, ingress et services Kubernetes "
-"déclarés pour ce service."
-msgstr ""
-
-#: templates/exposure_tab.html.twig
-msgid "La portée est déduite du nom d’hôte ou de l’adresse : vérifiez-la."
-msgstr ""
-
-#: templates/exposure_tab.html.twig
-msgid "Aucun port publié ni aucune route d’entrée."
-msgstr ""
-
-#: templates/exposure_tab.html.twig
-msgid ""
-"Ce service n’est joignable que par les autres conteneurs de ses réseaux."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Versions depuis le registre Harbor"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid ""
-"Pour les services qu’aucune connexion WUD ne suit, le plugin lit la liste "
-"des tags de leur image."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Seule cette liste est lue : rien n’est modifié dans Harbor."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid ""
-"La vérification tourne toutes les heures ; le bouton la lance tout de suite."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Images concernées : celles qui commencent par"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "dans l’entité de cette connexion et ses sous-entités."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Dernière vérification"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Services de ce registre"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Harbor sur un réseau privé (GLPI 12)"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Pour les registres seulement, ajouter dans config/local_define.php :"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Projets, artefacts et analyses de vulnérabilités"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid ""
-"Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, "
-"avec le résumé de leur analyse."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid ""
-"Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit "
-"d’écriture ni de lancement d’analyse."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "La lecture tourne toutes les heures ; le bouton la lance tout de suite."
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Projets"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Dépôts"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Artefacts"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Analysés"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Avec vulnérabilités critiques"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Retirés"
-msgstr ""
-
-#: templates/harbor_actions.html.twig
-msgid "Lire Harbor maintenant"
-msgstr ""
-
-#: templates/config_connections.html.twig
-msgid ""
-"Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up "
-"Docker et Harbor."
-msgstr ""
-
-#: templates/config_connections.html.twig
-msgid "Le plugin les lit seulement, sans rien y modifier."
-msgstr ""
-
-#: templates/config_connections.html.twig
-msgid ""
-"Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis "
-"lancez un import."
-msgstr ""
-
-#: templates/config_connections.html.twig
-msgid "Les imports tournent ensuite tout seuls."
-msgstr ""
-
-#: templates/config_connections.html.twig
-msgid "Ajouter une connexion"
-msgstr ""
-
-#: templates/_exposure_head.html.twig
-msgid "Point d’entrée"
-msgstr ""
-
-#: templates/_exposure_head.html.twig
-msgid "Chiffrement"
-msgstr ""
-
-#: templates/_exposure_head.html.twig
-msgid "Portée"
-msgstr ""
-
-#: templates/_exposure_head.html.twig
-msgid "Matrice des flux (GRC Manager)"
-msgstr ""
-
-#: templates/_state_badges.html.twig
-msgid "En cours"
-msgstr ""
-
-#: templates/_state_badges.html.twig
-msgid "Arrêté"
-msgstr ""
 
 #: front/config.php:39
 #, php-format
@@ -2015,6 +35,14 @@ msgstr ""
 msgid "Correspondances enregistrées."
 msgstr ""
 
+#: front/hardening.form.php:37
+msgid "Exception enregistrée."
+msgstr ""
+
+#: front/hardening.form.php:48
+msgid "Exception supprimée."
+msgstr ""
+
 #: front/service.php:31
 msgid ""
 "Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs "
@@ -2031,20 +59,35 @@ msgstr ""
 msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
 msgstr ""
 
-#: src/Api/Evidence.php:436
+#: front/version.php:120 src/LifecycleProduct.php:50 src/Menu.php:117
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid "Fin de support des images"
+msgstr ""
+
+#: src/Api/Evidence.php:502
 msgid "Autre image"
 msgstr ""
 
-#: src/Api/Evidence.php:437
+#: src/Api/Evidence.php:503
 msgid "Nouveau tag"
 msgstr ""
 
-#: src/Api/Evidence.php:438
+#: src/Api/Evidence.php:504
 msgid "Image reconstruite (même tag)"
+msgstr ""
+
+#: src/ConfigPage.php:70 templates/harbor_images.html.twig
+#: templates/managed_registries.html.twig
+msgid "Registres maîtrisés"
 msgstr ""
 
 #: src/Connection.php:102
 msgid "Connexion Docker"
+msgstr ""
+
+#: src/Connection.php:102 templates/version_tab.html.twig
+#: templates/versions.html.twig
+msgid "Connexions Docker"
 msgstr ""
 
 #: src/Connection.php:131
@@ -2065,6 +108,31 @@ msgstr ""
 
 #: src/Connection.php:146
 msgid "Vulnérabilités critiques ou hautes"
+msgstr ""
+
+#: src/Connection.php:214 templates/computer_nodes.html.twig
+msgid "Adresse"
+msgstr ""
+
+#: src/Connection.php:221 templates/connection_form.html.twig
+msgid "Type"
+msgstr ""
+
+#: src/Connection.php:237 templates/connection_actions.html.twig
+#: templates/kubernetes_actions.html.twig
+msgid "Dernier import"
+msgstr ""
+
+#: src/Connection.php:245 templates/connection_form.html.twig
+msgid "Environnement des applications créées"
+msgstr ""
+
+#: src/Connection.php:252 templates/connection_form.html.twig
+msgid "Tickets de mise à jour"
+msgstr ""
+
+#: src/Connection.php:260 templates/connection_form.html.twig
+msgid "Tickets de vulnérabilité"
 msgstr ""
 
 #: src/Connection.php:384
@@ -2446,6 +514,10 @@ msgstr ""
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
 msgstr ""
 
+#: src/Exposure.php:60 templates/exposure_tab.html.twig
+msgid "Exposition"
+msgstr ""
+
 #: src/Exposure.php:121
 msgid "Internet (probable)"
 msgstr ""
@@ -2455,7 +527,7 @@ msgid ""
 "Nom d’hôte public ou adresse publique : sans doute joignable depuis Internet."
 msgstr ""
 
-#: src/Exposure.php:130
+#: src/Exposure.php:130 src/Hardening.php:179
 msgid "Réseau de l’hôte"
 msgstr ""
 
@@ -2495,14 +567,14 @@ msgid "Internet"
 msgstr ""
 
 #: src/HarborArtifact.php:57
-msgid "Images Harbor"
-msgstr ""
-
-#: src/HarborArtifact.php:57
 msgid "Image Harbor"
 msgstr ""
 
-#: src/HarborArtifact.php:107
+#: src/HarborArtifact.php:57
+msgid "Images Harbor"
+msgstr ""
+
+#: src/HarborArtifact.php:107 src/Hardening.php:126
 msgid "Critique"
 msgstr ""
 
@@ -2510,7 +582,7 @@ msgstr ""
 msgid "Au moins une vulnérabilité critique."
 msgstr ""
 
-#: src/HarborArtifact.php:113
+#: src/HarborArtifact.php:113 src/Hardening.php:132
 msgid "Haute"
 msgstr ""
 
@@ -2518,7 +590,7 @@ msgstr ""
 msgid "Au moins une vulnérabilité haute, aucune critique."
 msgstr ""
 
-#: src/HarborArtifact.php:119
+#: src/HarborArtifact.php:119 src/Hardening.php:138
 msgid "Moyenne"
 msgstr ""
 
@@ -2526,7 +598,7 @@ msgstr ""
 msgid "Vulnérabilités moyennes au plus."
 msgstr ""
 
-#: src/HarborArtifact.php:125
+#: src/HarborArtifact.php:125 src/Hardening.php:144
 msgid "Basse"
 msgstr ""
 
@@ -2601,6 +673,10 @@ msgstr ""
 msgid "L’image vient de l’un des registres maîtrisés."
 msgstr ""
 
+#: src/HarborArtifact.php:234 templates/harbor_images.html.twig
+msgid "Hors registre maîtrisé"
+msgstr ""
+
 #: src/HarborArtifact.php:238
 msgid ""
 "L’image ne vient d’aucun registre maîtrisé : ni analysée ni contrôlée par "
@@ -2616,10 +692,6 @@ msgid "Aucun registre maîtrisé déclaré (ni connexion Harbor, ni liste)."
 msgstr ""
 
 #: src/HarborArtifact.php:502
-msgid "o"
-msgstr ""
-
-#: src/HarborArtifact.php:502
 msgid "Ko"
 msgstr ""
 
@@ -2627,16 +699,238 @@ msgstr ""
 msgid "Mo"
 msgstr ""
 
+#: src/HarborArtifact.php:502
+msgid "o"
+msgstr ""
+
 #: src/HarborArtifact.php:503
 msgid "Go"
 msgstr ""
 
-#: src/HarborArtifact.php:602 src/ImageVersion.php:605 src/Service.php:338
+#: src/HarborArtifact.php:602 src/ImageVersion.php:605 src/Service.php:347
 msgid "Namespace"
+msgstr ""
+
+#: src/HarborArtifact.php:603 src/ImageVersion.php:237 src/ImageVersion.php:606
+#: src/Service.php:107 src/Service.php:347 templates/_service_rows.html.twig
+#: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig
+#: templates/harbor_images.html.twig templates/ticket_content.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Stack"
+msgstr ""
+
+#: src/Hardening.php:43 templates/hardening_tab.html.twig
+msgid "Configuration à risque"
+msgstr ""
+
+#: src/Hardening.php:129
+msgid "Donne la main sur l’hôte : à corriger en priorité."
+msgstr ""
+
+#: src/Hardening.php:135
+msgid "Affaiblit fortement l’isolement du conteneur."
+msgstr ""
+
+#: src/Hardening.php:141
+msgid "Aggrave les conséquences d’une compromission."
+msgstr ""
+
+#: src/Hardening.php:147
+msgid "Bonne pratique de durcissement non appliquée."
+msgstr ""
+
+#: src/Hardening.php:161
+msgid "Mode privilégié"
+msgstr ""
+
+#: src/Hardening.php:163
+msgid "Le conteneur a tous les droits sur l’hôte et ses périphériques."
+msgstr ""
+
+#: src/Hardening.php:164
+msgid "Retirer « privileged » et n’ajouter que les capacités nécessaires."
+msgstr ""
+
+#: src/Hardening.php:167
+msgid "Socket du moteur de conteneurs monté"
+msgstr ""
+
+#: src/Hardening.php:170
+msgid "Qui accède à ce socket pilote le moteur, donc l’hôte entier."
+msgstr ""
+
+#: src/Hardening.php:174
+msgid ""
+"Retirer le montage, ou passer par un proxy du socket en lecture seule limité "
+"aux appels utiles."
+msgstr ""
+
+#: src/Hardening.php:182
+msgid ""
+"Le conteneur partage les interfaces réseau de l’hôte : aucun isolement "
+"réseau."
+msgstr ""
+
+#: src/Hardening.php:185
+msgid "Utiliser un réseau dédié et publier seulement les ports utiles."
+msgstr ""
+
+#: src/Hardening.php:188
+msgid "Processus de l’hôte visibles"
+msgstr ""
+
+#: src/Hardening.php:190
+msgid "Le conteneur voit et peut viser les processus de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:191
+msgid "Retirer le partage de l’espace des processus de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:194
+msgid "Capacités dangereuses ajoutées"
+msgstr ""
+
+#: src/Hardening.php:197
+msgid "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
+msgstr ""
+
+#: src/Hardening.php:200
+msgid "Retirer ces capacités ou les remplacer par une permission plus étroite."
+msgstr ""
+
+#: src/Hardening.php:203
+msgid "Répertoire sensible de l’hôte monté"
+msgstr ""
+
+#: src/Hardening.php:206
+msgid "Le conteneur lit ou modifie des fichiers système de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:209
+msgid ""
+"Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
+msgstr ""
+
+#: src/Hardening.php:212
+msgid "Mémoire partagée de l’hôte"
+msgstr ""
+
+#: src/Hardening.php:214
+msgid "Le conteneur partage les communications entre processus de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:215
+msgid "Retirer le partage de l’espace IPC de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:218
+msgid "Capacités ajoutées"
+msgstr ""
+
+#: src/Hardening.php:220
+msgid "Droits du noyau en plus de ceux accordés par défaut."
+msgstr ""
+
+#: src/Hardening.php:221
+msgid "Vérifier que chaque capacité est nécessaire."
+msgstr ""
+
+#: src/Hardening.php:224
+msgid "Exécution en root"
+msgstr ""
+
+#: src/Hardening.php:227
+msgid ""
+"Aucun utilisateur non privilégié n’est défini : le processus tourne sans "
+"doute en root."
+msgstr ""
+
+#: src/Hardening.php:230
+msgid "Définir un utilisateur non privilégié (user, runAsNonRoot)."
+msgstr ""
+
+#: src/Hardening.php:233
+msgid "Aucune limite de mémoire"
+msgstr ""
+
+#: src/Hardening.php:235
+msgid "Le conteneur peut épuiser la mémoire de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:236
+msgid "Fixer une limite de mémoire adaptée."
+msgstr ""
+
+#: src/Hardening.php:239
+msgid "Aucune limite de processeur"
+msgstr ""
+
+#: src/Hardening.php:241
+msgid "Le conteneur peut accaparer le processeur de l’hôte."
+msgstr ""
+
+#: src/Hardening.php:242
+msgid "Fixer une limite de processeur adaptée."
+msgstr ""
+
+#: src/Hardening.php:245
+msgid "Système de fichiers en écriture"
+msgstr ""
+
+#: src/Hardening.php:248
+msgid "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
+msgstr ""
+
+#: src/Hardening.php:252
+msgid ""
+"Passer le système de fichiers en lecture seule, avec des volumes pour les "
+"données."
+msgstr ""
+
+#: src/HardeningException.php:48
+msgid "Exceptions de configuration"
+msgstr ""
+
+#: src/HardeningException.php:49
+msgid "Exception de configuration"
+msgstr ""
+
+#: src/HardeningException.php:88
+msgid "Enregistrer une exception"
+msgstr ""
+
+#: src/HardeningException.php:89
+msgid "Supprimer une exception"
+msgstr ""
+
+#: src/HardeningException.php:116
+msgid "Vous n’avez pas le droit d’enregistrer cette exception."
+msgstr ""
+
+#: src/HardeningException.php:119
+msgid "Écart inconnu."
+msgstr ""
+
+#: src/HardeningException.php:123
+msgid "La justification est obligatoire."
+msgstr ""
+
+#: src/HardeningException.php:127
+#, php-format
+msgid "La date de fin doit être comprise entre aujourd’hui et dans %d jours."
+msgstr ""
+
+#: src/HardeningException.php:147
+msgid "L’exception n’a pas pu être enregistrée."
 msgstr ""
 
 #: src/ImageVersion.php:69
 msgid "Version d'image"
+msgstr ""
+
+#: src/ImageVersion.php:69 templates/versions.html.twig
+msgid "Versions des images"
 msgstr ""
 
 #: src/ImageVersion.php:126
@@ -2740,6 +1034,67 @@ msgstr ""
 msgid "Registre de l'image"
 msgstr ""
 
+#: src/ImageVersion.php:267 templates/_version_rows.html.twig
+#: templates/ticket_content.html.twig
+msgid "Version déployée"
+msgstr ""
+
+#: src/ImageVersion.php:268 templates/_version_rows.html.twig
+#: templates/ticket_content.html.twig
+msgid "Dernière version"
+msgstr ""
+
+#: src/ImageVersion.php:269 templates/_version_rows.html.twig
+#: templates/ticket_content.html.twig templates/versions.html.twig
+msgid "Écart"
+msgstr ""
+
+#: src/ImageVersion.php:270 templates/_exposure_head.html.twig
+#: templates/lifecycle.html.twig templates/ticket_content.html.twig
+#: templates/version_tab.html.twig
+msgid "Source"
+msgstr ""
+
+#: src/ImageVersion.php:271 templates/_version_rows.html.twig
+#: templates/version_tab.html.twig
+msgid "Vérifié le"
+msgstr ""
+
+#: src/ImageVersion.php:272 src/Service.php:102
+#: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig
+#: templates/harbor_images.html.twig templates/lifecycle.html.twig
+#: templates/service_form.html.twig templates/ticket_content.html.twig
+#: templates/version_tab.html.twig templates/vuln_ticket_content.html.twig
+msgid "Image"
+msgstr ""
+
+#: src/ImageVersion.php:273 templates/_version_rows.html.twig
+#: templates/version_tab.html.twig templates/wud_actions.html.twig
+msgid "Réplicas désynchronisés"
+msgstr ""
+
+#: src/ImageVersion.php:274 templates/version_tab.html.twig
+msgid "Conteneurs WUD"
+msgstr ""
+
+#: src/ImageVersion.php:275 templates/version_tab.html.twig
+msgid "Empreinte déployée"
+msgstr ""
+
+#: src/ImageVersion.php:276 templates/version_tab.html.twig
+msgid "Dernière empreinte"
+msgstr ""
+
+#: src/ImageVersion.php:277 templates/_harbor_service.html.twig
+#: templates/version_tab.html.twig
+msgid "Rattachement"
+msgstr ""
+
+#: src/ImageVersion.php:278 templates/_version_rows.html.twig
+#: templates/version_tab.html.twig
+msgid "Registre"
+msgstr ""
+
 #: src/ImageVersion.php:279
 msgid "Mise à jour disponible"
 msgstr ""
@@ -2748,7 +1103,7 @@ msgstr ""
 msgid "Versions"
 msgstr ""
 
-#: src/Importer.php:380
+#: src/Importer.php:383
 #, php-format
 msgid ""
 "Créée par le plugin Inventaire Docker pour la stack Portainer « %1$s » "
@@ -2777,6 +1132,13 @@ msgstr ""
 msgid ""
 "Produit invalide : nom de la source en minuscules (exemples : postgresql, "
 "nodejs)."
+msgstr ""
+
+#: src/LifecycleProduct.php:200 templates/_version_rows.html.twig
+#: templates/eol_ticket_content.html.twig
+#: templates/eol_ticket_followup.html.twig templates/version_tab.html.twig
+#: templates/versions.html.twig
+msgid "Fin de support"
 msgstr ""
 
 #: src/LifecycleProduct.php:203
@@ -2909,16 +1271,27 @@ msgid ""
 "fin de support"
 msgstr ""
 
-#: src/Menu.php:42 src/Profile.php:35
+#: src/Menu.php:43 src/Profile.php:35
 msgid "Inventaire Docker"
 msgstr ""
 
-#: src/Node.php:39
-msgid "Nœuds Swarm"
+#: src/Menu.php:102 src/Service.php:264 templates/connection_actions.html.twig
+#: templates/eol.html.twig templates/kubernetes_actions.html.twig
+#: templates/versions.html.twig
+msgid "Services"
+msgstr ""
+
+#: src/Menu.php:112 templates/harbor_actions.html.twig
+#: templates/harbor_images.html.twig templates/managed_registries.html.twig
+msgid "Images Harbor et vulnérabilités"
 msgstr ""
 
 #: src/Node.php:39
 msgid "Nœud Swarm"
+msgstr ""
+
+#: src/Node.php:39
+msgid "Nœuds Swarm"
 msgstr ""
 
 #: src/Node.php:52
@@ -2933,77 +1306,125 @@ msgstr ""
 msgid "Service de conteneur"
 msgstr ""
 
-#: src/Service.php:102
+#: src/Service.php:103
 msgid "Tag"
 msgstr ""
 
-#: src/Service.php:104
-msgid "Réplicas voulus"
+#: src/Service.php:104 templates/_service_rows.html.twig
+#: templates/service_form.html.twig
+msgid "Empreinte (digest)"
 msgstr ""
 
 #: src/Service.php:105
+msgid "Réplicas voulus"
+msgstr ""
+
+#: src/Service.php:106
 msgid "Réplicas en cours"
 msgstr ""
 
-#: src/Service.php:113
+#: src/Service.php:108 templates/_status_badge.html.twig
+#: templates/_version_rows.html.twig templates/computer_nodes.html.twig
+msgid "Retiré"
+msgstr ""
+
+#: src/Service.php:109 templates/_service_rows.html.twig
+#: templates/computer_nodes.html.twig templates/service_form.html.twig
+msgid "Vu la dernière fois"
+msgstr ""
+
+#: src/Service.php:110 templates/service_form.html.twig
+msgid "Environnement Portainer"
+msgstr ""
+
+#: src/Service.php:111 templates/_service_rows.html.twig
+#: templates/service_form.html.twig
+msgid "Ports publiés"
+msgstr ""
+
+#: src/Service.php:112 templates/service_form.html.twig
+msgid "Réseaux"
+msgstr ""
+
+#: src/Service.php:113 templates/service_form.html.twig
+msgid "Secrets (noms)"
+msgstr ""
+
+#: src/Service.php:114
 msgid "Retiré le"
 msgstr ""
 
-#: src/Service.php:168
-msgid "Service Swarm"
+#: src/Service.php:115 templates/service_form.html.twig
+msgid "Nature"
+msgstr ""
+
+#: src/Service.php:116 templates/service_form.html.twig
+msgid "État des conteneurs"
+msgstr ""
+
+#: src/Service.php:117 templates/service_form.html.twig
+msgid "Politique de redémarrage"
+msgstr ""
+
+#: src/Service.php:118 templates/service_form.html.twig
+msgid "Volumes (noms)"
 msgstr ""
 
 #: src/Service.php:169
-msgid "Service Compose"
+msgid "Service Swarm"
 msgstr ""
 
 #: src/Service.php:170
+msgid "Service Compose"
+msgstr ""
+
+#: src/Service.php:171
 msgid "Conteneur autonome"
 msgstr ""
 
-#: src/Service.php:186
+#: src/Service.php:187
 msgid "Disponible"
 msgstr ""
 
-#: src/Service.php:187
+#: src/Service.php:188
 msgid "Mise à jour en cours"
 msgstr ""
 
-#: src/Service.php:188
+#: src/Service.php:189
 msgid "Dégradé"
 msgstr ""
 
-#: src/Service.php:189
+#: src/Service.php:190
 msgid "Indisponible"
 msgstr ""
 
-#: src/Service.php:190
+#: src/Service.php:191
 msgid "Arrêté (0 réplica)"
 msgstr ""
 
-#: src/Service.php:191
+#: src/Service.php:192
 msgid "Suspendu"
 msgstr ""
 
-#: src/Service.php:192
+#: src/Service.php:193
 msgid "Tâche en cours"
 msgstr ""
 
-#: src/Service.php:193
+#: src/Service.php:194
 msgid "Planifié"
 msgstr ""
 
-#: src/Service.php:307
+#: src/Service.php:316
 #, php-format
 msgid "%d tâche(s) active(s)"
 msgstr ""
 
-#: src/Service.php:308
+#: src/Service.php:317
 #, php-format
 msgid "%d (global)"
 msgstr ""
 
-#: src/Service.php:329
+#: src/Service.php:338
 #, php-format
 msgid "volume anonyme %s"
 msgstr ""
@@ -3040,4 +1461,1948 @@ msgstr ""
 msgid ""
 "Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d "
 "critique(s), %5$d haute(s)"
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid ""
+"Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un "
+"flux est proposé."
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid ""
+"GRC Manager est installé : chaque exposition est comparée aux flux actifs de "
+"sa matrice des flux."
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid "Ouvrir la matrice des flux"
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid ""
+"« Proposer le flux » ouvre un nouveau flux dans GRC : rien n’est enregistré "
+"sans vous."
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Chiffrement"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Matrice des flux (GRC Manager)"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Point d’entrée"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Portée"
+msgstr ""
+
+#: templates/_exposure_head.html.twig templates/_hardening_head.html.twig
+#: templates/_service_rows.html.twig templates/_version_rows.html.twig
+#: templates/eol_ticket_content.html.twig templates/harbor_images.html.twig
+#: templates/ticket_content.html.twig templates/vuln_ticket_content.html.twig
+msgid "Service"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Aucun flux documenté"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Aucun flux à documenter"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Flux documenté"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Flux interne"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid ""
+"Ouvre le formulaire d’un nouveau flux dans GRC Manager : relisez puis "
+"enregistrez."
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Proposer le flux"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Publié sur Internet (entrant)"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Sans TLS"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Analyse"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Artefact Harbor"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Aucune connexion Harbor : pas d’analyse de vulnérabilités connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Ce service n’a pas d’image connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Elle n’est ni analysée ni contrôlée par Harbor : la reconstruire depuis le "
+"registre maîtrisé."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Empreinte"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Image hors des registres Harbor déclarés : pas d’analyse de vulnérabilités "
+"connue."
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Image hors registre maîtrisé"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Image introuvable dans Harbor"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "L’analyse ci-dessous est celle de l’image actuelle de ce tag."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Publié le"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid ""
+"Souvent une image multi-plateforme poussée depuis un hôte (Harbor n’en garde "
+"qu’une plateforme)."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "Tags"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Ticket de vulnérabilité"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Total"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Voir toutes les images Harbor et leurs vulnérabilités"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "Vulnérabilités de l’image (Harbor)"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "aucun résultat d’analyse pour cette image dans Harbor."
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "corrigibles"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "elle vient de"
+msgstr ""
+
+#: templates/_harbor_service.html.twig
+msgid "qui n’est pas dans la liste des registres maîtrisés"
+msgstr ""
+
+#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+msgid "sans tag"
+msgstr ""
+
+#: templates/_hardening_head.html.twig
+msgid "Correction conseillée"
+msgstr ""
+
+#: templates/_hardening_head.html.twig templates/harbor_images.html.twig
+msgid "Gravité"
+msgstr ""
+
+#: templates/_hardening_head.html.twig
+msgid "Suivi"
+msgstr ""
+
+#: templates/_hardening_head.html.twig
+msgid "Écart constaté"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "Accepter le risque"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig templates/lifecycle.html.twig
+#: templates/managed_registries.html.twig
+msgid "Enregistrer"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+#, php-format
+msgid "Exception expirée le %s"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+#, php-format
+msgid "Exception jusqu’au %s"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "Jusqu’au (à réexaminer ensuite)"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "Pourquoi ce risque est-il accepté ?"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "Renouveler l’exception"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "Supprimer l’exception"
+msgstr ""
+
+#: templates/_hardening_rows.html.twig
+msgid "À traiter"
+msgstr ""
+
+#: templates/_page_help.html.twig
+msgid "Ce qui est attendu :"
+msgstr ""
+
+#: templates/_page_help.html.twig
+msgid "À quoi sert cette page ?"
+msgstr ""
+
+#: templates/_service_rows.html.twig
+msgid "En cours sur ce nœud"
+msgstr ""
+
+#: templates/_service_rows.html.twig
+msgid "Image et tag"
+msgstr ""
+
+#: templates/_service_rows.html.twig
+msgid "Réplicas ou conteneurs"
+msgstr ""
+
+#: templates/_service_rows.html.twig templates/service_form.html.twig
+msgid "Statut"
+msgstr ""
+
+#: templates/_service_rows.html.twig
+msgid "Tag mobile : la version réelle est donnée par l’empreinte."
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "B"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "C"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "H"
+msgstr ""
+
+#: templates/_severity_badge.html.twig
+msgid "M"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+msgid "basses"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "critiques"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "hautes"
+msgstr ""
+
+#: templates/_severity_badge.html.twig templates/vuln_ticket_content.html.twig
+msgid "moyennes"
+msgstr ""
+
+#: templates/_state_badges.html.twig
+msgid "Arrêté"
+msgstr ""
+
+#: templates/_state_badges.html.twig
+msgid "En cours"
+msgstr ""
+
+#: templates/_status_badge.html.twig
+msgid "Actif"
+msgstr ""
+
+#: templates/_version_rows.html.twig
+msgid "Application et environnement"
+msgstr ""
+
+#: templates/_version_rows.html.twig
+msgid "Conteneur WUD"
+msgstr ""
+
+#: templates/_version_rows.html.twig templates/version_tab.html.twig
+msgid "Erreur WUD"
+msgstr ""
+
+#: templates/_version_rows.html.twig
+msgid "Nouvelle empreinte disponible"
+msgstr ""
+
+#: templates/_version_rows.html.twig templates/version_tab.html.twig
+msgid "Page du registre"
+msgstr ""
+
+#: templates/_version_rows.html.twig
+msgid "Pourquoi sans service"
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Aucun service importé pour cette application."
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Données importées de Kubernetes en lecture seule."
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Données importées de Portainer en lecture seule."
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Elle n'est peut-être liée à aucune stack Portainer."
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Services Docker de cette stack"
+msgstr ""
+
+#: templates/appliance_services.html.twig
+msgid "Un service disparu est marqué « Retiré », jamais supprimé."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Aucun conteneur en cours sur cet hôte."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Aucune tâche de service en cours sur ce nœud."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Cet ordinateur n'est rattaché à aucun nœud Swarm ni hôte Docker."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Hôte Docker autonome"
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Le rattachement se fait à l'import Portainer, par nom d'hôte."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Nœud Kubernetes"
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Nœud Kubernetes (control plane)"
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Pour Kubernetes : par nom du nœud, sinon par adresse IP."
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Version de Docker"
+msgstr ""
+
+#: templates/computer_nodes.html.twig
+msgid "Version du kubelet"
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Ajouter une connexion"
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid ""
+"Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis "
+"lancez un import."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid ""
+"Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up "
+"Docker et Harbor."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Le plugin les lit seulement, sans rien y modifier."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Les imports tournent ensuite tout seuls."
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Applications créées"
+msgstr ""
+
+#: templates/connection_actions.html.twig templates/harbor_actions.html.twig
+#: templates/kubernetes_actions.html.twig templates/wud_actions.html.twig
+msgid "GLPI 12 refuse par défaut les appels vers un réseau privé."
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Import depuis Portainer"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+#: templates/kubernetes_actions.html.twig
+msgid "Importer maintenant"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid ""
+"L'import lit Portainer sans rien y modifier et tourne toutes les heures."
+msgstr ""
+
+#: templates/connection_actions.html.twig
+#: templates/kubernetes_actions.html.twig
+msgid "Le bouton « Importer maintenant » le lance tout de suite."
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Nœuds Swarm et hôtes Docker"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Portainer sur un réseau privé (GLPI 12)"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Pour Portainer seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+#: templates/kubernetes_actions.html.twig
+msgid "Retirés à cet import"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "Stacks"
+msgstr ""
+
+#: templates/connection_actions.html.twig templates/harbor_actions.html.twig
+#: templates/kubernetes_actions.html.twig templates/wud_actions.html.twig
+msgid "Tester la connexion"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+#: templates/kubernetes_actions.html.twig
+msgid "rattachés à un ordinateur"
+msgstr ""
+
+#: templates/connection_actions.html.twig
+msgid "À vérifier dans Portainer"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de Harbor"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de Portainer"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de WUD"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de l'API du cluster"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de l'interface Portainer, sans /api à la fin."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse de l'interface de What's Up Docker, sans /api à la fin."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Adresse du registre Harbor, sans /v2 ni /api à la fin."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Affecté à la création seulement ; jamais modifié ensuite."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Appliqué seulement aux applications créées par l'import, jamais aux "
+"applications existantes."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Autoriser HTTP"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Catégorie"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Catégorie, groupe et modèle : ceux des tickets de mise à jour ci-dessus."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Certificat d'autorité du cluster"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Champ « server » du fichier kubeconfig ; HTTPS obligatoire."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Clé d'API"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Compte robot"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Compte robot Harbor avec le seul droit de lecture (pull) ; vide pour les "
+"projets publics."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Créer des tickets de fin de support"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Créer des tickets de mise à jour"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Créer des tickets de vulnérabilité"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Déconseillé : la clé d'API circule alors en clair."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Déconseillé : le mot de passe circule alors en clair."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Délai avant la fin de support (jours)"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Désactivé par défaut. La source des cycles de vie doit aussi être activée."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Désactivé par défaut. Selon l’analyse Harbor de l’image qui tourne : un "
+"ticket par service, puis des suivis."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Désactivé par défaut. Un ticket par service, puis des suivis : jamais de "
+"doublon."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Effacer le mot de passe"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Facultatif : contenu PEM (ca.crt) si le cluster a sa propre autorité ; "
+"vide : autorités du système."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Facultatif : seulement si WUD demande une authentification."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Facultatif pour les projets publics."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Gravité minimale des vulnérabilités qui donne un ticket."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Groupe chargé du ticket"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Hôte dans les images"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Jeton d'accès d'un utilisateur Portainer dédié, aux droits de lecture seuls."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Jeton du compte de service"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Jeton du compte de service en lecture seule (voir README)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Laisser vide si WUD n'a pas d'authentification."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Modèle de ticket"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Mot de passe"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Namespaces ignorés"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Nom libre, par exemple « Cluster production »."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Nom libre, par exemple « Harbor production »."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Nom libre, par exemple « Portainer production »."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Nom libre, par exemple « WUD production »."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Oui : le mot de passe enregistré est supprimé (WUD sans mot de passe)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Oui : le mot de passe enregistré est supprimé (projets publics seulement)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Réglages communs"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Ses champs prédéfinis (type, urgence, demandeur...) servent de départ."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Seuil"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Seulement s’il diffère de l’adresse : début des images "
+"(registry.exemple.test:5000/...)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Séparés par des virgules ; « * » accepté (cattle-*). Par défaut : namespaces "
+"du système."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Ticket quand la branche déployée arrive en fin de support dans ce délai (0 : "
+"une fois atteinte)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Tickets de fin de support"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Un jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Une clé est enregistrée (chiffrée) : laisser vide pour la conserver."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Une connexion inactive n'est pas importée par la tâche automatique."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Utilisateur"
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Écart minimal entre la version déployée et la dernière version."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Commencez par Portainer : WUD complète les services que Portainer a importés."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Kubernetes remplace Portainer pour les applications qui tournent sur un "
+"cluster."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid "Le plugin lit ces outils sans jamais rien y modifier."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un "
+"cluster."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid "Quelle source voulez-vous connecter ?"
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid "Registre privé : dernières versions de vos images, sans WUD."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos "
+"projets."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Stacks Swarm et Compose, services, conteneurs et hôtes : ce qui tourne, et "
+"où."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid "Version déployée et dernière version disponible de chaque image."
+msgstr ""
+
+#: templates/eol.html.twig templates/version_tab.html.twig
+#: templates/versions.html.twig
+msgid "Activer"
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid "Activée"
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid "Ajouter une correspondance"
+msgstr ""
+
+#: templates/eol.html.twig templates/exposure.html.twig
+#: templates/hardening.html.twig templates/versions.html.twig
+msgid "Aucun service ne correspond à ces filtres."
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid "Cycles de vie mis à jour le"
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid ""
+"Cycles de vie pas encore lus : prochaine mise à jour par la tâche "
+"automatique."
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"Demandez à l’administrateur de GLPI de l’activer dans la configuration du "
+"plugin."
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid ""
+"Dernière mise à jour incomplète : les données en cache restent utilisées."
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid "Désactivée"
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid "Fin de support des images : désactivée."
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid ""
+"Le plugin compare la branche déployée aux dates de fin de support publiées "
+"par une source ouverte."
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid "Le plugin ne met rien à jour lui-même."
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"Planifiez d’abord le passage des images en fin de support vers une branche "
+"encore maintenue."
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid "Réglages et correspondances"
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid ""
+"Savoir quelles images tournent sur une branche qui ne reçoit plus de "
+"correctifs."
+msgstr ""
+
+#: templates/eol.html.twig templates/exposure.html.twig
+#: templates/harbor_images.html.twig templates/hardening.html.twig
+#: templates/versions.html.twig
+msgid "Tous"
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid ""
+"Une fois activée, chaque image indique si sa branche est encore maintenue."
+msgstr ""
+
+#: templates/eol.html.twig templates/lifecycle.html.twig
+msgid ""
+"Une image peut être à jour dans sa branche alors que cette branche ne reçoit "
+"plus de correctifs."
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"« Support inconnu » : image sans correspondance avec un produit, ou branche "
+"absente de la source."
+msgstr ""
+
+#: templates/eol.html.twig templates/versions.html.twig
+msgid "À surveiller"
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid "Application"
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig templates/version_tab.html.twig
+msgid "Branche"
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig
+msgid ""
+"Elle ne recevra plus de correctifs de sécurité : prévoir le passage à une "
+"branche maintenue."
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig
+msgid ""
+"La branche de l’image déployée par ce service arrive en fin de support, ou "
+"l’a dépassée."
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig
+msgid "Ticket créé par Inventaire Docker, délai choisi (jours) :"
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig templates/ticket_content.html.twig
+#: templates/vuln_ticket_content.html.twig
+msgid ""
+"Un suivi sera ajouté si la situation change ; jamais de changement de "
+"statut, de priorité ni d’affectation."
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig
+#: templates/eol_ticket_followup.html.twig templates/ticket_content.html.twig
+#: templates/ticket_followup.html.twig templates/vuln_ticket_content.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "Voir le service dans GLPI"
+msgstr ""
+
+#: templates/eol_ticket_content.html.twig
+msgid "atteinte (date non publiée)"
+msgstr ""
+
+#: templates/eol_ticket_followup.html.twig
+msgid "Branche maintenue"
+msgstr ""
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "Nouvelle situation"
+msgstr ""
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid "Situation précédente"
+msgstr ""
+
+#: templates/eol_ticket_followup.html.twig templates/ticket_followup.html.twig
+#: templates/vuln_ticket_followup.html.twig
+msgid ""
+"Suivi ajouté par Inventaire Docker : le statut du ticket n’est pas modifié."
+msgstr ""
+
+#: templates/eol_ticket_followup.html.twig
+msgid "le service utilise maintenant"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Exposés sur Internet"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Le plugin ne modifie rien, ni dans les plateformes ni dans GRC Manager."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Les ports et les routes sont relevés à chaque import Portainer ou Kubernetes."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Sans flux documenté"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Services exposés"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Une route HTTP est comptée sur le port 443 avec TLS, 80 sinon : le port réel "
+"est celui du point d’entrée."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Voir ce qui est réellement joignable : ports publiés, routes Traefik, "
+"ingress et services Kubernetes."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Vérifiez que chaque service exposé sur Internet est voulu et documenté dans "
+"la matrice des flux."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "Aucun port publié ni aucune route d’entrée."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid ""
+"Ce service n’est joignable que par les autres conteneurs de ses réseaux."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "La portée est déduite du nom d’hôte ou de l’adresse : vérifiez-la."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid ""
+"Ports publiés par Docker, routes Traefik, ingress et services Kubernetes "
+"déclarés pour ce service."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "Tous les services exposés"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Analysés"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Artefacts"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Avec vulnérabilités critiques"
+msgstr ""
+
+#: templates/harbor_actions.html.twig templates/wud_actions.html.twig
+msgid "Dernière lecture"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Dernière vérification"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit "
+"d’écriture ni de lancement d’analyse."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Dépôts"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Harbor sur un réseau privé (GLPI 12)"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Images concernées : celles qui commencent par"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "La lecture tourne toutes les heures ; le bouton la lance tout de suite."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"La vérification tourne toutes les heures ; le bouton la lance tout de suite."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"Le plugin lit les projets, dépôts et artefacts visibles par le compte robot, "
+"avec le résumé de leur analyse."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Lire Harbor maintenant"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Pour les registres seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid ""
+"Pour les services qu’aucune connexion WUD ne suit, le plugin lit la liste "
+"des tags de leur image."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Projets"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Projets, artefacts et analyses de vulnérabilités"
+msgstr ""
+
+#: templates/harbor_actions.html.twig templates/kubernetes_actions.html.twig
+msgid "Requêtes"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Retirés"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Services de ce registre"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Seule cette liste est lue : rien n’est modifié dans Harbor."
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "Versions depuis le registre Harbor"
+msgstr ""
+
+#: templates/harbor_actions.html.twig templates/kubernetes_actions.html.twig
+#: templates/wud_actions.html.twig
+msgid "Voir les versions des images"
+msgstr ""
+
+#: templates/harbor_actions.html.twig templates/versions.html.twig
+msgid "Vérifier les registres maintenant"
+msgstr ""
+
+#: templates/harbor_actions.html.twig
+msgid "dans l’entité de cette connexion et ses sous-entités."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Absente de Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Ajouter une connexion Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Ajoutez une connexion de type Harbor (compte robot en lecture seule) dans la "
+"configuration du plugin."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Analysée le"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Artefacts Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Artefacts listés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucun artefact ne correspond à ces filtres."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucune connexion Harbor pour le moment."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Aucune image déployée ne correspond à ces filtres."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Connexions et registres maîtrisés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Critique ou haute"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Données lues dans Harbor toutes les heures, sans rien y modifier."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Déployé par"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Dépôt"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Faites reconstruire ou remplacer les images non maîtrisées."
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/versions.html.twig
+msgid "Filtrer"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités "
+"critiques et hautes."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Images déployées"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Images qui ne viennent d’aucun registre maîtrisé."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Pour chaque image déployée : l’artefact Harbor qui lui correspond et le "
+"résumé de son analyse de vulnérabilités."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Projet Harbor"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Provenance"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/versions.html.twig
+msgid "Réinitialiser"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Seulement ceux déployés"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Seulement hors registre maîtrisé"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Taille"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Toutes"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Voir tous les artefacts"
+msgstr ""
+
+#: templates/harbor_images.html.twig templates/vuln_ticket_content.html.twig
+msgid "Vulnérabilités"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "aucun (provenance des images non évaluée)"
+msgstr ""
+
+#: templates/hardening.html.twig
+#, php-format
+msgid "%1$d sur %2$d services analysés"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Avec une exception"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid ""
+"Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart "
+"voulu, enregistrez une exception justifiée et datée."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "En cours ou expirée"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid ""
+"La configuration des conteneurs est lue à chaque import Portainer ou "
+"Kubernetes."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Le plugin ne modifie rien sur les plateformes."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Lus au prochain import"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Pas encore analysés"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid ""
+"Repérer les conteneurs dont la configuration affaiblit la sécurité de "
+"l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de "
+"limites."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Sans écart critique ni haut"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Services sans écart ouvert"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid ""
+"Un filtre de gravité montre les services dont l’écart ouvert le plus grave a "
+"cette gravité."
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Écarts couverts par une exception en cours exclus"
+msgstr ""
+
+#: templates/hardening.html.twig
+msgid "Écarts par service"
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid "Aucun des réglages à risque contrôlés n’a été trouvé sur ce service."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid "Aucun écart relevé."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid ""
+"Corrigez sur la plateforme, ou acceptez le risque avec une justification et "
+"une date de fin."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid ""
+"La configuration est lue au prochain import Portainer ou Kubernetes de ce "
+"service."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid "Pas encore analysé."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid ""
+"Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, "
+"accès à l’hôte, capacités, limites, montages."
+msgstr ""
+
+#: templates/hardening_tab.html.twig
+msgid "Tous les services"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid ""
+"Appliquer le manifeste du README (kubectl apply -f), puis lire le jeton :"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid ""
+"Chaque namespace qui a des charges devient une application ; chaque "
+"conteneur, une fiche de service."
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Cluster sur un réseau privé (GLPI 12)"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Créer le compte de service en lecture seule"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Import depuis Kubernetes"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid ""
+"L'import lit le cluster sans rien y modifier et tourne toutes les heures."
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Namespaces avec des charges"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Namespaces visibles"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig templates/service_form.html.twig
+msgid "Nœuds"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "applications créées"
+msgstr ""
+
+#: templates/kubernetes_actions.html.twig
+msgid "À vérifier dans le cluster"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Activez la lecture des cycles de vie ci-dessus."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Activez la source, puis associez chaque image sans correspondance au produit "
+"qui lui convient."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Ajoutez une correspondance pour celles qui ont un cycle de vie publié."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Appel sortant, désactivé par défaut : une requête par produit et par jour au "
+"plus."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Aucune donnée pour le moment."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Chaque produit au plus une fois par jour."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Cliquez sur « Mettre à jour maintenant » ou attendez la tâche automatique "
+"(une fois par jour)."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Correspondance image → produit"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Cycles de vie"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Dernière mise à jour"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Données en cache du"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "En service"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Enregistrer les correspondances"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Fournie"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Image : nom sans tag (postgres, bitnami/redis, registry.exemple.test/outils/"
+"api)."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Images en service sans correspondance"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Le résultat apparaît dans « Versions des images »."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Leur fin de support reste « inconnue » : le plugin ne devine jamais le "
+"produit d’une image."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Lire les cycles de vie (fin de support)"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Mettre à jour maintenant"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Nouvelle correspondance"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Nouvelle image"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Pas encore lus"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Produit"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Produit : son nom dans la source, en minuscules (postgresql, nodejs, apache-"
+"http-server)."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Produit de la nouvelle image"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Produits non lus à la dernière mise à jour (les données déjà en cache "
+"restent utilisées) :"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Services ou conteneurs"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Seul le nom du produit est envoyé (postgresql, nodejs...), jamais vos "
+"services ni vos hôtes."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Signaler « bientôt en fin de support » (jours avant)"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Supprimer"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Voir les images concernées"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "dernier essai"
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "données du"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Elle est signalée dans l’onglet « Images Harbor et vulnérabilités » et sur "
+"la fiche du service."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Hôtes des registres maîtrisés, un par ligne"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Images déployées hors de ces registres : signalées."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Laisser vide pour utiliser les hôtes des connexions Harbor :"
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Tel qu’écrit au début des images (registry.exemple.test:5000/outils/wiki). "
+"docker.io : Docker Hub."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid ""
+"Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
+"contrôlée."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "aucune connexion Harbor"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Application (namespace)"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Application (stack)"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Aucun conteneur en cours pour ce service."
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Aucun pod en cours connu pour ce service."
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Aucune stack"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Aucune tâche en cours connue pour ce service."
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Cluster Kubernetes"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Conteneurs"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Conteneurs en cours"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Hôte Docker"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Nom d'hôte"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Non rattaché"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Ordinateur"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Planification"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Pods en cours"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Ports des conteneurs"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Réplicas"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Tag (version déployée)"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Tâches"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Tâches en cours"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "Volumes persistants (noms)"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "conteneurs en cours / conteneurs"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "depuis le"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "en cours / voulus"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "prêts / voulus"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "stack hors Portainer"
+msgstr ""
+
+#: templates/service_form.html.twig
+msgid "État"
+msgstr ""
+
+#: templates/ticket_content.html.twig templates/vuln_ticket_content.html.twig
+msgid "Ticket créé par Inventaire Docker, seuil choisi :"
+msgstr ""
+
+#: templates/ticket_content.html.twig
+msgid "Une version plus récente de l’image de ce service est disponible."
+msgstr ""
+
+#: templates/ticket_followup.html.twig
+msgid "le service est à jour en version"
+msgstr ""
+
+#: templates/ticket_followup.html.twig
+msgid "Écart résolu"
+msgstr ""
+
+#: templates/ticket_followup.html.twig
+msgid "Écart sous le seuil"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Ajouter ou corriger la correspondance"
+msgstr ""
+
+#: templates/version_tab.html.twig templates/versions.html.twig
+msgid ""
+"Ajoutez une connexion WUD, ou lancez la vérification des registres (toutes "
+"les heures)."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Aucune version connue pour ce service (ni WUD, ni registre)."
+msgstr ""
+
+#: templates/version_tab.html.twig templates/versions.html.twig
+msgid "Aucune version connue pour le moment."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Aucune version connue pour les services de cette application."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Ce tag ne désigne pas une version précise."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid ""
+"Conteneurs dans des versions différentes (mise à jour en cours ou bloquée) :"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid ""
+"Les registres sont vérifiés toutes les heures pour les services sans WUD."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Non vérifiée : source des cycles de vie désactivée."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Pourquoi non vérifié"
+msgstr ""
+
+#: templates/version_tab.html.twig templates/versions.html.twig
+msgid "Préférer un tag versionné (1.2.3) pour savoir ce qui tourne vraiment."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Ticket de fin de support"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Ticket de mise à jour"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Une nouvelle empreinte est disponible pour ce tag."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Version de l’image"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Versions des images de cette application"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid ""
+"Versions lues dans What’s Up Docker ou dans le registre de l’image, sans "
+"rien y modifier."
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "Voir toutes les versions des images"
+msgstr ""
+
+#: templates/version_tab.html.twig
+msgid "dernière version de la branche"
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Cliquez sur un compteur ou filtrez par écart ou par environnement, puis "
+"planifiez les mises à jour."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Conteneurs sans service importé"
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Conteneurs suivis par WUD qui ne correspondent à aucun service importé de "
+"Portainer."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Docker Hub au plus une fois par jour et par image."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Environnement"
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Ils ne sont pas ignorés : leur version est suivie ici."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Pour chaque service : version déployée, dernière version disponible et écart."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Recherche avancée et export"
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Repérer les images à mettre à jour : version déployée, dernière version, "
+"écart, fin de support."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "Sans environnement"
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Source : What’s Up Docker, sinon le registre de l’image (Docker Hub, "
+"Harbor), sans rien y modifier."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "« Non suivable » : tag mobile (latest...) ou sans numéro de version."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid "À mettre à jour"
+msgstr ""
+
+#: templates/vuln_ticket_content.html.twig
+msgid ""
+"L’analyse Harbor de l’image déployée par ce service signale des "
+"vulnérabilités au-delà du seuil choisi."
+msgstr ""
+
+#: templates/vuln_ticket_content.html.twig
+msgid ""
+"Prévoir une image corrigée (version plus récente ou image reconstruite), "
+"puis la redéployer."
+msgstr ""
+
+#: templates/vuln_ticket_followup.html.twig
+msgid "Image redéployée ou reconstruite"
+msgstr ""
+
+#: templates/vuln_ticket_followup.html.twig
+msgid "Plus de vulnérabilité au seuil"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Conteneurs sans service"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Conteneurs suivis"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid ""
+"La lecture de WUD ne modifie rien dans WUD (aucun déclencheur) et tourne "
+"toutes les heures."
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid ""
+"Lancez d’abord l’import Portainer, sinon ils seront tous listés « sans "
+"service »."
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Le bouton « Lire WUD maintenant » la lance tout de suite."
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid ""
+"Les conteneurs vus par WUD sont rattachés aux services importés de Portainer."
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Lire WUD maintenant"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Pour WUD seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Services rattachés"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "Versions depuis What’s Up Docker"
+msgstr ""
+
+#: templates/wud_actions.html.twig
+msgid "WUD sur un réseau privé (GLPI 12)"
 msgstr ""

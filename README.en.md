@@ -119,6 +119,9 @@ API, what the auditor can check).
 5. **Exposure** sub-page: published ports, Traefik routes and ingresses; "Exposed on the Internet"
    filter and, with GRC Manager, "No documented flow" (**Suggest the flow** button towards the flow
    matrix, never an automatic creation).
+6. **Risky configuration** sub-page: privileged containers, running as root, with the Docker socket,
+   the host network or no limits; justified and dated exception for an intended finding, never an
+   automatic fix.
 
 ## Links with the other plugins
 

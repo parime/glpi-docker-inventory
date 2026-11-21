@@ -96,6 +96,7 @@ mapping. Branch of a tag: the most precise one that starts the version (`1.24` f
 | Appliance (stack or namespace) | **Services**, **Versions** | services of the stack, their versions |
 | Computer (Swarm node, Docker host, Kubernetes node) | **Node services** | services running on the machine |
 | Service | **Versions** | versions, end of support, "Image vulnerabilities (Harbor)" card, links to tickets |
+| Service | **Risky configuration** | security findings (privileged, root, Docker socket, host network, limits…), severity, advised fix, current exceptions |
 
 ## Tickets
 

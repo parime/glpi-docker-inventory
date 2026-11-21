@@ -276,8 +276,12 @@ statut, de priorité ou d'affectation. Le détail, côté technicien, est dans l
 ## Droits des utilisateurs de GLPI
 
 - **Administration > Profils**, onglet **Inventaire Docker** : droit **Lire** sur les services de
-  conteneurs. Il donne accès à **Parc > Inventaire Docker** et à ses quatre sous-pages, aux onglets
+  conteneurs. Il donne accès à **Parc > Inventaire Docker** et à ses sous-pages, aux onglets
   des applications et des ordinateurs, et aux preuves lues par GRC Manager.
+- Même onglet, ligne **Exceptions de configuration** : **Enregistrer une exception** (accepter un
+  écart de configuration avec une raison et une date de fin) et **Supprimer une exception**.
+  Accordés à l'installation aux profils qui modifient la configuration de GLPI ; à donner au
+  responsable sécurité.
 - Les connexions, registres maîtrisés et réglages de fin de support demandent le droit
   **Configuration** de GLPI en modification.
 - Tout est filtré sur les entités actives de l'utilisateur.

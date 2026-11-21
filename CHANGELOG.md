@@ -5,6 +5,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Configuration à risque des conteneurs ([#71](https://github.com/parime/glpi-docker-inventory/issues/71)) :
+  à chaque import, le plugin lit les réglages de sécurité des conteneurs (détail des conteneurs d'un
+  hôte autonome, spécification des services Swarm, modèle de pod des charges Kubernetes) : mode
+  privilégié, socket d'un moteur de conteneurs monté, réseau, processus ou mémoire partagée de l'hôte,
+  capacités ajoutées (dangereuses à part), exécution en root, absence de limite de mémoire ou de
+  processeur, système de fichiers en écriture, répertoires sensibles de l'hôte montés. Chaque écart a
+  une gravité (critique, haute, moyenne, basse), une explication et une correction conseillée. Jamais
+  les variables d'environnement, les commandes ni le contenu des secrets ; aucune requête de plus.
+- Onglet **Configuration à risque** de chaque service et sous-page du même nom de **Parc > Inventaire
+  Docker** : carte de synthèse (part des services sans écart ouvert, sans écart critique ni haut),
+  filtres par gravité et « Avec une exception ».
+- Exceptions justifiées et datées (366 jours au plus, à renouveler) : **Accepter le risque** sur un
+  écart, avec la raison et la date de fin ; une exception expirée ne couvre plus l'écart. Nouveau
+  droit **Exceptions de configuration** (enregistrer, supprimer) dans l'onglet **Inventaire Docker**
+  des profils, accordé à l'installation aux profils qui modifient la configuration de GLPI. Le plugin
+  ne corrige jamais rien sur les plateformes.
+- API de lecture : `Evidence::hardening()` (preuve A.8.9 : taux de services sans écart ouvert,
+  répartition par gravité, écarts et exceptions ; clé ajoutée, version de l'API inchangée).
+
 ## [0.11.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

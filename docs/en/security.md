@@ -108,6 +108,32 @@ never writes into GRC.
 The reach is inferred from the host name or address: a public name is not necessarily reachable
 (firewall, internal DNS). Check it with the network team.
 
+## Risky configuration (A.8.9)
+
+**Assets > Docker Inventory**, **Risky configuration** sub-page (and tab of the same name on each
+service): security settings collected at each import, with no request beyond the inventory ones.
+
+| Severity | Findings |
+| --- | --- |
+| Critical | Privileged mode; container engine socket mounted (`docker.sock`, `containerd.sock`…) |
+| High | Host network or processes shared; dangerous capabilities (`SYS_ADMIN`, `NET_ADMIN`…); sensitive host directory mounted (`/etc`, `/`, `/var/lib/docker`…) |
+| Medium | Host shared memory (IPC); other added capabilities; running as root (no user set) |
+| Low | No memory limit; no CPU limit; writable file system |
+
+Swarm has neither privileged mode nor host process sharing: these findings only concern standalone
+hosts and Kubernetes. A container with no user set is counted as root: the image may set one, check
+it.
+
+For an intended finding (a monitoring agent that reads the socket, for instance), **Accept the risk**
+records an exception: the reason and an end date (366 days at most). After that date the finding
+counts again; **Renew the exception** extends it after review. **Configuration exceptions** right
+(record, delete) in **Administration > Profiles**, **Docker Inventory** tab. The plugin never
+changes anything on the platforms.
+
+The summary card gives the share of analysed services with no open finding and with no critical or
+high finding (findings covered by a current exception do not count). GRC Manager can read it through
+`Evidence::hardening()` as evidence for control A.8.9.
+
 ## What the auditor can check
 
 - **Read only**: the plugin only sends read requests to the sources, with dedicated accounts with
