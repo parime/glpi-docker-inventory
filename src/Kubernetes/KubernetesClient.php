@@ -27,7 +27,8 @@ use GlpiPlugin\Dockerinventory\Compat\Http;
  * - GET /version : version du cluster ;
  * - GET /api/v1/{namespaces,nodes,pods} ;
  * - GET /apis/apps/v1/{deployments,statefulsets,daemonsets,replicasets} ;
- * - GET /apis/batch/v1/cronjobs.
+ * - GET /apis/batch/v1/cronjobs ;
+ * - GET /api/v1/services et /apis/networking.k8s.io/v1/ingresses (exposition, #72).
  * Listes de tout le cluster (ClusterRole get/list/watch), paginées par l'API (limit, continue) : au
  * plus MAX_PAGES pages par liste, au-delà la liste est « incomplète » et rien n'en est retiré.
  *
@@ -54,6 +55,9 @@ final class KubernetesClient
         'statefulsets' => '/apis/apps/v1/statefulsets',
         'daemonsets'   => '/apis/apps/v1/daemonsets',
         'cronjobs'     => '/apis/batch/v1/cronjobs',
+        // Exposition (#72) : services (NodePort, LoadBalancer, sélecteurs) et ingress.
+        'services'     => '/api/v1/services',
+        'ingresses'    => '/apis/networking.k8s.io/v1/ingresses',
     ];
 
     /** @var callable(string, array<string, scalar>, array<string, string>): string */

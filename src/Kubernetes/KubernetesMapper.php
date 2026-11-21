@@ -38,7 +38,7 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  *     image: string, tag: string, digest: string, mode: string, replicas: int|null,
  *     running_replicas: int, ports: string, networks: string, secrets: string, volumes: string,
  *     state: string, restart_policy: string, container_uids: string, container_names: string,
- *     placement: array<string, int>}
+ *     placement: array<string, int>, routes?: string}
  * @phpstan-type PodIndex array<string, array{digests: array<string, array<string, int>>,
  *     placement: array<string, int>}>
  * @phpstan-type K8sNode array{node_uid: string, hostname: string, role: string, availability: string,

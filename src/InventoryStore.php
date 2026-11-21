@@ -295,6 +295,10 @@ final class InventoryStore
             'last_seen'        => $this->now,
             'date_mod'         => $this->now,
         ];
+        // Routes (#72) : seulement si la source les a lues ; sinon celles du dernier import restent.
+        if (array_key_exists('routes', $service)) {
+            $values['routes'] = (string) $service['routes'];
+        }
         $existing = $DB->request([
             'SELECT' => ['id', 'image', 'tag', 'digest'],
             'FROM'   => $table,

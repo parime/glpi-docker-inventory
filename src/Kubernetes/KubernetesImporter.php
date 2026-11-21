@@ -20,6 +20,7 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Kubernetes;
 
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\InventoryStore;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Service;
@@ -127,7 +128,10 @@ final class KubernetesImporter
 
         // Listes du cluster ; une liste illisible vaut null (rien n'en est déduit ni retiré).
         $lists = [];
-        $resources = ['nodes', 'pods', 'replicasets', 'cronjobs', 'deployments', 'statefulsets', 'daemonsets'];
+        $resources = [
+            'nodes', 'pods', 'replicasets', 'cronjobs', 'deployments', 'statefulsets', 'daemonsets', 'services',
+            'ingresses',
+        ];
         foreach ($resources as $resource) {
             $lists[$resource] = $this->read($client, $resource, $report);
         }
@@ -163,6 +167,23 @@ final class KubernetesImporter
             }
             foreach (KubernetesMapper::mapWorkloads($kind, $lists[$resource], $podIndex, $excluded) as $workload) {
                 $workloads[] = $workload;
+            }
+        }
+
+        // Exposition (#72) : routes recalculées seulement si services et ingress sont lus en entier ;
+        // sinon les routes du dernier import sont gardées.
+        $routesRead = $lists['services'] !== null && $lists['ingresses'] !== null
+            && !isset($this->incomplete['services']) && !isset($this->incomplete['ingresses']);
+        if ($routesRead) {
+            $objects = [];
+            foreach (KubernetesMapper::WORKLOAD_RESOURCES as $kind => $resource) {
+                $objects[$kind] = $lists[$resource] ?? [];
+            }
+            $routes = ExposureMapper::kubernetesRoutes($lists['services'], $lists['ingresses'], $objects);
+            foreach ($workloads as $i => $workload) {
+                $workloads[$i]['routes'] = ExposureMapper::encode(
+                    $routes[ExposureMapper::workloadKey($workload['service_uid'])] ?? []
+                );
             }
         }
 
