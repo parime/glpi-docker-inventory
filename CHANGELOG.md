@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-11-21
+
 ### Added
 
 - Exposition des services ([#72](https://github.com/parime/glpi-docker-inventory/issues/72)) : à chaque
