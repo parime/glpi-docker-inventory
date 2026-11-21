@@ -92,6 +92,22 @@ Each Portainer import records, for each service, a move to another image, to ano
 another digest under the same tag (rebuilt image). This log is read only and never purged
 automatically: it is evidence of change management (A.8.32).
 
+## Exposure and flow matrix
+
+**Assets > Docker Inventory**, **Exposure** sub-page (and **Exposure** tab of each service):
+published ports, Traefik routes, ingresses and exposed Kubernetes services, collected at each import,
+with their reach (Internet (likely), host network, internal network, host only). The "**Exposed on
+the Internet**" filter lists the published services.
+
+With GRC Manager, each exposure is compared with the active flows of the **flow matrix**: an exposure
+without a documented flow is flagged ("**No documented flow**" filter). The **Suggest the flow**
+button opens the form of a new flow in GRC ("published on the Internet" or "internal", the service as
+destination): the person reviews it, adds the justification and the owner, then saves. The plugin
+never writes into GRC.
+
+The reach is inferred from the host name or address: a public name is not necessarily reachable
+(firewall, internal DNS). Check it with the network team.
+
 ## What the auditor can check
 
 - **Read only**: the plugin only sends read requests to the sources, with dedicated accounts with

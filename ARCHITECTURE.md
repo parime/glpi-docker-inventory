@@ -33,6 +33,11 @@ dockerinventory/
 │   │   ├── GlpiVersion.php    GLPI 11 ou 12
 │   │   ├── Http.php           GET par le client HTTP de GLPI, sans redirection
 │   │   └── Base/              classes parentes : propriétés typées (GLPI 12) ou non (GLPI 11)
+│   ├── Exposure.php           exposition des services (#72) : onglet « Exposition » des services,
+│   │                          sous-page de l'entrée, flux proposés et documentés dans GRC Manager
+│   ├── Exposure/
+│   │   └── ExposureMapper.php routes Traefik (étiquettes), ingress et services Kubernetes, ports
+│   │                          publiés, portée, flux proposé (fonctions pures)
 │   ├── Menu.php               seule entrée de menu d'usage (Parc > Inventaire Docker) et onglets de
 │   │                          ses sous-pages (templates/_section_nav.html.twig)
 │   ├── ConfigPage.php         onglets et adresses de la page de configuration du plugin
@@ -77,7 +82,8 @@ dockerinventory/
 │   ├── Kubernetes/            source Kubernetes (#31)
 │   │   ├── KubernetesClient.php    lecture seule : GET /version, /api/v1/{namespaces,nodes,pods},
 │   │   │                           /apis/apps/v1/{deployments,statefulsets,daemonsets,replicasets},
-│   │   │                           /apis/batch/v1/cronjobs ; jeton Bearer, limit/continue, certificat
+│   │   │                           /apis/batch/v1/cronjobs, /api/v1/services,
+│   │                           /apis/networking.k8s.io/v1/ingresses ; jeton Bearer, limit/continue, certificat
 │   │   │                           d'autorité de la connexion, transport injectable
 │   │   ├── KubernetesContext.php   contexte réseau (réseaux privés autorisés sous GLPI 12)
 │   │   ├── KubernetesException.php codes stables, jamais le texte d'origine ni le jeton
@@ -344,6 +350,36 @@ dockerinventory/
 - Versions (WUD, registres), Harbor et tickets : rien de propre à Kubernetes ; les services sont
   traités comme ceux de Portainer, tickets réglés sur la connexion Kubernetes
   (`Connection::WORKLOAD_TYPES`).
+
+## Exposition (#72)
+
+- Relevée à l'import, en lecture seule, dans la colonne `routes` des services (JSON) :
+  - Portainer : étiquettes Traefik des services Swarm (`Spec.Labels`) et des conteneurs (`Labels`) :
+    `traefik.http.routers.<routeur>.{rule, tls, tls.certresolver, entrypoints}`,
+    `traefik.tcp.routers.<routeur>.rule` (`HostSNI`), `traefik.http.services.<s>.loadbalancer.server.port`
+    et l'ancienne forme `traefik.frontend.rule` ; `traefik.enable=false` : rien. Seuls `Host`, `HostSNI`,
+    `Path` et `PathPrefix` sont lus dans la règle ;
+  - Kubernetes : services (`/api/v1/services`) rattachés aux charges dont le modèle de pod porte toutes
+    les étiquettes du sélecteur ; ports des services NodePort et LoadBalancer (adresse du répartiteur) ;
+    ingress (`/apis/networking.k8s.io/v1/ingresses`) : hôte, chemin, TLS (hôte listé dans `spec.tls`),
+    classe, service de destination. Routes recalculées seulement si les deux listes sont lues en entier ;
+    sinon celles du dernier import sont gardées (403 : avertissement).
+- Ports publiés : colonne `ports` (Portainer). Pour Kubernetes, `ports` contient les ports des
+  conteneurs, qui ne sont pas une exposition.
+- Portée (à l'affichage) : nom d'hôte public ou adresse publique => « Internet (probable) » ; nom sans
+  point, suffixes internes (`.local`, `.lan`, `.internal`, `.intranet`, `.svc`, `.cluster.local`...),
+  adresse privée ou port de nœud => « réseau interne » ; port publié sur toutes les adresses => « réseau de
+  l'hôte » ; adresse de bouclage => « hôte seul » (aucun flux proposé). Les adresses de documentation
+  (RFC 5737, RFC 3849) comptent comme publiques. Une route HTTP est comptée sur le port 443 avec TLS, 80
+  sinon.
+- GRC Manager (`GlpiPlugin\Grcmanager\NetworkFlow`, plugin actif et droit de lecture de sa matrice) :
+  lecture seule des flux actifs (`destination_itemtype`, `destination_items_id`, `destination_label`,
+  `protocol`, `ports`). Exposition documentée : même destination (application du service, ou libellé qui
+  contient l'hôte ou le nom du service), même protocole (ou tous), port couvert. Sinon, avec le droit de
+  création des flux, lien vers `networkflow.form.php` avec les valeurs proposées en paramètres
+  (`flow_type` `internet_publication` ou `internal`, `name`, `source_label`, `destination_itemtype` et
+  `destination_items_id` de l'application, `destination_label`, `protocol`, `ports`). Rien n'est jamais
+  écrit dans GRC.
 
 ## Règles communes
 
