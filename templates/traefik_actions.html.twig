@@ -1,0 +1,258 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Sous le formulaire d'une connexion Traefik enregistrée : test, lecture sur clic, routes appliquées
+   comparées aux étiquettes et signalements de la dernière lecture (#80). #}
+{% set status_colors = {0: 'secondary', 1: 'success', 2: 'warning', 3: 'danger'} %}
+{% set status = item.fields['last_import_status']|default(0) %}
+{% set match_colors = {
+    declared: 'success', differs: 'warning', not_inventoried: 'secondary',
+    other_provider: 'info', internal: 'secondary'
+} %}
+{% set check_colors = {
+    dashboard_exposed: 'danger', no_tls: 'danger', no_auth: 'warning', no_headers: 'secondary'
+} %}
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h2 class="card-title">
+            <i class="ti ti-route me-2" aria-hidden="true"></i>
+            {{ __('Routes appliquées par Traefik', 'dockerinventory') }}
+        </h2>
+    </div>
+    <div class="card-body">
+        {{ include('@dockerinventory/_page_help.html.twig', {
+            page: 'traefik',
+            purpose: __(
+                'Comparer les routes vraiment appliquées par Traefik aux étiquettes des services inventoriés.',
+                'dockerinventory'
+            ),
+            expected: __(
+                'Aucune route signalée, et aucune route déclarée dans les étiquettes qui ne soit pas appliquée.',
+                'dockerinventory'
+            ),
+        }) }}
+        <p class="text-muted">
+            {{ __(
+                'Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+                'Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire Traefik maintenant ».',
+                'dockerinventory'
+            ) }}
+        </p>
+
+        <div class="mb-3">
+            <span class="me-2">{{ __('Dernière lecture', 'dockerinventory') }} :</span>
+            <span class="badge {{ tone.badge(status_colors[status] ?? 'secondary') }}">{{ status_label }}</span>
+            {% if item.fields['last_import_date'] %}
+                <span class="ms-2 text-muted">{{ item.fields['last_import_date']|formatted_datetime }}</span>
+            {% endif %}
+            {% if report and report.traefik_version|default('') %}
+                <span class="badge bg-success-subtle text-success-emphasis ms-2">
+                    Traefik {{ report.traefik_version }}
+                </span>
+            {% endif %}
+        </div>
+
+        {% if report and report.errors is not empty %}
+            <div class="alert alert-warning">
+                <ul class="mb-0">
+                    {% for error in report.errors %}
+                        <li>{{ error_labels[error.code] ?? error.code }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if report and report.counts is defined %}
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                    <i class="ti ti-route me-1" aria-hidden="true"></i>
+                    {{ __('Routes', 'dockerinventory') }} : {{ report.counts.routes|default(0) }}
+                </span>
+                <span class="badge bg-danger-subtle text-danger-emphasis">
+                    <i class="ti ti-world me-1" aria-hidden="true"></i>
+                    {{ __('Internet (probable)', 'dockerinventory') }} : {{ report.counts.internet|default(0) }}
+                </span>
+                {% for code, label in traefik_labels.checks %}
+                    {% if report.counts[code]|default(0) > 0 %}
+                        <span class="badge {{ tone.badge(check_colors[code]) }}">
+                            <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                            {{ label }} : {{ report.counts[code] }}
+                        </span>
+                    {% endif %}
+                {% endfor %}
+                {% if report.counts.not_applied|default(0) > 0 %}
+                    <span class="badge bg-warning-subtle text-warning-emphasis">
+                        <i class="ti ti-unlink me-1" aria-hidden="true"></i>
+                        {{ __('Déclarées non appliquées', 'dockerinventory') }} : {{ report.counts.not_applied }}
+                    </span>
+                {% endif %}
+            </div>
+            {% if report.truncated|default(false) %}
+                <div class="alert alert-info">
+                    {{ __('Liste tronquée : seules les 100 premières routes sont affichées.', 'dockerinventory') }}
+                </div>
+            {% endif %}
+
+            {% if report.routes is not empty %}
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">{{ __('Route', 'dockerinventory') }}</th>
+                                <th scope="col">{{ __('Hôte et chemin', 'dockerinventory') }}</th>
+                                <th scope="col">{{ __('Points d’entrée', 'dockerinventory') }}</th>
+                                <th scope="col">TLS</th>
+                                <th scope="col">{{ __('Service cible', 'dockerinventory') }}</th>
+                                <th scope="col">{{ __('Middlewares', 'dockerinventory') }}</th>
+                                <th scope="col">{{ __('Étiquettes', 'dockerinventory') }}</th>
+                                <th scope="col">{{ __('Signalements', 'dockerinventory') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for route in report.routes %}
+                                {% set scope = exposure_infos.scopes[route.scope]|default(null) %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ route.name }}</strong>
+                                        <div class="small text-muted">
+                                            {{ route.protocol|upper }} · {{ route.provider }}
+                                            {% if route.status and route.status != 'enabled' %}
+                                                <span class="badge bg-warning-subtle text-warning-emphasis ms-1">
+                                                    {{ route.status }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% for host in route.hosts %}
+                                        <div>{{ host }}</div>
+                                        {% else %}
+                                        <span class="text-muted">{{ __('Tous les hôtes', 'dockerinventory') }}</span>
+                                        {% endfor %}
+                                        {% for path in route.paths %}
+                                        <div class="small text-muted">{{ path }}</div>
+                                        {% endfor %}
+                                        {% if scope %}
+                                            <span class="badge {{ tone.badge(scope.color) }}" title="{{ scope.help }}">
+                                                <i class="{{ scope.icon }} me-1" aria-hidden="true"></i>
+                                                {{ scope.label }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small">{{ route.entrypoints|join(', ') }}</td>
+                                    <td>
+                                        {% if route.tls %}
+                                            <span class="badge bg-success-subtle text-success-emphasis">
+                                            <i class="ti ti-lock me-1" aria-hidden="true"></i>
+                                            {{ __('Yes') }}</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                            <i class="ti ti-lock-open me-1" aria-hidden="true"></i>
+                                            {{ __('No') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small">
+                                        {{ route.service }}
+                                        {% if route.servers > 0 %}
+                                        <div class="text-muted">
+                                            {{ _n('%d serveur', '%d serveurs', route.servers, 'dockerinventory')
+                                                |format(route.servers) }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="small">{{ route.middlewares|join(', ') }}</td>
+                                    <td>
+                                        {% set match_color = match_colors[route.match]|default('secondary') %}
+                                        <span class="badge {{ tone.badge(match_color) }}">
+                                            {{ traefik_labels.matches[route.match]|default(route.match) }}
+                                        </span>
+                                        {% for service in route.services %}
+                                            <div class="small">
+                                            <a href="{{ service_url }}?id={{ service.id }}">{{ service.name }}</a></div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for check in route.checks %}
+                                            <div>
+                                            {% set check_color = check_colors[check]|default('warning') %}
+                                            <span class="badge {{ tone.badge(check_color) }}">
+                                                <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                                                {{ traefik_labels.checks[check]|default(check) }}
+                                            </span></div>
+                                        {% else %}
+                                            <span class="text-muted">-</span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+            {% if report.not_applied is not empty %}
+                <h3 class="h4">
+                    <i class="ti ti-unlink me-1" aria-hidden="true"></i>
+                    {{ __('Routes déclarées dans les étiquettes mais absentes de Traefik', 'dockerinventory') }}
+                </h3>
+                <p class="text-muted small">
+                    {{ __(
+                        'Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou import à relancer.',
+                        'dockerinventory'
+                    ) }}
+                </p>
+                <ul>
+                    {% for route in report.not_applied %}
+                        <li>
+                            <strong>{{ route.name }}</strong>
+                            {% if route.host %}({{ route.host }}){% endif %}
+                            : <a href="{{ service_url }}?id={{ route.service_id }}">{{ route.service }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
+
+        <form method="post" action="{{ item.getFormURL() }}" class="d-flex flex-wrap gap-2">
+            <input type="hidden" name="id" value="{{ item.getID() }}">
+            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" name="test" value="1" class="btn btn-outline-secondary">
+                <i class="ti ti-plug-connected me-1" aria-hidden="true"></i>
+                {{ __('Tester la connexion', 'dockerinventory') }}
+            </button>
+            <button type="submit" name="import" value="1" class="btn btn-primary">
+                <i class="ti ti-download me-1" aria-hidden="true"></i>
+                {{ __('Lire Traefik maintenant', 'dockerinventory') }}
+            </button>
+        </form>
+
+        <details class="mt-3 text-muted">
+            <summary>{{ __('Traefik sur un réseau privé (GLPI 12)', 'dockerinventory') }}</summary>
+            <p class="mt-2 mb-1">
+                {{ __('GLPI 12 refuse par défaut les appels vers un réseau privé.', 'dockerinventory') }}
+                {{ __('Pour Traefik seulement, ajouter dans config/local_define.php :', 'dockerinventory') }}
+            </p>
+            <pre class="mb-0"><code>define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
+    '{{ context_class }}',
+]);</code></pre>
+        </details>
+    </div>
+</div>

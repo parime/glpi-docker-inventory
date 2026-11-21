@@ -46,6 +46,7 @@ replicas or version.
 | Lifecycles (endoflife.date, disabled by default) | End-of-support dates of the image products (explicit mapping) | End of support, soon, maintained or unknown per service; optional end-of-support tickets |
 | Harbor | Projects, repositories, artifacts, vulnerability scan overview | Vulnerabilities per image, images outside the managed registry flagged |
 | Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets and CronJobs (image, tag, digest, ready and desired replicas, state), nodes, NodePort and LoadBalancer services, ingresses | Namespace = native Appliance; Service record per container; nodes linked to computers (name or IP address); same versions and Harbor vulnerabilities |
+| Traefik (read on click) | Traefik API: applied HTTP and TCP routes, entry points, services, middlewares | Routes compared with labels (matching, different, outside labels, declared but not applied); findings: exposed dashboard, public route without TLS or security headers, administration without authentication |
 
 ## Screenshots
 

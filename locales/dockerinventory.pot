@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 06:41+0000\n"
+"POT-Creation-Date: 2026-11-21 14:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,435 +81,507 @@ msgstr ""
 msgid "Registres maîtrisés"
 msgstr ""
 
-#: src/Connection.php:102
+#: src/Connection.php:110
 msgid "Connexion Docker"
 msgstr ""
 
-#: src/Connection.php:102 templates/version_tab.html.twig
+#: src/Connection.php:110 templates/version_tab.html.twig
 #: templates/versions.html.twig
 msgid "Connexions Docker"
 msgstr ""
 
-#: src/Connection.php:131
+#: src/Connection.php:140
 msgid "Version majeure seulement"
 msgstr ""
 
-#: src/Connection.php:132
+#: src/Connection.php:141
 msgid "Version mineure ou majeure"
 msgstr ""
 
-#: src/Connection.php:133
+#: src/Connection.php:142
 msgid "Tout écart de version, correctifs compris"
 msgstr ""
 
-#: src/Connection.php:145
+#: src/Connection.php:154
 msgid "Vulnérabilités critiques"
 msgstr ""
 
-#: src/Connection.php:146
+#: src/Connection.php:155
 msgid "Vulnérabilités critiques ou hautes"
 msgstr ""
 
-#: src/Connection.php:214 templates/computer_nodes.html.twig
+#: src/Connection.php:228 templates/computer_nodes.html.twig
 msgid "Adresse"
 msgstr ""
 
-#: src/Connection.php:221 templates/connection_form.html.twig
+#: src/Connection.php:235 templates/connection_form.html.twig
 msgid "Type"
 msgstr ""
 
-#: src/Connection.php:237 templates/connection_actions.html.twig
+#: src/Connection.php:251 templates/connection_actions.html.twig
 #: templates/kubernetes_actions.html.twig
 msgid "Dernier import"
 msgstr ""
 
-#: src/Connection.php:245 templates/connection_form.html.twig
+#: src/Connection.php:259 templates/connection_form.html.twig
 msgid "Environnement des applications créées"
 msgstr ""
 
-#: src/Connection.php:252 templates/connection_form.html.twig
+#: src/Connection.php:266 templates/connection_form.html.twig
 msgid "Tickets de mise à jour"
 msgstr ""
 
-#: src/Connection.php:260 templates/connection_form.html.twig
+#: src/Connection.php:274 templates/connection_form.html.twig
 msgid "Tickets de vulnérabilité"
 msgstr ""
 
-#: src/Connection.php:384
+#: src/Connection.php:404
 msgid "La clé d'API Portainer est obligatoire."
 msgstr ""
 
-#: src/Connection.php:393
+#: src/Connection.php:413
 msgid "Le jeton du compte de service Kubernetes est obligatoire."
 msgstr ""
 
-#: src/Connection.php:431
+#: src/Connection.php:451
 msgid "Hôte du registre invalide (exemple : registry.exemple.test:5000)."
 msgstr ""
 
-#: src/Connection.php:448
+#: src/Connection.php:468
 msgid ""
 "Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN "
 "CERTIFICATE-----...)."
 msgstr ""
 
-#: src/Connection.php:638 src/Connection.php:697
+#: src/Connection.php:670 src/Connection.php:730
 #, php-format
 msgid "Échec : %s"
 msgstr ""
 
-#: src/Connection.php:646
+#: src/Connection.php:678
 #, php-format
 msgid ""
 "Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d "
 "analysés, %6$d retirés."
 msgstr ""
 
-#: src/Connection.php:656
+#: src/Connection.php:688
 #, php-format
 msgid "Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
-#: src/Connection.php:715
+#: src/Connection.php:751
 #, php-format
 msgid ""
 "Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds "
 "ou hôtes."
 msgstr ""
 
-#: src/Connection.php:753
+#: src/Connection.php:789
 #, php-format
 msgid ""
 "Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, "
 "%5$d retirés, %6$d nœuds."
 msgstr ""
 
-#: src/Connection.php:795
+#: src/Connection.php:831
 msgid ""
 "Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer "
 "(voir README)."
 msgstr ""
 
-#: src/Connection.php:799
+#: src/Connection.php:835
 msgid ""
 "Portainer annonce des services ou des conteneurs que ce compte ne voit pas."
 msgstr ""
 
-#: src/Connection.php:802
+#: src/Connection.php:838
 msgid ""
 "Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir "
 "README)."
 msgstr ""
 
-#: src/Connection.php:806
+#: src/Connection.php:842
 msgid ""
 "Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été "
 "retiré."
 msgstr ""
 
-#: src/Connection.php:808
+#: src/Connection.php:844
 msgid "Vérifiez les accès du compte dans Portainer (voir README)."
 msgstr ""
 
-#: src/Connection.php:810
+#: src/Connection.php:846
 msgid ""
 "Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:814
+#: src/Connection.php:850
 msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
 msgstr ""
 
-#: src/Connection.php:816
+#: src/Connection.php:852
 msgid "Vérifiez son ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:818
+#: src/Connection.php:854
 msgid ""
 "Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été "
 "retiré."
 msgstr ""
 
-#: src/Connection.php:820
+#: src/Connection.php:856
 msgid "Vérifiez les droits du compte de service (voir README)."
 msgstr ""
 
-#: src/Connection.php:822
+#: src/Connection.php:858
 msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
 msgstr ""
 
-#: src/Connection.php:842
+#: src/Connection.php:878
 #, php-format
 msgid "Tickets de mise à jour : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
-#: src/Connection.php:855
+#: src/Connection.php:891
 #, php-format
 msgid ""
 "Lecture de WUD terminée (%1$s) : %2$d conteneurs, %3$d services suivis, %4$d "
 "sans service."
 msgstr ""
 
-#: src/Connection.php:874
+#: src/Connection.php:910
 #, php-format
 msgid ""
 "Registres lus (%1$s) : %2$d versions trouvées, %3$d non suivables, %4$d non "
 "vérifiées, %5$d requêtes."
 msgstr ""
 
-#: src/Connection.php:901
+#: src/Connection.php:937
 msgid "Connexion réussie : le registre Harbor accepte ce compte."
 msgstr ""
 
-#: src/Connection.php:903
+#: src/Connection.php:939
 msgid ""
 "Connexion réussie : registre joignable sans compte (projets publics "
 "seulement)."
 msgstr ""
 
-#: src/Connection.php:909
+#: src/Connection.php:945
 #, php-format
 msgid "API de Harbor : %d projet(s) visible(s) avec ce compte."
 msgstr ""
 
-#: src/Connection.php:914
+#: src/Connection.php:950
 #, php-format
 msgid "API de Harbor non lue (projets, analyses) : %s"
 msgstr ""
 
-#: src/Connection.php:951
+#: src/Connection.php:987
 #, php-format
 msgid ""
 "Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce "
 "jeton."
 msgstr ""
 
-#: src/Connection.php:964
+#: src/Connection.php:1000
 #, php-format
 msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
 msgstr ""
 
-#: src/Connection.php:973 src/Connection.php:1033
+#: src/Connection.php:1009 src/Connection.php:1149
 #, php-format
 msgid "Connexion établie, mais à vérifier : %s"
 msgstr ""
 
-#: src/Connection.php:997
+#: src/Connection.php:1030
+#, php-format
+msgid ""
+"Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non "
+"appliquée(s)."
+msgstr ""
+
+#: src/Connection.php:1049
+msgid "Conforme aux étiquettes"
+msgstr ""
+
+#: src/Connection.php:1050
+msgid "Différente des étiquettes"
+msgstr ""
+
+#: src/Connection.php:1051
+msgid "Service non inventorié"
+msgstr ""
+
+#: src/Connection.php:1052
+msgid "Hors étiquettes Docker"
+msgstr ""
+
+#: src/Connection.php:1053
+msgid "Interne à Traefik"
+msgstr ""
+
+#: src/Connection.php:1057
+msgid "Tableau de bord ou API de Traefik sans authentification"
+msgstr ""
+
+#: src/Connection.php:1060
+msgid "Route publique sans TLS ni redirection HTTPS"
+msgstr ""
+
+#: src/Connection.php:1061
+msgid "Route d'administration sans authentification"
+msgstr ""
+
+#: src/Connection.php:1062
+msgid "Route publique sans en-têtes de sécurité"
+msgstr ""
+
+#: src/Connection.php:1085
+#, php-format
+msgid "Connexion réussie : Traefik %1$s, %2$d route(s) HTTP."
+msgstr ""
+
+#: src/Connection.php:1110
 #, php-format
 msgid "Connexion réussie : WUD %1$s, %2$d conteneur(s) suivi(s)."
 msgstr ""
 
-#: src/Connection.php:1061
+#: src/Connection.php:1177
 #, php-format
 msgid ""
 "Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé."
 msgstr ""
 
-#: src/Connection.php:1072
+#: src/Connection.php:1188
 #, php-format
 msgid "À vérifier (%1$s) : %2$s"
 msgstr ""
 
-#: src/Connection.php:1107
+#: src/Connection.php:1223
 msgid "Réussi"
 msgstr ""
 
-#: src/Connection.php:1108
+#: src/Connection.php:1224
 msgid "Partiel"
 msgstr ""
 
-#: src/Connection.php:1109
+#: src/Connection.php:1225
 msgid "Échec"
 msgstr ""
 
-#: src/Connection.php:1110
+#: src/Connection.php:1226
 msgid "Avertissement"
 msgstr ""
 
-#: src/Connection.php:1111
+#: src/Connection.php:1227
 msgid "Jamais lancé"
 msgstr ""
 
-#: src/Connection.php:1121
+#: src/Connection.php:1237
 msgid "Clé d'API refusée par Portainer (401)."
 msgstr ""
 
-#: src/Connection.php:1122
+#: src/Connection.php:1238
 msgid "Accès refusé par Portainer (403) pour cette clé."
 msgstr ""
 
-#: src/Connection.php:1123 src/Connection.php:1130
+#: src/Connection.php:1239 src/Connection.php:1262
 msgid "Adresse introuvable (404) : vérifier l'adresse."
 msgstr ""
 
-#: src/Connection.php:1124
+#: src/Connection.php:1240
 msgid "Cet environnement n'est pas un cluster Swarm."
 msgstr ""
 
-#: src/Connection.php:1125 src/Connection.php:1132 src/Connection.php:1171
-#: src/Connection.php:1205
+#: src/Connection.php:1241 src/Connection.php:1252 src/Connection.php:1264
+#: src/Connection.php:1303 src/Connection.php:1337
 msgid "Réseau privé refusé par GLPI (voir README)."
 msgstr ""
 
-#: src/Connection.php:1126
+#: src/Connection.php:1242
 msgid "Réponse inattendue : est-ce bien Portainer ?"
 msgstr ""
 
-#: src/Connection.php:1127
+#: src/Connection.php:1243
 msgid "Portainer injoignable (réseau, certificat...)."
 msgstr ""
 
-#: src/Connection.php:1128
+#: src/Connection.php:1244
 msgid "Identifiants refusés par WUD (401)."
 msgstr ""
 
-#: src/Connection.php:1129
+#: src/Connection.php:1245
+msgid "Identifiants ou jeton refusés par Traefik (401)."
+msgstr ""
+
+#: src/Connection.php:1246
+msgid "Accès refusé par Traefik (403)."
+msgstr ""
+
+#: src/Connection.php:1248
+msgid "API introuvable (404) : l'API de Traefik est-elle activée ?"
+msgstr ""
+
+#: src/Connection.php:1251
+msgid "Traefik a répondu par une erreur interne (5xx)."
+msgstr ""
+
+#: src/Connection.php:1254
+msgid "Réponse inattendue : est-ce bien l'API de Traefik ?"
+msgstr ""
+
+#: src/Connection.php:1258
+msgid "Traefik injoignable (réseau, certificat, délai...)."
+msgstr ""
+
+#: src/Connection.php:1261
 msgid "Accès refusé par WUD (403)."
 msgstr ""
 
-#: src/Connection.php:1131
+#: src/Connection.php:1263
 msgid "WUD a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1133
+#: src/Connection.php:1265
 msgid "Réponse inattendue : est-ce bien What's Up Docker ?"
 msgstr ""
 
-#: src/Connection.php:1134
+#: src/Connection.php:1266
 msgid "WUD injoignable (réseau, certificat, délai...)."
 msgstr ""
 
-#: src/Connection.php:1147
+#: src/Connection.php:1279
 msgid ""
 "Jeton refusé par le cluster (401) : jeton expiré ou compte de service "
 "supprimé ?"
 msgstr ""
 
-#: src/Connection.php:1151
+#: src/Connection.php:1283
 msgid ""
 "Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir "
 "README)."
 msgstr ""
 
-#: src/Connection.php:1155
+#: src/Connection.php:1287
 msgid ""
 "Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port "
 "6443 en général)."
 msgstr ""
 
-#: src/Connection.php:1159
+#: src/Connection.php:1291
 msgid ""
 "Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
 msgstr ""
 
-#: src/Connection.php:1163
+#: src/Connection.php:1295
 msgid ""
 "Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain "
 "import."
 msgstr ""
 
-#: src/Connection.php:1167
+#: src/Connection.php:1299
 msgid "L'API du cluster a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1175
+#: src/Connection.php:1307
 msgid ""
 "Certificat du cluster non reconnu : coller le certificat d'autorité du "
 "cluster (voir README)."
 msgstr ""
 
-#: src/Connection.php:1179
+#: src/Connection.php:1311
 msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
 msgstr ""
 
-#: src/Connection.php:1182
+#: src/Connection.php:1314
 msgid "Cluster injoignable (réseau, nom, délai...)."
 msgstr ""
 
-#: src/Connection.php:1194
+#: src/Connection.php:1326
 msgid "Compte refusé par le registre (401)."
 msgstr ""
 
-#: src/Connection.php:1195
+#: src/Connection.php:1327
 msgid "Accès refusé par le registre (403)."
 msgstr ""
 
-#: src/Connection.php:1196
+#: src/Connection.php:1328
 msgid "Image introuvable dans le registre, ou privée."
 msgstr ""
 
-#: src/Connection.php:1198
+#: src/Connection.php:1330
 msgid "Limite de requêtes du registre atteinte (429) : nouvel essai plus tard."
 msgstr ""
 
-#: src/Connection.php:1202
+#: src/Connection.php:1334
 msgid "Le registre a répondu par une erreur interne (5xx)."
 msgstr ""
 
-#: src/Connection.php:1206
+#: src/Connection.php:1338
 msgid "Réponse inattendue du registre."
 msgstr ""
 
-#: src/Connection.php:1208
+#: src/Connection.php:1340
 msgid "Registre injoignable (réseau, certificat, délai...)."
 msgstr ""
 
-#: src/Connection.php:1212
+#: src/Connection.php:1344
 msgid "Registre non pris en charge : ni Docker Hub, ni un Harbor déclaré."
 msgstr ""
 
-#: src/Connection.php:1216
+#: src/Connection.php:1348
 msgid "Registre privé : renseigner un compte robot sur la connexion Harbor."
 msgstr ""
 
-#: src/Connection.php:1220
+#: src/Connection.php:1352
 msgid ""
 "Docker Hub non interrogé cette fois (limite ou réseau) : nouvel essai plus "
 "tard."
 msgstr ""
 
-#: src/Connection.php:1229
+#: src/Connection.php:1361
 msgid "HTTPS obligatoire (sauf « Autoriser HTTP »)."
 msgstr ""
 
-#: src/Connection.php:1230
+#: src/Connection.php:1362
 msgid "L'adresse ne doit pas contenir d'identifiants."
 msgstr ""
 
-#: src/Connection.php:1231
+#: src/Connection.php:1363
 #, php-format
 msgid "Adresse invalide (exemple : %s)."
 msgstr ""
 
-#: src/Connection.php:1252
+#: src/Connection.php:1385
 msgid ""
 "Dernières versions dans les registres (Docker Hub, Harbor) pour les services "
 "sans WUD"
 msgstr ""
 
-#: src/Connection.php:1258
+#: src/Connection.php:1391
 msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
 msgstr ""
 
-#: src/Connection.php:1264
+#: src/Connection.php:1397
 msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
 msgstr ""
 
-#: src/Connection.php:1269
+#: src/Connection.php:1402
 msgid "Lecture des versions des images depuis What's Up Docker"
 msgstr ""
 
-#: src/Connection.php:1273
+#: src/Connection.php:1406
 msgid ""
 "Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
 msgstr ""
 
-#: src/Connection.php:1365
+#: src/Connection.php:1498
 #, php-format
 msgid "%1$s : %2$s (%3$d conteneurs, %4$d services suivis, %5$d sans service)"
 msgstr ""
 
-#: src/Connection.php:1395
+#: src/Connection.php:1528
 #, php-format
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
 msgstr ""
@@ -518,7 +590,7 @@ msgstr ""
 msgid "Exposition"
 msgstr ""
 
-#: src/Exposure.php:121
+#: src/Exposure.php:121 templates/traefik_actions.html.twig
 msgid "Internet (probable)"
 msgstr ""
 
@@ -527,7 +599,7 @@ msgid ""
 "Nom d’hôte public ou adresse publique : sans doute joignable depuis Internet."
 msgstr ""
 
-#: src/Exposure.php:130 src/Hardening.php:179
+#: src/Exposure.php:130 src/Hardening.php:181
 msgid "Réseau de l’hôte"
 msgstr ""
 
@@ -574,7 +646,7 @@ msgstr ""
 msgid "Images Harbor"
 msgstr ""
 
-#: src/HarborArtifact.php:107 src/Hardening.php:126
+#: src/HarborArtifact.php:107 src/Hardening.php:128
 msgid "Critique"
 msgstr ""
 
@@ -582,7 +654,7 @@ msgstr ""
 msgid "Au moins une vulnérabilité critique."
 msgstr ""
 
-#: src/HarborArtifact.php:113 src/Hardening.php:132
+#: src/HarborArtifact.php:113 src/Hardening.php:134
 msgid "Haute"
 msgstr ""
 
@@ -590,7 +662,7 @@ msgstr ""
 msgid "Au moins une vulnérabilité haute, aucune critique."
 msgstr ""
 
-#: src/HarborArtifact.php:119 src/Hardening.php:138
+#: src/HarborArtifact.php:119 src/Hardening.php:140
 msgid "Moyenne"
 msgstr ""
 
@@ -598,7 +670,7 @@ msgstr ""
 msgid "Vulnérabilités moyennes au plus."
 msgstr ""
 
-#: src/HarborArtifact.php:125 src/Hardening.php:144
+#: src/HarborArtifact.php:125 src/Hardening.php:146
 msgid "Basse"
 msgstr ""
 
@@ -723,205 +795,205 @@ msgstr ""
 msgid "Configuration à risque"
 msgstr ""
 
-#: src/Hardening.php:129
+#: src/Hardening.php:131
 msgid "Donne la main sur l’hôte : à corriger en priorité."
 msgstr ""
 
-#: src/Hardening.php:135
+#: src/Hardening.php:137
 msgid "Affaiblit fortement l’isolement du conteneur."
 msgstr ""
 
-#: src/Hardening.php:141
+#: src/Hardening.php:143
 msgid "Aggrave les conséquences d’une compromission."
 msgstr ""
 
-#: src/Hardening.php:147
+#: src/Hardening.php:149
 msgid "Bonne pratique de durcissement non appliquée."
 msgstr ""
 
-#: src/Hardening.php:161
+#: src/Hardening.php:163
 msgid "Mode privilégié"
 msgstr ""
 
-#: src/Hardening.php:163
+#: src/Hardening.php:165
 msgid "Le conteneur a tous les droits sur l’hôte et ses périphériques."
 msgstr ""
 
-#: src/Hardening.php:164
+#: src/Hardening.php:166
 msgid "Retirer « privileged » et n’ajouter que les capacités nécessaires."
 msgstr ""
 
-#: src/Hardening.php:167
+#: src/Hardening.php:169
 msgid "Socket du moteur de conteneurs monté"
 msgstr ""
 
-#: src/Hardening.php:170
+#: src/Hardening.php:172
 msgid "Qui accède à ce socket pilote le moteur, donc l’hôte entier."
 msgstr ""
 
-#: src/Hardening.php:174
+#: src/Hardening.php:176
 msgid ""
 "Retirer le montage, ou passer par un proxy du socket en lecture seule limité "
 "aux appels utiles."
 msgstr ""
 
-#: src/Hardening.php:182
+#: src/Hardening.php:184
 msgid ""
 "Le conteneur partage les interfaces réseau de l’hôte : aucun isolement "
 "réseau."
 msgstr ""
 
-#: src/Hardening.php:185
+#: src/Hardening.php:187
 msgid "Utiliser un réseau dédié et publier seulement les ports utiles."
 msgstr ""
 
-#: src/Hardening.php:188
+#: src/Hardening.php:190
 msgid "Processus de l’hôte visibles"
 msgstr ""
 
-#: src/Hardening.php:190
+#: src/Hardening.php:192
 msgid "Le conteneur voit et peut viser les processus de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:191
+#: src/Hardening.php:193
 msgid "Retirer le partage de l’espace des processus de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:194
+#: src/Hardening.php:196
 msgid "Capacités dangereuses ajoutées"
 msgstr ""
 
-#: src/Hardening.php:197
+#: src/Hardening.php:199
 msgid "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
 msgstr ""
 
-#: src/Hardening.php:201
+#: src/Hardening.php:203
 msgid "Retirer ces capacités ou les remplacer par une permission plus étroite."
 msgstr ""
 
-#: src/Hardening.php:206
+#: src/Hardening.php:208
 msgid "Répertoire sensible de l’hôte monté"
 msgstr ""
 
-#: src/Hardening.php:209
+#: src/Hardening.php:211
 msgid "Le conteneur lit ou modifie des fichiers système de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:213
+#: src/Hardening.php:215
 msgid ""
 "Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
 msgstr ""
 
-#: src/Hardening.php:218
+#: src/Hardening.php:220
 msgid "Mémoire partagée de l’hôte"
 msgstr ""
 
-#: src/Hardening.php:220
+#: src/Hardening.php:222
 msgid "Le conteneur partage les communications entre processus de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:221
+#: src/Hardening.php:223
 msgid "Retirer le partage de l’espace IPC de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:224
+#: src/Hardening.php:226
 msgid "Capacités ajoutées"
 msgstr ""
 
-#: src/Hardening.php:226
+#: src/Hardening.php:228
 msgid "Droits du noyau en plus de ceux accordés par défaut."
 msgstr ""
 
-#: src/Hardening.php:227
+#: src/Hardening.php:229
 msgid "Vérifier que chaque capacité est nécessaire."
 msgstr ""
 
-#: src/Hardening.php:230
+#: src/Hardening.php:232
 msgid "Exécution en root"
 msgstr ""
 
-#: src/Hardening.php:233
+#: src/Hardening.php:235
 msgid ""
 "Aucun utilisateur non privilégié n’est défini : le processus tourne sans "
 "doute en root."
 msgstr ""
 
-#: src/Hardening.php:236
+#: src/Hardening.php:238
 msgid "Définir un utilisateur non privilégié (user, runAsNonRoot)."
 msgstr ""
 
-#: src/Hardening.php:239
+#: src/Hardening.php:241
 msgid "Aucune limite de mémoire"
 msgstr ""
 
-#: src/Hardening.php:241
+#: src/Hardening.php:243
 msgid "Le conteneur peut épuiser la mémoire de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:242
+#: src/Hardening.php:244
 msgid "Fixer une limite de mémoire adaptée."
 msgstr ""
 
-#: src/Hardening.php:245
+#: src/Hardening.php:247
 msgid "Aucune limite de processeur"
 msgstr ""
 
-#: src/Hardening.php:247
+#: src/Hardening.php:249
 msgid "Le conteneur peut accaparer le processeur de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:248
+#: src/Hardening.php:250
 msgid "Fixer une limite de processeur adaptée."
 msgstr ""
 
-#: src/Hardening.php:251
+#: src/Hardening.php:253
 msgid "Système de fichiers en écriture"
 msgstr ""
 
-#: src/Hardening.php:254
+#: src/Hardening.php:256
 msgid "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
 msgstr ""
 
-#: src/Hardening.php:258
+#: src/Hardening.php:260
 msgid ""
 "Passer le système de fichiers en lecture seule, avec des volumes pour les "
 "données."
 msgstr ""
 
-#: src/HardeningException.php:48
+#: src/HardeningException.php:44
 msgid "Exceptions de configuration"
 msgstr ""
 
-#: src/HardeningException.php:49
+#: src/HardeningException.php:45
 msgid "Exception de configuration"
 msgstr ""
 
-#: src/HardeningException.php:88
+#: src/HardeningException.php:84
 msgid "Enregistrer une exception"
 msgstr ""
 
-#: src/HardeningException.php:89
+#: src/HardeningException.php:85
 msgid "Supprimer une exception"
 msgstr ""
 
-#: src/HardeningException.php:116
+#: src/HardeningException.php:112
 msgid "Vous n’avez pas le droit d’enregistrer cette exception."
 msgstr ""
 
-#: src/HardeningException.php:119
+#: src/HardeningException.php:115
 msgid "Écart inconnu."
 msgstr ""
 
-#: src/HardeningException.php:123
+#: src/HardeningException.php:119
 msgid "La justification est obligatoire."
 msgstr ""
 
-#: src/HardeningException.php:127
+#: src/HardeningException.php:123
 #, php-format
 msgid "La date de fin doit être comprise entre aujourd’hui et dans %d jours."
 msgstr ""
 
-#: src/HardeningException.php:147
+#: src/HardeningException.php:143
 msgid "L’exception n’a pas pu être enregistrée."
 msgstr ""
 
@@ -1890,7 +1962,8 @@ msgid "Applications créées"
 msgstr ""
 
 #: templates/connection_actions.html.twig templates/harbor_actions.html.twig
-#: templates/kubernetes_actions.html.twig templates/wud_actions.html.twig
+#: templates/kubernetes_actions.html.twig templates/traefik_actions.html.twig
+#: templates/wud_actions.html.twig
 msgid "GLPI 12 refuse par défaut les appels vers un réseau privé."
 msgstr ""
 
@@ -1935,7 +2008,8 @@ msgid "Stacks"
 msgstr ""
 
 #: templates/connection_actions.html.twig templates/harbor_actions.html.twig
-#: templates/kubernetes_actions.html.twig templates/wud_actions.html.twig
+#: templates/kubernetes_actions.html.twig templates/traefik_actions.html.twig
+#: templates/wud_actions.html.twig
 msgid "Tester la connexion"
 msgstr ""
 
@@ -1973,7 +2047,17 @@ msgid "Adresse de l'interface de What's Up Docker, sans /api à la fin."
 msgstr ""
 
 #: templates/connection_form.html.twig
+msgid "Adresse de l’API de Traefik"
+msgstr ""
+
+#: templates/connection_form.html.twig
 msgid "Adresse du registre Harbor, sans /v2 ni /api à la fin."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est "
+"appelée."
 msgstr ""
 
 #: templates/connection_form.html.twig
@@ -2077,6 +2161,10 @@ msgid "Facultatif : seulement si WUD demande une authentification."
 msgstr ""
 
 #: templates/connection_form.html.twig
+msgid "Facultatif : seulement si l’API de Traefik est protégée."
+msgstr ""
+
+#: templates/connection_form.html.twig
 msgid "Facultatif pour les projets publics."
 msgstr ""
 
@@ -2118,6 +2206,10 @@ msgid "Mot de passe"
 msgstr ""
 
 #: templates/connection_form.html.twig
+msgid "Mot de passe ou jeton"
+msgstr ""
+
+#: templates/connection_form.html.twig
 msgid "Namespaces ignorés"
 msgstr ""
 
@@ -2134,6 +2226,10 @@ msgid "Nom libre, par exemple « Portainer production »."
 msgstr ""
 
 #: templates/connection_form.html.twig
+msgid "Nom libre, par exemple « Traefik production »."
+msgstr ""
+
+#: templates/connection_form.html.twig
 msgid "Nom libre, par exemple « WUD production »."
 msgstr ""
 
@@ -2144,6 +2240,16 @@ msgstr ""
 #: templates/connection_form.html.twig
 msgid ""
 "Oui : le mot de passe enregistré est supprimé (projets publics seulement)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid "Oui : le secret enregistré est supprimé (API sans authentification)."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton "
+"(Bearer)."
 msgstr ""
 
 #: templates/connection_form.html.twig
@@ -2187,6 +2293,12 @@ msgstr ""
 #: templates/connection_form.html.twig
 msgid ""
 "Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr ""
+
+#: templates/connection_form.html.twig
+msgid ""
+"Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le "
+"conserver."
 msgstr ""
 
 #: templates/connection_form.html.twig
@@ -2236,6 +2348,12 @@ msgstr ""
 
 #: templates/connection_type_choice.html.twig
 msgid ""
+"Routes, points d’entrée et middlewares appliqués, contrôles TLS et "
+"authentification."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
 "Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos "
 "projets."
 msgstr ""
@@ -2244,6 +2362,11 @@ msgstr ""
 msgid ""
 "Stacks Swarm et Compose, services, conteneurs et hôtes : ce qui tourne, et "
 "où."
+msgstr ""
+
+#: templates/connection_type_choice.html.twig
+msgid ""
+"Traefik montre les routes réellement appliquées, à comparer aux étiquettes."
 msgstr ""
 
 #: templates/connection_type_choice.html.twig
@@ -2491,7 +2614,8 @@ msgstr ""
 msgid "Avec vulnérabilités critiques"
 msgstr ""
 
-#: templates/harbor_actions.html.twig templates/wud_actions.html.twig
+#: templates/harbor_actions.html.twig templates/traefik_actions.html.twig
+#: templates/wud_actions.html.twig
 msgid "Dernière lecture"
 msgstr ""
 
@@ -3193,6 +3317,107 @@ msgstr ""
 
 #: templates/ticket_followup.html.twig
 msgid "Écart sous le seuil"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+#, php-format
+msgid "%d serveur"
+msgid_plural "%d serveurs"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/traefik_actions.html.twig
+msgid ""
+"Aucune route signalée, et aucune route déclarée dans les étiquettes qui ne "
+"soit pas appliquée."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid ""
+"Comparer les routes vraiment appliquées par Traefik aux étiquettes des "
+"services inventoriés."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Déclarées non appliquées"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Hôte et chemin"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Lire Traefik maintenant"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Liste tronquée : seules les 100 premières routes sont affichées."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Middlewares"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid ""
+"Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire "
+"Traefik maintenant »."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Points d’entrée"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Pour Traefik seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid ""
+"Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à "
+"l’adresse de la connexion."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Route"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Routes"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Routes appliquées par Traefik"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Routes déclarées dans les étiquettes mais absentes de Traefik"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Service cible"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Signalements"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Tous les hôtes"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Traefik sur un réseau privé (GLPI 12)"
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid ""
+"Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou import "
+"à relancer."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
+msgid "Étiquettes"
 msgstr ""
 
 #: templates/version_tab.html.twig

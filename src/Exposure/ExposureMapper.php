@@ -541,7 +541,7 @@ final class ExposureMapper
      * @param list<string> $functions
      * @return list<string>
      */
-    private static function ruleValues(string $rule, array $functions): array
+    public static function ruleValues(string $rule, array $functions): array
     {
         $values = [];
         $names = implode('|', array_map('preg_quote', $functions));

@@ -108,6 +108,16 @@ never writes into GRC.
 The reach is inferred from the host name or address: a public name is not necessarily reachable
 (firewall, internal DNS). Check it with the network team.
 
+### Routes actually applied by Traefik
+
+With a **Traefik** connection (see the administrator guide), "Read Traefik now" lists the applied
+routes and matches them with the labels: **matching**, **different** (other host names), **service
+not inventoried**, **outside Docker labels** (file, Kubernetes...), **internal to Traefik**. Routes
+declared in labels but missing from Traefik are listed separately. Findings, never fixed by the
+plugin: Traefik dashboard or API without authentication (`api.insecure`), public route without TLS
+or HTTPS redirect, administration route without authentication, public route without a security
+headers middleware.
+
 ## Risky configuration (A.8.9)
 
 **Assets > Docker Inventory**, **Risky configuration** sub-page (and tab of the same name on each

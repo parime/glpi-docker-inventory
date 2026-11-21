@@ -150,7 +150,7 @@ dockerinventory/
 
 | Table | Contenu |
 | --- | --- |
-| `glpi_plugin_dockerinventory_connections` | Connexion Portainer, WUD, Harbor ou Kubernetes (`type`) : URL, clé, jeton ou mot de passe chiffré, certificat d'autorité et namespaces ignorés (Kubernetes), utilisateur (WUD) ou compte robot (Harbor), hôte du registre dans les images (Harbor), HTTP autorisé ou non, entité, environnement des applications créées (Portainer), dernier import et son compte rendu |
+| `glpi_plugin_dockerinventory_connections` | Connexion Portainer, WUD, Harbor, Kubernetes ou Traefik (`type`, Traefik : lecture sur clic, compte rendu des routes dans `last_import_report`, #80) : URL, clé, jeton ou mot de passe chiffré, certificat d'autorité et namespaces ignorés (Kubernetes), utilisateur (WUD) ou compte robot (Harbor), hôte du registre dans les images (Harbor), HTTP autorisé ou non, entité, environnement des applications créées (Portainer), dernier import et son compte rendu |
 | `glpi_plugin_dockerinventory_stacks` | Stack Swarm ou Compose de Portainer (`stack_uid`), ou projet Compose hors Portainer (`stack_uid` 0, `compose_project`) ↔ Application GLPI, nature (`kind`), état « retiré » |
 | `glpi_plugin_dockerinventory_services` | Service Swarm, service Compose ou conteneur autonome (`kind`) : stack, Application, image, tag, empreinte, réplicas voulus et en cours (conteneurs et conteneurs en cours hors Swarm), ports, réseaux, volumes et secrets par leur nom, état des conteneurs, politique de redémarrage, identifiants et noms des conteneurs (rattachement WUD), état « retiré » |
 | `glpi_plugin_dockerinventory_nodes` | Nœud Swarm ou hôte autonome (rôle `standalone`) : nom d'hôte, rôle, état, version de Docker, ordinateur GLPI rattaché |

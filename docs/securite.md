@@ -110,6 +110,16 @@ propriétaire, puis enregistre. Le plugin n'écrit jamais dans GRC.
 La portée est déduite du nom d'hôte ou de l'adresse : un nom public n'est pas forcément joignable
 (pare-feu, DNS interne). À vérifier avec l'équipe réseau.
 
+### Routes réellement appliquées par Traefik
+
+Avec une connexion **Traefik** (voir le guide de l'administrateur), « Lire Traefik maintenant »
+liste les routes appliquées et les rapproche des étiquettes : **conforme**, **différente** (autres
+noms d'hôte), **service non inventorié**, **hors étiquettes Docker** (fichier, Kubernetes...),
+**interne à Traefik**. Les routes déclarées dans les étiquettes mais absentes de Traefik sont
+listées à part. Signalements, jamais corrigés par le plugin : tableau de bord ou API de Traefik
+sans authentification (`api.insecure`), route publique sans TLS ni redirection vers HTTPS, route
+d'administration sans authentification, route publique sans middleware d'en-têtes de sécurité.
+
 ## Configuration à risque (A.8.9)
 
 **Parc > Inventaire Docker**, sous-page **Configuration à risque** (et onglet du même nom de chaque

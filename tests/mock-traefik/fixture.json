@@ -1,0 +1,32 @@
+{
+  "version": {"Version": "3.1.2", "Codename": "fictif", "startDate": "2026-01-05T08:00:00Z"},
+  "entrypoints": [
+    {"address": ":80", "name": "web"},
+    {"address": ":443", "name": "websecure"},
+    {"address": ":8080", "name": "traefik"}
+  ],
+  "middlewares": [
+    {"headers": {"stsSeconds": 31536000}, "status": "enabled", "name": "secure-headers@file", "provider": "file", "type": "headers"},
+    {"redirectScheme": {"scheme": "https"}, "status": "enabled", "name": "to-https@file", "provider": "file", "type": "redirectscheme"},
+    {"basicAuth": {"users": ["masque"]}, "status": "enabled", "name": "admin-auth@docker", "provider": "docker", "type": "basicauth"}
+  ],
+  "services": [
+    {"loadBalancer": {"servers": [{"url": "http://10.0.0.11:80"}, {"url": "http://10.0.0.12:80"}]}, "status": "enabled", "name": "whoami@docker", "provider": "docker", "type": "loadbalancer"},
+    {"loadBalancer": {"servers": [{"url": "http://10.0.0.21:2368"}]}, "status": "enabled", "name": "blog@docker", "provider": "docker", "type": "loadbalancer"},
+    {"loadBalancer": {"servers": [{"url": "http://10.0.0.31:3000"}]}, "status": "enabled", "name": "grafana@file", "provider": "file", "type": "loadbalancer"},
+    {"status": "enabled", "name": "api@internal", "provider": "internal"},
+    {"status": "enabled", "name": "dashboard@internal", "provider": "internal"}
+  ],
+  "routers": [
+    {"entryPoints": ["websecure"], "middlewares": ["secure-headers@file"], "service": "whoami", "rule": "Host(`whoami.exemple.test`)", "tls": {"certResolver": "lets"}, "status": "enabled", "name": "whoami@docker", "provider": "docker"},
+    {"entryPoints": ["web"], "service": "blog", "rule": "Host(`blog.exemple.test`)", "status": "enabled", "name": "blog@docker", "provider": "docker"},
+    {"entryPoints": ["websecure"], "middlewares": ["secure-headers@file"], "service": "grafana", "rule": "Host(`grafana.exemple.test`)", "tls": {}, "status": "enabled", "name": "grafana@file", "provider": "file"},
+    {"entryPoints": ["websecure"], "middlewares": ["admin-auth", "secure-headers@file"], "service": "portainer", "rule": "Host(`portainer.exemple.test`)", "tls": {}, "status": "enabled", "name": "portainer@docker", "provider": "docker"},
+    {"entryPoints": ["web"], "middlewares": ["to-https@file"], "service": "noop@internal", "rule": "HostRegexp(`.+`)", "status": "enabled", "name": "http-catchall@file", "provider": "file"},
+    {"entryPoints": ["traefik"], "service": "api@internal", "rule": "PathPrefix(`/api`)", "status": "enabled", "name": "api@internal", "provider": "internal"},
+    {"entryPoints": ["traefik"], "service": "dashboard@internal", "rule": "PathPrefix(`/`)", "status": "enabled", "name": "dashboard@internal", "provider": "internal"}
+  ],
+  "tcp_routers": [
+    {"entryPoints": ["websecure"], "service": "postgres", "rule": "HostSNI(`db.exemple.test`)", "tls": {"passthrough": true}, "status": "enabled", "name": "postgres@file", "provider": "file"}
+  ]
+}

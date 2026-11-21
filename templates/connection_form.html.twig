@@ -29,6 +29,13 @@
         {% set key_helper = has_api_key
             ? __('Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver.', 'dockerinventory')
             : __('Facultatif pour les projets publics.', 'dockerinventory') %}
+    {% elseif is_traefik %}
+        {% set key_helper = has_api_key
+            ? __(
+                'Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le conserver.',
+                'dockerinventory'
+            )
+            : __('Facultatif : seulement si l’API de Traefik est protégée.', 'dockerinventory') %}
     {% elseif is_wud %}
         {% set key_helper = has_api_key
             ? __('Un mot de passe est enregistré (chiffré) : laisser vide pour le conserver.', 'dockerinventory')
@@ -44,7 +51,7 @@
     ) %}
     {% set type_html %}
         {% set type_color = is_wud ? 'bg-success-subtle text-success-emphasis' : 'bg-info-subtle text-info-emphasis' %}
-        {% set type_icon = is_kubernetes ? 'ti-brand-kubernetes'
+        {% set type_icon = is_traefik ? 'ti-route' : is_kubernetes ? 'ti-brand-kubernetes'
             : (is_harbor ? 'ti-building-warehouse' : (is_wud ? 'ti-tags' : 'ti-brand-docker')) %}
         <span class="badge {{ type_color }}">
             <i class="ti {{ type_icon }} me-1" aria-hidden="true"></i>{{ type_label }}
@@ -54,7 +61,9 @@
     {{ fields.field('type_display', type_html, __('Type', 'dockerinventory')) }}
     {{ fields.textField('name', item.fields['name'], __('Name'), {
         required: true,
-        helper: is_kubernetes
+        helper: is_traefik
+            ? __('Nom libre, par exemple « Traefik production ».', 'dockerinventory')
+            : is_kubernetes
             ? __('Nom libre, par exemple « Cluster production ».', 'dockerinventory')
             : is_harbor
             ? __('Nom libre, par exemple « Harbor production ».', 'dockerinventory')
@@ -140,6 +149,33 @@
         {{ fields.dropdownYesNo('allow_http', item.fields['allow_http'] ?? 0, __('Autoriser HTTP', 'dockerinventory'), {
             helper: __('Déconseillé : le mot de passe circule alors en clair.', 'dockerinventory'),
         }) }}
+    {% elseif is_traefik %}
+        {{ fields.textField('url', item.fields['url'], __('Adresse de l’API de Traefik', 'dockerinventory'), {
+            required: true,
+            placeholder: 'https://traefik.exemple.test',
+            helper: __(
+                'Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est appelée.',
+                'dockerinventory'
+            ),
+        }) }}
+        {{ fields.textField('username', item.fields['username'] ?? '', __('Utilisateur', 'dockerinventory'), {
+            helper: __(
+                'Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton (Bearer).',
+                'dockerinventory'
+            ),
+        }) }}
+        {{ fields.passwordField('api_key', '', __('Mot de passe ou jeton', 'dockerinventory'), {
+            clearable: false,
+            helper: key_helper,
+        }) }}
+        {% if has_api_key %}
+            {{ fields.dropdownYesNo('_clear_api_key', 0, __('Effacer le mot de passe', 'dockerinventory'), {
+                helper: __('Oui : le secret enregistré est supprimé (API sans authentification).', 'dockerinventory'),
+            }) }}
+        {% endif %}
+        {{ fields.dropdownYesNo('allow_http', item.fields['allow_http'] ?? 0, __('Autoriser HTTP', 'dockerinventory'), {
+            helper: __('Déconseillé : le mot de passe circule alors en clair.', 'dockerinventory'),
+        }) }}
     {% elseif is_wud %}
         {{ fields.textField('url', item.fields['url'], __('Adresse de WUD', 'dockerinventory'), {
             required: true,
@@ -184,7 +220,7 @@
         ) }}
     {% endif %}
     {{ fields.textareaField('comment', item.fields['comment'], _n('Comment', 'Comments', 1)) }}
-    {% if not is_wud and not is_harbor %}
+    {% if not is_wud and not is_harbor and not is_traefik %}
         {# Tickets de mise à jour des services de cette connexion (désactivés par défaut). #}
         {{ fields.largeTitle(__('Tickets de mise à jour', 'dockerinventory'), 'ti ti-ticket') }}
         {{ fields.dropdownYesNo('ticket_enabled', item.fields['ticket_enabled'] ?? 0,
