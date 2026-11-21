@@ -380,7 +380,9 @@ final class AccessControlTest extends TestCase
         yield 'configuration : registres maîtrisés' => [
             'front/config.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
         ];
-        $actions = ['save_settings', 'refresh', 'save_mappings', 'save_exploits', 'download_exploits', 'import_exploits'];
+        $actions = [
+            'save_settings', 'refresh', 'save_mappings', 'save_exploits', 'download_exploits', 'import_exploits',
+        ];
         foreach ($actions as $action) {
             yield 'configuration : ' . $action => ['front/config.php', [], [$action => 1, 'enabled' => 1]];
         }
