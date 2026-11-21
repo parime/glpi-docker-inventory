@@ -5,6 +5,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- Marketplace et forum : logo du plugin (`logo.svg`, `logo.png`, `logo-40.png`), captures d'écran
+  (`docs/screenshots/`) dans la fiche du catalogue et les README, descriptions et étiquettes du
+  catalogue à jour (exposition, configuration à risque, Kubernetes), installation depuis le
+  marketplace, annonce du forum GLPI en anglais et en français (`docs/forum-announcement.md`).
+
 ## [0.12.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
