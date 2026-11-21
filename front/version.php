@@ -22,6 +22,7 @@ use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
+use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
@@ -29,13 +30,14 @@ use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Menu;
+use GlpiPlugin\Dockerinventory\Scan\ScanReportParser;
 use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 
 // Sous-pages « Versions des images » (par défaut), « Images Harbor et vulnérabilités »
-// (?view=harbor), « Fin de support des images » (?view=eol), « Exposition » (?view=exposure, #72)
-// et « Configuration à risque » (?view=hardening, #71) de l'entrée Parc > Inventaire Docker :
-// lecture seule, droit de lecture du plugin, entités actives.
+// (?view=harbor), « Analyses importées » (?view=scans, #73), « Fin de support des images »
+// (?view=eol), « Exposition » (?view=exposure, #72) et « Configuration à risque » (?view=hardening,
+// #71) de l'entrée Parc > Inventaire Docker : lecture seule, droit de lecture du plugin, entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
 $hasHarbor = countElementsInTable(Connection::getTable(), ['type' => Connection::TYPE_HARBOR]) > 0;
@@ -44,7 +46,11 @@ $tabs = [
     'versions_url' => ImageVersion::getOverviewURL(),
     'harbor_url'   => HarborArtifact::getPageURL(),
     'tabs'         => Menu::tabs(
-        in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL, Menu::TAB_EXPOSURE, Menu::TAB_HARDENING], true)
+        in_array(
+            $view,
+            [Menu::TAB_HARBOR, Menu::TAB_SCANS, Menu::TAB_EOL, Menu::TAB_EXPOSURE, Menu::TAB_HARDENING],
+            true
+        )
             ? $view
             : Menu::TAB_VERSIONS
     ),
@@ -73,6 +79,34 @@ if ($view === Menu::TAB_EXPOSURE) {
         'infos'        => Exposure::infos(),
         'grc'          => $grc,
         'page_url'     => Exposure::getPageURL(),
+    ]);
+    Html::footer();
+
+    return;
+}
+if ($view === Menu::TAB_SCANS) {
+    // Analyses importées (#73) : rapports de Trivy, Grype ou Docker Scout déposés par
+    // front/imagescan.form.php, rattachés aux services ; rien n'est lancé sur les plateformes.
+    $filter = (string) ($_GET['filter'] ?? '');
+    if (!in_array($filter, ImageScan::FILTERS, true)) {
+        $filter = '';
+    }
+    $data = ImageScan::overview($filter);
+
+    Html::header(ImageScan::getTypeName(2), '', 'assets', Menu::class, Menu::TAB_SCANS);
+    TemplateRenderer::getInstance()->display('@dockerinventory/image_scans.html.twig', $tabs + [
+        'scans'         => $data['scans'],
+        'counts'        => $data['counts'],
+        'coverage'      => $data['coverage'],
+        'filter'        => $filter,
+        'critical_high' => ImageScan::FILTER_CRITICAL_HIGH,
+        'stale_filter'  => ImageScan::FILTER_STALE,
+        'stale_days'    => ImageScan::STALE_DAYS,
+        'max_mb'        => intdiv(ScanReportParser::MAX_BYTES, 1024 * 1024),
+        'page_url'      => ImageScan::getPageURL(),
+        'form_url'      => ImageScan::getFormURLForActions(),
+        'can_create'    => ImageScan::canCreate(),
+        'can_purge'     => ImageScan::canPurge(),
     ]);
     Html::footer();
 

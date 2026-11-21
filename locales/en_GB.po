@@ -3018,3 +3018,207 @@ msgstr "Wrong label, stopped service, network not shared with Traefik or invento
 
 msgid "Étiquettes"
 msgstr "Labels"
+
+msgid "Choisissez un fichier de rapport."
+msgstr "Choose a report file."
+
+msgid "Analyse supprimée."
+msgstr "Scan deleted."
+
+msgid "Analyses d’images importées"
+msgstr "Imported image scans"
+
+msgid "Analyse d’image importée"
+msgstr "Imported image scan"
+
+msgid "Importer une analyse"
+msgstr "Import a scan"
+
+msgid "Supprimer une analyse"
+msgstr "Delete a scan"
+
+msgid "Le fichier est vide."
+msgstr "The file is empty."
+
+#, php-format
+msgid "Le fichier dépasse %d Mo."
+msgstr "The file exceeds %d MB."
+
+msgid "Le fichier n’est pas du JSON valide."
+msgstr "The file is not valid JSON."
+
+msgid "Le fichier est trop imbriqué pour être lu."
+msgstr "The file is too deeply nested to be read."
+
+msgid ""
+"Format non reconnu : rapport JSON de Trivy ou de Grype, ou SARIF, attendu."
+msgstr ""
+"Unrecognised format: a Trivy or Grype JSON report, or SARIF, is expected."
+
+msgid "Image analysée inconnue : indiquez-la (nom:tag) dans le formulaire."
+msgstr "Scanned image unknown: enter it (name:tag) in the form."
+
+#, php-format
+msgid "Le rapport compte plus de %d vulnérabilités."
+msgstr "The report contains more than %d vulnerabilities."
+
+msgid "Par tag : empreinte déployée différente de celle de l’analyse"
+msgstr "By tag: deployed digest differs from the scanned one"
+
+msgid "Gravité inconnue"
+msgstr "Unknown severity"
+
+msgid "Gravité inconnue ou négligeable selon l’outil d’analyse."
+msgstr "Unknown or negligible severity according to the scanner."
+
+msgid "Vous n’avez pas le droit d’importer une analyse."
+msgstr "You are not allowed to import a scan."
+
+msgid "Fichier refusé."
+msgstr "File rejected."
+
+#, php-format
+msgid "Analyse importée : %1$s, %2$d vulnérabilités."
+msgstr "Scan imported: %1$s, %2$d vulnerabilities."
+
+msgid "L’analyse n’a pas pu être enregistrée."
+msgstr "The scan could not be saved."
+
+msgid "Analyses importées"
+msgstr "Imported scans"
+
+msgid "Analyse trop ancienne : relancez-la et déposez le nouveau rapport."
+msgstr "Scan too old: run it again and upload the new report."
+
+msgid "Date inconnue"
+msgstr "Unknown date"
+
+msgid "Trop ancienne"
+msgstr "Too old"
+
+#, php-format
+msgid "il y a %d j"
+msgstr "%d d ago"
+
+msgid "Corrigée en"
+msgstr "Fixed in"
+
+msgid "Paquet"
+msgstr "Package"
+
+#, php-format
+msgid ""
+"Seules les %d plus graves sont détaillées ; les compteurs portent sur "
+"toutes."
+msgstr "Only the %d most severe are detailed; the counters cover all of them."
+
+msgid "Version installée"
+msgstr "Installed version"
+
+msgid "Vulnérabilité"
+msgstr "Vulnerability"
+
+#, php-format
+msgid "Vulnérabilités détaillées (%d)"
+msgstr "Detailed vulnerabilities (%d)"
+
+msgid "Aucun service déployé avec cette image"
+msgstr "No service deployed with this image"
+
+msgid "Vulnérabilités corrigeables sur le total"
+msgstr "Fixable vulnerabilities out of the total"
+
+#, php-format
+msgid "%1$d vulnérabilités, dont %2$d corrigeables."
+msgstr "%1$d vulnerabilities, %2$d of them fixable."
+
+msgid "Image analysée"
+msgstr "Scanned image"
+
+msgid "Vulnérabilités de l’image (analyse importée)"
+msgstr "Image vulnerabilities (imported scan)"
+
+#, php-format
+msgid "%1$d sur %2$d services"
+msgstr "%1$d of %2$d services"
+
+#, php-format
+msgid "%d Mo au plus."
+msgstr "%d MB at most."
+
+msgid "Analyses trop anciennes"
+msgstr "Scans too old"
+
+msgid "Analyses à traiter en priorité"
+msgstr "Scans to handle first"
+
+msgid "Aucune analyse ne correspond à ces filtres."
+msgstr "No scan matches these filters."
+
+msgid "Avec une vulnérabilité critique ou haute"
+msgstr "With a critical or high vulnerability"
+
+msgid ""
+"Connaître les vulnérabilités des images hors de Harbor, à partir des "
+"analyses faites en CI."
+msgstr ""
+"Know the vulnerabilities of images outside Harbor, from the scans run in CI."
+
+msgid "Corrigeables"
+msgstr "Fixable"
+
+msgid "Corrigez d’abord les vulnérabilités critiques et hautes."
+msgstr "Fix critical and high vulnerabilities first."
+
+msgid ""
+"Déposez le rapport de Trivy, de Grype ou de Docker Scout de chaque image "
+"déployée."
+msgstr ""
+"Upload the Trivy, Grype or Docker Scout report of each deployed image."
+
+msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgstr "Management of technical vulnerabilities (ISO 27001, control A.8.8)."
+
+msgid "Image analysée (facultatif)"
+msgstr "Scanned image (optional)"
+
+msgid "Importer"
+msgstr "Import"
+
+msgid "Importer un rapport"
+msgstr "Import a report"
+
+msgid "Le plugin ne lance aucune analyse."
+msgstr "The plugin never runs a scan."
+
+msgid ""
+"Les images stockées dans Harbor ont leur onglet : Images Harbor et "
+"vulnérabilités."
+msgstr ""
+"Images stored in Harbor have their own tab: Harbor images and "
+"vulnerabilities."
+
+msgid "Nécessaire si le rapport ne la nomme pas (SARIF de Docker Scout)."
+msgstr "Required if the report does not name it (Docker Scout SARIF)."
+
+#, php-format
+msgid "Plus de %d jours, ou date inconnue"
+msgstr "More than %d days, or unknown date"
+
+msgid "Rapport (JSON ou SARIF)"
+msgstr "Report (JSON or SARIF)"
+
+msgid "Rapports acceptés, produits par vos outils (en CI par exemple) :"
+msgstr "Accepted reports, produced by your tools (in CI for example):"
+
+msgid "Services couverts par une analyse"
+msgstr "Services covered by a scan"
+
+msgid "Trop anciennes"
+msgstr "Too old"
+
+msgid "Une par image, tag et empreinte"
+msgstr "One per image, tag and digest"
+
+msgid "Vulnérabilités par image"
+msgstr "Vulnerabilities by image"

@@ -1,0 +1,54 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Versions » d'un service : analyse importée rattachée (#73, ImageScan::forService()). #}
+{% set scan = image_scan %}
+<div class="card mb-3">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-file-search me-2" aria-hidden="true"></i>
+            {{ __('Vulnérabilités de l’image (analyse importée)', 'dockerinventory') }}
+        </h2>
+        {{ include('@dockerinventory/_severity_badge.html.twig', {severity: scan.severity, artifact: scan}) }}
+        <a href="{{ scan.page_url }}" class="ms-auto small">
+            <i class="ti ti-external-link me-1" aria-hidden="true"></i>{{ __('Analyses importées', 'dockerinventory') }}
+        </a>
+    </div>
+    <div class="card-body">
+        <div class="row g-3 mb-2">
+            <div class="col-md-4">
+                <div class="text-muted small">{{ __('Image analysée', 'dockerinventory') }}</div>
+                <strong>{{ scan.name }}</strong>
+                {% if scan.digest_short %}
+                    <div><code title="{{ scan.digest }}">{{ scan.digest_short }}</code></div>
+                {% endif %}
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small">{{ __('Analyse', 'dockerinventory') }}</div>
+                {{ include('@dockerinventory/_image_scan_age.html.twig') }}
+            </div>
+            <div class="col-md-4">
+                <div class="text-muted small">{{ __('Rattachement', 'dockerinventory') }}</div>
+                {{ scan.method_label }}
+            </div>
+        </div>
+        <p class="mb-2">
+            {{ __('%1$d vulnérabilités, dont %2$d corrigeables.', 'dockerinventory')|format(scan.total, scan.fixable) }}
+        </p>
+        {% if scan.findings is not empty %}
+            {{ include('@dockerinventory/_image_scan_findings.html.twig') }}
+        {% endif %}
+    </div>
+</div>

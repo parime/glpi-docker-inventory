@@ -28,6 +28,7 @@ use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\HardeningException;
+use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
 use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesClient;
@@ -165,6 +166,7 @@ final class XssTest extends TestCase
             );
             $DB->delete(HardeningException::getTable(), ['plugin_dockerinventory_services_id' => $serviceIds]);
         }
+        $DB->delete(ImageScan::getTable(), ['filename' => 'xss-di73.json']);
         foreach (
             $DB->request(['SELECT' => ['appliances_id'], 'FROM' => 'glpi_plugin_dockerinventory_stacks',
             'WHERE' => ['plugin_dockerinventory_connections_id' => $sources]]) as $row
@@ -359,6 +361,20 @@ final class XssTest extends TestCase
         $hardening = $this->open('front/version.php', ['view' => 'hardening']);
         $this->assertEscaped($hardening, 'configuration à risque');
         $this->assertStringContainsString('&lt;img src=x onerror', $hardening);
+        // Analyse importée (#73) : identifiant, paquet et versions venus d'un fichier déposé.
+        $_SESSION['glpiactiveprofile'][ImageScan::RIGHTNAME] = CREATE | PURGE;
+        $imported = ImageScan::import((string) json_encode([
+            'ArtifactName' => 'nginx:1.27-di73',
+            'Results'      => [['Vulnerabilities' => [[
+                'VulnerabilityID'  => 'CVE-2099-' . self::SCRIPT,
+                'PkgName'          => self::IMG,
+                'InstalledVersion' => self::SCRIPT,
+                'FixedVersion'     => self::IMG,
+                'Severity'         => 'CRITICAL',
+            ]]]],
+        ]), 'xss-di73.json');
+        $this->assertTrue($imported['ok'], $imported['message']);
+        $this->assertEscaped($this->open('front/version.php', ['view' => 'scans']), 'analyses importées');
         $this->assertEscaped($this->open('front/service.php'), 'liste des services', false);
         $this->assertEscaped($this->open('front/imageversion.php'), 'recherche des versions', false);
         $this->assertEscaped(

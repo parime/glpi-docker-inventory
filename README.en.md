@@ -13,7 +13,8 @@ GLPI plugin that gives a **read-only** view of containerised applications:
 - **Kubernetes**: namespaces, workloads, nodes, exposed services and ingresses.
 
 It also reports the **exposure** of services (published ports, Traefik routes, ingresses) and their
-**risky configuration** (privileged mode, mounted Docker socket, running as root...).
+**risky configuration** (privileged mode, mounted Docker socket, running as root...), and imports the
+Trivy, Grype or Docker Scout **image scans** run in CI for images outside Harbor.
 
 It answers "what is running, in which version, is it up to date, is it vulnerable, is it exposed?", which GLPI
 cannot do on its own: its "Virtualization" tab lists isolated containers, with no stack, service,
@@ -94,7 +95,7 @@ Then **Setup > Plugins**, install and enable "Docker Inventory".
 
 | Screen | Path | Right |
 | --- | --- | --- |
-| Viewing | **Assets > Docker Inventory**: **Services**, **Image versions**, **Harbor images and vulnerabilities**, **Image end of support**, **Exposure**, **Risky configuration** sub-pages | **Read** (Administration > Profiles, "Docker Inventory" tab) |
+| Viewing | **Assets > Docker Inventory**: **Services**, **Image versions**, **Harbor images and vulnerabilities**, **Imported scans**, **Image end of support**, **Exposure**, **Risky configuration** sub-pages | **Read** (Administration > Profiles, "Docker Inventory" tab) |
 | Settings | **Setup > Plugins > Docker Inventory**: **Docker connections** (Portainer, Kubernetes, WUD, Harbor), **Managed registries**, **Image end of support** tabs | GLPI setup, update |
 
 The former addresses (*Setup > Docker connections*, *Setup > Image end of support*, up to version

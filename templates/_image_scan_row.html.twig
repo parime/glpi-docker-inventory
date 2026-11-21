@@ -1,0 +1,68 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Ligne d'une analyse importée (#73) et, dessous, ses vulnérabilités détaillées (repliées). #}
+<tr>
+    <td>
+        <strong>{{ scan.name }}</strong>
+        {% if scan.digest_short %}
+            <div class="small text-muted"><code title="{{ scan.digest }}">{{ scan.digest_short }}</code></div>
+        {% endif %}
+    </td>
+    <td>
+        {{ include('@dockerinventory/_image_scan_age.html.twig') }}
+    </td>
+    <td>{{ include('@dockerinventory/_severity_badge.html.twig', {severity: scan.severity, artifact: scan}) }}</td>
+    <td>
+        {% set fixable_color = scan.fixable > 0 ? 'info' : 'secondary' %}
+        <span class="badge {{ tone.badge(fixable_color) }}"
+              title="{{ __('Vulnérabilités corrigeables sur le total', 'dockerinventory') }}" data-bs-toggle="tooltip">
+            {{ scan.fixable }} / {{ scan.total }}
+        </span>
+    </td>
+    <td>
+        {% for service in scan.services %}
+            <div class="text-nowrap">
+                <i class="ti {{ service.exact ? 'ti-link' : 'ti-tag' }} me-1 text-muted" title="{{ service.method }}"
+                   data-bs-toggle="tooltip" aria-hidden="true"></i>
+                <a href="{{ service.url }}">{{ service.stack ? service.stack ~ ' / ' : '' }}{{ service.name }}</a>
+            </div>
+        {% else %}
+            <span class="text-muted small">{{ __('Aucun service déployé avec cette image', 'dockerinventory') }}</span>
+        {% endfor %}
+    </td>
+    {% if can_purge %}
+        <td class="text-end">
+            <form method="post" action="{{ form_url }}" class="d-inline">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="id" value="{{ scan.id }}">
+                <button type="submit" name="purge_scan" value="1" class="btn btn-sm btn-ghost-danger"
+                        title="{{ __('Supprimer une analyse', 'dockerinventory') }}">
+                    <i class="ti ti-trash" aria-hidden="true"></i>
+                    <span class="visually-hidden">{{ __('Supprimer une analyse', 'dockerinventory') }}</span>
+                </button>
+            </form>
+        </td>
+    {% endif %}
+</tr>
+{% if scan.findings is not empty %}
+    <tr>
+        <td colspan="{{ can_purge ? 6 : 5 }}" class="pt-0">
+            {{ include('@dockerinventory/_image_scan_findings.html.twig') }}
+        </td>
+    </tr>
+{% endif %}

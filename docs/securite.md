@@ -40,7 +40,7 @@ Avec GRC Manager installé, la fiche de quatre mesures de l'Annexe A d'ISO 27001
 | Mesure | Preuve |
 | --- | --- |
 | A.5.9 Inventaire des informations et autres actifs associés | Services, stacks, nœuds ; date du dernier import réussi de chaque connexion (fraîcheur de l'inventaire) |
-| A.8.8 Gestion des vulnérabilités techniques | Écarts de version (majeure, mineure, correctif) ; vulnérabilités Harbor des images déployées |
+| A.8.8 Gestion des vulnérabilités techniques | Écarts de version (majeure, mineure, correctif) ; vulnérabilités Harbor des images déployées ; analyses importées de Trivy, Grype ou Docker Scout |
 | A.8.9 Gestion de la configuration | Configuration des services et provenance des images (registre maîtrisé ou non) |
 | A.8.32 Gestion des changements | Changements de version des 90 derniers jours (autre image, autre tag, image reconstruite sous le même tag) |
 
@@ -87,6 +87,28 @@ Un service n'est rattaché à une analyse que par l'**empreinte** de l'image qui
 son tag, avec la mention « empreinte différente de celle de Harbor » : c'est ce qui permet de dire
 que l'analyse porte bien sur l'image déployée. Une image non analysée ou dont l'analyse a échoué
 est affichée comme telle, jamais comme « sans vulnérabilité ».
+
+### Images hors de Harbor : analyses importées
+
+Pour les images qui viennent d'un autre registre, **Parc > Inventaire Docker**, sous-page
+**Analyses importées** : déposez le rapport produit par votre outil, en CI par exemple.
+
+| Outil | Commande qui produit le rapport |
+|-------|---------------------------------|
+| Trivy | `trivy image --format json --output rapport.json IMAGE` |
+| Grype | `grype IMAGE --output json --file rapport.json` |
+| Docker Scout | `docker scout cves --format sarif --output rapport.sarif IMAGE` |
+
+Tout rapport SARIF 2.1.0 est aussi accepté. Le SARIF de Docker Scout ne nomme pas l'image : saisissez
+alors « nom:tag » dans le champ **Image analysée**. Le fichier est lu puis oublié : taille de 20 Mo
+au plus, profondeur JSON et nombre de vulnérabilités bornés, aucun contenu exécuté. Une analyse par
+image, tag et empreinte : un nouveau dépôt remplace l'ancien (historique gardé).
+
+L'analyse est rattachée aux services comme celle de Harbor : par l'empreinte, sinon par le tag. La
+page donne les vulnérabilités par gravité, les corrigeables, la date de l'analyse (signalée au-delà
+de 30 jours ou si elle est inconnue), le taux de services couverts et le détail des 500
+vulnérabilités les plus graves. L'onglet **Versions** du service affiche la même carte. Droit
+**Analyses d'images importées** du profil : importer, supprimer (accordé aux administrateurs).
 
 ## Changements de version
 

@@ -1,0 +1,59 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Vulnérabilités détaillées d'une analyse importée (#73), des plus graves aux moins graves. #}
+<details>
+    <summary class="small">
+        <i class="ti ti-list-details me-1" aria-hidden="true"></i>
+        {{ __('Vulnérabilités détaillées (%d)', 'dockerinventory')|format(scan.findings|length) }}
+    </summary>
+    {% if scan.truncated %}
+        <p class="small text-muted mb-1">
+            {{ __('Seules les %d plus graves sont détaillées ; les compteurs portent sur toutes.', 'dockerinventory')
+                |format(scan.findings|length) }}
+        </p>
+    {% endif %}
+    <div class="table-responsive">
+        <table class="table table-sm mb-0">
+            <thead>
+                <tr>
+                    <th>{{ __('Vulnérabilité', 'dockerinventory') }}</th>
+                    <th>{{ __('Gravité', 'dockerinventory') }}</th>
+                    <th>{{ __('Paquet', 'dockerinventory') }}</th>
+                    <th>{{ __('Version installée', 'dockerinventory') }}</th>
+                    <th>{{ __('Corrigée en', 'dockerinventory') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for finding in scan.findings %}
+                    <tr>
+                        <td><code>{{ finding.id }}</code></td>
+                        <td>
+                            <span class="badge {{ tone.badge(finding.severity.color) }}">
+                                <i class="{{ finding.severity.icon }} me-1" aria-hidden="true"></i>
+                                {{- finding.severity.label -}}
+                            </span>
+                        </td>
+                        <td>{{ finding.package }}</td>
+                        <td>{{ finding.installed }}</td>
+                        <td>{{ finding.fixed ?: '-' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</details>

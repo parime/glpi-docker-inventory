@@ -21,6 +21,16 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   tableau de bord ou API de Traefik sans authentification (`api.insecure`), route publique sans TLS
   ni redirection HTTPS, route d'administration sans authentification, route publique sans en-têtes
   de sécurité. Faux Traefik `tests/mock-traefik` pour les tests.
+- Analyses d'images importées ([#73](https://github.com/parime/glpi-docker-inventory/issues/73)) :
+  sous-page **Analyses importées** de Parc > Inventaire Docker pour déposer le rapport JSON de Trivy
+  ou de Grype, ou un SARIF (Docker Scout, Trivy, Grype), des images qui ne sont pas dans Harbor.
+  Lecture sûre (20 Mo au plus, profondeur JSON et nombre de vulnérabilités bornés, valeurs typées et
+  tronquées), une analyse par entité, image, tag et empreinte, remplacée au dépôt suivant. Rattachement
+  aux services par empreinte, sinon par tag ; vulnérabilités par gravité, corrigeables, analyse de plus
+  de 30 jours signalée, taux de services couverts, détail des 500 plus graves ; carte dans l'onglet
+  Versions du service. Droit propre (importer, supprimer), accordé aux administrateurs. Aucune
+  analyse lancée, rien n'est modifié sur les plateformes. Rapports d'exemple fictifs
+  dans `tests/fixtures/scans`.
 
 ### Changed
 

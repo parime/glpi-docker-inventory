@@ -1,0 +1,206 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Sous-page « Analyses importées » de l'entrée Inventaire Docker (#73) : rapports de Trivy, Grype ou
+   Docker Scout déposés, services rattachés, vulnérabilités par gravité (ImageScan::overview()). #}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'scans',
+        purpose: __(
+            'Connaître les vulnérabilités des images hors de Harbor, à partir des analyses faites en CI.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Déposez le rapport de Trivy, de Grype ou de Docker Scout de chaque image déployée.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Corrigez d’abord les vulnérabilités critiques et hautes.', 'dockerinventory')
+            ~ ' ' ~ __('Le plugin ne lance aucune analyse.', 'dockerinventory')
+            ~ ' ' ~ __('Le plugin ne modifie rien sur les plateformes.', 'dockerinventory'),
+        reference: __('Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8).', 'dockerinventory'),
+    }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+    <div class="row row-cards mb-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-file-search text-info me-1" aria-hidden="true"></i>
+                        {{ __('Analyses importées', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ counts.scans }}</div>
+                    <div class="small text-muted">{{ __('Une par image, tag et empreinte', 'dockerinventory') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-link text-success me-1" aria-hidden="true"></i>
+                        {{ __('Services couverts par une analyse', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ coverage is null ? '-' : coverage ~ ' %' }}</div>
+                    <div class="small text-muted">
+                        {{ __('%1$d sur %2$d services', 'dockerinventory')|format(counts.covered, counts.services) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-alert-octagon text-danger me-1" aria-hidden="true"></i>
+                        {{ __('Avec une vulnérabilité critique ou haute', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ counts.critical_high }}</div>
+                    <div class="small text-muted">{{ __('Analyses à traiter en priorité', 'dockerinventory') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-clock-exclamation text-warning me-1" aria-hidden="true"></i>
+                        {{ __('Analyses trop anciennes', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ counts.stale }}</div>
+                    <div class="small text-muted">
+                        {{ __('Plus de %d jours, ou date inconnue', 'dockerinventory')|format(stale_days) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if can_create %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h2 class="card-title mb-0">
+                    <i class="ti ti-upload me-2" aria-hidden="true"></i>
+                    {{- __('Importer un rapport', 'dockerinventory') -}}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{{ form_url }}" enctype="multipart/form-data"
+                      class="row g-2 align-items-end">
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    <div class="col-md-5">
+                        <label class="form-label" for="dockerinventory-scan-report">
+                            {{ __('Rapport (JSON ou SARIF)', 'dockerinventory') }}
+                        </label>
+                        <input type="file" class="form-control" id="dockerinventory-scan-report" name="report"
+                               accept=".json,.sarif,application/json" required>
+                        <div class="form-hint">{{ __('%d Mo au plus.', 'dockerinventory')|format(max_mb) }}</div>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label" for="dockerinventory-scan-reference">
+                            {{ __('Image analysée (facultatif)', 'dockerinventory') }}
+                        </label>
+                        <input type="text" class="form-control" id="dockerinventory-scan-reference" name="reference"
+                               maxlength="300" placeholder="registre.exemple.test/boutique/web:2.4.1">
+                        <div class="form-hint">
+                            {{ __(
+                                'Nécessaire si le rapport ne la nomme pas (SARIF de Docker Scout).',
+                                'dockerinventory'
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" name="import_scan" value="1" class="btn btn-primary w-100">
+                            <i class="ti ti-upload me-1" aria-hidden="true"></i>{{ __('Importer', 'dockerinventory') }}
+                        </button>
+                    </div>
+                </form>
+                <p class="small text-muted mt-3 mb-1">
+                    <i class="ti ti-terminal-2 me-1" aria-hidden="true"></i>
+                    {{ __('Rapports acceptés, produits par vos outils (en CI par exemple) :', 'dockerinventory') }}
+                </p>
+                <ul class="small text-muted mb-0">
+                    <li><code>trivy image --format json --output rapport.json IMAGE</code></li>
+                    <li><code>grype IMAGE --output json --file rapport.json</code></li>
+                    <li><code>docker scout cves --format sarif --output rapport.sarif IMAGE</code></li>
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="card-title mb-0">
+                <i class="ti ti-shield-search me-2" aria-hidden="true"></i>
+                {{ __('Vulnérabilités par image', 'dockerinventory') }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ page_url }}" class="btn btn-sm {{ filter == '' ? 'btn-dark' : 'btn-outline-dark' }}">
+                    <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Toutes', 'dockerinventory') }}
+                </a>
+                <a href="{{ page_url }}&filter={{ critical_high }}"
+                   class="btn btn-sm {{ filter == critical_high ? 'btn-danger' : 'btn-outline-danger' }}">
+                    <i class="ti ti-alert-octagon me-1" aria-hidden="true"></i>
+                    {{- __('Critique ou haute', 'dockerinventory') -}}
+                    <span class="badge bg-danger-subtle text-danger-emphasis ms-1">{{ counts.critical_high }}</span>
+                </a>
+                <a href="{{ page_url }}&filter={{ stale_filter }}"
+                   class="btn btn-sm {{ filter == stale_filter ? 'btn-warning' : 'btn-outline-warning' }}">
+                    <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
+                    {{- __('Trop anciennes', 'dockerinventory') -}}
+                    <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ counts.stale }}</span>
+                </a>
+            </div>
+        </div>
+        {% if scans is empty %}
+            <div class="card-body">
+                <div class="empty">
+                    <div class="empty-icon"><i class="ti ti-file-search text-muted" aria-hidden="true"></i></div>
+                    <p class="empty-title">
+                        {{ __('Aucune analyse ne correspond à ces filtres.', 'dockerinventory') }}
+                    </p>
+                    <p class="empty-subtitle text-muted">
+                        {{ __(
+                            'Les images stockées dans Harbor ont leur onglet : Images Harbor et vulnérabilités.',
+                            'dockerinventory'
+                        ) }}
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    <thead>
+                        <tr>
+                            <th>{{ __('Image', 'dockerinventory') }}</th>
+                            <th>{{ __('Analyse', 'dockerinventory') }}</th>
+                            <th>{{ __('Gravité', 'dockerinventory') }}</th>
+                            <th>{{ __('Corrigeables', 'dockerinventory') }}</th>
+                            <th>{{ __('Services', 'dockerinventory') }}</th>
+                            {% if can_purge %}
+                                <th><span class="visually-hidden">{{ __('Actions') }}</span></th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in scans %}
+                            {{ include('@dockerinventory/_image_scan_row.html.twig') }}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>

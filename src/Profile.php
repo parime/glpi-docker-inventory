@@ -64,6 +64,12 @@ class Profile extends CommonGLPI
                     'field'    => HardeningException::RIGHTNAME,
                     'rights'   => (new HardeningException())->getRights(),
                 ],
+                [
+                    'itemtype' => ImageScan::class,
+                    'label'    => ImageScan::getTypeName(2),
+                    'field'    => ImageScan::RIGHTNAME,
+                    'rights'   => (new ImageScan())->getRights(),
+                ],
             ],
         ]);
 

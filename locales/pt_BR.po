@@ -3018,3 +3018,213 @@ msgstr "Etiqueta errada, serviço parado, rede não compartilhada com o Traefik 
 
 msgid "Étiquettes"
 msgstr "Etiquetas"
+
+msgid "Choisissez un fichier de rapport."
+msgstr "Escolha um arquivo de relatório."
+
+msgid "Analyse supprimée."
+msgstr "Análise excluída."
+
+msgid "Analyses d’images importées"
+msgstr "Análises de imagens importadas"
+
+msgid "Analyse d’image importée"
+msgstr "Análise de imagem importada"
+
+msgid "Importer une analyse"
+msgstr "Importar uma análise"
+
+msgid "Supprimer une analyse"
+msgstr "Excluir uma análise"
+
+msgid "Le fichier est vide."
+msgstr "O arquivo está vazio."
+
+#, php-format
+msgid "Le fichier dépasse %d Mo."
+msgstr "O arquivo excede %d MB."
+
+msgid "Le fichier n’est pas du JSON valide."
+msgstr "O arquivo não é um JSON válido."
+
+msgid "Le fichier est trop imbriqué pour être lu."
+msgstr "O arquivo está aninhado demais para ser lido."
+
+msgid ""
+"Format non reconnu : rapport JSON de Trivy ou de Grype, ou SARIF, attendu."
+msgstr ""
+"Formato não reconhecido: esperado um relatório JSON do Trivy ou do Grype, ou"
+" SARIF."
+
+msgid "Image analysée inconnue : indiquez-la (nom:tag) dans le formulaire."
+msgstr "Imagem analisada desconhecida: informe-a (nome:tag) no formulário."
+
+#, php-format
+msgid "Le rapport compte plus de %d vulnérabilités."
+msgstr "O relatório contém mais de %d vulnerabilidades."
+
+msgid "Par tag : empreinte déployée différente de celle de l’analyse"
+msgstr "Por tag: digest implantado diferente do da análise"
+
+msgid "Gravité inconnue"
+msgstr "Gravidade desconhecida"
+
+msgid "Gravité inconnue ou négligeable selon l’outil d’analyse."
+msgstr ""
+"Gravidade desconhecida ou insignificante segundo a ferramenta de análise."
+
+msgid "Vous n’avez pas le droit d’importer une analyse."
+msgstr "Você não tem permissão para importar uma análise."
+
+msgid "Fichier refusé."
+msgstr "Arquivo recusado."
+
+#, php-format
+msgid "Analyse importée : %1$s, %2$d vulnérabilités."
+msgstr "Análise importada: %1$s, %2$d vulnerabilidades."
+
+msgid "L’analyse n’a pas pu être enregistrée."
+msgstr "Não foi possível salvar a análise."
+
+msgid "Analyses importées"
+msgstr "Análises importadas"
+
+msgid "Analyse trop ancienne : relancez-la et déposez le nouveau rapport."
+msgstr "Análise antiga demais: execute-a novamente e envie o novo relatório."
+
+msgid "Date inconnue"
+msgstr "Data desconhecida"
+
+msgid "Trop ancienne"
+msgstr "Antiga demais"
+
+#, php-format
+msgid "il y a %d j"
+msgstr "há %d d"
+
+msgid "Corrigée en"
+msgstr "Corrigida em"
+
+msgid "Paquet"
+msgstr "Pacote"
+
+#, php-format
+msgid ""
+"Seules les %d plus graves sont détaillées ; les compteurs portent sur "
+"toutes."
+msgstr ""
+"Apenas as %d mais graves são detalhadas; os contadores abrangem todas."
+
+msgid "Version installée"
+msgstr "Versão instalada"
+
+msgid "Vulnérabilité"
+msgstr "Vulnerabilidade"
+
+#, php-format
+msgid "Vulnérabilités détaillées (%d)"
+msgstr "Vulnerabilidades detalhadas (%d)"
+
+msgid "Aucun service déployé avec cette image"
+msgstr "Nenhum serviço implantado com esta imagem"
+
+msgid "Vulnérabilités corrigeables sur le total"
+msgstr "Vulnerabilidades corrigíveis sobre o total"
+
+#, php-format
+msgid "%1$d vulnérabilités, dont %2$d corrigeables."
+msgstr "%1$d vulnerabilidades, das quais %2$d corrigíveis."
+
+msgid "Image analysée"
+msgstr "Imagem analisada"
+
+msgid "Vulnérabilités de l’image (analyse importée)"
+msgstr "Vulnerabilidades da imagem (análise importada)"
+
+#, php-format
+msgid "%1$d sur %2$d services"
+msgstr "%1$d de %2$d serviços"
+
+#, php-format
+msgid "%d Mo au plus."
+msgstr "No máximo %d MB."
+
+msgid "Analyses trop anciennes"
+msgstr "Análises antigas demais"
+
+msgid "Analyses à traiter en priorité"
+msgstr "Análises a tratar com prioridade"
+
+msgid "Aucune analyse ne correspond à ces filtres."
+msgstr "Nenhuma análise corresponde a estes filtros."
+
+msgid "Avec une vulnérabilité critique ou haute"
+msgstr "Com uma vulnerabilidade crítica ou alta"
+
+msgid ""
+"Connaître les vulnérabilités des images hors de Harbor, à partir des "
+"analyses faites en CI."
+msgstr ""
+"Conhecer as vulnerabilidades das imagens fora do Harbor, a partir das "
+"análises feitas na CI."
+
+msgid "Corrigeables"
+msgstr "Corrigíveis"
+
+msgid "Corrigez d’abord les vulnérabilités critiques et hautes."
+msgstr "Corrija primeiro as vulnerabilidades críticas e altas."
+
+msgid ""
+"Déposez le rapport de Trivy, de Grype ou de Docker Scout de chaque image "
+"déployée."
+msgstr ""
+"Envie o relatório do Trivy, do Grype ou do Docker Scout de cada imagem "
+"implantada."
+
+msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgstr "Gestão de vulnerabilidades técnicas (ISO 27001, controle A.8.8)."
+
+msgid "Image analysée (facultatif)"
+msgstr "Imagem analisada (opcional)"
+
+msgid "Importer"
+msgstr "Importar"
+
+msgid "Importer un rapport"
+msgstr "Importar um relatório"
+
+msgid "Le plugin ne lance aucune analyse."
+msgstr "O plugin não executa nenhuma análise."
+
+msgid ""
+"Les images stockées dans Harbor ont leur onglet : Images Harbor et "
+"vulnérabilités."
+msgstr ""
+"As imagens armazenadas no Harbor têm sua aba: Imagens Harbor e "
+"vulnerabilidades."
+
+msgid "Nécessaire si le rapport ne la nomme pas (SARIF de Docker Scout)."
+msgstr "Necessária se o relatório não a nomear (SARIF do Docker Scout)."
+
+#, php-format
+msgid "Plus de %d jours, ou date inconnue"
+msgstr "Mais de %d dias, ou data desconhecida"
+
+msgid "Rapport (JSON ou SARIF)"
+msgstr "Relatório (JSON ou SARIF)"
+
+msgid "Rapports acceptés, produits par vos outils (en CI par exemple) :"
+msgstr ""
+"Relatórios aceitos, produzidos pelas suas ferramentas (na CI, por exemplo):"
+
+msgid "Services couverts par une analyse"
+msgstr "Serviços cobertos por uma análise"
+
+msgid "Trop anciennes"
+msgstr "Antigas demais"
+
+msgid "Une par image, tag et empreinte"
+msgstr "Uma por imagem, tag e digest"
+
+msgid "Vulnérabilités par image"
+msgstr "Vulnerabilidades por imagem"

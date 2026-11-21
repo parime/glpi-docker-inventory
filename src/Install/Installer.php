@@ -25,6 +25,7 @@ use DisplayPreference;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HardeningException;
+use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
@@ -58,6 +59,7 @@ final class Installer
         'glpi_plugin_dockerinventory_vulntickets',
         'glpi_plugin_dockerinventory_versionchanges',
         'glpi_plugin_dockerinventory_hardeningexceptions',
+        'glpi_plugin_dockerinventory_imagescans',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -98,6 +100,11 @@ final class Installer
             ProfileRight::addProfileRights([HardeningException::RIGHTNAME]);
             $this->grantToAdministrators([HardeningException::RIGHTNAME => CREATE | PURGE]);
         }
+        // 0.14.0 => analyses d'images importées (#73) : même règle.
+        if (countElementsInTable('glpi_profilerights', ['name' => ImageScan::RIGHTNAME]) === 0) {
+            ProfileRight::addProfileRights([ImageScan::RIGHTNAME]);
+            $this->grantToAdministrators([ImageScan::RIGHTNAME => CREATE | PURGE]);
+        }
         $defaults = [ImageVersion::class => self::VERSION_COLUMNS, Connection::class => self::CONNECTION_COLUMNS];
         foreach ($defaults as $itemtype => $columns) {
             if (countElementsInTable(DisplayPreference::getTable(), ['itemtype' => $itemtype]) === 0) {
@@ -128,7 +135,7 @@ final class Installer
         global $DB;
 
         CronTask::unregister('dockerinventory');
-        ProfileRight::deleteProfileRights([Service::RIGHTNAME, HardeningException::RIGHTNAME]);
+        ProfileRight::deleteProfileRights([Service::RIGHTNAME, HardeningException::RIGHTNAME, ImageScan::RIGHTNAME]);
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
         HarborSettings::delete();
@@ -482,6 +489,39 @@ final class Installer
                 KEY `entities_id` (`entities_id`),
                 KEY `users_id` (`users_id`),
                 KEY `date_end` (`date_end`)",
+            // Analyses d'images importées (#73) : une par entité, image, tag et empreinte.
+            'glpi_plugin_dockerinventory_imagescans' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `name` varchar(255) NOT NULL DEFAULT '',
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `is_recursive` tinyint NOT NULL DEFAULT '0',
+                `image` varchar(255) NOT NULL DEFAULT '',
+                `image_key` varchar(255) NOT NULL DEFAULT '',
+                `tag` varchar(128) NOT NULL DEFAULT '',
+                `digest` varchar(80) NOT NULL DEFAULT '',
+                `scanner` varchar(16) NOT NULL DEFAULT '',
+                `tool` varchar(64) NOT NULL DEFAULT '',
+                `tool_version` varchar(32) NOT NULL DEFAULT '',
+                `scan_date` timestamp NULL DEFAULT NULL,
+                `critical` int NOT NULL DEFAULT '0',
+                `high` int NOT NULL DEFAULT '0',
+                `medium` int NOT NULL DEFAULT '0',
+                `low` int NOT NULL DEFAULT '0',
+                `other` int NOT NULL DEFAULT '0',
+                `fixable` int NOT NULL DEFAULT '0',
+                `total` int NOT NULL DEFAULT '0',
+                `findings` mediumtext,
+                `is_truncated` tinyint NOT NULL DEFAULT '0',
+                `filename` varchar(255) NOT NULL DEFAULT '',
+                `users_id` int {$sign} NOT NULL DEFAULT '0',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`entities_id`, `image_key`, `tag`, `digest`),
+                KEY `is_recursive` (`is_recursive`),
+                KEY `image_key` (`image_key`),
+                KEY `users_id` (`users_id`),
+                KEY `scan_date` (`scan_date`)",
         ];
 
         $created = [];

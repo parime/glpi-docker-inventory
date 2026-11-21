@@ -13,7 +13,8 @@ Plugin GLPI qui donne une vue sur les applications en conteneurs, **en lecture s
 - **Kubernetes** : namespaces, charges de travail, nœuds, services exposés et ingress.
 
 Il relève aussi l'**exposition** des services (ports publiés, routes Traefik, ingress) et leur
-**configuration à risque** (mode privilégié, socket Docker monté, exécution en root...).
+**configuration à risque** (mode privilégié, socket Docker monté, exécution en root...), et importe les
+**analyses d'images** de Trivy, Grype ou Docker Scout faites en CI pour les images hors de Harbor.
 
 Il répond à la question « qu'est-ce qui tourne, en quelle version, est-ce à jour, est-ce
 vulnérable, est-ce exposé ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
@@ -94,7 +95,7 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 
 | Écran | Chemin | Droit |
 | --- | --- | --- |
-| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Fin de support des images**, **Exposition**, **Configuration à risque** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
+| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Analyses importées**, **Fin de support des images**, **Exposition**, **Configuration à risque** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
 | Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres maîtrisés**, **Fin de support des images** | Configuration de GLPI en modification |
 
 Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
