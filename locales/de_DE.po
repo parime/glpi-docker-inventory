@@ -2869,3 +2869,152 @@ msgstr "Für eine gewollte Abweichung eine begründete und datierte Ausnahme spe
 
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Bei jedem Import erfasste Sicherheitseinstellungen: privilegiert, root, Host-Zugriff, Limits, Einbindungen."
+
+msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgstr "Traefik-Lesung beendet (%1$s): %2$d Route(n), %3$d Befund(e), %4$d deklarierte, nicht angewendete Route(n)."
+
+msgid "Conforme aux étiquettes"
+msgstr "Entspricht den Labels"
+
+msgid "Différente des étiquettes"
+msgstr "Weicht von den Labels ab"
+
+msgid "Service non inventorié"
+msgstr "Dienst nicht inventarisiert"
+
+msgid "Hors étiquettes Docker"
+msgstr "Außerhalb der Docker-Labels"
+
+msgid "Interne à Traefik"
+msgstr "Traefik-intern"
+
+msgid "Tableau de bord ou API de Traefik sans authentification"
+msgstr "Traefik-Dashboard oder -API ohne Authentifizierung"
+
+msgid "Route publique sans TLS ni redirection HTTPS"
+msgstr "Öffentliche Route ohne TLS und ohne HTTPS-Weiterleitung"
+
+msgid "Route d'administration sans authentification"
+msgstr "Administrationsroute ohne Authentifizierung"
+
+msgid "Route publique sans en-têtes de sécurité"
+msgstr "Öffentliche Route ohne Sicherheitsheader"
+
+msgid "Connexion réussie : Traefik %1$s, %2$d route(s) HTTP."
+msgstr "Verbindung erfolgreich: Traefik %1$s, %2$d HTTP-Route(n)."
+
+msgid "Identifiants ou jeton refusés par Traefik (401)."
+msgstr "Zugangsdaten oder Token von Traefik abgelehnt (401)."
+
+msgid "Accès refusé par Traefik (403)."
+msgstr "Zugriff von Traefik verweigert (403)."
+
+msgid "API introuvable (404) : l'API de Traefik est-elle activée ?"
+msgstr "API nicht gefunden (404): Ist die Traefik-API aktiviert?"
+
+msgid "Traefik a répondu par une erreur interne (5xx)."
+msgstr "Traefik hat mit einem internen Fehler geantwortet (5xx)."
+
+msgid "Réponse inattendue : est-ce bien l'API de Traefik ?"
+msgstr "Unerwartete Antwort: Ist das wirklich die Traefik-API?"
+
+msgid "Traefik injoignable (réseau, certificat, délai...)."
+msgstr "Traefik nicht erreichbar (Netzwerk, Zertifikat, Zeitüberschreitung...)."
+
+msgid "Adresse de l’API de Traefik"
+msgstr "Adresse der Traefik-API"
+
+msgid "Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est appelée."
+msgstr "Adresse, unter der /api/version antwortet, ohne /api am Ende. Nur diese Adresse wird aufgerufen."
+
+msgid "Facultatif : seulement si l’API de Traefik est protégée."
+msgstr "Optional: nur wenn die Traefik-API geschützt ist."
+
+msgid "Mot de passe ou jeton"
+msgstr "Passwort oder Token"
+
+msgid "Nom libre, par exemple « Traefik production »."
+msgstr "Freier Name, zum Beispiel „Traefik Produktion“."
+
+msgid "Oui : le secret enregistré est supprimé (API sans authentification)."
+msgstr "Ja: Das gespeicherte Geheimnis wird gelöscht (API ohne Authentifizierung)."
+
+msgid "Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton (Bearer)."
+msgstr "Für eine durch basicAuth geschützte API. Leer: Das Geheimnis wird als Token (Bearer) gesendet."
+
+msgid "Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr "Ein Passwort oder Token ist gespeichert (verschlüsselt): leer lassen, um es zu behalten."
+
+msgid "Routes, points d’entrée et middlewares appliqués, contrôles TLS et authentification."
+msgstr "Angewendete Routen, Einstiegspunkte und Middlewares, TLS- und Authentifizierungsprüfungen."
+
+msgid "Traefik montre les routes réellement appliquées, à comparer aux étiquettes."
+msgstr "Traefik zeigt die tatsächlich angewendeten Routen, zum Vergleich mit den Labels."
+
+msgid "%d serveur"
+msgid_plural "%d serveurs"
+msgstr[0] "%d Server"
+msgstr[1] "%d Server"
+
+msgid "Aucune route signalée, et aucune route déclarée dans les étiquettes qui ne soit pas appliquée."
+msgstr "Keine gemeldete Route und keine in den Labels deklarierte Route, die nicht angewendet wird."
+
+msgid "Déclarées non appliquées"
+msgstr "Deklariert, nicht angewendet"
+
+msgid "Hôte et chemin"
+msgstr "Host und Pfad"
+
+msgid "Lire Traefik maintenant"
+msgstr "Traefik jetzt lesen"
+
+msgid "Lire, en lecture seule, les routes que Traefik applique vraiment et les comparer aux étiquettes des services inventoriés."
+msgstr "Die tatsächlich von Traefik angewendeten Routen schreibgeschützt lesen und mit den Labels der inventarisierten Dienste vergleichen."
+
+msgid "Liste tronquée : seules les 100 premières routes sont affichées."
+msgstr "Gekürzte Liste: Nur die ersten 100 Routen werden angezeigt."
+
+msgid "Middlewares"
+msgstr "Middlewares"
+
+msgid "Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire Traefik maintenant »."
+msgstr "Keine automatische Aktion: Gelesen wird, wenn Sie auf „Traefik jetzt lesen“ klicken."
+
+msgid "Points d’entrée"
+msgstr "Einstiegspunkte"
+
+msgid "Pour Traefik seulement, ajouter dans config/local_define.php :"
+msgstr "Nur für Traefik in config/local_define.php hinzufügen:"
+
+msgid "Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion."
+msgstr "In Traefik wird nichts geändert: Nur GET-Lesezugriffe werden an die Adresse der Verbindung gesendet."
+
+msgid "Route"
+msgstr "Route"
+
+msgid "Routes"
+msgstr "Routen"
+
+msgid "Routes appliquées par Traefik"
+msgstr "Von Traefik angewendete Routen"
+
+msgid "Routes déclarées dans les étiquettes mais absentes de Traefik"
+msgstr "In den Labels deklarierte, in Traefik fehlende Routen"
+
+msgid "Service cible"
+msgstr "Zieldienst"
+
+msgid "Signalements"
+msgstr "Befunde"
+
+msgid "Tous les hôtes"
+msgstr "Alle Hosts"
+
+msgid "Traefik sur un réseau privé (GLPI 12)"
+msgstr "Traefik in einem privaten Netzwerk (GLPI 12)"
+
+msgid "Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou inventaire à réimporter."
+msgstr "Falsches Label, gestoppter Dienst, nicht mit Traefik geteiltes Netzwerk oder neu zu importierendes Inventar."
+
+msgid "Étiquettes"
+msgstr "Labels"

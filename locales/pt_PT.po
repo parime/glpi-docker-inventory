@@ -2869,3 +2869,152 @@ msgstr "Para um desvio intencional, registre uma exceção justificada e datada.
 
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Configurações de segurança coletadas a cada importação: privilegiado, root, acesso ao host, limites, montagens."
+
+msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgstr "Leitura do Traefik concluída (%1$s): %2$d rota(s), %3$d alerta(s), %4$d rota(s) declarada(s) não aplicada(s)."
+
+msgid "Conforme aux étiquettes"
+msgstr "Conforme às etiquetas"
+
+msgid "Différente des étiquettes"
+msgstr "Diferente das etiquetas"
+
+msgid "Service non inventorié"
+msgstr "Serviço não inventariado"
+
+msgid "Hors étiquettes Docker"
+msgstr "Fora das etiquetas Docker"
+
+msgid "Interne à Traefik"
+msgstr "Interna do Traefik"
+
+msgid "Tableau de bord ou API de Traefik sans authentification"
+msgstr "Painel ou API do Traefik sem autenticação"
+
+msgid "Route publique sans TLS ni redirection HTTPS"
+msgstr "Rota pública sem TLS nem redirecionamento HTTPS"
+
+msgid "Route d'administration sans authentification"
+msgstr "Rota de administração sem autenticação"
+
+msgid "Route publique sans en-têtes de sécurité"
+msgstr "Rota pública sem cabeçalhos de segurança"
+
+msgid "Connexion réussie : Traefik %1$s, %2$d route(s) HTTP."
+msgstr "Conexão bem-sucedida: Traefik %1$s, %2$d rota(s) HTTP."
+
+msgid "Identifiants ou jeton refusés par Traefik (401)."
+msgstr "Credenciais ou token recusados pelo Traefik (401)."
+
+msgid "Accès refusé par Traefik (403)."
+msgstr "Acesso negado pelo Traefik (403)."
+
+msgid "API introuvable (404) : l'API de Traefik est-elle activée ?"
+msgstr "API não encontrada (404): a API do Traefik está ativada?"
+
+msgid "Traefik a répondu par une erreur interne (5xx)."
+msgstr "O Traefik respondeu com um erro interno (5xx)."
+
+msgid "Réponse inattendue : est-ce bien l'API de Traefik ?"
+msgstr "Resposta inesperada: é mesmo a API do Traefik?"
+
+msgid "Traefik injoignable (réseau, certificat, délai...)."
+msgstr "Traefik inacessível (rede, certificado, tempo limite...)."
+
+msgid "Adresse de l’API de Traefik"
+msgstr "Endereço da API do Traefik"
+
+msgid "Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est appelée."
+msgstr "Endereço onde responde /api/version, sem /api no final. Apenas este endereço é chamado."
+
+msgid "Facultatif : seulement si l’API de Traefik est protégée."
+msgstr "Opcional: apenas se a API do Traefik estiver protegida."
+
+msgid "Mot de passe ou jeton"
+msgstr "Senha ou token"
+
+msgid "Nom libre, par exemple « Traefik production »."
+msgstr "Nome livre, por exemplo «Traefik produção»."
+
+msgid "Oui : le secret enregistré est supprimé (API sans authentification)."
+msgstr "Sim: o segredo guardado é excluído (API sem autenticação)."
+
+msgid "Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton (Bearer)."
+msgstr "Para uma API protegida por basicAuth. Vazio: o segredo é enviado como token (Bearer)."
+
+msgid "Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le conserver."
+msgstr "Uma senha ou token está guardado (criptografado): deixe vazio para mantê-lo."
+
+msgid "Routes, points d’entrée et middlewares appliqués, contrôles TLS et authentification."
+msgstr "Rotas, pontos de entrada e middlewares aplicados, verificações de TLS e autenticação."
+
+msgid "Traefik montre les routes réellement appliquées, à comparer aux étiquettes."
+msgstr "O Traefik mostra as rotas realmente aplicadas, para comparar com as etiquetas."
+
+msgid "%d serveur"
+msgid_plural "%d serveurs"
+msgstr[0] "%d servidor"
+msgstr[1] "%d servidores"
+
+msgid "Aucune route signalée, et aucune route déclarée dans les étiquettes qui ne soit pas appliquée."
+msgstr "Nenhuma rota com alerta e nenhuma rota declarada nas etiquetas sem ser aplicada."
+
+msgid "Déclarées non appliquées"
+msgstr "Declaradas não aplicadas"
+
+msgid "Hôte et chemin"
+msgstr "Host e caminho"
+
+msgid "Lire Traefik maintenant"
+msgstr "Ler o Traefik agora"
+
+msgid "Lire, en lecture seule, les routes que Traefik applique vraiment et les comparer aux étiquettes des services inventoriés."
+msgstr "Ler, somente leitura, as rotas que o Traefik realmente aplica e compará-las com as etiquetas dos serviços inventariados."
+
+msgid "Liste tronquée : seules les 100 premières routes sont affichées."
+msgstr "Lista truncada: apenas as 100 primeiras rotas são exibidas."
+
+msgid "Middlewares"
+msgstr "Middlewares"
+
+msgid "Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire Traefik maintenant »."
+msgstr "Sem tarefa automática: a leitura é feita quando você clica em «Ler o Traefik agora»."
+
+msgid "Points d’entrée"
+msgstr "Pontos de entrada"
+
+msgid "Pour Traefik seulement, ajouter dans config/local_define.php :"
+msgstr "Apenas para o Traefik, adicionar em config/local_define.php:"
+
+msgid "Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion."
+msgstr "Nada é alterado no Traefik: apenas leituras GET são enviadas, para o endereço da conexão."
+
+msgid "Route"
+msgstr "Rota"
+
+msgid "Routes"
+msgstr "Rotas"
+
+msgid "Routes appliquées par Traefik"
+msgstr "Rotas aplicadas pelo Traefik"
+
+msgid "Routes déclarées dans les étiquettes mais absentes de Traefik"
+msgstr "Rotas declaradas nas etiquetas mas ausentes do Traefik"
+
+msgid "Service cible"
+msgstr "Serviço de destino"
+
+msgid "Signalements"
+msgstr "Alertas"
+
+msgid "Tous les hôtes"
+msgstr "Todos os hosts"
+
+msgid "Traefik sur un réseau privé (GLPI 12)"
+msgstr "Traefik em uma rede privada (GLPI 12)"
+
+msgid "Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou inventaire à réimporter."
+msgstr "Etiqueta errada, serviço parado, rede não compartilhada com o Traefik ou inventário a reimportar."
+
+msgid "Étiquettes"
+msgstr "Etiquetas"
