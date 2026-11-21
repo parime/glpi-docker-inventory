@@ -1,0 +1,73 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Configuration à risque » d'un service (#71) : écarts relevés par l'import et exceptions
+   justifiées et datées. Le plugin ne corrige rien sur la plateforme. #}
+<div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-shield-exclamation me-2" aria-hidden="true"></i>
+            {{ __('Configuration à risque', 'dockerinventory') }}
+        </h2>
+        <a href="{{ page_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
+            <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Tous les services', 'dockerinventory') }}
+        </a>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-0">
+            {{ __(
+                'Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+                'Corrigez sur la plateforme, ou acceptez le risque avec une justification et une date de fin.',
+                'dockerinventory'
+            ) }}
+        </p>
+    </div>
+    {% if not service.analysed %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon"><i class="ti ti-hourglass text-secondary" aria-hidden="true"></i></div>
+                <p class="empty-title">{{ __('Pas encore analysé.', 'dockerinventory') }}</p>
+                <p class="empty-subtitle text-muted">
+                    {{ __(
+                        'La configuration est lue au prochain import Portainer ou Kubernetes de ce service.',
+                        'dockerinventory'
+                    ) }}
+                </p>
+            </div>
+        </div>
+    {% elseif service.findings is empty %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon"><i class="ti ti-shield-check text-success" aria-hidden="true"></i></div>
+                <p class="empty-title">{{ __('Aucun écart relevé.', 'dockerinventory') }}</p>
+                <p class="empty-subtitle text-muted">
+                    {{ __('Aucun des réglages à risque contrôlés n’a été trouvé sur ce service.', 'dockerinventory') }}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                {{ include('@dockerinventory/_hardening_head.html.twig', {show_service: false}) }}
+                <tbody>
+                    {{ include('@dockerinventory/_hardening_rows.html.twig', {show_service: false}) }}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

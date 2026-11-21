@@ -89,6 +89,7 @@ class Service extends ServiceBase
         $this->addDefaultFormTab($tabs);
         $this->addStandardTab(ImageVersion::class, $tabs, $options);
         $this->addStandardTab(Exposure::class, $tabs, $options);
+        $this->addStandardTab(Hardening::class, $tabs, $options);
 
         return $tabs;
     }
@@ -226,6 +227,14 @@ class Service extends ServiceBase
         }
 
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
+    }
+
+    /**
+     * Exceptions aux écarts de configuration du service (#71) : sans objet sans lui.
+     */
+    public function cleanDBonPurge()
+    {
+        (new HardeningException())->deleteByCriteria(['plugin_dockerinventory_services_id' => $this->getID()], true);
     }
 
     public function showForm($ID, array $options = [])

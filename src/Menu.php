@@ -25,9 +25,9 @@ use CommonGLPI;
  * Seule entrée de menu d'usage du plugin : Parc > Inventaire Docker (charte commune, section 9).
  * Ses écrans sont des sous-pages reliées par une barre d'onglets commune
  * (templates/_section_nav.html.twig) : services, versions des images, images Harbor et
- * vulnérabilités, fin de support des images, exposition. Visible avec le droit de lecture du plugin. Les réglages
- * (connexions, registres maîtrisés, fin de support) sont dans la page de configuration du plugin
- * (ConfigPage).
+ * vulnérabilités, fin de support des images, exposition, configuration à risque. Visible avec le
+ * droit de lecture du plugin. Les réglages (connexions, registres maîtrisés, fin de support) sont
+ * dans la page de configuration du plugin (ConfigPage).
  */
 class Menu extends CommonGLPI
 {
@@ -36,6 +36,7 @@ class Menu extends CommonGLPI
     public const TAB_HARBOR = 'harbor';
     public const TAB_EOL = 'eol';
     public const TAB_EXPOSURE = 'exposure';
+    public const TAB_HARDENING = 'hardening';
 
     public static function getTypeName($nb = 0)
     {
@@ -121,6 +122,11 @@ class Menu extends CommonGLPI
                 'label' => Exposure::getTypeName(1),
                 'icon'  => Exposure::getIcon(),
                 'url'   => Exposure::getPageURL(false),
+            ],
+            self::TAB_HARDENING => [
+                'label' => Hardening::getTypeName(1),
+                'icon'  => Hardening::getIcon(),
+                'url'   => Hardening::getPageURL(false),
             ],
         ];
     }

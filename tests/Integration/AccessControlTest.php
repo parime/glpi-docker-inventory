@@ -27,6 +27,9 @@ use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
+use GlpiPlugin\Dockerinventory\Hardening;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
+use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
@@ -53,6 +56,7 @@ final class AccessControlTest extends TestCase
         'front/config.php',
         'front/connection.form.php',
         'front/connection.php',
+        'front/hardening.form.php',
         'front/imageversion.php',
         'front/lifecycle.php',
         'front/service.form.php',
@@ -149,6 +153,7 @@ final class AccessControlTest extends TestCase
         $this->serviceA = (int) (new Service())->add([
             'name' => 'service-a-' . $this->suffix, 'service_uid' => 'a-' . $this->suffix,
             'entities_id' => $this->entityA, 'image' => 'nginx', 'ports' => '8443:443/tcp',
+            'hardening' => self::hardening(),
         ]);
         $this->serviceB = (int) (new Service())->add([
             'name'          => 'service-b-' . $this->suffix,
@@ -157,6 +162,7 @@ final class AccessControlTest extends TestCase
             'appliances_id' => $this->applianceB,
             'image'         => 'nginx',
             'ports'         => '8443:443/tcp',
+            'hardening'     => self::hardening(),
         ]);
         $this->connectionB = (int) (new Connection())->add([
             'name'        => 'portainer-b-' . $this->suffix,
@@ -202,6 +208,15 @@ final class AccessControlTest extends TestCase
             $this->assertGreaterThan(0, $this->harbors[$letter]);
         }
         HarborArtifact::resetCache();
+    }
+
+    /** Écarts relevés sur les deux services (#71) : socket Docker monté et exécution en root. */
+    private static function hardening(): string
+    {
+        return HardeningMapper::encode([
+            ['code' => HardeningMapper::DOCKER_SOCKET, 'detail' => '/var/run/docker.sock'],
+            ['code' => HardeningMapper::ROOT_USER, 'detail' => ''],
+        ]);
     }
 
     private function harborHost(string $letter): string
@@ -295,10 +310,27 @@ final class AccessControlTest extends TestCase
         $this->fail($page . ' : pas de redirection');
     }
 
-    private function setRights(int $service, int $config): void
+    private function setRights(int $service, int $config, int $exception = 0): void
     {
         $_SESSION['glpiactiveprofile'][Service::RIGHTNAME] = $service;
         $_SESSION['glpiactiveprofile'][Connection::RIGHTNAME] = $config;
+        $_SESSION['glpiactiveprofile'][HardeningException::RIGHTNAME] = $exception;
+    }
+
+    /**
+     * Exception demandée sur un service (#71), date de fin valide.
+     *
+     * @return array<string, mixed>
+     */
+    private static function exceptionPost(int $serviceId): array
+    {
+        return [
+            'add_exception'                      => 1,
+            'plugin_dockerinventory_services_id' => $serviceId,
+            'code'                               => HardeningMapper::DOCKER_SOCKET,
+            'justification'                      => 'Proxy du socket prévu',
+            'date_end'                           => substr((string) $_SESSION['glpi_currenttime'], 0, 10),
+        ];
     }
 
     public function testEveryFrontPageIsInTheMatrix(): void
@@ -350,6 +382,13 @@ final class AccessControlTest extends TestCase
         yield 'fin de support, tous les états' => ['front/version.php', ['view' => 'eol', 'eol' => 'all'], []];
         yield 'exposition' => ['front/version.php', ['view' => 'exposure'], []];
         yield 'exposition sur Internet' => ['front/version.php', ['view' => 'exposure', 'filter' => 'internet'], []];
+        yield 'configuration à risque' => ['front/version.php', ['view' => 'hardening'], []];
+        yield 'configuration à risque critique' => [
+            'front/version.php', ['view' => 'hardening', 'filter' => 'critical'], [],
+        ];
+        yield 'exceptions : page' => ['front/hardening.form.php', [], []];
+        yield 'exceptions : ajout' => ['front/hardening.form.php', [], ['add_exception' => 1, 'code' => 'root_user']];
+        yield 'exceptions : suppression' => ['front/hardening.form.php', [], ['purge_exception' => 1, 'id' => 1]];
     }
 
     /**
@@ -413,6 +452,57 @@ final class AccessControlTest extends TestCase
         $this->assertStringContainsString('service-a-' . $this->suffix, $exposure);
         $this->assertStringContainsString('ti-world-share', $exposure);
         $this->assertStringNotContainsString('front/config.php', $exposure);
+        // Configuration à risque (#71) : lecture sans droit sur les exceptions, ni formulaire ni action.
+        $hardening = $this->open('front/version.php', ['view' => 'hardening']);
+        $this->assertStringContainsString('service-a-' . $this->suffix, $hardening);
+        $this->assertStringContainsString('ti-shield-exclamation', $hardening);
+        $this->assertStringNotContainsString('add_exception', $hardening);
+        $this->assertStringNotContainsString('front/config.php', $hardening);
+        $this->assertRefused('front/hardening.form.php', [], self::exceptionPost($this->serviceA));
+        $this->assertSame(0, countElementsInTable(HardeningException::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceA,
+        ]));
+    }
+
+    /**
+     * Exceptions (#71) : enregistrées et supprimées avec le droit du plugin, sur un service visible.
+     */
+    public function testExceptionIsRecordedThenRemovedWithTheRight(): void
+    {
+        $this->setRights(READ, 0, CREATE);
+        $this->assertSame(Hardening::getPageURL(), $this->redirectionOf('front/hardening.form.php'));
+        $this->redirectionOf('front/hardening.form.php', [], self::exceptionPost($this->serviceA));
+        $exception = new HardeningException();
+        $this->assertTrue($exception->getFromDBByCrit(['plugin_dockerinventory_services_id' => $this->serviceA]));
+        $this->assertSame($this->entityA, (int) $exception->fields['entities_id']);
+        $service = new Service();
+        $this->assertTrue($service->getFromDB($this->serviceA));
+        $described = Hardening::describe($service->fields);
+        $this->assertSame(1, $described['excepted']);
+        $this->assertSame(1, $described['open']);
+        $this->assertSame(HardeningMapper::SEVERITY_MEDIUM, $described['worst']);
+        $page = $this->open('front/version.php', ['view' => 'hardening']);
+        $this->assertStringContainsString('add_exception', $page);
+        $this->assertStringNotContainsString('purge_exception', $page);
+
+        // Justification vide, date hors limites ou écart inconnu : refusés, rien ne change.
+        $today = substr((string) $_SESSION['glpi_currenttime'], 0, 10);
+        $this->assertNotSame('', HardeningException::record($this->serviceA, HardeningMapper::ROOT_USER, ' ', $today));
+        $this->assertNotSame(
+            '',
+            HardeningException::record($this->serviceA, HardeningMapper::ROOT_USER, 'motif', '2000-01-01')
+        );
+        $this->assertNotSame('', HardeningException::record($this->serviceA, 'pirate', 'motif', $today));
+        $this->assertSame(1, countElementsInTable(HardeningException::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceA,
+        ]));
+
+        // Sans le droit de suppression : refus ; avec : supprimée.
+        $this->assertRefused('front/hardening.form.php', [], ['purge_exception' => 1, 'id' => $exception->getID()]);
+        $this->setRights(READ, 0, CREATE | PURGE);
+        $this->assertStringContainsString('purge_exception', $this->open('front/version.php', ['view' => 'hardening']));
+        $this->redirectionOf('front/hardening.form.php', [], ['purge_exception' => 1, 'id' => $exception->getID()]);
+        $this->assertFalse($exception->getFromDB($exception->getID()));
     }
 
     /**
@@ -520,6 +610,23 @@ final class AccessControlTest extends TestCase
         $serviceB = new Service();
         $this->assertTrue($serviceB->getFromDB($this->serviceB));
         $this->assertFalse(Exposure::displayTabContentForItem($serviceB));
+        // Configuration à risque (#71) : ni écarts ni exception sur un service de l'entité B.
+        $this->setRights(READ, READ | UPDATE, CREATE | PURGE);
+        $hardening = $this->open('front/version.php', ['view' => 'hardening']);
+        $this->assertStringContainsString('service-a-' . $this->suffix, $hardening);
+        $this->assertStringNotContainsString('service-b-' . $this->suffix, $hardening);
+        $this->assertSame([$this->serviceA], array_column(Hardening::overview()['services'], 'id'));
+        $this->assertFalse(Hardening::displayTabContentForItem($serviceB));
+        $this->assertRefused('front/hardening.form.php', [], self::exceptionPost($this->serviceB));
+        $this->assertNotSame('', HardeningException::record(
+            $this->serviceB,
+            HardeningMapper::ROOT_USER,
+            'motif',
+            substr((string) $_SESSION['glpi_currenttime'], 0, 10)
+        ));
+        $this->assertSame(0, countElementsInTable(HardeningException::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceB,
+        ]));
         $harbor = $this->open('front/version.php', ['view' => 'harbor', 'artifacts' => 'all']);
         $this->assertStringContainsString('projet-a-' . $this->suffix, $harbor);
         $this->assertStringNotContainsString('projet-b-' . $this->suffix, $harbor);

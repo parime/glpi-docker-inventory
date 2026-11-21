@@ -23,6 +23,7 @@ use Appliance;
 use ApplianceEnvironment;
 use Computer;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\Importer;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
@@ -398,6 +399,18 @@ final class ImporterTest extends TestCase
         $this->assertSame('proxy, wiki-interne_default', $wiki['networks']);
         $this->assertSame('wiki-interne_pages', $wiki['volumes']);
         $this->assertSame('wiki_db_password', $wiki['secrets']);
+        // Configuration à risque (#71) : lue dans le détail des conteneurs, jamais leurs variables.
+        $this->assertSame(
+            [HardeningMapper::ROOT_USER, HardeningMapper::NO_MEMORY_LIMIT, HardeningMapper::NO_CPU_LIMIT,
+                HardeningMapper::WRITABLE_ROOTFS],
+            array_column(HardeningMapper::decode($wiki['hardening']) ?? [], 'code')
+        );
+        $backup = HardeningMapper::decode($services['sauvegarde-nocturne']['hardening']);
+        $this->assertSame(
+            [HardeningMapper::PRIVILEGED, HardeningMapper::DOCKER_SOCKET, HardeningMapper::ROOT_USER],
+            array_column($backup ?? [], 'code')
+        );
+        $this->assertStringNotContainsString('ne-doit-jamais', (string) $services['sauvegarde-nocturne']['hardening']);
         $this->assertSame('docker-recette', $wiki['endpoint_name']);
         $this->assertSame('exited', $services['courrier']['state']);
         $this->assertSame(0, (int) $services['courrier']['running_replicas']);
@@ -489,6 +502,9 @@ final class ImporterTest extends TestCase
         $this->assertSame(Connection::STATUS_OK, $report['status']);
         $this->assertSame('', $this->services()['sauvegarde-nocturne']['restart_policy']);
         $this->assertSame('always', $this->services()['wiki']['restart_policy']);
+        // Sans détail, rien n'est analysé (#71) : ni écart inventé, ni « aucun écart ».
+        $this->assertNull($this->services()['sauvegarde-nocturne']['hardening']);
+        $this->assertNotNull($this->services()['wiki']['hardening']);
     }
 
     public function testUnauthorizedKeyFailsWithoutChange(): void

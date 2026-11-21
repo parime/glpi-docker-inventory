@@ -119,6 +119,9 @@ lecture, ce que l'auditeur peut vérifier).
 5. Sous-page **Exposition** : ports publiés, routes Traefik et ingress ; filtres « Exposés sur
    Internet » et, avec GRC Manager, « Sans flux documenté » (bouton **Proposer le flux** vers la
    matrice des flux, jamais de création automatique).
+6. Sous-page **Configuration à risque** : conteneurs privilégiés, en root, avec le socket Docker, le
+   réseau de l'hôte ou sans limites ; exception justifiée et datée pour un écart voulu, jamais de
+   correction automatique.
 
 ## Liens avec les autres plugins
 

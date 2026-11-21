@@ -25,6 +25,9 @@ use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
+use GlpiPlugin\Dockerinventory\Hardening;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
+use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
 use GlpiPlugin\Dockerinventory\Kubernetes\KubernetesClient;
@@ -160,6 +163,7 @@ final class XssTest extends TestCase
                 'glpi_plugin_dockerinventory_services_nodes',
                 ['plugin_dockerinventory_services_id' => $serviceIds]
             );
+            $DB->delete(HardeningException::getTable(), ['plugin_dockerinventory_services_id' => $serviceIds]);
         }
         foreach (
             $DB->request(['SELECT' => ['appliances_id'], 'FROM' => 'glpi_plugin_dockerinventory_stacks',
@@ -339,6 +343,22 @@ final class XssTest extends TestCase
         );
         $this->assertEscaped($this->open('front/service.form.php', ['id' => (int) $service['id']]), 'fiche service');
         $this->assertEscaped($this->open('front/version.php', ['view' => 'exposure']), 'exposition');
+        // Configuration à risque (#71) : détail d'un écart (utilisateur lu sur la plateforme) et
+        // justification d'une exception saisie par une personne.
+        $DB->update(Service::getTable(), ['hardening' => HardeningMapper::encode([
+            ['code' => HardeningMapper::ROOT_USER, 'detail' => self::SCRIPT],
+            ['code' => HardeningMapper::PRIVILEGED, 'detail' => ''],
+        ])], ['id' => (int) $service['id']]);
+        $_SESSION['glpiactiveprofile'][HardeningException::RIGHTNAME] = CREATE | PURGE;
+        $this->assertSame('', HardeningException::record(
+            (int) $service['id'],
+            HardeningMapper::PRIVILEGED,
+            self::IMG,
+            substr((string) $_SESSION['glpi_currenttime'], 0, 10)
+        ));
+        $hardening = $this->open('front/version.php', ['view' => 'hardening']);
+        $this->assertEscaped($hardening, 'configuration à risque');
+        $this->assertStringContainsString('&lt;img src=x onerror', $hardening);
         $this->assertEscaped($this->open('front/service.php'), 'liste des services', false);
         $this->assertEscaped($this->open('front/imageversion.php'), 'recherche des versions', false);
         $this->assertEscaped(
@@ -361,6 +381,10 @@ final class XssTest extends TestCase
         $this->assertEscaped(
             $this->capture(static fn () => Exposure::displayTabContentForItem($item)),
             'onglet Exposition du service'
+        );
+        $this->assertEscaped(
+            $this->capture(static fn () => Hardening::displayTabContentForItem($item)),
+            'onglet Configuration à risque du service'
         );
         $appliance = new Appliance();
         if ((int) $service['appliances_id'] > 0 && $appliance->getFromDB((int) $service['appliances_id'])) {

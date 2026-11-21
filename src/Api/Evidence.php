@@ -26,6 +26,8 @@ use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborLinker;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
+use GlpiPlugin\Dockerinventory\Hardening;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Service;
@@ -372,6 +374,70 @@ final class Evidence
             'services_total' => count($rows),
             'internet_total' => $internet,
             'page_url'       => Exposure::getPageURL(),
+        ];
+    }
+
+    /**
+     * Configuration à risque des services actifs (#71, A.8.9) : taux de services analysés sans
+     * écart ouvert (les écarts couverts par une exception en cours ne comptent pas), répartition
+     * par gravité la plus haute et services qui ont au moins un écart, avec leurs exceptions.
+     *
+     * @return array{analysed: int, compliant: int, not_analysed: int, with_exception: int,
+     *     rate: int|null, rate_serious: int|null, by_severity: array<string, int>,
+     *     services: list<array{service: string, url: string, stack: string, worst: string, open: int,
+     *     findings: list<array{code: string, label: string, severity: string, detail: string,
+     *     exception: string, exception_end: string}>, entities_id: int}>, services_total: int,
+     *     page_url: string}|null
+     */
+    public static function hardening(int $limit = 50): ?array
+    {
+        if (!self::canRead()) {
+            return null;
+        }
+        $data = Hardening::overview();
+        $labels = Hardening::infos();
+        $rows = [];
+        foreach ($data['services'] as $service) {
+            $findings = [];
+            foreach ($service['findings'] as $finding) {
+                $findings[] = [
+                    'code'          => (string) $finding['code'],
+                    'label'         => $labels[$finding['code']]['label'] ?? (string) $finding['code'],
+                    'severity'      => (string) $finding['severity'],
+                    'detail'        => (string) $finding['detail'],
+                    'exception'     => (string) $finding['exception'],
+                    'exception_end' => is_array($finding['exception_row'])
+                        ? (string) $finding['exception_row']['date_end']
+                        : '',
+                ];
+            }
+            $rows[] = [
+                'service'     => (string) $service['name'],
+                'url'         => (string) $service['url'],
+                'stack'       => (string) $service['stack_name'],
+                'worst'       => (string) $service['worst'],
+                'open'        => (int) $service['open'],
+                'findings'    => $findings,
+                'entities_id' => (int) $service['entities_id'],
+            ];
+        }
+        $counts = $data['counts'];
+        $bySeverity = [];
+        foreach (HardeningMapper::SEVERITIES as $severity) {
+            $bySeverity[$severity] = (int) $counts[$severity];
+        }
+
+        return [
+            'analysed'       => $counts['analysed'],
+            'compliant'      => $counts['compliant'],
+            'not_analysed'   => $counts['not_analysed'],
+            'with_exception' => $counts['with_exception'],
+            'rate'           => $data['rate'],
+            'rate_serious'   => $data['rate_serious'],
+            'by_severity'    => $bySeverity,
+            'services'       => array_slice($rows, 0, max(0, $limit)),
+            'services_total' => count($rows),
+            'page_url'       => Hardening::getPageURL(),
         ];
     }
 

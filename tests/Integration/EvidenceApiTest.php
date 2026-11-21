@@ -24,6 +24,7 @@ use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Node;
 use GlpiPlugin\Dockerinventory\Service;
@@ -108,6 +109,11 @@ final class EvidenceApiTest extends TestCase
             'replicas'                              => 2,
             'running_replicas'                      => 2,
             'ports'                                 => '443:8443/tcp',
+            // Configuration à risque (#71) : réseau de l'hôte et exécution en root.
+            'hardening'                             => HardeningMapper::encode([
+                ['code' => HardeningMapper::HOST_NETWORK, 'detail' => ''],
+                ['code' => HardeningMapper::ROOT_USER, 'detail' => 'root'],
+            ]),
         ]);
         $artifact = (int) (new HarborArtifact())->add([
             'entities_id'                           => $entity,
@@ -198,6 +204,7 @@ final class EvidenceApiTest extends TestCase
             'configuration'   => Evidence::configuration(1000),
             'versionChanges'  => Evidence::versionChanges('2026-01-01 00:00:00', 1000),
             'exposure'        => Evidence::exposure(1000),
+            'hardening'       => Evidence::hardening(1000),
         ];
         foreach ($results as $name => $result) {
             $this->assertIsArray($result, $name);
@@ -245,6 +252,22 @@ final class EvidenceApiTest extends TestCase
         $this->assertFalse($exposed[0]['internet']);
         $this->assertSame($this->entities['a'], $exposed[0]['entities_id']);
 
+        // Configuration à risque (#71, A.8.9) : écarts du service, gravité la plus haute.
+        $hardening = $results['hardening'];
+        $this->assertGreaterThanOrEqual(1, $hardening['analysed']);
+        $this->assertIsInt($hardening['rate']);
+        $this->assertGreaterThanOrEqual(1, $hardening['by_severity'][HardeningMapper::SEVERITY_HIGH]);
+        $risky = $this->rowsOfA($hardening['services']);
+        $this->assertCount(1, $risky);
+        $this->assertSame(HardeningMapper::SEVERITY_HIGH, $risky[0]['worst']);
+        $this->assertSame(2, $risky[0]['open']);
+        $this->assertSame(
+            [HardeningMapper::HOST_NETWORK, HardeningMapper::ROOT_USER],
+            array_column($risky[0]['findings'], 'code')
+        );
+        $this->assertSame(['', ''], array_column($risky[0]['findings'], 'exception'));
+        $this->assertSame($this->entities['a'], $risky[0]['entities_id']);
+
         $changes = $this->rowsOfA($results['versionChanges']['changes']);
         $this->assertCount(1, $changes);
         $this->assertSame('0.9.0', $changes[0]['old_tag']);
@@ -276,5 +299,6 @@ final class EvidenceApiTest extends TestCase
         $this->assertNull(Evidence::configuration());
         $this->assertNull(Evidence::versionChanges('2026-01-01 00:00:00'));
         $this->assertNull(Evidence::exposure());
+        $this->assertNull(Evidence::hardening());
     }
 }

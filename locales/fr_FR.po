@@ -2610,3 +2610,262 @@ msgstr "Service Kubernetes"
 
 msgid "Internet"
 msgstr "Internet"
+
+msgid "Exception enregistrée."
+msgstr "Exception enregistrée."
+
+msgid "Exception supprimée."
+msgstr "Exception supprimée."
+
+msgid "Configuration à risque"
+msgstr "Configuration à risque"
+
+msgid "Donne la main sur l’hôte : à corriger en priorité."
+msgstr "Donne la main sur l’hôte : à corriger en priorité."
+
+msgid "Affaiblit fortement l’isolement du conteneur."
+msgstr "Affaiblit fortement l’isolement du conteneur."
+
+msgid "Aggrave les conséquences d’une compromission."
+msgstr "Aggrave les conséquences d’une compromission."
+
+msgid "Bonne pratique de durcissement non appliquée."
+msgstr "Bonne pratique de durcissement non appliquée."
+
+msgid "Mode privilégié"
+msgstr "Mode privilégié"
+
+msgid "Le conteneur a tous les droits sur l’hôte et ses périphériques."
+msgstr "Le conteneur a tous les droits sur l’hôte et ses périphériques."
+
+msgid "Retirer « privileged » et n’ajouter que les capacités nécessaires."
+msgstr "Retirer « privileged » et n’ajouter que les capacités nécessaires."
+
+msgid "Socket du moteur de conteneurs monté"
+msgstr "Socket du moteur de conteneurs monté"
+
+msgid "Qui accède à ce socket pilote le moteur, donc l’hôte entier."
+msgstr "Qui accède à ce socket pilote le moteur, donc l’hôte entier."
+
+msgid "Retirer le montage, ou passer par un proxy du socket en lecture seule limité aux appels utiles."
+msgstr "Retirer le montage, ou passer par un proxy du socket en lecture seule limité aux appels utiles."
+
+msgid "Le conteneur partage les interfaces réseau de l’hôte : aucun isolement réseau."
+msgstr "Le conteneur partage les interfaces réseau de l’hôte : aucun isolement réseau."
+
+msgid "Utiliser un réseau dédié et publier seulement les ports utiles."
+msgstr "Utiliser un réseau dédié et publier seulement les ports utiles."
+
+msgid "Processus de l’hôte visibles"
+msgstr "Processus de l’hôte visibles"
+
+msgid "Le conteneur voit et peut viser les processus de l’hôte."
+msgstr "Le conteneur voit et peut viser les processus de l’hôte."
+
+msgid "Retirer le partage de l’espace des processus de l’hôte."
+msgstr "Retirer le partage de l’espace des processus de l’hôte."
+
+msgid "Capacités dangereuses ajoutées"
+msgstr "Capacités dangereuses ajoutées"
+
+msgid "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
+msgstr "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
+
+msgid "Retirer ces capacités ou les remplacer par une permission plus étroite."
+msgstr "Retirer ces capacités ou les remplacer par une permission plus étroite."
+
+msgid "Répertoire sensible de l’hôte monté"
+msgstr "Répertoire sensible de l’hôte monté"
+
+msgid "Le conteneur lit ou modifie des fichiers système de l’hôte."
+msgstr "Le conteneur lit ou modifie des fichiers système de l’hôte."
+
+msgid "Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
+msgstr "Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
+
+msgid "Mémoire partagée de l’hôte"
+msgstr "Mémoire partagée de l’hôte"
+
+msgid "Le conteneur partage les communications entre processus de l’hôte."
+msgstr "Le conteneur partage les communications entre processus de l’hôte."
+
+msgid "Retirer le partage de l’espace IPC de l’hôte."
+msgstr "Retirer le partage de l’espace IPC de l’hôte."
+
+msgid "Capacités ajoutées"
+msgstr "Capacités ajoutées"
+
+msgid "Droits du noyau en plus de ceux accordés par défaut."
+msgstr "Droits du noyau en plus de ceux accordés par défaut."
+
+msgid "Vérifier que chaque capacité est nécessaire."
+msgstr "Vérifier que chaque capacité est nécessaire."
+
+msgid "Exécution en root"
+msgstr "Exécution en root"
+
+msgid "Aucun utilisateur non privilégié n’est défini : le processus tourne sans doute en root."
+msgstr "Aucun utilisateur non privilégié n’est défini : le processus tourne sans doute en root."
+
+msgid "Définir un utilisateur non privilégié (user, runAsNonRoot)."
+msgstr "Définir un utilisateur non privilégié (user, runAsNonRoot)."
+
+msgid "Aucune limite de mémoire"
+msgstr "Aucune limite de mémoire"
+
+msgid "Le conteneur peut épuiser la mémoire de l’hôte."
+msgstr "Le conteneur peut épuiser la mémoire de l’hôte."
+
+msgid "Fixer une limite de mémoire adaptée."
+msgstr "Fixer une limite de mémoire adaptée."
+
+msgid "Aucune limite de processeur"
+msgstr "Aucune limite de processeur"
+
+msgid "Le conteneur peut accaparer le processeur de l’hôte."
+msgstr "Le conteneur peut accaparer le processeur de l’hôte."
+
+msgid "Fixer une limite de processeur adaptée."
+msgstr "Fixer une limite de processeur adaptée."
+
+msgid "Système de fichiers en écriture"
+msgstr "Système de fichiers en écriture"
+
+msgid "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
+msgstr "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
+
+msgid "Passer le système de fichiers en lecture seule, avec des volumes pour les données."
+msgstr "Passer le système de fichiers en lecture seule, avec des volumes pour les données."
+
+msgid "Exceptions de configuration"
+msgstr "Exceptions de configuration"
+
+msgid "Exception de configuration"
+msgstr "Exception de configuration"
+
+msgid "Enregistrer une exception"
+msgstr "Enregistrer une exception"
+
+msgid "Supprimer une exception"
+msgstr "Supprimer une exception"
+
+msgid "Vous n’avez pas le droit d’enregistrer cette exception."
+msgstr "Vous n’avez pas le droit d’enregistrer cette exception."
+
+msgid "Écart inconnu."
+msgstr "Écart inconnu."
+
+msgid "La justification est obligatoire."
+msgstr "La justification est obligatoire."
+
+#, php-format
+msgid "La date de fin doit être comprise entre aujourd’hui et dans %d jours."
+msgstr "La date de fin doit être comprise entre aujourd’hui et dans %d jours."
+
+msgid "L’exception n’a pas pu être enregistrée."
+msgstr "L’exception n’a pas pu être enregistrée."
+
+msgid "Correction conseillée"
+msgstr "Correction conseillée"
+
+msgid "Suivi"
+msgstr "Suivi"
+
+msgid "Écart constaté"
+msgstr "Écart constaté"
+
+msgid "Accepter le risque"
+msgstr "Accepter le risque"
+
+#, php-format
+msgid "Exception expirée le %s"
+msgstr "Exception expirée le %s"
+
+#, php-format
+msgid "Exception jusqu’au %s"
+msgstr "Exception jusqu’au %s"
+
+msgid "Jusqu’au (à réexaminer ensuite)"
+msgstr "Jusqu’au (à réexaminer ensuite)"
+
+msgid "Pourquoi ce risque est-il accepté ?"
+msgstr "Pourquoi ce risque est-il accepté ?"
+
+msgid "Renouveler l’exception"
+msgstr "Renouveler l’exception"
+
+msgid "Supprimer l’exception"
+msgstr "Supprimer l’exception"
+
+msgid "À traiter"
+msgstr "À traiter"
+
+#, php-format
+msgid "%1$d sur %2$d services analysés"
+msgstr "%1$d sur %2$d services analysés"
+
+msgid "Avec une exception"
+msgstr "Avec une exception"
+
+msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
+msgstr "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
+
+msgid "En cours ou expirée"
+msgstr "En cours ou expirée"
+
+msgid "La configuration des conteneurs est lue à chaque import Portainer ou Kubernetes."
+msgstr "La configuration des conteneurs est lue à chaque import Portainer ou Kubernetes."
+
+msgid "Le plugin ne modifie rien sur les plateformes."
+msgstr "Le plugin ne modifie rien sur les plateformes."
+
+msgid "Lus au prochain import"
+msgstr "Lus au prochain import"
+
+msgid "Pas encore analysés"
+msgstr "Pas encore analysés"
+
+msgid "Sans écart critique ni haut"
+msgstr "Sans écart critique ni haut"
+
+msgid "Services sans écart ouvert"
+msgstr "Services sans écart ouvert"
+
+msgid "Un filtre de gravité montre les services dont l’écart ouvert le plus grave a cette gravité."
+msgstr "Un filtre de gravité montre les services dont l’écart ouvert le plus grave a cette gravité."
+
+msgid "Écarts couverts par une exception en cours exclus"
+msgstr "Écarts couverts par une exception en cours exclus"
+
+msgid "Écarts par service"
+msgstr "Écarts par service"
+
+msgid "Aucun des réglages à risque contrôlés n’a été trouvé sur ce service."
+msgstr "Aucun des réglages à risque contrôlés n’a été trouvé sur ce service."
+
+msgid "Aucun écart relevé."
+msgstr "Aucun écart relevé."
+
+msgid "Corrigez sur la plateforme, ou acceptez le risque avec une justification et une date de fin."
+msgstr "Corrigez sur la plateforme, ou acceptez le risque avec une justification et une date de fin."
+
+msgid "La configuration est lue au prochain import Portainer ou Kubernetes de ce service."
+msgstr "La configuration est lue au prochain import Portainer ou Kubernetes de ce service."
+
+msgid "Pas encore analysé."
+msgstr "Pas encore analysé."
+
+msgid "Tous les services"
+msgstr "Tous les services"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Corrigez les écarts critiques et hauts sur la plateforme."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "Pour un écart voulu, enregistrez une exception justifiée et datée."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."

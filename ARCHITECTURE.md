@@ -38,6 +38,11 @@ dockerinventory/
 │   ├── Exposure/
 │   │   └── ExposureMapper.php routes Traefik (étiquettes), ingress et services Kubernetes, ports
 │   │                          publiés, portée, flux proposé (fonctions pures)
+│   ├── Hardening.php          configuration à risque (#71) : onglet des services, sous-page, synthèse
+│   ├── HardeningException.php exception justifiée et datée sur un écart (droit propre, CREATE et PURGE)
+│   ├── Hardening/
+│   │   └── HardeningMapper.php réglages de sécurité Docker, Swarm et Kubernetes => écarts et gravités
+│   │                          (fonctions pures)
 │   ├── Menu.php               seule entrée de menu d'usage (Parc > Inventaire Docker) et onglets de
 │   │                          ses sous-pages (templates/_section_nav.html.twig)
 │   ├── ConfigPage.php         onglets et adresses de la page de configuration du plugin
@@ -350,6 +355,28 @@ dockerinventory/
 - Versions (WUD, registres), Harbor et tickets : rien de propre à Kubernetes ; les services sont
   traités comme ceux de Portainer, tickets réglés sur la connexion Kubernetes
   (`Connection::WORKLOAD_TYPES`).
+
+## Configuration à risque (#71)
+
+- Relevée à l'import, sans requête de plus, dans la colonne `hardening` des services (JSON, liste de
+  `{code, detail}` ; `[]` : analysé sans écart ; NULL : jamais analysé) :
+  - hôte autonome : détail du conteneur déjà lu pour la politique de redémarrage,
+    `HostConfig.{Privileged, NetworkMode, PidMode, IpcMode, CapAdd, Memory, NanoCpus, CpuQuota,
+    ReadonlyRootfs, Binds}`, `Config.User`, `Mounts[].{Type, Source}` ; un service Compose réunit les
+    écarts de ses conteneurs ; sans détail lu, l'analyse précédente est gardée ;
+  - Swarm : `Spec.TaskTemplate.ContainerSpec.{User, CapabilityAdd, ReadOnly, Mounts}`,
+    `Resources.Limits`, réseau `host` ;
+  - Kubernetes : modèle de pod (`hostNetwork`, `hostPID`, `hostIPC`, `securityContext`, volumes
+    `hostPath` montés par le conteneur, `resources.limits`).
+  Jamais `Config.Env`, les commandes ni le contenu des secrets.
+- Gravités (`HardeningMapper::RULES`) : critique (privilégié, socket d'un moteur), haute (réseau ou PID
+  de l'hôte, capacités dangereuses, répertoire sensible), moyenne (IPC de l'hôte, autres capacités,
+  root), basse (limites, écriture).
+- Exceptions : table `glpi_plugin_dockerinventory_hardeningexceptions` (une par service et par code,
+  entité du service, raison, date de fin à 366 jours au plus, auteur, historique). Écrites seulement par
+  `front/hardening.form.php` (droit `plugin_dockerinventory_hardeningexception` CREATE ou PURGE, et
+  service visible). Supprimées avec le service.
+- Preuve : `Evidence::hardening()` (taux sans écart ouvert, sans écart critique ni haut, répartition).
 
 ## Exposition (#72)
 

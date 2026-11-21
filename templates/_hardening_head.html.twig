@@ -1,0 +1,25 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# En-têtes du tableau des écarts de configuration (#71). show_service : colonne du service. #}
+<thead>
+    <tr>
+        {% if show_service %}<th>{{ __('Service', 'dockerinventory') }}</th>{% endif %}
+        <th>{{ __('Gravité', 'dockerinventory') }}</th>
+        <th>{{ __('Écart constaté', 'dockerinventory') }}</th>
+        <th>{{ __('Correction conseillée', 'dockerinventory') }}</th>
+        <th>{{ __('Suivi', 'dockerinventory') }}</th>
+    </tr>
+</thead>

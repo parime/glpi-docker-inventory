@@ -1,0 +1,123 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Écarts de configuration d'un service (#71) : une ligne par écart. service : Hardening::describe(),
+   infos, severities, action_url, can_create, can_purge, today, max_date, default_end :
+   Hardening::viewContext(). show_service : colonne du service (sous-page).
+   Les formulaires n'enregistrent ou ne suppriment qu'une exception : rien n'est modifié sur la plateforme. #}
+{% for finding in service.findings %}
+    {% set info = infos[finding.code] %}
+    {% set severity = severities[finding.severity] %}
+    {% set exception = finding.exception_row %}
+    {% set form_id = 'dockerinventory-exception-' ~ service.id ~ '-' ~ finding.code %}
+    <tr>
+        {% if show_service and loop.first %}
+            <td rowspan="{{ service.findings|length }}">
+                <a href="{{ service.url }}">{{ service.name }}</a>
+                {% if service.stack_name %}
+                    <div class="small text-muted">{{ service.stack_name }}</div>
+                {% endif %}
+            </td>
+        {% endif %}
+        <td>
+            <span class="badge {{ tone.badge(severity.color) }} text-nowrap" title="{{ severity.help }}"
+                  data-bs-toggle="tooltip">
+                <i class="{{ severity.icon }} me-1" aria-hidden="true"></i>{{ severity.label }}
+            </span>
+        </td>
+        <td>
+            <strong><i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}</strong>
+            {% if finding.detail %}<div><code>{{ finding.detail }}</code></div>{% endif %}
+            <div class="small text-muted">{{ info.help }}</div>
+        </td>
+        <td class="small">
+            <i class="ti ti-tool me-1 text-muted" aria-hidden="true"></i>{{ info.fix }}
+        </td>
+        <td>
+            {% if finding.exception == 'active' %}
+                <span class="badge bg-success-subtle text-success-emphasis text-nowrap">
+                    <i class="ti ti-shield-check me-1" aria-hidden="true"></i>
+                    {{ __('Exception jusqu’au %s', 'dockerinventory')|format(exception.date_end|date('d/m/Y')) }}
+                </span>
+            {% elseif finding.exception == 'expired' %}
+                <span class="badge bg-danger-subtle text-danger-emphasis text-nowrap">
+                    <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
+                    {{ __('Exception expirée le %s', 'dockerinventory')|format(exception.date_end|date('d/m/Y')) }}
+                </span>
+            {% else %}
+                <span class="badge bg-warning-subtle text-warning-emphasis text-nowrap">
+                    <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>{{ __('À traiter', 'dockerinventory') }}
+                </span>
+            {% endif %}
+            {% if exception %}
+                <div class="small mt-1">
+                    <i class="ti ti-message me-1 text-muted" aria-hidden="true"></i>{{ exception.justification }}
+                </div>
+                {% if exception.user %}
+                    <div class="small text-muted">{{ exception.user }}</div>
+                {% endif %}
+            {% endif %}
+            <div class="d-flex flex-wrap gap-1 mt-1">
+                {% if can_create %}
+                    <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#{{ form_id }}"
+                       role="button" aria-expanded="false" aria-controls="{{ form_id }}">
+                        <i class="ti ti-shield-half me-1" aria-hidden="true"></i>
+                        {% if exception %}
+                            {{ __('Renouveler l’exception', 'dockerinventory') }}
+                        {% else %}
+                            {{ __('Accepter le risque', 'dockerinventory') }}
+                        {% endif %}
+                    </a>
+                {% endif %}
+                {% if exception and can_purge %}
+                    <form method="post" action="{{ action_url }}" class="d-inline">
+                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="id" value="{{ exception.id }}">
+                        <button type="submit" name="purge_exception" value="1" class="btn btn-sm btn-outline-danger">
+                            <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                            {{ __('Supprimer l’exception', 'dockerinventory') }}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {% if can_create %}
+                <form method="post" action="{{ action_url }}" class="collapse mt-2" id="{{ form_id }}">
+                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="plugin_dockerinventory_services_id" value="{{ service.id }}">
+                    <input type="hidden" name="code" value="{{ finding.code }}">
+                    <label class="form-label small mb-1" for="{{ form_id }}-why">
+                        {{ __('Pourquoi ce risque est-il accepté ?', 'dockerinventory') }}
+                    </label>
+                    <textarea class="form-control form-control-sm mb-2" id="{{ form_id }}-why"
+                              name="justification" rows="2" maxlength="2000"
+                              required>{{ exception ? exception.justification : '' }}</textarea>
+                    <label class="form-label small mb-1" for="{{ form_id }}-end">
+                        {{ __('Jusqu’au (à réexaminer ensuite)', 'dockerinventory') }}
+                    </label>
+                    <div class="d-flex gap-2">
+                        <input type="date" class="form-control form-control-sm" id="{{ form_id }}-end" name="date_end"
+                               min="{{ today }}" max="{{ max_date }}" value="{{ default_end }}" required>
+                        <button type="submit" name="add_exception" value="1" class="btn btn-sm btn-primary text-nowrap">
+                            <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
+                            {{ __('Enregistrer', 'dockerinventory') }}
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </td>
+    </tr>
+{% endfor %}

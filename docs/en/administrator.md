@@ -272,8 +272,11 @@ status, priority or assignment. Details, from the technician's side, are in the
 ## Rights of GLPI users
 
 - **Administration > Profiles**, **Docker Inventory** tab: **Read** right on container services.
-  It gives access to **Assets > Docker Inventory** and its four sub-pages, to the tabs of
+  It gives access to **Assets > Docker Inventory** and its sub-pages, to the tabs of
   appliances and computers, and to the evidence read by GRC Manager.
+- Same tab, **Configuration exceptions** row: **Record an exception** (accept a configuration
+  finding with a reason and an end date) and **Delete an exception**. Granted at installation to the
+  profiles that can update the GLPI setup; give them to the security officer.
 - Connections, managed registries and end-of-support settings require the GLPI **Setup** right,
   update.
 - Everything is filtered on the user's active entities.

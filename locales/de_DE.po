@@ -2610,3 +2610,262 @@ msgstr "Kubernetes-Service"
 
 msgid "Internet"
 msgstr "Internet"
+
+msgid "Exception enregistrée."
+msgstr "Ausnahme gespeichert."
+
+msgid "Exception supprimée."
+msgstr "Ausnahme gelöscht."
+
+msgid "Configuration à risque"
+msgstr "Riskante Konfiguration"
+
+msgid "Donne la main sur l’hôte : à corriger en priorité."
+msgstr "Gibt die Kontrolle über den Host: vorrangig beheben."
+
+msgid "Affaiblit fortement l’isolement du conteneur."
+msgstr "Schwächt die Isolierung des Containers stark."
+
+msgid "Aggrave les conséquences d’une compromission."
+msgstr "Verschlimmert die Folgen einer Kompromittierung."
+
+msgid "Bonne pratique de durcissement non appliquée."
+msgstr "Bewährte Härtungspraxis nicht angewendet."
+
+msgid "Mode privilégié"
+msgstr "Privilegierter Modus"
+
+msgid "Le conteneur a tous les droits sur l’hôte et ses périphériques."
+msgstr "Der Container hat alle Rechte auf dem Host und seinen Geräten."
+
+msgid "Retirer « privileged » et n’ajouter que les capacités nécessaires."
+msgstr "„privileged“ entfernen und nur die nötigen Capabilities hinzufügen."
+
+msgid "Socket du moteur de conteneurs monté"
+msgstr "Socket der Container-Engine eingebunden"
+
+msgid "Qui accède à ce socket pilote le moteur, donc l’hôte entier."
+msgstr "Wer diesen Socket erreicht, steuert die Engine und damit den ganzen Host."
+
+msgid "Retirer le montage, ou passer par un proxy du socket en lecture seule limité aux appels utiles."
+msgstr "Einbindung entfernen oder einen schreibgeschützten Socket-Proxy nutzen, der auf die nötigen Aufrufe beschränkt ist."
+
+msgid "Le conteneur partage les interfaces réseau de l’hôte : aucun isolement réseau."
+msgstr "Der Container teilt die Netzwerkschnittstellen des Hosts: keine Netzwerkisolierung."
+
+msgid "Utiliser un réseau dédié et publier seulement les ports utiles."
+msgstr "Ein eigenes Netzwerk verwenden und nur die nötigen Ports veröffentlichen."
+
+msgid "Processus de l’hôte visibles"
+msgstr "Prozesse des Hosts sichtbar"
+
+msgid "Le conteneur voit et peut viser les processus de l’hôte."
+msgstr "Der Container sieht die Prozesse des Hosts und kann sie angreifen."
+
+msgid "Retirer le partage de l’espace des processus de l’hôte."
+msgstr "Die Freigabe des Prozess-Namespace des Hosts entfernen."
+
+msgid "Capacités dangereuses ajoutées"
+msgstr "Gefährliche Capabilities hinzugefügt"
+
+msgid "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
+msgstr "Diese Capabilities erlauben, aus dem Container auszubrechen oder auf den Host einzuwirken."
+
+msgid "Retirer ces capacités ou les remplacer par une permission plus étroite."
+msgstr "Diese Capabilities entfernen oder durch eine engere Berechtigung ersetzen."
+
+msgid "Répertoire sensible de l’hôte monté"
+msgstr "Sensibles Host-Verzeichnis eingebunden"
+
+msgid "Le conteneur lit ou modifie des fichiers système de l’hôte."
+msgstr "Der Container liest oder ändert Systemdateien des Hosts."
+
+msgid "Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
+msgstr "Ein eigenes Volume oder Unterverzeichnis einbinden, wenn möglich schreibgeschützt."
+
+msgid "Mémoire partagée de l’hôte"
+msgstr "Gemeinsamer Speicher des Hosts"
+
+msgid "Le conteneur partage les communications entre processus de l’hôte."
+msgstr "Der Container teilt die Interprozesskommunikation des Hosts."
+
+msgid "Retirer le partage de l’espace IPC de l’hôte."
+msgstr "Die Freigabe des IPC-Namespace des Hosts entfernen."
+
+msgid "Capacités ajoutées"
+msgstr "Capabilities hinzugefügt"
+
+msgid "Droits du noyau en plus de ceux accordés par défaut."
+msgstr "Kernel-Rechte zusätzlich zu den standardmäßig gewährten."
+
+msgid "Vérifier que chaque capacité est nécessaire."
+msgstr "Prüfen, ob jede Capability nötig ist."
+
+msgid "Exécution en root"
+msgstr "Ausführung als root"
+
+msgid "Aucun utilisateur non privilégié n’est défini : le processus tourne sans doute en root."
+msgstr "Kein nicht privilegierter Benutzer festgelegt: Der Prozess läuft vermutlich als root."
+
+msgid "Définir un utilisateur non privilégié (user, runAsNonRoot)."
+msgstr "Einen nicht privilegierten Benutzer festlegen (user, runAsNonRoot)."
+
+msgid "Aucune limite de mémoire"
+msgstr "Kein Speicherlimit"
+
+msgid "Le conteneur peut épuiser la mémoire de l’hôte."
+msgstr "Der Container kann den Speicher des Hosts erschöpfen."
+
+msgid "Fixer une limite de mémoire adaptée."
+msgstr "Ein passendes Speicherlimit festlegen."
+
+msgid "Aucune limite de processeur"
+msgstr "Kein CPU-Limit"
+
+msgid "Le conteneur peut accaparer le processeur de l’hôte."
+msgstr "Der Container kann die CPU des Hosts vereinnahmen."
+
+msgid "Fixer une limite de processeur adaptée."
+msgstr "Ein passendes CPU-Limit festlegen."
+
+msgid "Système de fichiers en écriture"
+msgstr "Beschreibbares Dateisystem"
+
+msgid "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
+msgstr "Ein Angreifer kann die Dateien des Images im Container ändern."
+
+msgid "Passer le système de fichiers en lecture seule, avec des volumes pour les données."
+msgstr "Das Dateisystem schreibgeschützt machen, mit Volumes für die Daten."
+
+msgid "Exceptions de configuration"
+msgstr "Konfigurationsausnahmen"
+
+msgid "Exception de configuration"
+msgstr "Konfigurationsausnahme"
+
+msgid "Enregistrer une exception"
+msgstr "Ausnahme speichern"
+
+msgid "Supprimer une exception"
+msgstr "Ausnahme löschen"
+
+msgid "Vous n’avez pas le droit d’enregistrer cette exception."
+msgstr "Sie dürfen diese Ausnahme nicht speichern."
+
+msgid "Écart inconnu."
+msgstr "Unbekannte Abweichung."
+
+msgid "La justification est obligatoire."
+msgstr "Die Begründung ist erforderlich."
+
+#, php-format
+msgid "La date de fin doit être comprise entre aujourd’hui et dans %d jours."
+msgstr "Das Enddatum muss zwischen heute und in %d Tagen liegen."
+
+msgid "L’exception n’a pas pu être enregistrée."
+msgstr "Die Ausnahme konnte nicht gespeichert werden."
+
+msgid "Correction conseillée"
+msgstr "Empfohlene Korrektur"
+
+msgid "Suivi"
+msgstr "Nachverfolgung"
+
+msgid "Écart constaté"
+msgstr "Festgestellte Abweichung"
+
+msgid "Accepter le risque"
+msgstr "Risiko akzeptieren"
+
+#, php-format
+msgid "Exception expirée le %s"
+msgstr "Ausnahme abgelaufen am %s"
+
+#, php-format
+msgid "Exception jusqu’au %s"
+msgstr "Ausnahme bis %s"
+
+msgid "Jusqu’au (à réexaminer ensuite)"
+msgstr "Bis (danach erneut prüfen)"
+
+msgid "Pourquoi ce risque est-il accepté ?"
+msgstr "Warum wird dieses Risiko akzeptiert?"
+
+msgid "Renouveler l’exception"
+msgstr "Ausnahme verlängern"
+
+msgid "Supprimer l’exception"
+msgstr "Ausnahme löschen"
+
+msgid "À traiter"
+msgstr "Zu bearbeiten"
+
+#, php-format
+msgid "%1$d sur %2$d services analysés"
+msgstr "%1$d von %2$d analysierten Diensten"
+
+msgid "Avec une exception"
+msgstr "Mit einer Ausnahme"
+
+msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
+msgstr "Härtung und Konfigurationsmanagement (ISO 27001, Maßnahme A.8.9)."
+
+msgid "En cours ou expirée"
+msgstr "Laufend oder abgelaufen"
+
+msgid "La configuration des conteneurs est lue à chaque import Portainer ou Kubernetes."
+msgstr "Die Konfiguration der Container wird bei jedem Portainer- oder Kubernetes-Import gelesen."
+
+msgid "Le plugin ne modifie rien sur les plateformes."
+msgstr "Das Plugin ändert nichts auf den Plattformen."
+
+msgid "Lus au prochain import"
+msgstr "Beim nächsten Import gelesen"
+
+msgid "Pas encore analysés"
+msgstr "Noch nicht analysiert"
+
+msgid "Sans écart critique ni haut"
+msgstr "Keine kritische oder hohe Abweichung"
+
+msgid "Services sans écart ouvert"
+msgstr "Dienste ohne offene Abweichung"
+
+msgid "Un filtre de gravité montre les services dont l’écart ouvert le plus grave a cette gravité."
+msgstr "Ein Schweregradfilter zeigt die Dienste, deren schwerste offene Abweichung diesen Schweregrad hat."
+
+msgid "Écarts couverts par une exception en cours exclus"
+msgstr "Durch eine laufende Ausnahme abgedeckte Abweichungen ausgenommen"
+
+msgid "Écarts par service"
+msgstr "Abweichungen nach Dienst"
+
+msgid "Aucun des réglages à risque contrôlés n’a été trouvé sur ce service."
+msgstr "Keine der geprüften riskanten Einstellungen wurde bei diesem Dienst gefunden."
+
+msgid "Aucun écart relevé."
+msgstr "Keine Abweichung festgestellt."
+
+msgid "Corrigez sur la plateforme, ou acceptez le risque avec une justification et une date de fin."
+msgstr "Auf der Plattform beheben oder das Risiko mit Begründung und Enddatum akzeptieren."
+
+msgid "La configuration est lue au prochain import Portainer ou Kubernetes de ce service."
+msgstr "Die Konfiguration wird beim nächsten Portainer- oder Kubernetes-Import dieses Dienstes gelesen."
+
+msgid "Pas encore analysé."
+msgstr "Noch nicht analysiert."
+
+msgid "Tous les services"
+msgstr "Alle Dienste"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Container erkennen, deren Konfiguration die Sicherheit des Hosts schwächt."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Kritische und hohe Abweichungen auf der Plattform beheben."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "Für eine gewollte Abweichung eine begründete und datierte Ausnahme speichern."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Bei jedem Import erfasste Sicherheitseinstellungen: privilegiert, root, Host-Zugriff, Limits, Einbindungen."

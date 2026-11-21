@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory;
 
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
@@ -242,7 +243,7 @@ final class Importer
      * Portainer et chaque projet Compose vu sur les conteneurs comme une stack, chaque service
      * Compose et chaque conteneur hors Compose comme un service. Lecture seule : informations du
      * moteur, liste des conteneurs et des images, détail de chaque conteneur pour sa politique de
-     * redémarrage (rien d'autre n'en est lu, ni variables d'environnement ni secrets).
+     * redémarrage et ses réglages de sécurité (#71) ; ni variables d'environnement ni secrets.
      *
      * @param array<string, mixed> $endpoint
      * @param list<array<string, mixed>> $stacks
@@ -270,6 +271,7 @@ final class Importer
         $images = PortainerMapper::imageIndex($client->images($endpointId));
         $containers = [];
         $policies = [];
+        $hardening = [];
         foreach ($rawContainers as $raw) {
             $container = PortainerMapper::mapContainer($raw, $images);
             if ($container === null) {
@@ -277,9 +279,10 @@ final class Importer
             }
             $containers[] = $container;
             try {
-                $policies[$container['uid']] = PortainerMapper::restartPolicy(
-                    $client->container($endpointId, $container['uid'])
-                );
+                $inspect = $client->container($endpointId, $container['uid']);
+                $policies[$container['uid']] = PortainerMapper::restartPolicy($inspect);
+                // Configuration à risque (#71) : champs de sécurité seulement (HardeningMapper).
+                $hardening[$container['uid']] = HardeningMapper::fromContainerInspect($inspect);
             } catch (PortainerException $e) {
                 if ($e->getMessage() !== PortainerException::NOT_FOUND) {
                     throw $e;
@@ -344,7 +347,7 @@ final class Importer
             $report['stacks']++;
         }
 
-        foreach (PortainerMapper::groupContainers($endpointId, $containers, $policies) as $service) {
+        foreach (PortainerMapper::groupContainers($endpointId, $containers, $policies, $hardening) as $service) {
             $stackRow = $stackRows[strtolower($service['stack_name'])] ?? ['id' => 0, 'appliances_id' => 0];
             $serviceId = $this->upsertService($connection, $endpointId, $endpointName, $service, $stackRow);
             $running = $service['running_replicas'];

@@ -299,6 +299,10 @@ final class InventoryStore
         if (array_key_exists('routes', $service)) {
             $values['routes'] = (string) $service['routes'];
         }
+        // Configuration à risque (#71) : seulement si la source l'a lue ; sinon l'analyse précédente reste.
+        if (array_key_exists('hardening', $service)) {
+            $values['hardening'] = (string) $service['hardening'];
+        }
         $existing = $DB->request([
             'SELECT' => ['id', 'image', 'tag', 'digest'],
             'FROM'   => $table,
