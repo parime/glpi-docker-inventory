@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.12.0] - 2026-11-21
+
 ### Added
 
 - Configuration à risque des conteneurs ([#71](https://github.com/parime/glpi-docker-inventory/issues/71)) :
