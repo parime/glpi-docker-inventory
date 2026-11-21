@@ -1,0 +1,40 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# État du pont vers la matrice des flux de GRC Manager (#72). grc : Exposure::grcState(). #}
+{% if grc.available %}
+    <p class="small mt-2 mb-0">
+        <i class="ti ti-arrows-exchange me-1 text-info" aria-hidden="true"></i>
+        {{ __(
+            'GRC Manager est installé : chaque exposition est comparée aux flux actifs de sa matrice des flux.',
+            'dockerinventory'
+        ) }}
+        {% if grc.can_create %}
+            {{ __(
+                '« Proposer le flux » ouvre un nouveau flux dans GRC : rien n’est enregistré sans vous.',
+                'dockerinventory'
+            ) }}
+        {% endif %}
+        <a href="{{ grc.matrix_url }}" class="ms-1">{{ __('Ouvrir la matrice des flux', 'dockerinventory') }}</a>
+    </p>
+{% else %}
+    <p class="small text-muted mt-2 mb-0">
+        <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
+        {{ __(
+            'Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un flux est proposé.',
+            'dockerinventory'
+        ) }}
+    </p>
+{% endif %}

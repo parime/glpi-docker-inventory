@@ -17,6 +17,7 @@
 
 use Glpi\Application\View\TemplateRenderer;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
@@ -30,7 +31,8 @@ use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 
 // Sous-pages « Versions des images » (par défaut), « Images Harbor et vulnérabilités »
-// (?view=harbor) et « Fin de support des images » (?view=eol) de l'entrée Parc > Inventaire Docker :
+// (?view=harbor), « Fin de support des images » (?view=eol) et « Exposition » (?view=exposure, #72)
+// de l'entrée Parc > Inventaire Docker :
 // lecture seule, droit de lecture du plugin, entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
@@ -39,8 +41,39 @@ $view = (string) ($_GET['view'] ?? '');
 $tabs = [
     'versions_url' => ImageVersion::getOverviewURL(),
     'harbor_url'   => HarborArtifact::getPageURL(),
-    'tabs'         => Menu::tabs(in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL], true) ? $view : Menu::TAB_VERSIONS),
+    'tabs'         => Menu::tabs(
+        in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL, Menu::TAB_EXPOSURE], true) ? $view : Menu::TAB_VERSIONS
+    ),
 ];
+
+if ($view === Menu::TAB_EXPOSURE) {
+    // Exposition : tous les services exposés, ou seulement ceux exposés sur Internet ou sans flux
+    // documenté dans GRC Manager. Aucune écriture, ni ici ni dans GRC.
+    $filter = (string) ($_GET['filter'] ?? '');
+    if (!in_array($filter, [Exposure::FILTER_INTERNET, Exposure::FILTER_UNDOCUMENTED], true)) {
+        $filter = '';
+    }
+    $grc = Exposure::grcState();
+    if (!$grc['available'] && $filter === Exposure::FILTER_UNDOCUMENTED) {
+        $filter = '';
+    }
+    $data = Exposure::overview($filter);
+
+    Html::header(Exposure::getTypeName(1), '', 'assets', Menu::class, Menu::TAB_EXPOSURE);
+    TemplateRenderer::getInstance()->display('@dockerinventory/exposure.html.twig', $tabs + [
+        'services'     => $data['services'],
+        'counts'       => $data['counts'],
+        'filter'       => $filter,
+        'internet'     => Exposure::FILTER_INTERNET,
+        'undocumented' => Exposure::FILTER_UNDOCUMENTED,
+        'infos'        => Exposure::infos(),
+        'grc'          => $grc,
+        'page_url'     => Exposure::getPageURL(),
+    ]);
+    Html::footer();
+
+    return;
+}
 $eolSource = [
     'eol_statuses'   => LifecycleProduct::statusInfos(),
     'eol_watch'      => ImageVersion::FILTER_EOL_WATCH,

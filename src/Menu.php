@@ -25,7 +25,7 @@ use CommonGLPI;
  * Seule entrée de menu d'usage du plugin : Parc > Inventaire Docker (charte commune, section 9).
  * Ses écrans sont des sous-pages reliées par une barre d'onglets commune
  * (templates/_section_nav.html.twig) : services, versions des images, images Harbor et
- * vulnérabilités, fin de support des images. Visible avec le droit de lecture du plugin. Les réglages
+ * vulnérabilités, fin de support des images, exposition. Visible avec le droit de lecture du plugin. Les réglages
  * (connexions, registres maîtrisés, fin de support) sont dans la page de configuration du plugin
  * (ConfigPage).
  */
@@ -35,6 +35,7 @@ class Menu extends CommonGLPI
     public const TAB_VERSIONS = 'versions';
     public const TAB_HARBOR = 'harbor';
     public const TAB_EOL = 'eol';
+    public const TAB_EXPOSURE = 'exposure';
 
     public static function getTypeName($nb = 0)
     {
@@ -115,6 +116,11 @@ class Menu extends CommonGLPI
                 'label' => __('Fin de support des images', 'dockerinventory'),
                 'icon'  => 'ti ti-calendar-x',
                 'url'   => ImageVersion::getEolURL(false),
+            ],
+            self::TAB_EXPOSURE => [
+                'label' => Exposure::getTypeName(1),
+                'icon'  => Exposure::getIcon(),
+                'url'   => Exposure::getPageURL(false),
             ],
         ];
     }

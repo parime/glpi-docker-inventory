@@ -1,0 +1,113 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Expositions d'un service (#72) : une ligne par port publié ou par route. service : Exposure::describe(),
+   infos : Exposure::infos(), grc : Exposure::grcState(). show_service : colonne du service (sous-page).
+   Le bouton « Proposer le flux » ouvre le formulaire d'un nouveau flux de GRC Manager : rien n'est
+   créé ici. #}
+{% for exposure in service.exposures %}
+    {% set scope = infos.scopes[exposure.scope] %}
+    {% set source = infos.sources[exposure.source] %}
+    <tr>
+        {% if show_service and loop.first %}
+            <td rowspan="{{ service.exposures|length }}">
+                <a href="{{ service.url }}">{{ service.name }}</a>
+                {% if service.stack_name %}
+                    <div class="small text-muted">{{ service.stack_name }}</div>
+                {% endif %}
+            </td>
+        {% endif %}
+        <td>
+            <span class="text-nowrap">
+                <i class="{{ source.icon }} me-1" aria-hidden="true"></i>{{ source.label }}
+            </span>
+            {% if exposure.name %}<div class="small text-muted">{{ exposure.name }}</div>{% endif %}
+        </td>
+        <td>
+            {% if exposure.source == 'port' %}
+                <code>{{ exposure.host ? exposure.host ~ ':' : '' }}{{ exposure.port }}</code>
+                <span class="text-muted">→ {{ exposure.target_port }}/{{ exposure.protocol }}</span>
+            {% else %}
+                <code>{{ exposure.host ?: '*' }}{{ exposure.path != '/' ? exposure.path : '' }}</code>
+                {% if exposure.port > 0 and exposure.source == 'k8s_service' %}
+                    <span class="text-muted">:{{ exposure.port }}/{{ exposure.protocol }}</span>
+                {% endif %}
+                {% if exposure.entrypoints %}
+                    <div class="small text-muted">{{ exposure.entrypoints }}</div>
+                {% endif %}
+            {% endif %}
+        </td>
+        <td>
+            {% if exposure.source in ['traefik', 'ingress'] %}
+                {% if exposure.tls %}
+                    <span class="badge bg-success-subtle text-success-emphasis">
+                        <i class="ti ti-lock me-1" aria-hidden="true"></i>HTTPS
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning-subtle text-warning-emphasis">
+                        <i class="ti ti-lock-open me-1" aria-hidden="true"></i>
+                        {{ __('Sans TLS', 'dockerinventory') }}
+                    </span>
+                {% endif %}
+            {% else %}
+                <span class="text-muted">-</span>
+            {% endif %}
+        </td>
+        <td>
+            <span class="badge {{ tone.badge(scope.color) }}" title="{{ scope.help }}">
+                <i class="{{ scope.icon }} me-1" aria-hidden="true"></i>{{ scope.label }}
+            </span>
+        </td>
+        {% if grc.available %}
+            <td>
+                {% if exposure.proposal is null %}
+                    <span class="text-muted small">{{ __('Aucun flux à documenter', 'dockerinventory') }}</span>
+                {% elseif exposure.documented %}
+                    <span class="badge bg-success-subtle text-success-emphasis">
+                        <i class="ti ti-circle-check me-1" aria-hidden="true"></i>
+                        {{ __('Flux documenté', 'dockerinventory') }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-danger-subtle text-danger-emphasis">
+                        <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                        {{ __('Aucun flux documenté', 'dockerinventory') }}
+                    </span>
+                    {% if exposure.propose_url %}
+                        <a href="{{ exposure.propose_url }}" class="btn btn-outline-primary btn-sm ms-1"
+                           target="_blank" rel="noopener noreferrer"
+                           title="{{ __(
+                               'Ouvre le formulaire d’un nouveau flux dans GRC Manager : relisez puis enregistrez.',
+                               'dockerinventory'
+                           ) }}">
+                            <i class="ti ti-arrows-exchange me-1" aria-hidden="true"></i>
+                            {{ __('Proposer le flux', 'dockerinventory') }}
+                        </a>
+                    {% endif %}
+                    <div class="small text-muted mt-1">
+                        {{ exposure.proposal.flow_type == 'internet_publication'
+                            ? __('Publié sur Internet (entrant)', 'dockerinventory')
+                            : __('Flux interne', 'dockerinventory') }} :
+                        {{ exposure.proposal.source_label }} → {{ exposure.proposal.destination_label }}
+                        {% if exposure.proposal.ports %}
+                            ({{ exposure.proposal.protocol|upper }} {{ exposure.proposal.ports }})
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </td>
+        {% endif %}
+    </tr>
+{% endfor %}

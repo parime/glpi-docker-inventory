@@ -446,8 +446,7 @@ final class ExposureMapper
         string $serviceName,
         string $internetLabel,
         string $internalLabel
-    ): ?array
-    {
+    ): ?array {
         if ($exposure['scope'] === self::SCOPE_LOCAL) {
             return null;
         }
@@ -490,8 +489,7 @@ final class ExposureMapper
         string $host,
         string $serviceName,
         array $flows
-    ): bool
-    {
+    ): bool {
         foreach ($flows as $flow) {
             $label = strtolower($flow['destination_label']);
             $sameTarget = ($applianceId > 0 && $flow['destination_itemtype'] === 'Appliance'
