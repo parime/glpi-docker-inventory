@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 15:43+0000\n"
+"POT-Creation-Date: 2026-11-21 16:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -605,45 +605,45 @@ msgstr ""
 msgid "Exploitation connue"
 msgstr ""
 
-#: src/ExploitSignal.php:137
+#: src/ExploitSignal.php:140
 msgid "Fichier illisible ou d’un format inattendu."
 msgstr ""
 
-#: src/ExploitSignal.php:138
+#: src/ExploitSignal.php:141
 msgid "Le fichier ne contient aucune CVE."
 msgstr ""
 
-#: src/ExploitSignal.php:140
+#: src/ExploitSignal.php:143
 msgid ""
 "Ce fichier n’est ni le catalogue CISA KEV (JSON) ni les scores EPSS (CSV)."
 msgstr ""
 
-#: src/ExploitSignal.php:143
+#: src/ExploitSignal.php:146
 msgid "Fichier trop volumineux."
 msgstr ""
 
-#: src/ExploitSignal.php:144
+#: src/ExploitSignal.php:147
 msgid "Source injoignable ou réponse refusée."
 msgstr ""
 
-#: src/ExploitSignal.php:146
+#: src/ExploitSignal.php:149
 msgid "Le fichier n’a pas pu être gardé dans le dossier des données du plugin."
 msgstr ""
 
-#: src/ExploitSignal.php:158
+#: src/ExploitSignal.php:161
 msgid "Catalogue CISA KEV"
 msgstr ""
 
-#: src/ExploitSignal.php:159
+#: src/ExploitSignal.php:162
 msgid "Scores EPSS"
 msgstr ""
 
-#: src/ExploitSignal.php:466
+#: src/ExploitSignal.php:469
 #, php-format
 msgid "%d CVE"
 msgstr ""
 
-#: src/ExploitSignal.php:494
+#: src/ExploitSignal.php:497
 msgid ""
 "Exploitation connue : téléchargement du catalogue CISA KEV et des scores EPSS"
 msgstr ""
@@ -2858,16 +2858,19 @@ msgid "Jamais chargé"
 msgstr ""
 
 #: templates/exploits.html.twig
-msgid ""
-"Le catalogue CISA KEV liste les vulnérabilités exploitées activement ; le "
-"score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans "
-"les 30 jours."
+msgid "Le catalogue CISA KEV liste les vulnérabilités exploitées activement."
 msgstr ""
 
 #: templates/exploits.html.twig
 msgid ""
 "Le plugin télécharge les fichiers publics complets : aucune CVE, aucune "
 "image ni aucun hôte n’est envoyé."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Le score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans "
+"les 30 jours."
 msgstr ""
 
 #: templates/exploits.html.twig
@@ -2880,8 +2883,8 @@ msgstr ""
 
 #: templates/exploits.html.twig templates/image_scans.html.twig
 msgid ""
-"Ordre de traitement : images exploitées activement (catalogue CISA KEV), "
-"puis gravité, puis exposition des services."
+"Ordre de traitement : exploitées activement (catalogue CISA KEV), puis "
+"gravité, puis exposition."
 msgstr ""
 
 #: templates/exploits.html.twig
@@ -2894,8 +2897,8 @@ msgstr ""
 
 #: templates/exploits.html.twig
 msgid ""
-"Repérer, parmi les vulnérabilités des images, celles qui sont exploitées "
-"activement, pour les corriger en premier."
+"Repérer les vulnérabilités des images exploitées activement, pour les "
+"corriger en premier."
 msgstr ""
 
 #: templates/exploits.html.twig
@@ -2906,8 +2909,8 @@ msgstr ""
 
 #: templates/exploits.html.twig
 msgid ""
-"Serveur sans accès à Internet : téléchargez le fichier depuis un autre "
-"poste, aux adresses ci-dessus, puis déposez-le ici."
+"Serveur sans accès à Internet : téléchargez le fichier sur un autre poste, "
+"puis déposez-le ici."
 msgstr ""
 
 #: templates/exploits.html.twig

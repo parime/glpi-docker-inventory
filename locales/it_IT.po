@@ -3365,8 +3365,12 @@ msgid "Jamais chargé"
 msgstr "Mai caricato"
 
 #: templates/exploits.html.twig
-msgid "Le catalogue CISA KEV liste les vulnérabilités exploitées activement ; le score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans les 30 jours."
-msgstr "Il catalogo CISA KEV elenca le vulnerabilità sfruttate attivamente; il punteggio EPSS stima la probabilità che una vulnerabilità venga sfruttata entro 30 giorni."
+msgid "Le catalogue CISA KEV liste les vulnérabilités exploitées activement."
+msgstr "Il catalogo CISA KEV elenca le vulnerabilità sfruttate attivamente."
+
+#: templates/exploits.html.twig
+msgid "Le score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans les 30 jours."
+msgstr "Il punteggio EPSS stima la probabilità che una vulnerabilità venga sfruttata entro 30 giorni."
 
 #: templates/exploits.html.twig
 msgid "Le plugin télécharge les fichiers publics complets : aucune CVE, aucune image ni aucun hôte n’est envoyé."
@@ -3381,8 +3385,8 @@ msgid "Mode hors ligne"
 msgstr "Modalità offline"
 
 #: templates/exploits.html.twig
-msgid "Ordre de traitement : images exploitées activement (catalogue CISA KEV), puis gravité, puis exposition des services."
-msgstr "Ordine di trattamento: immagini sfruttate attivamente (catalogo CISA KEV), poi gravità, poi esposizione dei servizi."
+msgid "Ordre de traitement : exploitées activement (catalogue CISA KEV), puis gravité, puis exposition."
+msgstr "Ordine di trattamento: sfruttate attivamente (catalogo CISA KEV), poi gravità, poi esposizione."
 
 #: templates/exploits.html.twig
 msgid "Origine"
@@ -3393,16 +3397,16 @@ msgid "Ouvrir la tâche automatique"
 msgstr "Apri l'azione automatica"
 
 #: templates/exploits.html.twig
-msgid "Repérer, parmi les vulnérabilités des images, celles qui sont exploitées activement, pour les corriger en premier."
-msgstr "Individuare, tra le vulnerabilità delle immagini, quelle sfruttate attivamente, per correggerle per prime."
+msgid "Repérer les vulnérabilités des images exploitées activement, pour les corriger en premier."
+msgstr "Individuare le vulnerabilità delle immagini sfruttate attivamente, per correggerle per prime."
 
 #: templates/exploits.html.twig
 msgid "Rien n’est téléchargé tant que vous ne cliquez pas ou n’activez pas la tâche automatique."
 msgstr "Non viene scaricato nulla finché non si fa clic o non si attiva l'azione automatica."
 
 #: templates/exploits.html.twig
-msgid "Serveur sans accès à Internet : téléchargez le fichier depuis un autre poste, aux adresses ci-dessus, puis déposez-le ici."
-msgstr "Server senza accesso a Internet: scarica il file da un altro computer, agli indirizzi qui sopra, poi caricalo qui."
+msgid "Serveur sans accès à Internet : téléchargez le fichier sur un autre poste, puis déposez-le ici."
+msgstr "Server senza accesso a Internet: scarica il file su un altro computer, poi caricalo qui."
 
 #: templates/exploits.html.twig
 msgid "Tâche automatique « exploitsignals » active : une mise à jour par jour."

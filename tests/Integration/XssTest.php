@@ -21,6 +21,7 @@ namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
@@ -28,7 +29,6 @@ use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\HardeningException;
-use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;

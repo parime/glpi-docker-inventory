@@ -172,7 +172,7 @@
             <p class="small text-muted mt-2 mb-0">
                 <i class="ti ti-sort-descending me-1" aria-hidden="true"></i>
                 {{ __(
-                    'Ordre de traitement : images exploitées activement (catalogue CISA KEV), puis gravité, puis exposition des services.',
+                    'Ordre de traitement : exploitées activement (catalogue CISA KEV), puis gravité, puis exposition.',
                     'dockerinventory'
                 ) }}
                 {% if exploits.loaded %}
@@ -184,7 +184,9 @@
                     </span>
                 {% endif %}
                 {% if exploits.config_url %}
-                    <a href="{{ exploits.config_url }}">{{ __('Réglages de l’exploitation connue', 'dockerinventory') }}</a>
+                    <a href="{{ exploits.config_url }}">
+                        {{- __('Réglages de l’exploitation connue', 'dockerinventory') -}}
+                    </a>
                 {% endif %}
             </p>
         </div>

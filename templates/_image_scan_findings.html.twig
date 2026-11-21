@@ -65,13 +65,18 @@
                                 {% endif %}
                                 {% if finding.kev_due %}
                                     <div class="small text-muted">
-                                        {{ __('Échéance CISA : %s', 'dockerinventory')|format(finding.kev_due|formatted_date) }}
+                                        {{ __('Échéance CISA : %s', 'dockerinventory')
+                                            |format(finding.kev_due|formatted_date) }}
                                     </div>
                                 {% endif %}
                             {% endif %}
                             {% if finding.epss is not null %}
-                                <span class="badge {{ finding.epss_high ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary-emphasis' }}"
-                                      title="{{ __('Probabilité d’exploitation dans les 30 jours (EPSS)', 'dockerinventory') }}"
+                                {% set epss_badge = finding.epss_high ? 'warning' : 'secondary' %}
+                                <span class="badge bg-{{ epss_badge }}-subtle text-{{ epss_badge }}-emphasis"
+                                      title="{{ __(
+                                          'Probabilité d’exploitation dans les 30 jours (EPSS)',
+                                          'dockerinventory'
+                                      ) }}"
                                       data-bs-toggle="tooltip">
                                     EPSS {{ finding.epss }} %
                                 </span>
