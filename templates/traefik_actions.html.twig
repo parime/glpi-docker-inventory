@@ -19,8 +19,13 @@
    comparées aux étiquettes et signalements de la dernière lecture (#80). #}
 {% set status_colors = {0: 'secondary', 1: 'success', 2: 'warning', 3: 'danger'} %}
 {% set status = item.fields['last_import_status']|default(0) %}
-{% set match_colors = {declared: 'success', differs: 'warning', not_inventoried: 'secondary', other_provider: 'info', internal: 'secondary'} %}
-{% set check_colors = {dashboard_exposed: 'danger', no_tls: 'danger', no_auth: 'warning', no_headers: 'secondary'} %}
+{% set match_colors = {
+    declared: 'success', differs: 'warning', not_inventoried: 'secondary',
+    other_provider: 'info', internal: 'secondary'
+} %}
+{% set check_colors = {
+    dashboard_exposed: 'danger', no_tls: 'danger', no_auth: 'warning', no_headers: 'secondary'
+} %}
 
 <div class="card mt-3">
     <div class="card-header">
@@ -33,7 +38,7 @@
         {{ include('@dockerinventory/_page_help.html.twig', {
             page: 'traefik',
             purpose: __(
-                'Lire, en lecture seule, les routes que Traefik applique vraiment et les comparer aux étiquettes des services inventoriés.',
+                'Comparer les routes vraiment appliquées par Traefik aux étiquettes des services inventoriés.',
                 'dockerinventory'
             ),
             expected: __(
@@ -42,8 +47,14 @@
             ),
         }) }}
         <p class="text-muted">
-            {{ __('Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion.', 'dockerinventory') }}
-            {{ __('Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire Traefik maintenant ».', 'dockerinventory') }}
+            {{ __(
+                'Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+                'Pas de tâche automatique : la lecture se fait quand vous cliquez sur « Lire Traefik maintenant ».',
+                'dockerinventory'
+            ) }}
         </p>
 
         <div class="mb-3">
@@ -53,7 +64,9 @@
                 <span class="ms-2 text-muted">{{ item.fields['last_import_date']|formatted_datetime }}</span>
             {% endif %}
             {% if report and report.traefik_version|default('') %}
-                <span class="badge bg-success-subtle text-success-emphasis ms-2">Traefik {{ report.traefik_version }}</span>
+                <span class="badge bg-success-subtle text-success-emphasis ms-2">
+                    Traefik {{ report.traefik_version }}
+                </span>
             {% endif %}
         </div>
 
@@ -70,21 +83,25 @@
         {% if report and report.counts is defined %}
             <div class="d-flex flex-wrap gap-2 mb-3">
                 <span class="badge bg-secondary-subtle text-secondary-emphasis">
-                    <i class="ti ti-route me-1" aria-hidden="true"></i>{{ __('Routes', 'dockerinventory') }} : {{ report.counts.routes|default(0) }}
+                    <i class="ti ti-route me-1" aria-hidden="true"></i>
+                    {{ __('Routes', 'dockerinventory') }} : {{ report.counts.routes|default(0) }}
                 </span>
                 <span class="badge bg-danger-subtle text-danger-emphasis">
-                    <i class="ti ti-world me-1" aria-hidden="true"></i>{{ __('Internet (probable)', 'dockerinventory') }} : {{ report.counts.internet|default(0) }}
+                    <i class="ti ti-world me-1" aria-hidden="true"></i>
+                    {{ __('Internet (probable)', 'dockerinventory') }} : {{ report.counts.internet|default(0) }}
                 </span>
                 {% for code, label in traefik_labels.checks %}
                     {% if report.counts[code]|default(0) > 0 %}
                         <span class="badge {{ tone.badge(check_colors[code]) }}">
-                            <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>{{ label }} : {{ report.counts[code] }}
+                            <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                            {{ label }} : {{ report.counts[code] }}
                         </span>
                     {% endif %}
                 {% endfor %}
                 {% if report.counts.not_applied|default(0) > 0 %}
                     <span class="badge bg-warning-subtle text-warning-emphasis">
-                        <i class="ti ti-unlink me-1" aria-hidden="true"></i>{{ __('Déclarées non appliquées', 'dockerinventory') }} : {{ report.counts.not_applied }}
+                        <i class="ti ti-unlink me-1" aria-hidden="true"></i>
+                        {{ __('Déclarées non appliquées', 'dockerinventory') }} : {{ report.counts.not_applied }}
                     </span>
                 {% endif %}
             </div>
@@ -118,42 +135,67 @@
                                         <div class="small text-muted">
                                             {{ route.protocol|upper }} · {{ route.provider }}
                                             {% if route.status and route.status != 'enabled' %}
-                                                <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ route.status }}</span>
+                                                <span class="badge bg-warning-subtle text-warning-emphasis ms-1">
+                                                    {{ route.status }}
+                                                </span>
                                             {% endif %}
                                         </div>
                                     </td>
                                     <td>
-                                        {% for host in route.hosts %}<div>{{ host }}</div>{% else %}<span class="text-muted">{{ __('Tous les hôtes', 'dockerinventory') }}</span>{% endfor %}
-                                        {% for path in route.paths %}<div class="small text-muted">{{ path }}</div>{% endfor %}
+                                        {% for host in route.hosts %}
+                                        <div>{{ host }}</div>
+                                        {% else %}
+                                        <span class="text-muted">{{ __('Tous les hôtes', 'dockerinventory') }}</span>
+                                        {% endfor %}
+                                        {% for path in route.paths %}
+                                        <div class="small text-muted">{{ path }}</div>
+                                        {% endfor %}
                                         {% if scope %}
                                             <span class="badge {{ tone.badge(scope.color) }}" title="{{ scope.help }}">
-                                                <i class="{{ scope.icon }} me-1" aria-hidden="true"></i>{{ scope.label }}
+                                                <i class="{{ scope.icon }} me-1" aria-hidden="true"></i>
+                                                {{ scope.label }}
                                             </span>
                                         {% endif %}
                                     </td>
                                     <td class="small">{{ route.entrypoints|join(', ') }}</td>
                                     <td>
                                         {% if route.tls %}
-                                            <span class="badge bg-success-subtle text-success-emphasis"><i class="ti ti-lock me-1" aria-hidden="true"></i>{{ __('Yes') }}</span>
+                                            <span class="badge bg-success-subtle text-success-emphasis">
+                                            <i class="ti ti-lock me-1" aria-hidden="true"></i>
+                                            {{ __('Yes') }}</span>
                                         {% else %}
-                                            <span class="badge bg-secondary-subtle text-secondary-emphasis"><i class="ti ti-lock-open me-1" aria-hidden="true"></i>{{ __('No') }}</span>
+                                            <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                            <i class="ti ti-lock-open me-1" aria-hidden="true"></i>
+                                            {{ __('No') }}</span>
                                         {% endif %}
                                     </td>
                                     <td class="small">
                                         {{ route.service }}
-                                        {% if route.servers > 0 %}<div class="text-muted">{{ _n('%d serveur', '%d serveurs', route.servers, 'dockerinventory')|format(route.servers) }}</div>{% endif %}
+                                        {% if route.servers > 0 %}
+                                        <div class="text-muted">
+                                            {{ _n('%d serveur', '%d serveurs', route.servers, 'dockerinventory')
+                                                |format(route.servers) }}
+                                        </div>
+                                        {% endif %}
                                     </td>
                                     <td class="small">{{ route.middlewares|join(', ') }}</td>
                                     <td>
-                                        <span class="badge {{ tone.badge(match_colors[route.match]|default('secondary')) }}">{{ traefik_labels.matches[route.match]|default(route.match) }}</span>
+                                        {% set match_color = match_colors[route.match]|default('secondary') %}
+                                        <span class="badge {{ tone.badge(match_color) }}">
+                                            {{ traefik_labels.matches[route.match]|default(route.match) }}
+                                        </span>
                                         {% for service in route.services %}
-                                            <div class="small"><a href="{{ service_url }}?id={{ service.id }}">{{ service.name }}</a></div>
+                                            <div class="small">
+                                            <a href="{{ service_url }}?id={{ service.id }}">{{ service.name }}</a></div>
                                         {% endfor %}
                                     </td>
                                     <td>
                                         {% for check in route.checks %}
-                                            <div><span class="badge {{ tone.badge(check_colors[check]|default('warning')) }}">
-                                                <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>{{ traefik_labels.checks[check]|default(check) }}
+                                            <div>
+                                            {% set check_color = check_colors[check]|default('warning') %}
+                                            <span class="badge {{ tone.badge(check_color) }}">
+                                                <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                                                {{ traefik_labels.checks[check]|default(check) }}
                                             </span></div>
                                         {% else %}
                                             <span class="text-muted">-</span>
@@ -172,7 +214,10 @@
                     {{ __('Routes déclarées dans les étiquettes mais absentes de Traefik', 'dockerinventory') }}
                 </h3>
                 <p class="text-muted small">
-                    {{ __('Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou inventaire à réimporter.', 'dockerinventory') }}
+                    {{ __(
+                        'Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou import à relancer.',
+                        'dockerinventory'
+                    ) }}
                 </p>
                 <ul>
                     {% for route in report.not_applied %}

@@ -31,7 +31,10 @@
             : __('Facultatif pour les projets publics.', 'dockerinventory') %}
     {% elseif is_traefik %}
         {% set key_helper = has_api_key
-            ? __('Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le conserver.', 'dockerinventory')
+            ? __(
+                'Un mot de passe ou jeton est enregistré (chiffré) : laisser vide pour le conserver.',
+                'dockerinventory'
+            )
             : __('Facultatif : seulement si l’API de Traefik est protégée.', 'dockerinventory') %}
     {% elseif is_wud %}
         {% set key_helper = has_api_key
@@ -150,10 +153,16 @@
         {{ fields.textField('url', item.fields['url'], __('Adresse de l’API de Traefik', 'dockerinventory'), {
             required: true,
             placeholder: 'https://traefik.exemple.test',
-            helper: __('Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est appelée.', 'dockerinventory'),
+            helper: __(
+                'Adresse où répond /api/version, sans /api à la fin. Seule cette adresse est appelée.',
+                'dockerinventory'
+            ),
         }) }}
         {{ fields.textField('username', item.fields['username'] ?? '', __('Utilisateur', 'dockerinventory'), {
-            helper: __('Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton (Bearer).', 'dockerinventory'),
+            helper: __(
+                'Pour une API protégée par basicAuth. Vide : le secret est envoyé comme jeton (Bearer).',
+                'dockerinventory'
+            ),
         }) }}
         {{ fields.passwordField('api_key', '', __('Mot de passe ou jeton', 'dockerinventory'), {
             clearable: false,

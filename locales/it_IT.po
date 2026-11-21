@@ -2968,7 +2968,7 @@ msgstr "Host e percorso"
 msgid "Lire Traefik maintenant"
 msgstr "Leggi Traefik ora"
 
-msgid "Lire, en lecture seule, les routes que Traefik applique vraiment et les comparer aux étiquettes des services inventoriés."
+msgid "Comparer les routes vraiment appliquées par Traefik aux étiquettes des services inventoriés."
 msgstr "Leggere, in sola lettura, le rotte che Traefik applica davvero e confrontarle con le etichette dei servizi inventariati."
 
 msgid "Liste tronquée : seules les 100 premières routes sont affichées."
@@ -3013,7 +3013,7 @@ msgstr "Tutti gli host"
 msgid "Traefik sur un réseau privé (GLPI 12)"
 msgstr "Traefik su una rete privata (GLPI 12)"
 
-msgid "Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou inventaire à réimporter."
+msgid "Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou import à relancer."
 msgstr "Etichetta errata, servizio fermo, rete non condivisa con Traefik o inventario da reimportare."
 
 msgid "Étiquettes"

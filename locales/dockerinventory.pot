@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 14:10+0000\n"
+"POT-Creation-Date: 2026-11-21 14:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -294,50 +294,50 @@ msgstr ""
 msgid "Connexion établie, mais à vérifier : %s"
 msgstr ""
 
-#: src/Connection.php:1035
+#: src/Connection.php:1030
 #, php-format
 msgid ""
 "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non "
 "appliquée(s)."
 msgstr ""
 
-#: src/Connection.php:1054
+#: src/Connection.php:1049
 msgid "Conforme aux étiquettes"
 msgstr ""
 
-#: src/Connection.php:1055
+#: src/Connection.php:1050
 msgid "Différente des étiquettes"
 msgstr ""
 
-#: src/Connection.php:1056
+#: src/Connection.php:1051
 msgid "Service non inventorié"
 msgstr ""
 
-#: src/Connection.php:1057
+#: src/Connection.php:1052
 msgid "Hors étiquettes Docker"
 msgstr ""
 
-#: src/Connection.php:1058
+#: src/Connection.php:1053
 msgid "Interne à Traefik"
 msgstr ""
 
-#: src/Connection.php:1062
+#: src/Connection.php:1057
 msgid "Tableau de bord ou API de Traefik sans authentification"
 msgstr ""
 
-#: src/Connection.php:1065
+#: src/Connection.php:1060
 msgid "Route publique sans TLS ni redirection HTTPS"
 msgstr ""
 
-#: src/Connection.php:1066
+#: src/Connection.php:1061
 msgid "Route d'administration sans authentification"
 msgstr ""
 
-#: src/Connection.php:1067
+#: src/Connection.php:1062
 msgid "Route publique sans en-têtes de sécurité"
 msgstr ""
 
-#: src/Connection.php:1090
+#: src/Connection.php:1085
 #, php-format
 msgid "Connexion réussie : Traefik %1$s, %2$d route(s) HTTP."
 msgstr ""
@@ -3333,6 +3333,12 @@ msgid ""
 msgstr ""
 
 #: templates/traefik_actions.html.twig
+msgid ""
+"Comparer les routes vraiment appliquées par Traefik aux étiquettes des "
+"services inventoriés."
+msgstr ""
+
+#: templates/traefik_actions.html.twig
 msgid "Déclarées non appliquées"
 msgstr ""
 
@@ -3342,12 +3348,6 @@ msgstr ""
 
 #: templates/traefik_actions.html.twig
 msgid "Lire Traefik maintenant"
-msgstr ""
-
-#: templates/traefik_actions.html.twig
-msgid ""
-"Lire, en lecture seule, les routes que Traefik applique vraiment et les "
-"comparer aux étiquettes des services inventoriés."
 msgstr ""
 
 #: templates/traefik_actions.html.twig
@@ -3412,8 +3412,8 @@ msgstr ""
 
 #: templates/traefik_actions.html.twig
 msgid ""
-"Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou "
-"inventaire à réimporter."
+"Étiquette erronée, service arrêté, réseau non partagé avec Traefik ou import "
+"à relancer."
 msgstr ""
 
 #: templates/traefik_actions.html.twig

@@ -1013,11 +1013,6 @@ class Connection extends ConnectionBase
     }
 
     /**
-     * « Tester la connexion » WUD : version de WUD et nombre de conteneurs suivis.
-     *
-     * @return array{ok: bool, message: string}
-     */
-    /**
      * Message de la lecture d'une API Traefik.
      *
      * @param array<string, mixed> $report
@@ -1094,6 +1089,11 @@ class Connection extends ConnectionBase
         ];
     }
 
+    /**
+     * « Tester la connexion » WUD : version de WUD et nombre de conteneurs suivis.
+     *
+     * @return array{ok: bool, message: string}
+     */
     public function testWudConnection(?WudClient $client = null): array
     {
         $client ??= $this->getWudClient();
