@@ -60,6 +60,7 @@ final class Installer
         'glpi_plugin_dockerinventory_versionchanges',
         'glpi_plugin_dockerinventory_hardeningexceptions',
         'glpi_plugin_dockerinventory_imagescans',
+        'glpi_plugin_dockerinventory_exploitsignals',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -124,6 +125,12 @@ final class Installer
             'state'         => CronTask::STATE_WAITING,
             'logs_lifetime' => 30,
         ]);
+        // Exploitation connue (#84) : téléchargement quotidien désactivé tant que l'administrateur
+        // ne l'active pas (état gardé si la tâche existe déjà).
+        CronTask::register(ExploitSignal::class, ExploitSignal::CRON_NAME, DAY_TIMESTAMP, [
+            'state'         => CronTask::STATE_DISABLE,
+            'logs_lifetime' => 30,
+        ]);
 
         $migration->executeMigration();
 
@@ -139,6 +146,7 @@ final class Installer
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
         HarborSettings::delete();
+        ExploitSignal::uninstall();
 
         foreach (self::TABLES as $table) {
             $DB->dropTable($table, true);
@@ -522,6 +530,22 @@ final class Installer
                 KEY `image_key` (`image_key`),
                 KEY `users_id` (`users_id`),
                 KEY `scan_date` (`scan_date`)",
+            // 0.14.0 => exploitation connue (#84) : signaux CISA KEV et EPSS des CVE des analyses
+            // importées, refaits depuis les fichiers en cache (ExploitSignal::rebuild()).
+            'glpi_plugin_dockerinventory_exploitsignals' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `cve_id` varchar(32) NOT NULL DEFAULT '',
+                `is_kev` tinyint NOT NULL DEFAULT '0',
+                `kev_date_added` date NULL DEFAULT NULL,
+                `kev_due_date` date NULL DEFAULT NULL,
+                `kev_ransomware` tinyint NOT NULL DEFAULT '0',
+                `kev_name` varchar(255) NOT NULL DEFAULT '',
+                `epss` float NULL DEFAULT NULL,
+                `epss_percentile` float NULL DEFAULT NULL,
+                `date_mod` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `cve_id` (`cve_id`),
+                KEY `is_kev` (`is_kev`)",
         ];
 
         $created = [];

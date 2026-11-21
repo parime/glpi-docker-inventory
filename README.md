@@ -96,7 +96,7 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 | Écran | Chemin | Droit |
 | --- | --- | --- |
 | Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Analyses importées**, **Fin de support des images**, **Exposition**, **Configuration à risque** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
-| Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres maîtrisés**, **Fin de support des images** | Configuration de GLPI en modification |
+| Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres maîtrisés**, **Fin de support des images**, **Exploitation connue** | Configuration de GLPI en modification |
 
 Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
 images*, jusqu'à la version 0.8.0) redirigent vers les nouvelles : les favoris restent valables.

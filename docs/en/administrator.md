@@ -276,6 +276,24 @@ of the setup page:
    in use without a mapping are listed with "**Add a mapping**". The product is never guessed:
    without a mapping, "Support unknown".
 
+## Known exploitation (CISA KEV, EPSS)
+
+**Nothing is downloaded at installation.** **Known exploitation** tab of the setup page:
+
+1. Choose whether to "**Also download the EPSS scores (optional)**" and the "high EPSS" threshold
+   (10% by default), "Save".
+2. "**Download now**": the plugin reads the complete public files, from a fixed address, without
+   sending anything (no CVE, image or host). CISA KEV catalog (`known_exploited_vulnerabilities.json`,
+   about 1 MB) and, if selected, the day's EPSS scores (`epss_scores-current.csv.gz`, a few MB). The
+   files are kept in `files/_plugins/dockerinventory/exploits`; scans imported later are enriched
+   without a new download.
+3. Daily update: enable the `exploitsignals` automatic action (disabled by default).
+4. **Offline mode**: download the same file on another computer, then upload it in "Offline mode"
+   (KEV JSON, EPSS CSV compressed or not, 64 MB at most).
+
+The **Cached data** table gives, for each catalog, the date, the origin (download or uploaded file),
+the number of CVEs and the last error; a source failure keeps the data already cached.
+
 ## Update, end-of-support and vulnerability tickets
 
 **Disabled by default.** They are set on the **Portainer** or **Kubernetes** connection of the
@@ -316,6 +334,7 @@ status, priority or assignment. Details, from the technician's side, are in the
 | `registrycheck` | every hour | Versions from Docker Hub and Harbor (without WUD) |
 | `harborimport` | every hour | Harbor projects, artifacts and vulnerabilities |
 | `lifecyclecheck` | once a day | End of support (if enabled) |
+| `exploitsignals` | once a day | CISA KEV catalog and EPSS scores (disabled by default) |
 
 ## Private networks under GLPI 12, mirrors
 
@@ -329,9 +348,11 @@ define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
     \GlpiPlugin\Dockerinventory\Registry\RegistryContext::class,
     \GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext::class,
     \GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext::class,
+    \GlpiPlugin\Dockerinventory\ExploitSignal::class,
 ]);
 ```
 
 Mirrors: `PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL` (Docker Hub) and
-`PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (endoflife.date, template with `{product}`), in the same
-file.
+`PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (endoflife.date, template with `{product}`),
+`PLUGIN_DOCKERINVENTORY_KEV_URL` and `PLUGIN_DOCKERINVENTORY_EPSS_URL` (CISA KEV catalog, EPSS
+scores), in the same file.

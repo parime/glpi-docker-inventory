@@ -16,7 +16,10 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exploit\ExploitCatalog;
+use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
@@ -101,6 +104,14 @@ if ($view === Menu::TAB_SCANS) {
         'filter'        => $filter,
         'critical_high' => ImageScan::FILTER_CRITICAL_HIGH,
         'stale_filter'  => ImageScan::FILTER_STALE,
+        'kev_filter'    => ImageScan::FILTER_KEV,
+        // Exploitation connue (#84) : date du catalogue, lien vers ses réglages (configuration de GLPI).
+        'exploits'      => [
+            'loaded'     => ExploitSignal::isLoaded(),
+            'date'       => ExploitSignal::state(ExploitCatalog::KIND_KEV)['date'],
+            'config_url' => (bool) Session::haveRight(Connection::RIGHTNAME, UPDATE)
+                ? ConfigPage::url(ConfigPage::TAB_EXPLOITS) : '',
+        ],
         'stale_days'    => ImageScan::STALE_DAYS,
         'max_mb'        => intdiv(ScanReportParser::MAX_BYTES, 1024 * 1024),
         'page_url'      => ImageScan::getPageURL(),

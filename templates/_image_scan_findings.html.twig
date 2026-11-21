@@ -15,7 +15,8 @@
 
 {% import '@dockerinventory/_tone.html.twig' as tone %}
 
-{# Vulnérabilités détaillées d'une analyse importée (#73), des plus graves aux moins graves. #}
+{# Vulnérabilités détaillées d'une analyse importée (#73) : exploitées activement (catalogue CISA KEV,
+   #84) d'abord, puis des plus graves aux moins graves, puis par probabilité d'exploitation (EPSS). #}
 <details>
     <summary class="small">
         <i class="ti ti-list-details me-1" aria-hidden="true"></i>
@@ -33,6 +34,7 @@
                 <tr>
                     <th>{{ __('Vulnérabilité', 'dockerinventory') }}</th>
                     <th>{{ __('Gravité', 'dockerinventory') }}</th>
+                    <th>{{ __('Exploitation connue', 'dockerinventory') }}</th>
                     <th>{{ __('Paquet', 'dockerinventory') }}</th>
                     <th>{{ __('Version installée', 'dockerinventory') }}</th>
                     <th>{{ __('Corrigée en', 'dockerinventory') }}</th>
@@ -47,6 +49,36 @@
                                 <i class="{{ finding.severity.icon }} me-1" aria-hidden="true"></i>
                                 {{- finding.severity.label -}}
                             </span>
+                        </td>
+                        <td>
+                            {% if finding.kev %}
+                                <span class="badge bg-danger text-white" title="{{ finding.kev_name }}"
+                                      data-bs-toggle="tooltip">
+                                    <i class="ti ti-flame me-1" aria-hidden="true"></i>
+                                    {{- __('Exploitée activement', 'dockerinventory') -}}
+                                </span>
+                                {% if finding.ransomware %}
+                                    <span class="badge bg-danger-subtle text-danger-emphasis">
+                                        <i class="ti ti-lock-exclamation me-1" aria-hidden="true"></i>
+                                        {{- __('Rançongiciel', 'dockerinventory') -}}
+                                    </span>
+                                {% endif %}
+                                {% if finding.kev_due %}
+                                    <div class="small text-muted">
+                                        {{ __('Échéance CISA : %s', 'dockerinventory')|format(finding.kev_due|formatted_date) }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                            {% if finding.epss is not null %}
+                                <span class="badge {{ finding.epss_high ? 'bg-warning-subtle text-warning-emphasis' : 'bg-secondary-subtle text-secondary-emphasis' }}"
+                                      title="{{ __('Probabilité d’exploitation dans les 30 jours (EPSS)', 'dockerinventory') }}"
+                                      data-bs-toggle="tooltip">
+                                    EPSS {{ finding.epss }} %
+                                </span>
+                            {% endif %}
+                            {% if not finding.kev and finding.epss is null %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
                         </td>
                         <td>{{ finding.package }}</td>
                         <td>{{ finding.installed }}</td>

@@ -96,7 +96,7 @@ Then **Setup > Plugins**, install and enable "Docker Inventory".
 | Screen | Path | Right |
 | --- | --- | --- |
 | Viewing | **Assets > Docker Inventory**: **Services**, **Image versions**, **Harbor images and vulnerabilities**, **Imported scans**, **Image end of support**, **Exposure**, **Risky configuration** sub-pages | **Read** (Administration > Profiles, "Docker Inventory" tab) |
-| Settings | **Setup > Plugins > Docker Inventory**: **Docker connections** (Portainer, Kubernetes, WUD, Harbor), **Managed registries**, **Image end of support** tabs | GLPI setup, update |
+| Settings | **Setup > Plugins > Docker Inventory**: **Docker connections** (Portainer, Kubernetes, WUD, Harbor), **Managed registries**, **Image end of support**, **Known exploitation** tabs | GLPI setup, update |
 
 The former addresses (*Setup > Docker connections*, *Setup > Image end of support*, up to version
 0.8.0) redirect to the new ones: bookmarks keep working.

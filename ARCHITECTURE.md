@@ -38,6 +38,11 @@ dockerinventory/
 │   ├── Exposure/
 │   │   └── ExposureMapper.php routes Traefik (étiquettes), ingress et services Kubernetes, ports
 │   │                          publiés, portée, flux proposé (fonctions pures)
+│   ├── Exploit/
+│   │   └── ExploitCatalog.php catalogue CISA KEV (JSON) et scores EPSS (CSV) : lecture bornée,
+│   │                          ordre de priorité (fonctions pures, #84)
+│   ├── ExploitSignal.php      exploitation connue (#84) : téléchargement, mode hors ligne, cache,
+│   │                          signaux des CVE des analyses, action automatique exploitsignals
 │   ├── ImageScan.php          analyse d'image importée (#73) : import, rattachement aux services,
 │   │                          sous-page « Analyses importées », carte de l'onglet « Versions »
 │   ├── Scan/
@@ -170,6 +175,7 @@ dockerinventory/
 | `glpi_plugin_dockerinventory_harborartifacts` | Artefact d'un dépôt Harbor (une ligne par connexion, dépôt et empreinte) : projet, tags, empreintes par plateforme, taille, date de publication, état de l'analyse, gravité, analyseur, date d'analyse, nombre de vulnérabilités par gravité et corrigibles, état « retiré » |
 | `glpi_plugin_dockerinventory_vulntickets` | Ticket de vulnérabilité suivi pour chaque service (un seul) et l'image qu'il décrit : empreinte, nombre de vulnérabilités critiques et hautes |
 | `glpi_plugin_dockerinventory_imagescans` | Analyse d'image importée (#73) : entité, image et clé normalisée, tag, empreinte, outil, date d'analyse, compteurs par gravité, corrigeables, vulnérabilités détaillées (JSON, 500 au plus), nom du fichier, auteur |
+| `glpi_plugin_dockerinventory_exploitsignals` | Exploitation connue (#84) : pour chaque CVE des analyses importées présente dans les fichiers en cache, présence au catalogue CISA KEV (date d'ajout, échéance, rançongiciel, nom) et score EPSS (probabilité, centile) ; refaite depuis le cache |
 | `glpi_plugin_dockerinventory_registrytags` | Cache des tags de Docker Hub : dépôt, tags et empreintes (JSON), raison d'un échec durable (introuvable), date de lecture ; valable un jour |
 
 ## Portainer (lot 1)
@@ -432,6 +438,21 @@ dockerinventory/
   l'analyse, outil et version, détail JSON, historique.
 - Rattachement à l'affichage (`HarborLinker::match`) : empreinte, sinon tag ; entités actives.
   Analyse trop ancienne : plus de 30 jours (`ImageScan::STALE_DAYS`) ou date inconnue.
+
+## Exploitation connue (#84)
+
+- Fichiers publics complets lus à une adresse fixe (`ExploitSignal::KEV_URL`, `EPSS_URL`, ou
+  constantes `PLUGIN_DOCKERINVENTORY_KEV_URL` et `PLUGIN_DOCKERINVENTORY_EPSS_URL`) : aucune CVE
+  envoyée. Sur clic (onglet « Exploitation connue » de la configuration) ou par l'action
+  `exploitsignals`, enregistrée **désactivée**. Mode hors ligne : même fichier déposé.
+- Cache : `GLPI_PLUGIN_DOC_DIR/dockerinventory/exploits/kev.json` et `epss.csv.gz` (64 Mo au plus
+  décompressé) ; état (date, origine, nombre, dernière erreur) dans la configuration de GLPI. Un
+  fichier refusé ou une panne garde le cache précédent.
+- `ExploitSignal::rebuild()` refait la table des signaux pour les seules CVE des analyses importées
+  (EPSS lu ligne à ligne depuis le gzip), après chaque mise à jour du cache, import ou suppression
+  d'analyse.
+- Ordre de priorité (`ExploitCatalog::imageKey()`, `findingKey()`) : exploitée activement, puis
+  gravité, puis exposition la plus large des services rattachés (images) ou EPSS (vulnérabilités).
 
 ## Règles communes
 

@@ -28,6 +28,7 @@ use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\HardeningException;
+use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
@@ -167,6 +168,8 @@ final class XssTest extends TestCase
             $DB->delete(HardeningException::getTable(), ['plugin_dockerinventory_services_id' => $serviceIds]);
         }
         $DB->delete(ImageScan::getTable(), ['filename' => 'xss-di73.json']);
+        ExploitSignal::uninstall();
+        ExploitSignal::rebuild();
         foreach (
             $DB->request(['SELECT' => ['appliances_id'], 'FROM' => 'glpi_plugin_dockerinventory_stacks',
             'WHERE' => ['plugin_dockerinventory_connections_id' => $sources]]) as $row
@@ -371,9 +374,19 @@ final class XssTest extends TestCase
                 'InstalledVersion' => self::SCRIPT,
                 'FixedVersion'     => self::IMG,
                 'Severity'         => 'CRITICAL',
+            ], [
+                'VulnerabilityID'  => 'CVE-2099-8443',
+                'PkgName'          => 'paquet-di84',
+                'InstalledVersion' => '1.0',
+                'Severity'         => 'HIGH',
             ]]]],
         ]), 'xss-di73.json');
         $this->assertTrue($imported['ok'], $imported['message']);
+        // Exploitation connue (#84) : nom de la vulnérabilité venu d'un catalogue KEV déposé.
+        $this->assertTrue(ExploitSignal::importFile((string) json_encode(['vulnerabilities' => [[
+            'cveID'             => 'CVE-2099-8443',
+            'vulnerabilityName' => self::IMG,
+        ]]]))['ok']);
         $this->assertEscaped($this->open('front/version.php', ['view' => 'scans']), 'analyses importées');
         $this->assertEscaped($this->open('front/service.php'), 'liste des services', false);
         $this->assertEscaped($this->open('front/imageversion.php'), 'recherche des versions', false);
@@ -383,7 +396,7 @@ final class XssTest extends TestCase
             false
         );
         // Page de configuration du plugin, chaque onglet (#35).
-        foreach (['connections', 'registries', 'lifecycle'] as $tab) {
+        foreach (['connections', 'registries', 'lifecycle', 'exploits'] as $tab) {
             $this->assertEscaped($this->open('front/config.php', ['tab' => $tab]), 'configuration : ' . $tab, false);
         }
 

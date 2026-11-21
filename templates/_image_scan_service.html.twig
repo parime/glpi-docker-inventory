@@ -22,6 +22,7 @@
             {{ __('Vulnérabilités de l’image (analyse importée)', 'dockerinventory') }}
         </h2>
         {{ include('@dockerinventory/_severity_badge.html.twig', {severity: scan.severity, artifact: scan}) }}
+        {{ include('@dockerinventory/_exploit_badges.html.twig') }}
         <a href="{{ scan.page_url }}" class="ms-auto small">
             <i class="ti ti-external-link me-1" aria-hidden="true"></i>{{ __('Analyses importées', 'dockerinventory') }}
         </a>
