@@ -3,43 +3,78 @@
     <name>Inventaire Docker</name>
     <key>dockerinventory</key>
     <state>stable</state>
+    <logo>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/logo.png</logo>
     <description>
         <short>
-            <fr>Inventaire en lecture seule des applications en conteneurs : stacks, services et nœuds Docker Swarm importés depuis Portainer</fr>
-            <en>Read-only inventory of containerised applications: Docker Swarm stacks, services and nodes imported from Portainer</en>
+            <fr>Inventaire en lecture seule des applications en conteneurs (Portainer, Kubernetes, WUD, Harbor) : stacks, services, versions, vulnérabilités, exposition et configuration à risque</fr>
+            <en>Read-only inventory of containerised applications (Portainer, Kubernetes, WUD, Harbor): stacks, services, versions, vulnerabilities, exposure and risky configuration</en>
         </short>
         <long>
             <fr>
                 Inventaire Docker donne à GLPI une vue en lecture seule sur les applications en conteneurs.
                 Il répond à la question « qu'est-ce qui tourne, en quelle version, est-ce à jour, est-ce
-                vulnérable ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
-                conteneurs isolés, sans stack, sans service, sans réplicas ni version.
+                vulnérable, est-ce exposé ? », que GLPI ne sait pas traiter seul : son onglet
+                « Virtualisation » liste des conteneurs isolés, sans stack, sans service ni version.
 
-                Depuis Portainer, le plugin importe les stacks Docker Swarm en Applications GLPI, les services
-                (image, tag, empreinte, réplicas, ports publiés, réseaux, noms des secrets) et les nœuds du
-                cluster, rattachés aux ordinateurs inventoriés. Il ne redéploie, ne redémarre et ne supprime
-                jamais rien : un service disparu est marqué « retiré », pas supprimé. Les clés d'API sont
-                chiffrées avec la clé de GLPI et seuls les noms des secrets Docker sont importés, jamais leur
-                contenu.
+                Inventaire : depuis Portainer (Docker Swarm et hôtes Docker autonomes) et Kubernetes, le
+                plugin importe les stacks et namespaces en Applications GLPI, les services (image, tag,
+                empreinte, réplicas, ports publiés, réseaux, noms des secrets) et les nœuds, rattachés aux
+                ordinateurs inventoriés.
+
+                Versions et vulnérabilités : version déployée et dernière version disponible de chaque
+                image (What's Up Docker ou registres Docker Hub et Harbor), résumé des vulnérabilités
+                Harbor, images hors registre maîtrisé, fin de support des produits (endoflife.date) et
+                tickets proposés selon des seuils.
+
+                Exposition : ports publiés, routes Traefik, ingress et services Kubernetes NodePort ou
+                LoadBalancer, avec la portée de chaque exposition (Internet probable, réseau de l'hôte,
+                interne). Avec GRC Manager, une exposition sans flux documenté est signalée.
+
+                Configuration à risque : mode privilégié, socket Docker monté, réseau ou processus de
+                l'hôte partagés, capacités dangereuses, exécution en root, absence de limites, répertoires
+                sensibles montés. Chaque écart a une gravité, une explication, une correction conseillée et
+                peut faire l'objet d'une exception justifiée et datée.
+
+                Le plugin ne redéploie, ne redémarre et ne supprime jamais rien. Les clés d'API sont
+                chiffrées avec la clé de GLPI et seuls les noms des secrets sont importés, jamais leur
+                contenu. Tous les réglages sont dans la page du plugin, une seule entrée de menu
+                (Parc > Inventaire Docker).
             </fr>
             <en>
                 Docker Inventory gives GLPI a read-only view of containerised applications. It answers
-                "what is running, in which version, is it up to date, is it vulnerable?", which GLPI cannot do
-                on its own: its "Virtualization" tab lists isolated containers, with no stack, service,
-                replicas or version.
+                "what is running, in which version, is it up to date, is it vulnerable, is it exposed?",
+                which GLPI cannot do on its own: its "Virtualization" tab lists isolated containers, with
+                no stack, service or version.
 
-                From Portainer, the plugin imports Docker Swarm stacks as GLPI Appliances, services (image,
-                tag, digest, replicas, published ports, networks, secret names) and cluster nodes, linked to
-                inventoried computers. It never redeploys, restarts or deletes anything: a service that
-                disappears is marked "retired", not deleted. API keys are encrypted with the GLPI key and only
-                Docker secret names are imported, never their content.
+                Inventory: from Portainer (Docker Swarm and standalone Docker hosts) and Kubernetes, the
+                plugin imports stacks and namespaces as GLPI Appliances, services (image, tag, digest,
+                replicas, published ports, networks, secret names) and nodes, linked to inventoried
+                computers.
+
+                Versions and vulnerabilities: deployed and latest available version of each image (What's
+                Up Docker or Docker Hub and Harbor registries), Harbor vulnerability summary, images
+                outside trusted registries, product end of life (endoflife.date) and tickets suggested
+                according to thresholds.
+
+                Exposure: published ports, Traefik routes, Kubernetes ingresses and NodePort or
+                LoadBalancer services, with the reach of each exposure (likely Internet, host network,
+                internal). With GRC Manager, an exposure with no documented flow is flagged.
+
+                Risky configuration: privileged mode, mounted Docker socket, shared host network or
+                processes, dangerous capabilities, running as root, missing limits, sensitive host paths
+                mounted. Each finding has a severity, an explanation, a suggested fix and can be covered by
+                a justified, dated exception.
+
+                The plugin never redeploys, restarts or deletes anything. API keys are encrypted with the
+                GLPI key and only secret names are imported, never their content. All settings live in the
+                plugin page, with a single menu entry (Assets > Docker Inventory).
             </en>
         </long>
     </description>
     <homepage>https://github.com/parime/glpi-docker-inventory</homepage>
     <download>https://github.com/parime/glpi-docker-inventory/releases</download>
     <issues>https://github.com/parime/glpi-docker-inventory/issues</issues>
-    <readme>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/README.md</readme>
+    <readme>https://github.com/parime/glpi-docker-inventory/blob/main/README.md</readme>
     <changelog>https://github.com/parime/glpi-docker-inventory/releases</changelog>
     <authors>
         <author>Vincent GUILLOTTE</author>
@@ -136,16 +171,32 @@
         <fr>
             <tag>docker</tag>
             <tag>swarm</tag>
+            <tag>kubernetes</tag>
             <tag>portainer</tag>
+            <tag>harbor</tag>
             <tag>conteneurs</tag>
             <tag>inventaire</tag>
+            <tag>vulnérabilités</tag>
+            <tag>sécurité</tag>
         </fr>
         <en>
             <tag>docker</tag>
             <tag>swarm</tag>
+            <tag>kubernetes</tag>
             <tag>portainer</tag>
+            <tag>harbor</tag>
             <tag>containers</tag>
             <tag>inventory</tag>
+            <tag>vulnerabilities</tag>
+            <tag>security</tag>
         </en>
     </tags>
+    <screenshots>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/services.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/exposition.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/configuration-risque.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/fiche-service.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/versions-images.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/parime/glpi-docker-inventory/main/docs/screenshots/reglages.png</screenshot>
+    </screenshots>
 </root>
