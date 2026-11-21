@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.14.0] - 2026-11-21
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ## [0.13.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
