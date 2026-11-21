@@ -488,7 +488,10 @@ final class AccessControlTest extends TestCase
         // Justification vide, date hors limites ou écart inconnu : refusés, rien ne change.
         $today = substr((string) $_SESSION['glpi_currenttime'], 0, 10);
         $this->assertNotSame('', HardeningException::record($this->serviceA, HardeningMapper::ROOT_USER, ' ', $today));
-        $this->assertNotSame('', HardeningException::record($this->serviceA, HardeningMapper::ROOT_USER, 'motif', '2000-01-01'));
+        $this->assertNotSame(
+            '',
+            HardeningException::record($this->serviceA, HardeningMapper::ROOT_USER, 'motif', '2000-01-01')
+        );
         $this->assertNotSame('', HardeningException::record($this->serviceA, 'pirate', 'motif', $today));
         $this->assertSame(1, countElementsInTable(HardeningException::getTable(), [
             'plugin_dockerinventory_services_id' => $this->serviceA,

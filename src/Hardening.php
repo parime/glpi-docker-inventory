@@ -197,7 +197,10 @@ class Hardening extends CommonGLPI
                     'Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte.',
                     'dockerinventory'
                 ),
-                'fix'   => __('Retirer ces capacités ou les remplacer par une permission plus étroite.', 'dockerinventory'),
+                'fix'   => __(
+                    'Retirer ces capacités ou les remplacer par une permission plus étroite.',
+                    'dockerinventory'
+                ),
             ],
             HardeningMapper::SENSITIVE_MOUNT => [
                 'label' => __('Répertoire sensible de l’hôte monté', 'dockerinventory'),
@@ -206,7 +209,10 @@ class Hardening extends CommonGLPI
                     'Le conteneur lit ou modifie des fichiers système de l’hôte.',
                     'dockerinventory'
                 ),
-                'fix'   => __('Monter un volume ou un sous-répertoire dédié, en lecture seule si possible.', 'dockerinventory'),
+                'fix'   => __(
+                    'Monter un volume ou un sous-répertoire dédié, en lecture seule si possible.',
+                    'dockerinventory'
+                ),
             ],
             HardeningMapper::HOST_IPC => [
                 'label' => __('Mémoire partagée de l’hôte', 'dockerinventory'),
@@ -364,17 +370,17 @@ class Hardening extends CommonGLPI
         $rank = array_flip(array_merge(HardeningMapper::SEVERITIES, ['']));
         usort(
             $services,
-            static fn (array $a, array $b): int => [$rank[$a['worst']], -$a['open']] <=> [$rank[$b['worst']], -$b['open']]
+            static fn (array $a, array $b): int
+                => [$rank[$a['worst']], -$a['open']] <=> [$rank[$b['worst']], -$b['open']]
         );
 
+        $serious = $counts[HardeningMapper::SEVERITY_CRITICAL] + $counts[HardeningMapper::SEVERITY_HIGH];
+
         return [
-            'services' => $services,
-            'counts'   => $counts,
-            'rate'     => self::rate($counts['compliant'], $counts['analysed']),
-            'rate_serious' => self::rate(
-                $counts['analysed'] - $counts[HardeningMapper::SEVERITY_CRITICAL] - $counts[HardeningMapper::SEVERITY_HIGH],
-                $counts['analysed']
-            ),
+            'services'     => $services,
+            'counts'       => $counts,
+            'rate'         => self::rate($counts['compliant'], $counts['analysed']),
+            'rate_serious' => self::rate($counts['analysed'] - $serious, $counts['analysed']),
         ];
     }
 
@@ -384,6 +390,5 @@ class Hardening extends CommonGLPI
     public static function rate(int $part, int $total): ?int
     {
         return $total > 0 ? (int) floor(100 * $part / $total) : null;
-    }
     }
 }

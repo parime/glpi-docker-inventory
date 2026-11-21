@@ -175,7 +175,10 @@ class HardeningException extends CommonDBTM
     {
         global $DB;
 
-        $serviceIds = array_values(array_filter(array_map('intval', $serviceIds), static fn (int $id): bool => $id > 0));
+        $serviceIds = array_values(array_filter(
+            array_map('intval', $serviceIds),
+            static fn (int $id): bool => $id > 0
+        ));
         if ($serviceIds === []) {
             return [];
         }

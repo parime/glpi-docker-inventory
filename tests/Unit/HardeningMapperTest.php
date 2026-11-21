@@ -122,7 +122,10 @@ final class HardeningMapperTest extends TestCase
         ], ['reseau-hote' => 'host']);
 
         $this->assertSame(
-            [M::HOST_NETWORK, M::SENSITIVE_MOUNT, M::ADDED_CAPABILITIES, M::ROOT_USER, M::NO_CPU_LIMIT, M::WRITABLE_ROOTFS],
+            [
+                M::HOST_NETWORK, M::SENSITIVE_MOUNT, M::ADDED_CAPABILITIES, M::ROOT_USER, M::NO_CPU_LIMIT,
+                M::WRITABLE_ROOTFS,
+            ],
             self::codes($findings)
         );
         $this->assertSame('root', array_column($findings, 'detail', 'code')[M::ROOT_USER]);
@@ -144,10 +147,16 @@ final class HardeningMapperTest extends TestCase
             'resources'       => ['limits' => ['memory' => '256Mi', 'cpu' => '500m']],
             'volumeMounts'    => [['name' => 'sock'], ['name' => 'journaux']],
         ];
-        $this->assertSame([M::PRIVILEGED, M::DOCKER_SOCKET, M::HOST_NETWORK], self::codes(M::fromPodSpec($podSpec, $container)));
+        $this->assertSame(
+            [M::PRIVILEGED, M::DOCKER_SOCKET, M::HOST_NETWORK],
+            self::codes(M::fromPodSpec($podSpec, $container))
+        );
 
         // runAsUser: 0 l'emporte sur runAsNonRoot du pod ; aucune limite, écriture permise.
-        $root = M::fromPodSpec(['securityContext' => ['runAsNonRoot' => true]], ['securityContext' => ['runAsUser' => 0]]);
+        $root = M::fromPodSpec(
+            ['securityContext' => ['runAsNonRoot' => true]],
+            ['securityContext' => ['runAsUser' => 0]]
+        );
         $this->assertSame([M::ROOT_USER, M::NO_MEMORY_LIMIT, M::NO_CPU_LIMIT, M::WRITABLE_ROOTFS], self::codes($root));
         $this->assertNotContains(
             M::ROOT_USER,
@@ -175,7 +184,8 @@ final class HardeningMapperTest extends TestCase
         $containers = [];
         foreach (['un', 'deux'] as $suffix) {
             $containers[] = [
-                'uid' => 'c-' . $suffix, 'name' => 'web-' . $suffix, 'project' => 'boutique', 'compose_service' => 'web',
+                'uid' => 'c-' . $suffix, 'name' => 'web-' . $suffix, 'project' => 'boutique',
+                'compose_service' => 'web',
                 'image' => 'nginx', 'tag' => '1.27', 'digest' => '', 'state' => 'running', 'ports' => [],
                 'networks' => [], 'volumes' => [], 'secrets' => [],
             ];
@@ -251,7 +261,8 @@ final class HardeningMapperTest extends TestCase
     public function testExceptionsCoverUntilTheirEndDate(): void
     {
         $findings = [['code' => M::PRIVILEGED, 'detail' => ''], ['code' => M::ROOT_USER, 'detail' => '']];
-        $rows = M::evaluate($findings, [M::PRIVILEGED => '2030-01-15', M::ROOT_USER => '2030-01-14'], '2030-01-15 08:00:00');
+        $ends = [M::PRIVILEGED => '2030-01-15', M::ROOT_USER => '2030-01-14'];
+        $rows = M::evaluate($findings, $ends, '2030-01-15 08:00:00');
         $this->assertSame(['active', 'expired'], array_column($rows, 'exception'));
         $this->assertSame([M::SEVERITY_CRITICAL, M::SEVERITY_MEDIUM], array_column($rows, 'severity'));
         $this->assertSame([''], array_column(M::evaluate([$findings[0]], [], '2030-01-15'), 'exception'));
