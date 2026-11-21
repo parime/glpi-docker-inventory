@@ -110,6 +110,20 @@ de 30 jours ou si elle est inconnue), le taux de services couverts et le détail
 vulnérabilités les plus graves. L'onglet **Versions** du service affiche la même carte. Droit
 **Analyses d'images importées** du profil : importer, supprimer (accordé aux administrateurs).
 
+### Exploitées activement d'abord (CISA KEV, EPSS)
+
+Une fois le catalogue **CISA KEV** chargé (onglet **Exploitation connue** de la page de
+configuration, voir le guide de l'administrateur), chaque vulnérabilité d'une analyse importée qui y
+figure porte la pastille **Exploitée activement**, avec l'échéance de correction fixée par la CISA et,
+le cas échéant, **Rançongiciel**. Si les scores **EPSS** sont aussi chargés, la probabilité
+d'exploitation dans les 30 jours s'affiche, en orange au-dessus du seuil choisi (10 % par défaut).
+
+La sous-page **Analyses importées** classe les images dans l'ordre de traitement : exploitées
+activement d'abord, puis gravité, puis exposition des services (Internet, réseau de l'hôte, réseau
+interne, hôte seul : badge à côté de chaque service). Le filtre **Exploitées activement** ne garde que
+ces images ; la carte de l'onglet **Versions** du service affiche les mêmes pastilles. Seules les 500
+vulnérabilités les plus graves de chaque analyse sont détaillées et donc rapprochées du catalogue.
+
 ## Changements de version
 
 Chaque import Portainer note, pour chaque service, le passage à une autre image, à un autre tag, ou

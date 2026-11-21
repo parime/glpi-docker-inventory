@@ -29,8 +29,9 @@ final class ConfigPage
     public const TAB_CONNECTIONS = 'connections';
     public const TAB_REGISTRIES = 'registries';
     public const TAB_LIFECYCLE = 'lifecycle';
+    public const TAB_EXPLOITS = 'exploits';
 
-    public const TABS = [self::TAB_CONNECTIONS, self::TAB_REGISTRIES, self::TAB_LIFECYCLE];
+    public const TABS = [self::TAB_CONNECTIONS, self::TAB_REGISTRIES, self::TAB_LIFECYCLE, self::TAB_EXPLOITS];
 
     /**
      * Adresse de la page, sur un onglet (connexions par défaut, sans paramètre : la recherche GLPI
@@ -69,6 +70,7 @@ final class ConfigPage
             self::TAB_CONNECTIONS => [Connection::getTypeName(2), Connection::getIcon()],
             self::TAB_REGISTRIES  => [__('Registres maîtrisés', 'dockerinventory'), 'ti ti-building-warehouse'],
             self::TAB_LIFECYCLE   => [LifecycleProduct::getTypeName(2), LifecycleProduct::getIcon()],
+            self::TAB_EXPLOITS    => [ExploitSignal::getTypeName(), ExploitSignal::getIcon()],
         ];
         $tabs = [];
         foreach ($labels as $tab => [$label, $icon]) {

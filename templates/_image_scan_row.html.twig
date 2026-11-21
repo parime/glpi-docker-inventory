@@ -26,7 +26,10 @@
     <td>
         {{ include('@dockerinventory/_image_scan_age.html.twig') }}
     </td>
-    <td>{{ include('@dockerinventory/_severity_badge.html.twig', {severity: scan.severity, artifact: scan}) }}</td>
+    <td>
+        {{ include('@dockerinventory/_severity_badge.html.twig', {severity: scan.severity, artifact: scan}) }}
+        <div class="d-flex flex-wrap gap-1 mt-1">{{ include('@dockerinventory/_exploit_badges.html.twig') }}</div>
+    </td>
     <td>
         {% set fixable_color = scan.fixable > 0 ? 'info' : 'secondary' %}
         <span class="badge {{ tone.badge(fixable_color) }}"
@@ -40,6 +43,13 @@
                 <i class="ti {{ service.exact ? 'ti-link' : 'ti-tag' }} me-1 text-muted" title="{{ service.method }}"
                    data-bs-toggle="tooltip" aria-hidden="true"></i>
                 <a href="{{ service.url }}">{{ service.stack ? service.stack ~ ' / ' : '' }}{{ service.name }}</a>
+                {% if service.exposure %}
+                    <span class="badge {{ tone.badge(service.exposure.color) }} ms-1"
+                          title="{{ service.exposure.help }}"
+                          data-bs-toggle="tooltip">
+                        <i class="{{ service.exposure.icon }} me-1" aria-hidden="true"></i>{{ service.exposure.label }}
+                    </span>
+                {% endif %}
             </div>
         {% else %}
             <span class="text-muted small">{{ __('Aucun service déployé avec cette image', 'dockerinventory') }}</span>

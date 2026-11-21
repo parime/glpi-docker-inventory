@@ -108,6 +108,20 @@ the rate of covered services and the detail of the 500 most severe vulnerabiliti
 **Versions** tab shows the same card. **Imported image scans** profile right: import, delete
 (granted to administrators).
 
+### Actively exploited first (CISA KEV, EPSS)
+
+Once the **CISA KEV** catalog is loaded (**Known exploitation** tab of the setup page, see the
+administrator guide), each vulnerability of an imported scan listed in it carries the **Actively
+exploited** badge, with the remediation due date set by CISA and, when relevant, **Ransomware**. If
+the **EPSS** scores are loaded too, the probability of exploitation within 30 days is shown, in
+orange above the chosen threshold (10% by default).
+
+The **Imported scans** sub-page sorts images in handling order: actively exploited first, then
+severity, then service exposure (Internet, host network, internal network, host only: badge next to
+each service). The **Actively exploited** filter keeps only those images; the card of the service's
+**Versions** tab shows the same badges. Only the 500 most severe vulnerabilities of each scan are
+detailed, and therefore matched against the catalog.
+
 ## Version changes
 
 Each Portainer import records, for each service, a move to another image, to another tag, or to

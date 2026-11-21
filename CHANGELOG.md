@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Priorisation par exploitation connue ([#84](https://github.com/parime/glpi-docker-inventory/issues/84)) :
+  les CVE des analyses importées sont enrichies par le catalogue **CISA KEV** (vulnérabilités exploitées
+  activement, échéance CISA, usage par des rançongiciels) et, en option, par les scores **FIRST EPSS**
+  (probabilité d'exploitation, seuil « EPSS élevé » réglable, 10 % par défaut). Nouvel onglet
+  **Exploitation connue** de la page de configuration : téléchargement sur clic des fichiers publics
+  complets depuis une adresse fixe (rien n'est envoyé), ou par l'action automatique `exploitsignals`,
+  **désactivée à l'installation** ; fichiers gardés en cache dans le dossier des données du plugin ;
+  mode hors ligne par dépôt du fichier KEV (JSON) ou EPSS (CSV, compressé ou non). Les images sont
+  classées : exploitées activement d'abord, puis gravité, puis exposition des services (badge de
+  portée à côté de chaque service) ; vulnérabilités détaillées dans le même ordre. Pastilles
+  « exploitée activement », « rançongiciel » et « EPSS élevé » sur les analyses et la carte de l'onglet
+  Versions du service, filtre **Exploitées activement** de la sous-page Analyses importées. Adresses
+  changeables par `PLUGIN_DOCKERINVENTORY_KEV_URL` et `PLUGIN_DOCKERINVENTORY_EPSS_URL` (miroir interne).
+
 ## [0.14.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

@@ -162,7 +162,33 @@
                     {{- __('Trop anciennes', 'dockerinventory') -}}
                     <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ counts.stale }}</span>
                 </a>
+                <a href="{{ page_url }}&filter={{ kev_filter }}"
+                   class="btn btn-sm {{ filter == kev_filter ? 'btn-danger' : 'btn-outline-danger' }}">
+                    <i class="ti ti-flame me-1" aria-hidden="true"></i>
+                    {{- __('Exploitées activement', 'dockerinventory') -}}
+                    <span class="badge bg-danger-subtle text-danger-emphasis ms-1">{{ counts.kev }}</span>
+                </a>
             </div>
+            <p class="small text-muted mt-2 mb-0">
+                <i class="ti ti-sort-descending me-1" aria-hidden="true"></i>
+                {{ __(
+                    'Ordre de traitement : exploitées activement (catalogue CISA KEV), puis gravité, puis exposition.',
+                    'dockerinventory'
+                ) }}
+                {% if exploits.loaded %}
+                    {{ __('Catalogue CISA KEV du %s.', 'dockerinventory')|format(exploits.date|formatted_datetime) }}
+                {% else %}
+                    <span class="text-warning-emphasis">
+                        <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                        {{- __('Catalogue CISA KEV pas encore chargé.', 'dockerinventory') -}}
+                    </span>
+                {% endif %}
+                {% if exploits.config_url %}
+                    <a href="{{ exploits.config_url }}">
+                        {{- __('Réglages de l’exploitation connue', 'dockerinventory') -}}
+                    </a>
+                {% endif %}
+            </p>
         </div>
         {% if scans is empty %}
             <div class="card-body">

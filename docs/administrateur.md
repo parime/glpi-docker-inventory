@@ -279,6 +279,27 @@ de support des images** de la page de configuration :
    modifiables. Les images en service sans correspondance sont listées avec « **Ajouter une
    correspondance** ». Le produit n'est jamais deviné : sans correspondance, « Support inconnu ».
 
+## Exploitation connue (CISA KEV, EPSS)
+
+**Rien n'est téléchargé à l'installation.** Onglet **Exploitation connue** de la page de
+configuration :
+
+1. Choisir de « **Télécharger aussi les scores EPSS (facultatif)** » et le seuil « EPSS élevé »
+   (10 % par défaut), « Enregistrer ».
+2. « **Télécharger maintenant** » : le plugin lit les fichiers publics complets, à une adresse fixe,
+   sans rien envoyer (aucune CVE, image ni hôte). Catalogue CISA KEV
+   (`known_exploited_vulnerabilities.json`, environ 1 Mo) et, si retenus, scores EPSS du jour
+   (`epss_scores-current.csv.gz`, quelques Mo). Les fichiers sont gardés dans
+   `files/_plugins/dockerinventory/exploits` ; les analyses importées ensuite sont enrichies sans
+   nouveau téléchargement.
+3. Mise à jour quotidienne : activer l'action automatique `exploitsignals` (désactivée par défaut).
+4. **Mode hors ligne** : télécharger le même fichier sur un autre poste, puis le déposer dans
+   « Mode hors ligne » (JSON du KEV, CSV de l'EPSS compressé ou non, 64 Mo au plus).
+
+Le tableau **Données en cache** donne, pour chaque catalogue, la date, l'origine (téléchargement ou
+fichier déposé), le nombre de CVE et la dernière erreur ; une panne de la source garde les données
+déjà en cache.
+
 ## Tickets de mise à jour, de fin de support et de vulnérabilité
 
 **Désactivés par défaut.** Ils se règlent sur la connexion **Portainer** ou **Kubernetes** des
@@ -321,6 +342,7 @@ statut, de priorité ou d'affectation. Le détail, côté technicien, est dans l
 | `registrycheck` | toutes les heures | Versions par Docker Hub et Harbor (sans WUD) |
 | `harborimport` | toutes les heures | Projets, artefacts et vulnérabilités Harbor |
 | `lifecyclecheck` | une fois par jour | Fin de support (si activée) |
+| `exploitsignals` | une fois par jour | Catalogue CISA KEV et scores EPSS (désactivée par défaut) |
 
 ## Réseaux privés sous GLPI 12, miroirs
 
@@ -334,9 +356,11 @@ define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
     \GlpiPlugin\Dockerinventory\Registry\RegistryContext::class,
     \GlpiPlugin\Dockerinventory\Kubernetes\KubernetesContext::class,
     \GlpiPlugin\Dockerinventory\Lifecycle\LifecycleContext::class,
+    \GlpiPlugin\Dockerinventory\ExploitSignal::class,
 ]);
 ```
 
 Miroirs : `PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL` (Docker Hub) et
-`PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (endoflife.date, modèle avec `{product}`), dans le même
-fichier.
+`PLUGIN_DOCKERINVENTORY_LIFECYCLE_URL` (endoflife.date, modèle avec `{product}`),
+`PLUGIN_DOCKERINVENTORY_KEV_URL` et `PLUGIN_DOCKERINVENTORY_EPSS_URL` (catalogue CISA KEV, scores
+EPSS), dans le même fichier.

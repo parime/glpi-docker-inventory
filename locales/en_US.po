@@ -3222,3 +3222,229 @@ msgstr "One per image, tag and digest"
 
 msgid "Vulnérabilités par image"
 msgstr "Vulnerabilities by image"
+
+#: front/config.php
+#, php-format
+msgid "%1$s importé : %2$d CVE."
+msgstr "%1$s imported: %2$d CVEs."
+
+#: src/ExploitSignal.php
+msgid "Exploitation connue"
+msgstr "Known exploitation"
+
+#: src/ExploitSignal.php
+msgid "Fichier illisible ou d’un format inattendu."
+msgstr "Unreadable file or unexpected format."
+
+#: src/ExploitSignal.php
+msgid "Le fichier ne contient aucune CVE."
+msgstr "The file contains no CVE."
+
+#: src/ExploitSignal.php
+msgid "Ce fichier n’est ni le catalogue CISA KEV (JSON) ni les scores EPSS (CSV)."
+msgstr "This file is neither the CISA KEV catalog (JSON) nor the EPSS scores (CSV)."
+
+#: src/ExploitSignal.php
+msgid "Fichier trop volumineux."
+msgstr "File too large."
+
+#: src/ExploitSignal.php
+msgid "Source injoignable ou réponse refusée."
+msgstr "Source unreachable or response refused."
+
+#: src/ExploitSignal.php
+msgid "Le fichier n’a pas pu être gardé dans le dossier des données du plugin."
+msgstr "The file could not be kept in the plugin data folder."
+
+#: src/ExploitSignal.php
+msgid "Catalogue CISA KEV"
+msgstr "CISA KEV catalog"
+
+#: src/ExploitSignal.php
+msgid "Scores EPSS"
+msgstr "EPSS scores"
+
+#: src/ExploitSignal.php
+#, php-format
+msgid "%d CVE"
+msgstr "%d CVEs"
+
+#: src/ExploitSignal.php
+msgid "Exploitation connue : téléchargement du catalogue CISA KEV et des scores EPSS"
+msgstr "Known exploitation: download of the CISA KEV catalog and EPSS scores"
+
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d EPSS élevé"
+msgid_plural "%d EPSS élevés"
+msgstr[0] "%d high EPSS"
+msgstr[1] "%d high EPSS"
+
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d exploitée activement"
+msgid_plural "%d exploitées activement"
+msgstr[0] "%d actively exploited"
+msgstr[1] "%d actively exploited"
+
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d rançongiciel"
+msgid_plural "%d rançongiciels"
+msgstr[0] "%d ransomware"
+msgstr[1] "%d ransomware"
+
+#: templates/_exploit_badges.html.twig
+msgid "Probabilité d’exploitation (EPSS) au-dessus du seuil choisi dans les réglages."
+msgstr "Exploitation probability (EPSS) above the threshold chosen in the settings."
+
+#: templates/_exploit_badges.html.twig
+msgid "Utilisées dans des campagnes de rançongiciel connues."
+msgstr "Used in known ransomware campaigns."
+
+#: templates/_exploit_badges.html.twig
+msgid "Vulnérabilités du catalogue CISA KEV : exploitées activement, à corriger en premier."
+msgstr "Vulnerabilities in the CISA KEV catalog: actively exploited, fix them first."
+
+#: templates/_image_scan_findings.html.twig
+msgid "Exploitée activement"
+msgstr "Actively exploited"
+
+#: templates/_image_scan_findings.html.twig
+msgid "Probabilité d’exploitation dans les 30 jours (EPSS)"
+msgstr "Probability of exploitation within 30 days (EPSS)"
+
+#: templates/_image_scan_findings.html.twig
+msgid "Rançongiciel"
+msgstr "Ransomware"
+
+#: templates/_image_scan_findings.html.twig
+#, php-format
+msgid "Échéance CISA : %s"
+msgstr "CISA due date: %s"
+
+#: templates/exploits.html.twig
+msgid "Activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Enable the automatic action for a daily update."
+
+#: templates/exploits.html.twig
+msgid "CVE du catalogue"
+msgstr "CVEs in the catalog"
+
+#: templates/exploits.html.twig
+msgid "Catalogue"
+msgstr "Catalog"
+
+#: templates/exploits.html.twig
+msgid "Catalogue CISA KEV (JSON) ou scores EPSS (CSV, compressé ou non)"
+msgstr "CISA KEV catalog (JSON) or EPSS scores (CSV, compressed or not)"
+
+#: templates/exploits.html.twig
+#, php-format
+msgid "Dans les analyses importées : %1$d CVE exploitées activement, %2$d CVE avec un score EPSS."
+msgstr "In the imported scans: %1$d actively exploited CVEs, %2$d CVEs with an EPSS score."
+
+#: templates/exploits.html.twig
+msgid "Données en cache"
+msgstr "Cached data"
+
+#: templates/exploits.html.twig
+msgid "EPSS élevé à partir de (%)"
+msgstr "High EPSS from (%)"
+
+#: templates/exploits.html.twig
+msgid "Fichier déposé"
+msgstr "Uploaded file"
+
+#: templates/exploits.html.twig
+msgid "Jamais chargé"
+msgstr "Never loaded"
+
+#: templates/exploits.html.twig
+msgid "Le catalogue CISA KEV liste les vulnérabilités exploitées activement."
+msgstr "The CISA KEV catalog lists actively exploited vulnerabilities."
+
+#: templates/exploits.html.twig
+msgid "Le score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans les 30 jours."
+msgstr "The EPSS score estimates the probability that a vulnerability will be exploited within 30 days."
+
+#: templates/exploits.html.twig
+msgid "Le plugin télécharge les fichiers publics complets : aucune CVE, aucune image ni aucun hôte n’est envoyé."
+msgstr "The plugin downloads the complete public files: no CVE, image or host is sent."
+
+#: templates/exploits.html.twig
+msgid "Mis à jour le"
+msgstr "Updated on"
+
+#: templates/exploits.html.twig
+msgid "Mode hors ligne"
+msgstr "Offline mode"
+
+#: templates/exploits.html.twig
+msgid "Ordre de traitement : exploitées activement (catalogue CISA KEV), puis gravité, puis exposition."
+msgstr "Handling order: actively exploited (CISA KEV catalog), then severity, then exposure."
+
+#: templates/exploits.html.twig
+msgid "Origine"
+msgstr "Origin"
+
+#: templates/exploits.html.twig
+msgid "Ouvrir la tâche automatique"
+msgstr "Open the automatic action"
+
+#: templates/exploits.html.twig
+msgid "Repérer les vulnérabilités des images exploitées activement, pour les corriger en premier."
+msgstr "Spot actively exploited image vulnerabilities, to fix them first."
+
+#: templates/exploits.html.twig
+msgid "Rien n’est téléchargé tant que vous ne cliquez pas ou n’activez pas la tâche automatique."
+msgstr "Nothing is downloaded until you click or enable the automatic action."
+
+#: templates/exploits.html.twig
+msgid "Serveur sans accès à Internet : téléchargez le fichier sur un autre poste, puis déposez-le ici."
+msgstr "Server without Internet access: download the file on another computer, then upload it here."
+
+#: templates/exploits.html.twig
+msgid "Tâche automatique « exploitsignals » active : une mise à jour par jour."
+msgstr "Automatic action \"exploitsignals\" enabled: one update per day."
+
+#: templates/exploits.html.twig
+msgid "Tâche automatique « exploitsignals » désactivée : activez-la pour une mise à jour par jour."
+msgstr "Automatic action \"exploitsignals\" disabled: enable it for one update per day."
+
+#: templates/exploits.html.twig
+msgid "Téléchargement"
+msgstr "Download"
+
+#: templates/exploits.html.twig
+msgid "Télécharger aussi les scores EPSS (facultatif)"
+msgstr "Also download the EPSS scores (optional)"
+
+#: templates/exploits.html.twig
+msgid "Télécharger maintenant"
+msgstr "Download now"
+
+#: templates/exploits.html.twig
+msgid "Téléchargez le catalogue CISA KEV (ou déposez-le hors ligne), puis consultez « Analyses importées »."
+msgstr "Download the CISA KEV catalog (or upload it offline), then open \"Imported scans\"."
+
+#: templates/exploits.html.twig
+msgid "Voir les images exploitées activement"
+msgstr "Show actively exploited images"
+
+#: templates/image_scans.html.twig
+#, php-format
+msgid "Catalogue CISA KEV du %s."
+msgstr "CISA KEV catalog from %s."
+
+#: templates/image_scans.html.twig
+msgid "Catalogue CISA KEV pas encore chargé."
+msgstr "CISA KEV catalog not loaded yet."
+
+#: templates/image_scans.html.twig
+msgid "Exploitées activement"
+msgstr "Actively exploited"
+
+#: templates/image_scans.html.twig
+msgid "Réglages de l’exploitation connue"
+msgstr "Known exploitation settings"

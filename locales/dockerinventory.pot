@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 14:59+0000\n"
+"POT-Creation-Date: 2026-11-21 16:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,20 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-#: front/config.php:39
+#: front/config.php:42
 #, php-format
 msgid "Registres maîtrisés enregistrés : %s"
 msgstr ""
 
-#: front/config.php:40
+#: front/config.php:43
 msgid "ceux des connexions Harbor"
 msgstr ""
 
-#: front/config.php:45
+#: front/config.php:52 front/config.php:95
 msgid "Réglages enregistrés."
 msgstr ""
 
-#: front/config.php:86
+#: front/config.php:81
+#, php-format
+msgid "%1$s importé : %2$d CVE."
+msgstr ""
+
+#: front/config.php:136
 msgid "Correspondances enregistrées."
 msgstr ""
 
@@ -67,7 +72,7 @@ msgstr ""
 msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
 msgstr ""
 
-#: front/version.php:156 src/LifecycleProduct.php:50 src/Menu.php:123
+#: front/version.php:167 src/LifecycleProduct.php:50 src/Menu.php:123
 #: templates/eol.html.twig templates/lifecycle.html.twig
 msgid "Fin de support des images"
 msgstr ""
@@ -84,7 +89,7 @@ msgstr ""
 msgid "Image reconstruite (même tag)"
 msgstr ""
 
-#: src/ConfigPage.php:70 templates/harbor_images.html.twig
+#: src/ConfigPage.php:71 templates/harbor_images.html.twig
 #: templates/managed_registries.html.twig
 msgid "Registres maîtrisés"
 msgstr ""
@@ -119,6 +124,7 @@ msgid "Vulnérabilités critiques ou hautes"
 msgstr ""
 
 #: src/Connection.php:228 templates/computer_nodes.html.twig
+#: templates/exploits.html.twig
 msgid "Adresse"
 msgstr ""
 
@@ -594,6 +600,54 @@ msgstr ""
 msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
 msgstr ""
 
+#: src/ExploitSignal.php:81 templates/_image_scan_findings.html.twig
+#: templates/exploits.html.twig
+msgid "Exploitation connue"
+msgstr ""
+
+#: src/ExploitSignal.php:140
+msgid "Fichier illisible ou d’un format inattendu."
+msgstr ""
+
+#: src/ExploitSignal.php:141
+msgid "Le fichier ne contient aucune CVE."
+msgstr ""
+
+#: src/ExploitSignal.php:143
+msgid ""
+"Ce fichier n’est ni le catalogue CISA KEV (JSON) ni les scores EPSS (CSV)."
+msgstr ""
+
+#: src/ExploitSignal.php:146
+msgid "Fichier trop volumineux."
+msgstr ""
+
+#: src/ExploitSignal.php:147
+msgid "Source injoignable ou réponse refusée."
+msgstr ""
+
+#: src/ExploitSignal.php:149
+msgid "Le fichier n’a pas pu être gardé dans le dossier des données du plugin."
+msgstr ""
+
+#: src/ExploitSignal.php:161
+msgid "Catalogue CISA KEV"
+msgstr ""
+
+#: src/ExploitSignal.php:162
+msgid "Scores EPSS"
+msgstr ""
+
+#: src/ExploitSignal.php:469
+#, php-format
+msgid "%d CVE"
+msgstr ""
+
+#: src/ExploitSignal.php:497
+msgid ""
+"Exploitation connue : téléchargement du catalogue CISA KEV et des scores EPSS"
+msgstr ""
+
 #: src/Exposure.php:60 templates/exposure_tab.html.twig
 msgid "Exposition"
 msgstr ""
@@ -733,11 +787,11 @@ msgstr ""
 msgid "Jamais analysée"
 msgstr ""
 
-#: src/HarborArtifact.php:209 src/ImageScan.php:158
+#: src/HarborArtifact.php:209 src/ImageScan.php:162
 msgid "Par empreinte : c’est l’image qui tourne"
 msgstr ""
 
-#: src/HarborArtifact.php:211 src/ImageScan.php:160
+#: src/HarborArtifact.php:211 src/ImageScan.php:164
 msgid "Par tag (empreinte déployée inconnue) : probablement l’image qui tourne"
 msgstr ""
 
@@ -1005,79 +1059,79 @@ msgstr ""
 msgid "L’exception n’a pas pu être enregistrée."
 msgstr ""
 
-#: src/ImageScan.php:54
+#: src/ImageScan.php:58
 msgid "Analyses d’images importées"
 msgstr ""
 
-#: src/ImageScan.php:55
+#: src/ImageScan.php:59
 msgid "Analyse d’image importée"
 msgstr ""
 
-#: src/ImageScan.php:94
+#: src/ImageScan.php:98
 msgid "Importer une analyse"
 msgstr ""
 
-#: src/ImageScan.php:95 templates/_image_scan_row.html.twig
+#: src/ImageScan.php:99 templates/_image_scan_row.html.twig
 msgid "Supprimer une analyse"
 msgstr ""
 
-#: src/ImageScan.php:117
+#: src/ImageScan.php:121
 msgid "Le fichier est vide."
 msgstr ""
 
-#: src/ImageScan.php:119
+#: src/ImageScan.php:123
 #, php-format
 msgid "Le fichier dépasse %d Mo."
 msgstr ""
 
-#: src/ImageScan.php:122
+#: src/ImageScan.php:126
 msgid "Le fichier n’est pas du JSON valide."
 msgstr ""
 
-#: src/ImageScan.php:123
+#: src/ImageScan.php:127
 msgid "Le fichier est trop imbriqué pour être lu."
 msgstr ""
 
-#: src/ImageScan.php:125
+#: src/ImageScan.php:129
 msgid ""
 "Format non reconnu : rapport JSON de Trivy ou de Grype, ou SARIF, attendu."
 msgstr ""
 
-#: src/ImageScan.php:129
+#: src/ImageScan.php:133
 msgid "Image analysée inconnue : indiquez-la (nom:tag) dans le formulaire."
 msgstr ""
 
-#: src/ImageScan.php:133
+#: src/ImageScan.php:137
 #, php-format
 msgid "Le rapport compte plus de %d vulnérabilités."
 msgstr ""
 
-#: src/ImageScan.php:164
+#: src/ImageScan.php:168
 msgid "Par tag : empreinte déployée différente de celle de l’analyse"
 msgstr ""
 
-#: src/ImageScan.php:182
+#: src/ImageScan.php:186
 msgid "Gravité inconnue"
 msgstr ""
 
-#: src/ImageScan.php:185
+#: src/ImageScan.php:189
 msgid "Gravité inconnue ou négligeable selon l’outil d’analyse."
 msgstr ""
 
-#: src/ImageScan.php:197
+#: src/ImageScan.php:201
 msgid "Vous n’avez pas le droit d’importer une analyse."
 msgstr ""
 
-#: src/ImageScan.php:202
+#: src/ImageScan.php:206
 msgid "Fichier refusé."
 msgstr ""
 
-#: src/ImageScan.php:245
+#: src/ImageScan.php:253
 #, php-format
 msgid "Analyse importée : %1$s, %2$d vulnérabilités."
 msgstr ""
 
-#: src/ImageScan.php:249
+#: src/ImageScan.php:257
 msgid "L’analyse n’a pas pu être enregistrée."
 msgstr ""
 
@@ -1625,6 +1679,43 @@ msgid ""
 "critique(s), %5$d haute(s)"
 msgstr ""
 
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d EPSS élevé"
+msgid_plural "%d EPSS élevés"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d exploitée activement"
+msgid_plural "%d exploitées activement"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/_exploit_badges.html.twig
+#, php-format
+msgid "%d rançongiciel"
+msgid_plural "%d rançongiciels"
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/_exploit_badges.html.twig
+msgid ""
+"Probabilité d’exploitation (EPSS) au-dessus du seuil choisi dans les "
+"réglages."
+msgstr ""
+
+#: templates/_exploit_badges.html.twig
+msgid "Utilisées dans des campagnes de rançongiciel connues."
+msgstr ""
+
+#: templates/_exploit_badges.html.twig
+msgid ""
+"Vulnérabilités du catalogue CISA KEV : exploitées activement, à corriger en "
+"premier."
+msgstr ""
+
 #: templates/_exposure_grc.html.twig
 msgid ""
 "Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un "
@@ -1828,8 +1919,8 @@ msgstr ""
 msgid "Accepter le risque"
 msgstr ""
 
-#: templates/_hardening_rows.html.twig templates/lifecycle.html.twig
-#: templates/managed_registries.html.twig
+#: templates/_hardening_rows.html.twig templates/exploits.html.twig
+#: templates/lifecycle.html.twig templates/managed_registries.html.twig
 msgid "Enregistrer"
 msgstr ""
 
@@ -1885,7 +1976,19 @@ msgid "Corrigée en"
 msgstr ""
 
 #: templates/_image_scan_findings.html.twig
+msgid "Exploitée activement"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
 msgid "Paquet"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Probabilité d’exploitation dans les 30 jours (EPSS)"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Rançongiciel"
 msgstr ""
 
 #: templates/_image_scan_findings.html.twig
@@ -1905,6 +2008,11 @@ msgstr ""
 #: templates/_image_scan_findings.html.twig
 #, php-format
 msgid "Vulnérabilités détaillées (%d)"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+#, php-format
+msgid "Échéance CISA : %s"
 msgstr ""
 
 #: templates/_image_scan_row.html.twig
@@ -2697,6 +2805,146 @@ msgstr ""
 msgid "le service utilise maintenant"
 msgstr ""
 
+#: templates/exploits.html.twig templates/image_scans.html.twig
+#, php-format
+msgid "%d Mo au plus."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Activez la tâche automatique pour une mise à jour quotidienne."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "CVE du catalogue"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Catalogue"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Catalogue CISA KEV (JSON) ou scores EPSS (CSV, compressé ou non)"
+msgstr ""
+
+#: templates/exploits.html.twig
+#, php-format
+msgid ""
+"Dans les analyses importées : %1$d CVE exploitées activement, %2$d CVE avec "
+"un score EPSS."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Données en cache"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "EPSS élevé à partir de (%)"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Fichier déposé"
+msgstr ""
+
+#: templates/exploits.html.twig templates/image_scans.html.twig
+msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgstr ""
+
+#: templates/exploits.html.twig templates/image_scans.html.twig
+msgid "Importer"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Jamais chargé"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Le catalogue CISA KEV liste les vulnérabilités exploitées activement."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Le plugin télécharge les fichiers publics complets : aucune CVE, aucune "
+"image ni aucun hôte n’est envoyé."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Le score EPSS estime la probabilité qu’une vulnérabilité soit exploitée dans "
+"les 30 jours."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Mis à jour le"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Mode hors ligne"
+msgstr ""
+
+#: templates/exploits.html.twig templates/image_scans.html.twig
+msgid ""
+"Ordre de traitement : exploitées activement (catalogue CISA KEV), puis "
+"gravité, puis exposition."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Origine"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Ouvrir la tâche automatique"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Repérer les vulnérabilités des images exploitées activement, pour les "
+"corriger en premier."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Rien n’est téléchargé tant que vous ne cliquez pas ou n’activez pas la tâche "
+"automatique."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Serveur sans accès à Internet : téléchargez le fichier sur un autre poste, "
+"puis déposez-le ici."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Tâche automatique « exploitsignals » active : une mise à jour par jour."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Tâche automatique « exploitsignals » désactivée : activez-la pour une mise à "
+"jour par jour."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Téléchargement"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Télécharger aussi les scores EPSS (facultatif)"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Télécharger maintenant"
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid ""
+"Téléchargez le catalogue CISA KEV (ou déposez-le hors ligne), puis consultez "
+"« Analyses importées »."
+msgstr ""
+
+#: templates/exploits.html.twig
+msgid "Voir les images exploitées activement"
+msgstr ""
+
 #: templates/exposure.html.twig
 msgid "Exposés sur Internet"
 msgstr ""
@@ -3112,11 +3360,6 @@ msgid "%1$d sur %2$d services"
 msgstr ""
 
 #: templates/image_scans.html.twig
-#, php-format
-msgid "%d Mo au plus."
-msgstr ""
-
-#: templates/image_scans.html.twig
 msgid "Analyses trop anciennes"
 msgstr ""
 
@@ -3130,6 +3373,15 @@ msgstr ""
 
 #: templates/image_scans.html.twig
 msgid "Avec une vulnérabilité critique ou haute"
+msgstr ""
+
+#: templates/image_scans.html.twig
+#, php-format
+msgid "Catalogue CISA KEV du %s."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Catalogue CISA KEV pas encore chargé."
 msgstr ""
 
 #: templates/image_scans.html.twig
@@ -3153,15 +3405,11 @@ msgid ""
 msgstr ""
 
 #: templates/image_scans.html.twig
-msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgid "Exploitées activement"
 msgstr ""
 
 #: templates/image_scans.html.twig
 msgid "Image analysée (facultatif)"
-msgstr ""
-
-#: templates/image_scans.html.twig
-msgid "Importer"
 msgstr ""
 
 #: templates/image_scans.html.twig
@@ -3193,6 +3441,10 @@ msgstr ""
 
 #: templates/image_scans.html.twig
 msgid "Rapports acceptés, produits par vos outils (en CI par exemple) :"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Réglages de l’exploitation connue"
 msgstr ""
 
 #: templates/image_scans.html.twig

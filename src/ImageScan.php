@@ -21,6 +21,8 @@ namespace GlpiPlugin\Dockerinventory;
 
 use DbUtils;
 use GlpiPlugin\Dockerinventory\Compat\Base\ImageScanBase;
+use GlpiPlugin\Dockerinventory\Exploit\ExploitCatalog;
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborLinker;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\Scan\ScanReportException;
@@ -46,7 +48,9 @@ class ImageScan extends ImageScanBase
 
     public const FILTER_CRITICAL_HIGH = 'critical_high';
     public const FILTER_STALE = 'stale';
-    public const FILTERS = [self::FILTER_CRITICAL_HIGH, self::FILTER_STALE];
+    /** Images avec une vulnérabilité du catalogue CISA KEV (#84). */
+    public const FILTER_KEV = 'kev';
+    public const FILTERS = [self::FILTER_CRITICAL_HIGH, self::FILTER_STALE, self::FILTER_KEV];
 
     public static function getTypeName($nb = 0)
     {
@@ -239,6 +243,10 @@ class ImageScan extends ImageScanBase
             $id = (int) $scan->add($values + $criteria);
             $ok = $id > 0;
         }
+        if ($ok) {
+            // Signaux d'exploitation connue des CVE de cette analyse, depuis le cache (#84).
+            ExploitSignal::rebuild();
+        }
 
         return $ok
             ? ['ok' => true, 'message' => sprintf(
@@ -264,7 +272,12 @@ class ImageScan extends ImageScanBase
     {
         $scan = new self();
 
-        return self::canPurge() && $scan->can($id, PURGE) && $scan->delete(['id' => $id], true);
+        if (!self::canPurge() || !$scan->can($id, PURGE) || !$scan->delete(['id' => $id], true)) {
+            return false;
+        }
+        ExploitSignal::rebuild();
+
+        return true;
     }
 
     /**
@@ -284,6 +297,7 @@ class ImageScan extends ImageScanBase
             'stale'         => 0,
             'services'      => count($services),
             'covered'       => count($linked),
+            'kev'           => 0,
         ];
         $byScan = [];
         foreach ($linked as $serviceId => $link) {
@@ -298,16 +312,26 @@ class ImageScan extends ImageScanBase
             if ($row['stale']) {
                 $counts['stale']++;
             }
+            if ($row['kev'] > 0) {
+                $counts['kev']++;
+            }
             if (
                 ($filter === self::FILTER_CRITICAL_HIGH && $row['critical'] + $row['high'] === 0)
                 || ($filter === self::FILTER_STALE && !$row['stale'])
+                || ($filter === self::FILTER_KEV && $row['kev'] === 0)
             ) {
                 continue;
             }
             $rows[] = $row;
         }
-        usort($rows, static fn (array $a, array $b): int => [HarborMapper::rank($a['severity_code']), $a['name']]
-            <=> [HarborMapper::rank($b['severity_code']), $b['name']]);
+        // Priorité (#84) : exploitée activement (KEV), puis gravité, puis exposition des services.
+        usort($rows, static fn (array $a, array $b): int => [
+            ...ExploitCatalog::imageKey($a['kev'], HarborMapper::rank($a['severity_code']), $a['exposure_rank']),
+            $a['name'],
+        ] <=> [
+            ...ExploitCatalog::imageKey($b['kev'], HarborMapper::rank($b['severity_code']), $b['exposure_rank']),
+            $b['name'],
+        ]);
 
         return [
             'scans'    => $rows,
@@ -394,27 +418,21 @@ class ImageScan extends ImageScanBase
         $date = $scan['scan_date'] !== null ? (string) $scan['scan_date'] : '';
         $age = $date !== '' ? (int) floor((strtotime($now) - strtotime($date)) / DAY_TIMESTAMP) : null;
         $findings = json_decode((string) ($scan['findings'] ?? '[]'), true);
-        $rows = [];
-        foreach (is_array($findings) ? $findings : [] as $finding) {
-            if (is_array($finding) && isset($finding['id'], $finding['severity'])) {
-                $rows[] = [
-                    'id'        => (string) $finding['id'],
-                    'severity'  => self::severityInfo((string) $finding['severity']),
-                    'package'   => (string) ($finding['package'] ?? ''),
-                    'installed' => (string) ($finding['installed'] ?? ''),
-                    'fixed'     => (string) ($finding['fixed'] ?? ''),
-                ];
-            }
-        }
+        $rows = self::findings(is_array($findings) ? $findings : []);
         $digest = (string) $scan['digest'];
+        $scopes = Exposure::infos()['scopes'];
+        $worst = count(ExposureMapper::SCOPES);
         $list = [];
         foreach ($services as $service) {
+            $rank = self::exposureRank($service);
+            $worst = min($worst, $rank);
             $list[] = [
-                'name'   => (string) $service['name'],
-                'stack'  => (string) $service['stack_name'],
-                'url'    => Service::getFormURLWithID((int) $service['id']),
-                'method' => self::methodLabels()[(string) $service['method']] ?? '',
-                'exact'  => $service['method'] === HarborLinker::METHOD_DIGEST,
+                'name'     => (string) $service['name'],
+                'stack'    => (string) $service['stack_name'],
+                'url'      => Service::getFormURLWithID((int) $service['id']),
+                'method'   => self::methodLabels()[(string) $service['method']] ?? '',
+                'exact'    => $service['method'] === HarborLinker::METHOD_DIGEST,
+                'exposure' => $scopes[ExposureMapper::SCOPES[$rank] ?? ''] ?? null,
             ];
         }
 
@@ -447,7 +465,75 @@ class ImageScan extends ImageScanBase
             'filename'      => (string) $scan['filename'],
             'date_mod'      => (string) ($scan['date_mod'] ?? ''),
             'services'      => $list,
+            'kev'           => count(array_filter(array_column($rows, 'kev'))),
+            'ransomware'    => count(array_filter(array_column($rows, 'ransomware'))),
+            'epss_high'     => count(array_filter(array_column($rows, 'epss_high'))),
+            'exposure_rank' => $worst,
         ];
+    }
+
+    /**
+     * Vulnérabilités détaillées avec leurs signaux d'exploitation connue (#84) : exploitée activement
+     * d'abord, puis gravité, puis probabilité d'exploitation (EPSS).
+     *
+     * @param array<mixed> $findings
+     * @return list<array<string, mixed>>
+     */
+    private static function findings(array $findings): array
+    {
+        $signals = ExploitSignal::signals();
+        $threshold = ExploitSignal::settings()['threshold'] / 100;
+        $rows = [];
+        foreach ($findings as $finding) {
+            if (!is_array($finding) || !isset($finding['id'], $finding['severity'])) {
+                continue;
+            }
+            $id = (string) $finding['id'];
+            $signal = $signals[strtoupper($id)] ?? null;
+            $epss = $signal['epss'] ?? null;
+            $rows[] = [
+                'id'         => $id,
+                'severity'   => self::severityInfo((string) $finding['severity']),
+                'rank'       => HarborMapper::rank((string) $finding['severity']),
+                'package'    => (string) ($finding['package'] ?? ''),
+                'installed'  => (string) ($finding['installed'] ?? ''),
+                'fixed'      => (string) ($finding['fixed'] ?? ''),
+                'kev'        => $signal !== null && $signal['is_kev'],
+                'kev_name'   => $signal['kev_name'] ?? '',
+                'kev_due'    => $signal['kev_due_date'] ?? '',
+                'ransomware' => $signal !== null && $signal['ransomware'],
+                'epss_raw'   => $epss,
+                'epss'       => $epss !== null ? round($epss * 100, 1) : null,
+                'epss_high'  => $epss !== null && $epss >= $threshold,
+            ];
+        }
+        usort($rows, static fn (array $a, array $b): int
+            => ExploitCatalog::findingKey($a['kev'], $a['rank'], $a['epss_raw'])
+            <=> ExploitCatalog::findingKey($b['kev'], $b['rank'], $b['epss_raw']));
+
+        return $rows;
+    }
+
+    /**
+     * Rang de l'exposition la plus large d'un service (0 : Internet, voir ExposureMapper::SCOPES) ;
+     * nombre de portées s'il n'est pas exposé.
+     *
+     * @param array<string, mixed> $service
+     */
+    public static function exposureRank(array $service): int
+    {
+        $rank = count(ExposureMapper::SCOPES);
+        if (!isset($service['ports']) && !isset($service['routes'])) {
+            return $rank;
+        }
+        foreach (Exposure::exposuresOf($service) as $exposure) {
+            $index = array_search($exposure['scope'], ExposureMapper::SCOPES, true);
+            if ($index !== false) {
+                $rank = min($rank, (int) $index);
+            }
+        }
+
+        return $rank;
     }
 
     /**
@@ -485,7 +571,7 @@ class ImageScan extends ImageScanBase
         $rows = [];
         foreach (
             $DB->request([
-                'SELECT' => ['id', 'name', 'stack_name', 'image', 'tag', 'digest'],
+                'SELECT' => ['id', 'name', 'stack_name', 'image', 'tag', 'digest', 'kind', 'ports', 'routes'],
                 'FROM'   => Service::getTable(),
                 'WHERE'  => ['is_retired' => 0, ['NOT' => ['image' => '']]]
                     + (new DbUtils())->getEntitiesRestrictCriteria(Service::getTable(), '', '', true),

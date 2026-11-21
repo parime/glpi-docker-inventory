@@ -374,13 +374,16 @@ final class AccessControlTest extends TestCase
      */
     public static function requests(): iterable
     {
-        foreach (['', 'connections', 'registries', 'lifecycle', 'inconnu'] as $tab) {
+        foreach (['', 'connections', 'registries', 'lifecycle', 'exploits', 'inconnu'] as $tab) {
             yield 'configuration : onglet ' . $tab => ['front/config.php', ['tab' => $tab], []];
         }
         yield 'configuration : registres maîtrisés' => [
             'front/config.php', [], ['save_managed_registries' => 1, 'managed_registries' => 'pirate.exemple.test'],
         ];
-        foreach (['save_settings', 'refresh', 'save_mappings'] as $action) {
+        $actions = [
+            'save_settings', 'refresh', 'save_mappings', 'save_exploits', 'download_exploits', 'import_exploits',
+        ];
+        foreach ($actions as $action) {
             yield 'configuration : ' . $action => ['front/config.php', [], [$action => 1, 'enabled' => 1]];
         }
         yield 'ancienne liste des connexions' => ['front/connection.php', [], []];
@@ -465,6 +468,7 @@ final class AccessControlTest extends TestCase
         $this->assertStringContainsString('ti-calendar-x', $eol);
         $this->assertStringNotContainsString('front/config.php', $eol);
         $this->assertStringNotContainsString('front/config.php', $this->open('front/version.php'));
+        $this->assertStringNotContainsString('front/config.php', $this->open('front/version.php', ['view' => 'scans']));
 
         $this->assertStringContainsString('service-a-' . $this->suffix, $this->open('front/version.php'));
         $this->assertStringContainsString(
