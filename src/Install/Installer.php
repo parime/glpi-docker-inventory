@@ -230,6 +230,7 @@ final class Installer
                 `restart_policy` varchar(64) NOT NULL DEFAULT '',
                 `container_uids` text,
                 `container_names` text,
+                `routes` text,
                 `is_retired` tinyint NOT NULL DEFAULT '0',
                 `date_retired` timestamp NULL DEFAULT NULL,
                 `last_seen` timestamp NULL DEFAULT NULL,
@@ -591,6 +592,8 @@ final class Installer
                 'restart_policy'  => "varchar(64) NOT NULL DEFAULT ''",
                 'container_uids'  => 'text',
                 'container_names' => 'text',
+                // Routes Traefik, ingress et services Kubernetes exposés (JSON, #72).
+                'routes'          => 'text',
             ] as $field => $definition
         ) {
             $migration->addField($services, $field, $definition, ['after' => $after]);

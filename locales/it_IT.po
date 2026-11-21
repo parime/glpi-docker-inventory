@@ -2487,3 +2487,126 @@ msgstr "«Supporto sconosciuto»: immagine senza corrispondenza con un prodotto,
 
 msgid "Ajouter une connexion"
 msgstr "Aggiungi una connessione"
+
+msgid "Voir ce qui est réellement joignable : ports publiés, routes Traefik, ingress et services Kubernetes."
+msgstr "Vedere ciò che è realmente raggiungibile: porte pubblicate, rotte Traefik, ingress e servizi Kubernetes."
+
+msgid "Vérifiez que chaque service exposé sur Internet est voulu et documenté dans la matrice des flux."
+msgstr "Verificate che ogni servizio esposto su Internet sia voluto e documentato nella matrice dei flussi."
+
+msgid "Le plugin ne modifie rien, ni dans les plateformes ni dans GRC Manager."
+msgstr "Il plugin non modifica nulla, né sulle piattaforme né in GRC Manager."
+
+msgid "Services exposés"
+msgstr "Servizi esposti"
+
+msgid "Exposés sur Internet"
+msgstr "Esposti su Internet"
+
+msgid "Sans flux documenté"
+msgstr "Senza flusso documentato"
+
+msgid "Les ports et les routes sont relevés à chaque import Portainer ou Kubernetes."
+msgstr "Porte e rotte vengono rilevate a ogni importazione da Portainer o Kubernetes."
+
+msgid "Une route HTTP est comptée sur le port 443 avec TLS, 80 sinon : le port réel est celui du point d’entrée."
+msgstr "Una rotta HTTP conta come porta 443 con TLS, 80 altrimenti: la porta reale è quella del punto di ingresso."
+
+msgid "Sans TLS"
+msgstr "Senza TLS"
+
+msgid "Aucun flux à documenter"
+msgstr "Nessun flusso da documentare"
+
+msgid "Flux documenté"
+msgstr "Flusso documentato"
+
+msgid "Aucun flux documenté"
+msgstr "Nessun flusso documentato"
+
+msgid "Ouvre le formulaire d’un nouveau flux dans GRC Manager : relisez puis enregistrez."
+msgstr "Apre il modulo di un nuovo flusso in GRC Manager: rileggete e poi salvate."
+
+msgid "Proposer le flux"
+msgstr "Proponi il flusso"
+
+msgid "Publié sur Internet (entrant)"
+msgstr "Pubblicato su Internet (in entrata)"
+
+msgid "Flux interne"
+msgstr "Flusso interno"
+
+msgid "GRC Manager est installé : chaque exposition est comparée aux flux actifs de sa matrice des flux."
+msgstr "GRC Manager è installato: ogni esposizione viene confrontata con i flussi attivi della sua matrice dei flussi."
+
+msgid "« Proposer le flux » ouvre un nouveau flux dans GRC : rien n’est enregistré sans vous."
+msgstr "«Proponi il flusso» apre un nuovo flusso in GRC: nulla viene salvato senza di voi."
+
+msgid "Ouvrir la matrice des flux"
+msgstr "Apri la matrice dei flussi"
+
+msgid "Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un flux est proposé."
+msgstr "Con GRC Manager, ogni esposizione viene confrontata con la sua matrice dei flussi e viene proposto un flusso."
+
+msgid "Exposition"
+msgstr "Esposizione"
+
+msgid "Tous les services exposés"
+msgstr "Tutti i servizi esposti"
+
+msgid "Ports publiés par Docker, routes Traefik, ingress et services Kubernetes déclarés pour ce service."
+msgstr "Porte pubblicate da Docker, rotte Traefik, ingress e servizi Kubernetes dichiarati per questo servizio."
+
+msgid "La portée est déduite du nom d’hôte ou de l’adresse : vérifiez-la."
+msgstr "La portata è dedotta dal nome host o dall’indirizzo: verificatela."
+
+msgid "Aucun port publié ni aucune route d’entrée."
+msgstr "Nessuna porta pubblicata né rotta di ingresso."
+
+msgid "Ce service n’est joignable que par les autres conteneurs de ses réseaux."
+msgstr "Questo servizio è raggiungibile solo dagli altri container delle sue reti."
+
+msgid "Point d’entrée"
+msgstr "Punto di ingresso"
+
+msgid "Chiffrement"
+msgstr "Cifratura"
+
+msgid "Portée"
+msgstr "Portata"
+
+msgid "Matrice des flux (GRC Manager)"
+msgstr "Matrice dei flussi (GRC Manager)"
+
+msgid "Internet (probable)"
+msgstr "Internet (probabile)"
+
+msgid "Nom d’hôte public ou adresse publique : sans doute joignable depuis Internet."
+msgstr "Nome host pubblico o indirizzo pubblico: probabilmente raggiungibile da Internet."
+
+msgid "Réseau de l’hôte"
+msgstr "Rete dell’host"
+
+msgid "Port publié sur toutes les adresses de l’hôte : joignable par tout réseau qui atteint l’hôte."
+msgstr "Porta pubblicata su tutti gli indirizzi dell’host: raggiungibile da ogni rete che raggiunge l’host."
+
+msgid "Réseau interne"
+msgstr "Rete interna"
+
+msgid "Nom ou adresse d’un réseau interne, ou port des nœuds Kubernetes."
+msgstr "Nome o indirizzo di una rete interna, o porta dei nodi Kubernetes."
+
+msgid "Hôte seul"
+msgstr "Solo l’host"
+
+msgid "Port publié sur l’adresse de bouclage : joignable depuis l’hôte seulement."
+msgstr "Porta pubblicata sull’indirizzo di loopback: raggiungibile solo dall’host."
+
+msgid "Port publié"
+msgstr "Porta pubblicata"
+
+msgid "Service Kubernetes"
+msgstr "Servizio Kubernetes"
+
+msgid "Internet"
+msgstr "Internet"

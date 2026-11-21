@@ -21,6 +21,7 @@ namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use GlpiPlugin\Dockerinventory\Api\Evidence;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
@@ -196,6 +197,7 @@ final class EvidenceApiTest extends TestCase
             'vulnerabilities' => Evidence::vulnerabilities(1000),
             'configuration'   => Evidence::configuration(1000),
             'versionChanges'  => Evidence::versionChanges('2026-01-01 00:00:00', 1000),
+            'exposure'        => Evidence::exposure(1000),
         ];
         foreach ($results as $name => $result) {
             $this->assertIsArray($result, $name);
@@ -235,6 +237,14 @@ final class EvidenceApiTest extends TestCase
         $this->assertSame(['443:8443/tcp'], $config[0]['ports']);
         $this->assertTrue($config[0]['replicas_ok']);
 
+        // Exposition (#72) : le port publié sur toutes les adresses de l'hôte.
+        $exposed = $this->rowsOfA($results['exposure']['services']);
+        $this->assertCount(1, $exposed);
+        $this->assertSame([ExposureMapper::SCOPE_HOST], array_column($exposed[0]['exposures'], 'scope'));
+        $this->assertSame([443], array_column($exposed[0]['exposures'], 'port'));
+        $this->assertFalse($exposed[0]['internet']);
+        $this->assertSame($this->entities['a'], $exposed[0]['entities_id']);
+
         $changes = $this->rowsOfA($results['versionChanges']['changes']);
         $this->assertCount(1, $changes);
         $this->assertSame('0.9.0', $changes[0]['old_tag']);
@@ -265,5 +275,6 @@ final class EvidenceApiTest extends TestCase
         $this->assertNull(Evidence::vulnerabilities());
         $this->assertNull(Evidence::configuration());
         $this->assertNull(Evidence::versionChanges('2026-01-01 00:00:00'));
+        $this->assertNull(Evidence::exposure());
     }
 }

@@ -1,0 +1,60 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Exposition » d'un service (#72) : ports publiés et routes d'entrée relevés par l'import,
+   portée de chacun et, avec GRC Manager, flux de la matrice proposé ou déjà documenté. Lecture seule. #}
+<div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-world-share me-2" aria-hidden="true"></i>{{ __('Exposition', 'dockerinventory') }}
+        </h2>
+        <a href="{{ page_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
+            <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Tous les services exposés', 'dockerinventory') }}
+        </a>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-0">
+            {{ __(
+                'Ports publiés par Docker, routes Traefik, ingress et services Kubernetes déclarés pour ce service.',
+                'dockerinventory'
+            ) }}
+            {{ __('La portée est déduite du nom d’hôte ou de l’adresse : vérifiez-la.', 'dockerinventory') }}
+        </p>
+        {{ include('@dockerinventory/_exposure_grc.html.twig') }}
+    </div>
+    {% if service.exposures is empty %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon"><i class="ti ti-shield-check text-success" aria-hidden="true"></i></div>
+                <p class="empty-title">{{ __('Aucun port publié ni aucune route d’entrée.', 'dockerinventory') }}</p>
+                <p class="empty-subtitle text-muted">
+                    {{ __(
+                        'Ce service n’est joignable que par les autres conteneurs de ses réseaux.',
+                        'dockerinventory'
+                    ) }}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                {{ include('@dockerinventory/_exposure_head.html.twig', {show_service: false}) }}
+                <tbody>
+                    {{ include('@dockerinventory/_exposure_rows.html.twig', {show_service: false}) }}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-16 01:40+0000\n"
+"POT-Creation-Date: 2026-11-21 05:57+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
+#: templates/_page_help.html.twig
+msgid "À quoi sert cette page ?"
+msgstr ""
+
+#: templates/_page_help.html.twig
+msgid "Ce qui est attendu :"
+msgstr ""
+
 #: templates/_service_rows.html.twig
 msgid "Tag mobile : la version réelle est donnée par l’empreinte."
 msgstr ""
@@ -25,6 +33,7 @@ msgstr ""
 #: templates/_service_rows.html.twig templates/vuln_ticket_content.html.twig
 #: templates/eol_ticket_content.html.twig templates/_version_rows.html.twig
 #: templates/ticket_content.html.twig templates/harbor_images.html.twig
+#: templates/_exposure_head.html.twig
 msgid "Service"
 msgstr ""
 
@@ -33,7 +42,7 @@ msgid "Image et tag"
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/service_form.html.twig
-#: src/Service.php:102
+#: src/Service.php:103
 msgid "Empreinte (digest)"
 msgstr ""
 
@@ -46,7 +55,7 @@ msgid "En cours sur ce nœud"
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/service_form.html.twig
-#: src/Service.php:109
+#: src/Service.php:110
 msgid "Ports publiés"
 msgstr ""
 
@@ -55,16 +64,65 @@ msgid "Statut"
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/computer_nodes.html.twig
-#: templates/service_form.html.twig src/Service.php:107
+#: templates/service_form.html.twig src/Service.php:108
 msgid "Vu la dernière fois"
 msgstr ""
 
 #: templates/_service_rows.html.twig templates/vuln_ticket_content.html.twig
 #: templates/eol_ticket_content.html.twig templates/_version_rows.html.twig
 #: templates/ticket_content.html.twig templates/harbor_images.html.twig
-#: src/HarborArtifact.php:603 src/ImageVersion.php:244 src/ImageVersion.php:613
-#: src/Service.php:105 src/Service.php:337
+#: src/HarborArtifact.php:603 src/ImageVersion.php:237 src/ImageVersion.php:606
+#: src/Service.php:106 src/Service.php:338
 msgid "Stack"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Voir ce qui est réellement joignable : ports publiés, routes Traefik, "
+"ingress et services Kubernetes."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Vérifiez que chaque service exposé sur Internet est voulu et documenté dans "
+"la matrice des flux."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Le plugin ne modifie rien, ni dans les plateformes ni dans GRC Manager."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Services exposés"
+msgstr ""
+
+#: templates/exposure.html.twig templates/versions.html.twig
+#: templates/eol.html.twig templates/harbor_images.html.twig
+msgid "Tous"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Exposés sur Internet"
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid "Sans flux documenté"
+msgstr ""
+
+#: templates/exposure.html.twig templates/versions.html.twig
+#: templates/eol.html.twig
+msgid "Aucun service ne correspond à ces filtres."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Les ports et les routes sont relevés à chaque import Portainer ou Kubernetes."
+msgstr ""
+
+#: templates/exposure.html.twig
+msgid ""
+"Une route HTTP est comptée sur le port 443 avec TLS, 80 sinon : le port réel "
+"est celui du point d’entrée."
 msgstr ""
 
 #: templates/computer_nodes.html.twig
@@ -92,7 +150,7 @@ msgid "Hôte Docker autonome"
 msgstr ""
 
 #: templates/computer_nodes.html.twig templates/_status_badge.html.twig
-#: templates/_version_rows.html.twig src/Service.php:106
+#: templates/_version_rows.html.twig src/Service.php:107
 msgid "Retiré"
 msgstr ""
 
@@ -104,7 +162,7 @@ msgstr ""
 msgid "Version de Docker"
 msgstr ""
 
-#: templates/computer_nodes.html.twig src/Connection.php:205
+#: templates/computer_nodes.html.twig src/Connection.php:214
 msgid "Adresse"
 msgstr ""
 
@@ -137,7 +195,7 @@ msgid ""
 msgstr ""
 
 #: templates/kubernetes_actions.html.twig
-#: templates/connection_actions.html.twig src/Connection.php:228
+#: templates/connection_actions.html.twig src/Connection.php:237
 msgid "Dernier import"
 msgstr ""
 
@@ -154,7 +212,8 @@ msgid "applications créées"
 msgstr ""
 
 #: templates/kubernetes_actions.html.twig templates/versions.html.twig
-#: templates/connection_actions.html.twig src/Service.php:254
+#: templates/connection_actions.html.twig templates/eol.html.twig
+#: src/Menu.php:101 src/Service.php:255
 msgid "Services"
 msgstr ""
 
@@ -219,8 +278,23 @@ msgstr ""
 msgid "Pour Kubernetes seulement, ajouter dans config/local_define.php :"
 msgstr ""
 
-#: templates/versions.html.twig templates/_versions_tabs.html.twig
-#: templates/lifecycle.html.twig src/ImageVersion.php:69
+#: templates/versions.html.twig
+msgid ""
+"Repérer les images à mettre à jour : version déployée, dernière version, "
+"écart, fin de support."
+msgstr ""
+
+#: templates/versions.html.twig
+msgid ""
+"Cliquez sur un compteur ou filtrez par écart ou par environnement, puis "
+"planifiez les mises à jour."
+msgstr ""
+
+#: templates/versions.html.twig templates/eol.html.twig
+msgid "Le plugin ne met rien à jour lui-même."
+msgstr ""
+
+#: templates/versions.html.twig src/ImageVersion.php:69
 msgid "Versions des images"
 msgstr ""
 
@@ -262,58 +336,55 @@ msgstr ""
 msgid "Connexions Docker"
 msgstr ""
 
-#: templates/versions.html.twig templates/harbor_images.html.twig
-msgid "Tous"
-msgstr ""
-
 #: templates/versions.html.twig
 msgid "À mettre à jour"
 msgstr ""
 
 #: templates/versions.html.twig templates/eol_ticket_content.html.twig
 #: templates/_version_rows.html.twig templates/eol_ticket_followup.html.twig
-#: templates/version_tab.html.twig src/LifecycleProduct.php:214
+#: templates/version_tab.html.twig src/LifecycleProduct.php:200
 msgid "Fin de support"
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid "À surveiller"
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid "Cycles de vie mis à jour le"
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid ""
 "Cycles de vie pas encore lus : prochaine mise à jour par la tâche "
 "automatique."
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid ""
 "Dernière mise à jour incomplète : les données en cache restent utilisées."
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid "Réglages et correspondances"
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid "Fin de support des images : désactivée."
 msgstr ""
 
-#: templates/versions.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
 msgid ""
 "Une fois activée, chaque image indique si sa branche est encore maintenue."
 msgstr ""
 
-#: templates/versions.html.twig templates/version_tab.html.twig
+#: templates/versions.html.twig templates/eol.html.twig
+#: templates/version_tab.html.twig
 msgid "Activer"
 msgstr ""
 
 #: templates/versions.html.twig templates/_version_rows.html.twig
-#: templates/ticket_content.html.twig src/ImageVersion.php:276
+#: templates/ticket_content.html.twig src/ImageVersion.php:269
 msgid "Écart"
 msgstr ""
 
@@ -331,10 +402,6 @@ msgstr ""
 
 #: templates/versions.html.twig templates/harbor_images.html.twig
 msgid "Réinitialiser"
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Aucun service ne correspond à ces filtres."
 msgstr ""
 
 #: templates/versions.html.twig
@@ -359,18 +426,23 @@ msgstr ""
 msgid "Préférer un tag versionné (1.2.3) pour savoir ce qui tourne vraiment."
 msgstr ""
 
+#: templates/managed_registries.html.twig
+msgid ""
+"Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
+"contrôlée."
+msgstr ""
+
+#: templates/managed_registries.html.twig
+msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
+msgstr ""
+
 #: templates/managed_registries.html.twig templates/harbor_images.html.twig
+#: src/ConfigPage.php:70
 msgid "Registres maîtrisés"
 msgstr ""
 
 #: templates/managed_registries.html.twig
 msgid "Images déployées hors de ces registres : signalées."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Une image qui ne vient pas d’un registre maîtrisé n’est ni analysée ni "
-"contrôlée."
 msgstr ""
 
 #: templates/managed_registries.html.twig
@@ -401,8 +473,8 @@ msgstr ""
 msgid "Enregistrer"
 msgstr ""
 
-#: templates/managed_registries.html.twig templates/_versions_tabs.html.twig
-#: templates/harbor_images.html.twig templates/harbor_actions.html.twig
+#: templates/managed_registries.html.twig templates/harbor_images.html.twig
+#: templates/harbor_actions.html.twig src/Menu.php:111
 msgid "Images Harbor et vulnérabilités"
 msgstr ""
 
@@ -504,7 +576,7 @@ msgid "Artefact Harbor"
 msgstr ""
 
 #: templates/_harbor_service.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:284
+#: src/ImageVersion.php:277
 msgid "Rattachement"
 msgstr ""
 
@@ -594,19 +666,19 @@ msgstr ""
 msgid "Volumes persistants (noms)"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:111
+#: templates/service_form.html.twig src/Service.php:112
 msgid "Secrets (noms)"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:110
+#: templates/service_form.html.twig src/Service.php:111
 msgid "Réseaux"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:116
+#: templates/service_form.html.twig src/Service.php:117
 msgid "Volumes (noms)"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:113
+#: templates/service_form.html.twig src/Service.php:114
 msgid "Nature"
 msgstr ""
 
@@ -622,7 +694,7 @@ msgstr ""
 msgid "Application (stack)"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:108
+#: templates/service_form.html.twig src/Service.php:109
 msgid "Environnement Portainer"
 msgstr ""
 
@@ -630,7 +702,7 @@ msgstr ""
 #: templates/eol_ticket_content.html.twig templates/lifecycle.html.twig
 #: templates/_version_rows.html.twig templates/ticket_content.html.twig
 #: templates/harbor_images.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:279 src/Service.php:100
+#: src/ImageVersion.php:272 src/Service.php:101
 msgid "Image"
 msgstr ""
 
@@ -658,11 +730,11 @@ msgstr ""
 msgid "État"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:114
+#: templates/service_form.html.twig src/Service.php:115
 msgid "État des conteneurs"
 msgstr ""
 
-#: templates/service_form.html.twig src/Service.php:115
+#: templates/service_form.html.twig src/Service.php:116
 msgid "Politique de redémarrage"
 msgstr ""
 
@@ -872,25 +944,46 @@ msgstr ""
 msgid "Ticket créé par Inventaire Docker, délai choisi (jours) :"
 msgstr ""
 
-#: templates/lifecycle.html.twig src/LifecycleProduct.php:50
+#: templates/lifecycle.html.twig templates/eol.html.twig
+msgid ""
+"Savoir quelles images tournent sur une branche qui ne reçoit plus de "
+"correctifs."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid ""
+"Activez la source, puis associez chaque image sans correspondance au produit "
+"qui lui convient."
+msgstr ""
+
+#: templates/lifecycle.html.twig
+msgid "Le résultat apparaît dans « Versions des images »."
+msgstr ""
+
+#: templates/lifecycle.html.twig templates/eol.html.twig front/version.php:96
+#: src/LifecycleProduct.php:50 src/Menu.php:116
 msgid "Fin de support des images"
 msgstr ""
 
-#: templates/lifecycle.html.twig
+#: templates/lifecycle.html.twig templates/eol.html.twig
 msgid "Activée"
 msgstr ""
 
-#: templates/lifecycle.html.twig
+#: templates/lifecycle.html.twig templates/eol.html.twig
 msgid "Désactivée"
 msgstr ""
 
 #: templates/lifecycle.html.twig
+msgid "Voir les images concernées"
+msgstr ""
+
+#: templates/lifecycle.html.twig templates/eol.html.twig
 msgid ""
 "Une image peut être à jour dans sa branche alors que cette branche ne reçoit "
 "plus de correctifs."
 msgstr ""
 
-#: templates/lifecycle.html.twig
+#: templates/lifecycle.html.twig templates/eol.html.twig
 msgid ""
 "Le plugin compare la branche déployée aux dates de fin de support publiées "
 "par une source ouverte."
@@ -909,7 +1002,8 @@ msgid ""
 msgstr ""
 
 #: templates/lifecycle.html.twig templates/ticket_content.html.twig
-#: templates/version_tab.html.twig src/ImageVersion.php:277
+#: templates/version_tab.html.twig templates/_exposure_head.html.twig
+#: src/ImageVersion.php:270
 msgid "Source"
 msgstr ""
 
@@ -983,7 +1077,7 @@ msgstr ""
 msgid "Services ou conteneurs"
 msgstr ""
 
-#: templates/lifecycle.html.twig
+#: templates/lifecycle.html.twig templates/eol.html.twig
 msgid "Ajouter une correspondance"
 msgstr ""
 
@@ -1060,27 +1154,27 @@ msgid "Application et environnement"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/ticket_content.html.twig
-#: src/ImageVersion.php:274
+#: src/ImageVersion.php:267
 msgid "Version déployée"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/ticket_content.html.twig
-#: src/ImageVersion.php:275
+#: src/ImageVersion.php:268
 msgid "Dernière version"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:278
+#: src/ImageVersion.php:271
 msgid "Vérifié le"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/version_tab.html.twig
-#: src/ImageVersion.php:285
+#: src/ImageVersion.php:278
 msgid "Registre"
 msgstr ""
 
 #: templates/_version_rows.html.twig templates/wud_actions.html.twig
-#: templates/version_tab.html.twig src/ImageVersion.php:280
+#: templates/version_tab.html.twig src/ImageVersion.php:273
 msgid "Réplicas désynchronisés"
 msgstr ""
 
@@ -1090,6 +1184,24 @@ msgstr ""
 
 #: templates/_version_rows.html.twig templates/version_tab.html.twig
 msgid "Erreur WUD"
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"Planifiez d’abord le passage des images en fin de support vers une branche "
+"encore maintenue."
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"Demandez à l’administrateur de GLPI de l’activer dans la configuration du "
+"plugin."
+msgstr ""
+
+#: templates/eol.html.twig
+msgid ""
+"« Support inconnu » : image sans correspondance avec un produit, ou branche "
+"absente de la source."
 msgstr ""
 
 #: templates/ticket_content.html.twig
@@ -1132,7 +1244,7 @@ msgid ""
 "applications existantes."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:212
+#: templates/connection_form.html.twig src/Connection.php:221
 msgid "Type"
 msgstr ""
 
@@ -1188,7 +1300,7 @@ msgid ""
 "du système."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:236
+#: templates/connection_form.html.twig src/Connection.php:245
 msgid "Environnement des applications créées"
 msgstr ""
 
@@ -1277,7 +1389,7 @@ msgstr ""
 msgid "Déconseillé : la clé d'API circule alors en clair."
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:243
+#: templates/connection_form.html.twig src/Connection.php:252
 msgid "Tickets de mise à jour"
 msgstr ""
 
@@ -1351,7 +1463,7 @@ msgstr ""
 msgid "Réglages communs"
 msgstr ""
 
-#: templates/connection_form.html.twig src/Connection.php:251
+#: templates/connection_form.html.twig src/Connection.php:260
 msgid "Tickets de vulnérabilité"
 msgstr ""
 
@@ -1391,6 +1503,40 @@ msgstr ""
 
 #: templates/_severity_badge.html.twig
 msgid "B"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Sans TLS"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Aucun flux à documenter"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Flux documenté"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Aucun flux documenté"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid ""
+"Ouvre le formulaire d’un nouveau flux dans GRC Manager : relisez puis "
+"enregistrez."
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Proposer le flux"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Publié sur Internet (entrant)"
+msgstr ""
+
+#: templates/_exposure_rows.html.twig
+msgid "Flux interne"
 msgstr ""
 
 #: templates/wud_actions.html.twig
@@ -1444,6 +1590,24 @@ msgstr ""
 
 #: templates/wud_actions.html.twig
 msgid "Pour WUD seulement, ajouter dans config/local_define.php :"
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid ""
+"Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités "
+"critiques et hautes."
+msgstr ""
+
+#: templates/harbor_images.html.twig
+msgid "Faites reconstruire ou remplacer les images non maîtrisées."
 msgstr ""
 
 #: templates/harbor_images.html.twig
@@ -1558,6 +1722,28 @@ msgstr ""
 msgid "Déployé par"
 msgstr ""
 
+#: templates/_exposure_grc.html.twig
+msgid ""
+"GRC Manager est installé : chaque exposition est comparée aux flux actifs de "
+"sa matrice des flux."
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid ""
+"« Proposer le flux » ouvre un nouveau flux dans GRC : rien n’est enregistré "
+"sans vous."
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid "Ouvrir la matrice des flux"
+msgstr ""
+
+#: templates/_exposure_grc.html.twig
+msgid ""
+"Avec GRC Manager, chaque exposition est comparée à sa matrice des flux et un "
+"flux est proposé."
+msgstr ""
+
 #: templates/vuln_ticket_followup.html.twig
 msgid "Plus de vulnérabilité au seuil"
 msgstr ""
@@ -1604,15 +1790,15 @@ msgstr ""
 msgid "Une nouvelle empreinte est disponible pour ce tag."
 msgstr ""
 
-#: templates/version_tab.html.twig src/ImageVersion.php:282
+#: templates/version_tab.html.twig src/ImageVersion.php:275
 msgid "Empreinte déployée"
 msgstr ""
 
-#: templates/version_tab.html.twig src/ImageVersion.php:283
+#: templates/version_tab.html.twig src/ImageVersion.php:276
 msgid "Dernière empreinte"
 msgstr ""
 
-#: templates/version_tab.html.twig src/ImageVersion.php:281
+#: templates/version_tab.html.twig src/ImageVersion.php:274
 msgid "Conteneurs WUD"
 msgstr ""
 
@@ -1644,6 +1830,33 @@ msgstr ""
 
 #: templates/version_tab.html.twig
 msgid "Voir toutes les versions des images"
+msgstr ""
+
+#: templates/exposure_tab.html.twig src/Exposure.php:60
+msgid "Exposition"
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "Tous les services exposés"
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid ""
+"Ports publiés par Docker, routes Traefik, ingress et services Kubernetes "
+"déclarés pour ce service."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "La portée est déduite du nom d’hôte ou de l’adresse : vérifiez-la."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid "Aucun port publié ni aucune route d’entrée."
+msgstr ""
+
+#: templates/exposure_tab.html.twig
+msgid ""
+"Ce service n’est joignable que par les autres conteneurs de ses réseaux."
 msgstr ""
 
 #: templates/harbor_actions.html.twig
@@ -1737,6 +1950,46 @@ msgstr ""
 msgid "Lire Harbor maintenant"
 msgstr ""
 
+#: templates/config_connections.html.twig
+msgid ""
+"Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up "
+"Docker et Harbor."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Le plugin les lit seulement, sans rien y modifier."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid ""
+"Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis "
+"lancez un import."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Les imports tournent ensuite tout seuls."
+msgstr ""
+
+#: templates/config_connections.html.twig
+msgid "Ajouter une connexion"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Point d’entrée"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Chiffrement"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Portée"
+msgstr ""
+
+#: templates/_exposure_head.html.twig
+msgid "Matrice des flux (GRC Manager)"
+msgstr ""
+
 #: templates/_state_badges.html.twig
 msgid "En cours"
 msgstr ""
@@ -1745,21 +1998,500 @@ msgstr ""
 msgid "Arrêté"
 msgstr ""
 
-#: front/connection.php:30
+#: front/config.php:39
 #, php-format
 msgid "Registres maîtrisés enregistrés : %s"
 msgstr ""
 
-#: front/connection.php:31
+#: front/config.php:40
 msgid "ceux des connexions Harbor"
 msgstr ""
 
-#: front/lifecycle.php:31
+#: front/config.php:45
 msgid "Réglages enregistrés."
 msgstr ""
 
-#: front/lifecycle.php:72
+#: front/config.php:86
 msgid "Correspondances enregistrées."
+msgstr ""
+
+#: front/service.php:31
+msgid ""
+"Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs "
+"autonomes et Kubernetes."
+msgstr ""
+
+#: front/service.php:35
+msgid ""
+"Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa "
+"version et son état."
+msgstr ""
+
+#: front/service.php:37
+msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
+msgstr ""
+
+#: src/Api/Evidence.php:436
+msgid "Autre image"
+msgstr ""
+
+#: src/Api/Evidence.php:437
+msgid "Nouveau tag"
+msgstr ""
+
+#: src/Api/Evidence.php:438
+msgid "Image reconstruite (même tag)"
+msgstr ""
+
+#: src/Connection.php:102
+msgid "Connexion Docker"
+msgstr ""
+
+#: src/Connection.php:131
+msgid "Version majeure seulement"
+msgstr ""
+
+#: src/Connection.php:132
+msgid "Version mineure ou majeure"
+msgstr ""
+
+#: src/Connection.php:133
+msgid "Tout écart de version, correctifs compris"
+msgstr ""
+
+#: src/Connection.php:145
+msgid "Vulnérabilités critiques"
+msgstr ""
+
+#: src/Connection.php:146
+msgid "Vulnérabilités critiques ou hautes"
+msgstr ""
+
+#: src/Connection.php:384
+msgid "La clé d'API Portainer est obligatoire."
+msgstr ""
+
+#: src/Connection.php:393
+msgid "Le jeton du compte de service Kubernetes est obligatoire."
+msgstr ""
+
+#: src/Connection.php:431
+msgid "Hôte du registre invalide (exemple : registry.exemple.test:5000)."
+msgstr ""
+
+#: src/Connection.php:448
+msgid ""
+"Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN "
+"CERTIFICATE-----...)."
+msgstr ""
+
+#: src/Connection.php:638 src/Connection.php:697
+#, php-format
+msgid "Échec : %s"
+msgstr ""
+
+#: src/Connection.php:646
+#, php-format
+msgid ""
+"Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d "
+"analysés, %6$d retirés."
+msgstr ""
+
+#: src/Connection.php:656
+#, php-format
+msgid "Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s)."
+msgstr ""
+
+#: src/Connection.php:715
+#, php-format
+msgid ""
+"Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds "
+"ou hôtes."
+msgstr ""
+
+#: src/Connection.php:753
+#, php-format
+msgid ""
+"Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, "
+"%5$d retirés, %6$d nœuds."
+msgstr ""
+
+#: src/Connection.php:795
+msgid ""
+"Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer "
+"(voir README)."
+msgstr ""
+
+#: src/Connection.php:799
+msgid ""
+"Portainer annonce des services ou des conteneurs que ce compte ne voit pas."
+msgstr ""
+
+#: src/Connection.php:802
+msgid ""
+"Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir "
+"README)."
+msgstr ""
+
+#: src/Connection.php:806
+msgid ""
+"Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été "
+"retiré."
+msgstr ""
+
+#: src/Connection.php:808
+msgid "Vérifiez les accès du compte dans Portainer (voir README)."
+msgstr ""
+
+#: src/Connection.php:810
+msgid ""
+"Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
+msgstr ""
+
+#: src/Connection.php:814
+msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
+msgstr ""
+
+#: src/Connection.php:816
+msgid "Vérifiez son ClusterRole (voir README)."
+msgstr ""
+
+#: src/Connection.php:818
+msgid ""
+"Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été "
+"retiré."
+msgstr ""
+
+#: src/Connection.php:820
+msgid "Vérifiez les droits du compte de service (voir README)."
+msgstr ""
+
+#: src/Connection.php:822
+msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
+msgstr ""
+
+#: src/Connection.php:842
+#, php-format
+msgid "Tickets de mise à jour : %1$d créé(s), %2$d suivi(s) ajouté(s)."
+msgstr ""
+
+#: src/Connection.php:855
+#, php-format
+msgid ""
+"Lecture de WUD terminée (%1$s) : %2$d conteneurs, %3$d services suivis, %4$d "
+"sans service."
+msgstr ""
+
+#: src/Connection.php:874
+#, php-format
+msgid ""
+"Registres lus (%1$s) : %2$d versions trouvées, %3$d non suivables, %4$d non "
+"vérifiées, %5$d requêtes."
+msgstr ""
+
+#: src/Connection.php:901
+msgid "Connexion réussie : le registre Harbor accepte ce compte."
+msgstr ""
+
+#: src/Connection.php:903
+msgid ""
+"Connexion réussie : registre joignable sans compte (projets publics "
+"seulement)."
+msgstr ""
+
+#: src/Connection.php:909
+#, php-format
+msgid "API de Harbor : %d projet(s) visible(s) avec ce compte."
+msgstr ""
+
+#: src/Connection.php:914
+#, php-format
+msgid "API de Harbor non lue (projets, analyses) : %s"
+msgstr ""
+
+#: src/Connection.php:951
+#, php-format
+msgid ""
+"Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce "
+"jeton."
+msgstr ""
+
+#: src/Connection.php:964
+#, php-format
+msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
+msgstr ""
+
+#: src/Connection.php:973 src/Connection.php:1033
+#, php-format
+msgid "Connexion établie, mais à vérifier : %s"
+msgstr ""
+
+#: src/Connection.php:997
+#, php-format
+msgid "Connexion réussie : WUD %1$s, %2$d conteneur(s) suivi(s)."
+msgstr ""
+
+#: src/Connection.php:1061
+#, php-format
+msgid ""
+"Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé."
+msgstr ""
+
+#: src/Connection.php:1072
+#, php-format
+msgid "À vérifier (%1$s) : %2$s"
+msgstr ""
+
+#: src/Connection.php:1107
+msgid "Réussi"
+msgstr ""
+
+#: src/Connection.php:1108
+msgid "Partiel"
+msgstr ""
+
+#: src/Connection.php:1109
+msgid "Échec"
+msgstr ""
+
+#: src/Connection.php:1110
+msgid "Avertissement"
+msgstr ""
+
+#: src/Connection.php:1111
+msgid "Jamais lancé"
+msgstr ""
+
+#: src/Connection.php:1121
+msgid "Clé d'API refusée par Portainer (401)."
+msgstr ""
+
+#: src/Connection.php:1122
+msgid "Accès refusé par Portainer (403) pour cette clé."
+msgstr ""
+
+#: src/Connection.php:1123 src/Connection.php:1130
+msgid "Adresse introuvable (404) : vérifier l'adresse."
+msgstr ""
+
+#: src/Connection.php:1124
+msgid "Cet environnement n'est pas un cluster Swarm."
+msgstr ""
+
+#: src/Connection.php:1125 src/Connection.php:1132 src/Connection.php:1171
+#: src/Connection.php:1205
+msgid "Réseau privé refusé par GLPI (voir README)."
+msgstr ""
+
+#: src/Connection.php:1126
+msgid "Réponse inattendue : est-ce bien Portainer ?"
+msgstr ""
+
+#: src/Connection.php:1127
+msgid "Portainer injoignable (réseau, certificat...)."
+msgstr ""
+
+#: src/Connection.php:1128
+msgid "Identifiants refusés par WUD (401)."
+msgstr ""
+
+#: src/Connection.php:1129
+msgid "Accès refusé par WUD (403)."
+msgstr ""
+
+#: src/Connection.php:1131
+msgid "WUD a répondu par une erreur interne (5xx)."
+msgstr ""
+
+#: src/Connection.php:1133
+msgid "Réponse inattendue : est-ce bien What's Up Docker ?"
+msgstr ""
+
+#: src/Connection.php:1134
+msgid "WUD injoignable (réseau, certificat, délai...)."
+msgstr ""
+
+#: src/Connection.php:1147
+msgid ""
+"Jeton refusé par le cluster (401) : jeton expiré ou compte de service "
+"supprimé ?"
+msgstr ""
+
+#: src/Connection.php:1151
+msgid ""
+"Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir "
+"README)."
+msgstr ""
+
+#: src/Connection.php:1155
+msgid ""
+"Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port "
+"6443 en général)."
+msgstr ""
+
+#: src/Connection.php:1159
+msgid ""
+"Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
+msgstr ""
+
+#: src/Connection.php:1163
+msgid ""
+"Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain "
+"import."
+msgstr ""
+
+#: src/Connection.php:1167
+msgid "L'API du cluster a répondu par une erreur interne (5xx)."
+msgstr ""
+
+#: src/Connection.php:1175
+msgid ""
+"Certificat du cluster non reconnu : coller le certificat d'autorité du "
+"cluster (voir README)."
+msgstr ""
+
+#: src/Connection.php:1179
+msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
+msgstr ""
+
+#: src/Connection.php:1182
+msgid "Cluster injoignable (réseau, nom, délai...)."
+msgstr ""
+
+#: src/Connection.php:1194
+msgid "Compte refusé par le registre (401)."
+msgstr ""
+
+#: src/Connection.php:1195
+msgid "Accès refusé par le registre (403)."
+msgstr ""
+
+#: src/Connection.php:1196
+msgid "Image introuvable dans le registre, ou privée."
+msgstr ""
+
+#: src/Connection.php:1198
+msgid "Limite de requêtes du registre atteinte (429) : nouvel essai plus tard."
+msgstr ""
+
+#: src/Connection.php:1202
+msgid "Le registre a répondu par une erreur interne (5xx)."
+msgstr ""
+
+#: src/Connection.php:1206
+msgid "Réponse inattendue du registre."
+msgstr ""
+
+#: src/Connection.php:1208
+msgid "Registre injoignable (réseau, certificat, délai...)."
+msgstr ""
+
+#: src/Connection.php:1212
+msgid "Registre non pris en charge : ni Docker Hub, ni un Harbor déclaré."
+msgstr ""
+
+#: src/Connection.php:1216
+msgid "Registre privé : renseigner un compte robot sur la connexion Harbor."
+msgstr ""
+
+#: src/Connection.php:1220
+msgid ""
+"Docker Hub non interrogé cette fois (limite ou réseau) : nouvel essai plus "
+"tard."
+msgstr ""
+
+#: src/Connection.php:1229
+msgid "HTTPS obligatoire (sauf « Autoriser HTTP »)."
+msgstr ""
+
+#: src/Connection.php:1230
+msgid "L'adresse ne doit pas contenir d'identifiants."
+msgstr ""
+
+#: src/Connection.php:1231
+#, php-format
+msgid "Adresse invalide (exemple : %s)."
+msgstr ""
+
+#: src/Connection.php:1252
+msgid ""
+"Dernières versions dans les registres (Docker Hub, Harbor) pour les services "
+"sans WUD"
+msgstr ""
+
+#: src/Connection.php:1258
+msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
+msgstr ""
+
+#: src/Connection.php:1264
+msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
+msgstr ""
+
+#: src/Connection.php:1269
+msgid "Lecture des versions des images depuis What's Up Docker"
+msgstr ""
+
+#: src/Connection.php:1273
+msgid ""
+"Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
+msgstr ""
+
+#: src/Connection.php:1365
+#, php-format
+msgid "%1$s : %2$s (%3$d conteneurs, %4$d services suivis, %5$d sans service)"
+msgstr ""
+
+#: src/Connection.php:1395
+#, php-format
+msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
+msgstr ""
+
+#: src/Exposure.php:121
+msgid "Internet (probable)"
+msgstr ""
+
+#: src/Exposure.php:125
+msgid ""
+"Nom d’hôte public ou adresse publique : sans doute joignable depuis Internet."
+msgstr ""
+
+#: src/Exposure.php:130
+msgid "Réseau de l’hôte"
+msgstr ""
+
+#: src/Exposure.php:134
+msgid ""
+"Port publié sur toutes les adresses de l’hôte : joignable par tout réseau "
+"qui atteint l’hôte."
+msgstr ""
+
+#: src/Exposure.php:139 src/Exposure.php:203
+msgid "Réseau interne"
+msgstr ""
+
+#: src/Exposure.php:143
+msgid "Nom ou adresse d’un réseau interne, ou port des nœuds Kubernetes."
+msgstr ""
+
+#: src/Exposure.php:148
+msgid "Hôte seul"
+msgstr ""
+
+#: src/Exposure.php:152
+msgid ""
+"Port publié sur l’adresse de bouclage : joignable depuis l’hôte seulement."
+msgstr ""
+
+#: src/Exposure.php:159
+msgid "Port publié"
+msgstr ""
+
+#: src/Exposure.php:165
+msgid "Service Kubernetes"
+msgstr ""
+
+#: src/Exposure.php:202
+msgid "Internet"
 msgstr ""
 
 #: src/HarborArtifact.php:57
@@ -1899,7 +2631,7 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
-#: src/HarborArtifact.php:602 src/ImageVersion.php:612 src/Service.php:337
+#: src/HarborArtifact.php:602 src/ImageVersion.php:605 src/Service.php:338
 msgid "Namespace"
 msgstr ""
 
@@ -1907,260 +2639,373 @@ msgstr ""
 msgid "Version d'image"
 msgstr ""
 
-#: src/ImageVersion.php:133
+#: src/ImageVersion.php:126
 msgid "Version majeure"
 msgstr ""
 
-#: src/ImageVersion.php:136
+#: src/ImageVersion.php:129
 msgid "Nouvelle version majeure : changements possiblement incompatibles."
 msgstr ""
 
-#: src/ImageVersion.php:139
+#: src/ImageVersion.php:132
 msgid "Version mineure"
 msgstr ""
 
-#: src/ImageVersion.php:143
+#: src/ImageVersion.php:136
 msgid ""
 "Nouvelle version mineure : nouvelles fonctions, en principe compatibles."
 msgstr ""
 
-#: src/ImageVersion.php:148
+#: src/ImageVersion.php:141
 msgid "Correctif"
 msgstr ""
 
-#: src/ImageVersion.php:151
+#: src/ImageVersion.php:144
 msgid "Correctif disponible (souvent des corrections de sécurité)."
 msgstr ""
 
-#: src/ImageVersion.php:154
+#: src/ImageVersion.php:147
 msgid "Préversion"
 msgstr ""
 
-#: src/ImageVersion.php:157
+#: src/ImageVersion.php:150
 msgid "Seule une préversion (ou une variante) plus récente existe."
 msgstr ""
 
-#: src/ImageVersion.php:160
+#: src/ImageVersion.php:153
 msgid "Empreinte seule"
 msgstr ""
 
-#: src/ImageVersion.php:163
+#: src/ImageVersion.php:156
 msgid "Même tag, image reconstruite : seule son empreinte a changé."
 msgstr ""
 
-#: src/ImageVersion.php:166
+#: src/ImageVersion.php:159
 msgid "Non suivable"
 msgstr ""
 
-#: src/ImageVersion.php:170
+#: src/ImageVersion.php:163
 msgid ""
 "Tag mobile (latest...) ou sans numéro de version : seule l’empreinte dit si "
 "l’image a changé."
 msgstr ""
 
-#: src/ImageVersion.php:175
+#: src/ImageVersion.php:168
 msgid "Non vérifié"
 msgstr ""
 
-#: src/ImageVersion.php:179
+#: src/ImageVersion.php:172
 msgid ""
 "Aucune version trouvée pour cette image (WUD ou registre), ou registre non "
 "pris en charge."
 msgstr ""
 
-#: src/ImageVersion.php:184
+#: src/ImageVersion.php:177
 msgid "À jour"
 msgstr ""
 
-#: src/ImageVersion.php:187
+#: src/ImageVersion.php:180
 msgid "Aucune version plus récente connue."
 msgstr ""
 
-#: src/ImageVersion.php:206
+#: src/ImageVersion.php:199
 msgid "Par identifiant ou nom du conteneur"
 msgstr ""
 
-#: src/ImageVersion.php:207
+#: src/ImageVersion.php:200
 msgid "Par empreinte de l’image"
 msgstr ""
 
-#: src/ImageVersion.php:208
+#: src/ImageVersion.php:201
 msgid "Par nom du service Swarm"
 msgstr ""
 
-#: src/ImageVersion.php:209
+#: src/ImageVersion.php:202
 msgid "Par image et tag"
 msgstr ""
 
-#: src/ImageVersion.php:210
+#: src/ImageVersion.php:203
 msgid "Plusieurs services possibles"
 msgstr ""
 
-#: src/ImageVersion.php:211
+#: src/ImageVersion.php:204
 msgid "Conteneur hors Swarm non importé"
 msgstr ""
 
-#: src/ImageVersion.php:212
+#: src/ImageVersion.php:205
 msgid "Aucun service importé correspondant"
 msgstr ""
 
-#: src/ImageVersion.php:223
+#: src/ImageVersion.php:216
 msgid "Registre de l'image"
 msgstr ""
 
-#: src/ImageVersion.php:286
+#: src/ImageVersion.php:279
 msgid "Mise à jour disponible"
 msgstr ""
 
-#: src/ImageVersion.php:366
+#: src/ImageVersion.php:359
 msgid "Versions"
 msgstr ""
 
-#: src/LifecycleProduct.php:140
+#: src/Importer.php:380
+#, php-format
+msgid ""
+"Créée par le plugin Inventaire Docker pour la stack Portainer « %1$s » "
+"(%2$s)."
+msgstr ""
+
+#: src/Kubernetes/KubernetesImporter.php:204
+#, php-format
+msgid ""
+"Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » "
+"(%2$s)."
+msgstr ""
+
+#: src/LifecycleProduct.php:126
 msgid ""
 "Nom d’image invalide (exemples : postgres, bitnami/redis, "
 "registry.exemple.test/outils/api)."
 msgstr ""
 
-#: src/LifecycleProduct.php:155
+#: src/LifecycleProduct.php:141
 #, php-format
 msgid "L’image %s a déjà une correspondance."
 msgstr ""
 
-#: src/LifecycleProduct.php:169
+#: src/LifecycleProduct.php:155
 msgid ""
 "Produit invalide : nom de la source en minuscules (exemples : postgresql, "
 "nodejs)."
 msgstr ""
 
-#: src/LifecycleProduct.php:217
+#: src/LifecycleProduct.php:203
 msgid "La branche déployée ne reçoit plus de correctifs de sécurité."
 msgstr ""
 
-#: src/LifecycleProduct.php:220
+#: src/LifecycleProduct.php:206
 msgid "Bientôt en fin de support"
 msgstr ""
 
-#: src/LifecycleProduct.php:223
+#: src/LifecycleProduct.php:209
 msgid "Prévoir le passage à une branche encore maintenue."
 msgstr ""
 
-#: src/LifecycleProduct.php:226
+#: src/LifecycleProduct.php:212
 msgid "Maintenue"
 msgstr ""
 
-#: src/LifecycleProduct.php:229
+#: src/LifecycleProduct.php:215
 msgid "La branche déployée reçoit encore des correctifs."
 msgstr ""
 
-#: src/LifecycleProduct.php:232
+#: src/LifecycleProduct.php:218
 msgid "Support inconnu"
 msgstr ""
 
-#: src/LifecycleProduct.php:235
+#: src/LifecycleProduct.php:221
 msgid "Fin de support non déterminée : jamais considérée comme maintenue."
 msgstr ""
 
-#: src/LifecycleProduct.php:256
+#: src/LifecycleProduct.php:242
 msgid "Source des cycles de vie désactivée."
 msgstr ""
 
-#: src/LifecycleProduct.php:258
+#: src/LifecycleProduct.php:244
 msgid "Image sans correspondance avec un produit."
 msgstr ""
 
-#: src/LifecycleProduct.php:261
+#: src/LifecycleProduct.php:247
 msgid "Tag sans numéro de version (latest...)."
 msgstr ""
 
-#: src/LifecycleProduct.php:263
+#: src/LifecycleProduct.php:249
 msgid ""
 "Cycles de vie pas encore lus (source pas encore interrogée ou injoignable)."
 msgstr ""
 
-#: src/LifecycleProduct.php:267
+#: src/LifecycleProduct.php:253
 msgid "Produit inconnu de la source : correspondance à corriger."
 msgstr ""
 
-#: src/LifecycleProduct.php:271
+#: src/LifecycleProduct.php:257
 msgid "Branche de cette version absente de la source."
 msgstr ""
 
-#: src/LifecycleProduct.php:285
+#: src/LifecycleProduct.php:271
 msgid "Produit inconnu de la source"
 msgstr ""
 
-#: src/LifecycleProduct.php:286
+#: src/LifecycleProduct.php:272
 msgid "Limite de requêtes atteinte"
 msgstr ""
 
-#: src/LifecycleProduct.php:287
+#: src/LifecycleProduct.php:273
 msgid "Erreur du serveur de la source"
 msgstr ""
 
-#: src/LifecycleProduct.php:289
+#: src/LifecycleProduct.php:275
 msgid ""
 "Adresse sur un réseau privé refusée par GLPI (contexte LifecycleContext à "
 "autoriser)"
 msgstr ""
 
-#: src/LifecycleProduct.php:292
+#: src/LifecycleProduct.php:278
 msgid "Réponse inattendue de la source"
 msgstr ""
 
-#: src/LifecycleProduct.php:293
+#: src/LifecycleProduct.php:279
 msgid "Source injoignable"
 msgstr ""
 
-#: src/LifecycleProduct.php:294
+#: src/LifecycleProduct.php:280
 msgid "Non interrogé (erreur précédente)"
 msgstr ""
 
-#: src/LifecycleProduct.php:311
+#: src/LifecycleProduct.php:297
 msgid "Fin de support atteinte (date non publiée)."
 msgstr ""
 
-#: src/LifecycleProduct.php:313
+#: src/LifecycleProduct.php:299
 msgid "Aucune fin de support annoncée."
 msgstr ""
 
-#: src/LifecycleProduct.php:315
+#: src/LifecycleProduct.php:301
 #, php-format
 msgid "Fin de support depuis le %s."
 msgstr ""
 
-#: src/LifecycleProduct.php:320
+#: src/LifecycleProduct.php:306
 #, php-format
 msgid "Fin de support le %1$s (dans %2$d jour)."
 msgid_plural "Fin de support le %1$s (dans %2$d jours)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/LifecycleProduct.php:356
+#: src/LifecycleProduct.php:342
 msgid "Source des cycles de vie désactivée : rien n’a été lu."
 msgstr ""
 
-#: src/LifecycleProduct.php:360
+#: src/LifecycleProduct.php:346
 #, php-format
 msgid ""
 "Cycles de vie : %1$d produits, %2$d lus, %3$d en cache, %4$d inconnus de la "
 "source, %5$d requêtes."
 msgstr ""
 
-#: src/LifecycleProduct.php:372
+#: src/LifecycleProduct.php:358
 #, php-format
 msgid "%d produit(s) non lu(s) : les données déjà en cache restent utilisées."
 msgstr ""
 
-#: src/LifecycleProduct.php:379
+#: src/LifecycleProduct.php:365
 #, php-format
 msgid "Tickets de fin de support : %1$d créé(s), %2$d suivi(s) ajouté(s)."
 msgstr ""
 
-#: src/LifecycleProduct.php:394
+#: src/LifecycleProduct.php:380
 msgid ""
 "Fin de support des images : cycles de vie (une fois par jour) et tickets de "
 "fin de support"
+msgstr ""
+
+#: src/Menu.php:42 src/Profile.php:35
+msgid "Inventaire Docker"
+msgstr ""
+
+#: src/Node.php:39
+msgid "Nœuds Swarm"
+msgstr ""
+
+#: src/Node.php:39
+msgid "Nœud Swarm"
+msgstr ""
+
+#: src/Node.php:52
+msgid "Services du nœud"
+msgstr ""
+
+#: src/Service.php:44
+msgid "Services de conteneurs"
+msgstr ""
+
+#: src/Service.php:45
+msgid "Service de conteneur"
+msgstr ""
+
+#: src/Service.php:102
+msgid "Tag"
+msgstr ""
+
+#: src/Service.php:104
+msgid "Réplicas voulus"
+msgstr ""
+
+#: src/Service.php:105
+msgid "Réplicas en cours"
+msgstr ""
+
+#: src/Service.php:113
+msgid "Retiré le"
+msgstr ""
+
+#: src/Service.php:168
+msgid "Service Swarm"
+msgstr ""
+
+#: src/Service.php:169
+msgid "Service Compose"
+msgstr ""
+
+#: src/Service.php:170
+msgid "Conteneur autonome"
+msgstr ""
+
+#: src/Service.php:186
+msgid "Disponible"
+msgstr ""
+
+#: src/Service.php:187
+msgid "Mise à jour en cours"
+msgstr ""
+
+#: src/Service.php:188
+msgid "Dégradé"
+msgstr ""
+
+#: src/Service.php:189
+msgid "Indisponible"
+msgstr ""
+
+#: src/Service.php:190
+msgid "Arrêté (0 réplica)"
+msgstr ""
+
+#: src/Service.php:191
+msgid "Suspendu"
+msgstr ""
+
+#: src/Service.php:192
+msgid "Tâche en cours"
+msgstr ""
+
+#: src/Service.php:193
+msgid "Planifié"
+msgstr ""
+
+#: src/Service.php:307
+#, php-format
+msgid "%d tâche(s) active(s)"
+msgstr ""
+
+#: src/Service.php:308
+#, php-format
+msgid "%d (global)"
+msgstr ""
+
+#: src/Service.php:329
+#, php-format
+msgid "volume anonyme %s"
 msgstr ""
 
 #: src/Ticket/EolTickets.php:236
@@ -2195,644 +3040,4 @@ msgstr ""
 msgid ""
 "Vulnérabilités dans l’image %1$s (service %2$s de la stack %3$s) : %4$d "
 "critique(s), %5$d haute(s)"
-msgstr ""
-
-#: src/Importer.php:380
-#, php-format
-msgid ""
-"Créée par le plugin Inventaire Docker pour la stack Portainer « %1$s » "
-"(%2$s)."
-msgstr ""
-
-#: src/Profile.php:35
-msgid "Inventaire Docker"
-msgstr ""
-
-#: src/Api/Evidence.php:371
-msgid "Autre image"
-msgstr ""
-
-#: src/Api/Evidence.php:372
-msgid "Nouveau tag"
-msgstr ""
-
-#: src/Api/Evidence.php:373
-msgid "Image reconstruite (même tag)"
-msgstr ""
-
-#: src/Kubernetes/KubernetesImporter.php:183
-#, php-format
-msgid ""
-"Créée par le plugin Inventaire Docker pour le namespace Kubernetes « %1$s » "
-"(%2$s)."
-msgstr ""
-
-#: src/Node.php:39
-msgid "Nœuds Swarm"
-msgstr ""
-
-#: src/Node.php:39
-msgid "Nœud Swarm"
-msgstr ""
-
-#: src/Node.php:52
-msgid "Services du nœud"
-msgstr ""
-
-#: src/Connection.php:102
-msgid "Connexion Docker"
-msgstr ""
-
-#: src/Connection.php:131
-msgid "Version majeure seulement"
-msgstr ""
-
-#: src/Connection.php:132
-msgid "Version mineure ou majeure"
-msgstr ""
-
-#: src/Connection.php:133
-msgid "Tout écart de version, correctifs compris"
-msgstr ""
-
-#: src/Connection.php:145
-msgid "Vulnérabilités critiques"
-msgstr ""
-
-#: src/Connection.php:146
-msgid "Vulnérabilités critiques ou hautes"
-msgstr ""
-
-#: src/Connection.php:375
-msgid "La clé d'API Portainer est obligatoire."
-msgstr ""
-
-#: src/Connection.php:384
-msgid "Le jeton du compte de service Kubernetes est obligatoire."
-msgstr ""
-
-#: src/Connection.php:422
-msgid "Hôte du registre invalide (exemple : registry.exemple.test:5000)."
-msgstr ""
-
-#: src/Connection.php:439
-msgid ""
-"Certificat d'autorité invalide : coller le contenu PEM (-----BEGIN "
-"CERTIFICATE-----...)."
-msgstr ""
-
-#: src/Connection.php:629 src/Connection.php:688
-#, php-format
-msgid "Échec : %s"
-msgstr ""
-
-#: src/Connection.php:637
-#, php-format
-msgid ""
-"Harbor lu (%1$s) : %2$d projets, %3$d dépôts, %4$d artefacts dont %5$d "
-"analysés, %6$d retirés."
-msgstr ""
-
-#: src/Connection.php:647
-#, php-format
-msgid "Tickets de vulnérabilité : %1$d créé(s), %2$d suivi(s) ajouté(s)."
-msgstr ""
-
-#: src/Connection.php:706
-#, php-format
-msgid ""
-"Import terminé (%1$s) : %2$d stacks, %3$d services, %4$d retirés, %5$d nœuds "
-"ou hôtes."
-msgstr ""
-
-#: src/Connection.php:744
-#, php-format
-msgid ""
-"Import terminé (%1$s) : %2$d namespaces, %3$d applications, %4$d services, "
-"%5$d retirés, %6$d nœuds."
-msgstr ""
-
-#: src/Connection.php:786
-msgid ""
-"Le compte ne voit aucun environnement : vérifiez ses accès dans Portainer "
-"(voir README)."
-msgstr ""
-
-#: src/Connection.php:790
-msgid ""
-"Portainer annonce des services ou des conteneurs que ce compte ne voit pas."
-msgstr ""
-
-#: src/Connection.php:793
-msgid ""
-"Rien n'a été retiré ici : vérifiez les accès du compte dans Portainer (voir "
-"README)."
-msgstr ""
-
-#: src/Connection.php:797
-msgid ""
-"Aucun élément trouvé alors que le dernier import en trouvait : rien n'a été "
-"retiré."
-msgstr ""
-
-#: src/Connection.php:799
-msgid "Vérifiez les accès du compte dans Portainer (voir README)."
-msgstr ""
-
-#: src/Connection.php:801
-msgid ""
-"Le compte ne voit aucun namespace : vérifiez son ClusterRole (voir README)."
-msgstr ""
-
-#: src/Connection.php:805
-msgid "Lecture refusée au compte de service (403) : rien n’en a été retiré."
-msgstr ""
-
-#: src/Connection.php:807
-msgid "Vérifiez son ClusterRole (voir README)."
-msgstr ""
-
-#: src/Connection.php:809
-msgid ""
-"Aucune charge trouvée alors que le dernier import en trouvait : rien n'a été "
-"retiré."
-msgstr ""
-
-#: src/Connection.php:811
-msgid "Vérifiez les droits du compte de service (voir README)."
-msgstr ""
-
-#: src/Connection.php:813
-msgid "Liste trop longue, lue en partie : rien n’en a été retiré."
-msgstr ""
-
-#: src/Connection.php:833
-#, php-format
-msgid "Tickets de mise à jour : %1$d créé(s), %2$d suivi(s) ajouté(s)."
-msgstr ""
-
-#: src/Connection.php:846
-#, php-format
-msgid ""
-"Lecture de WUD terminée (%1$s) : %2$d conteneurs, %3$d services suivis, %4$d "
-"sans service."
-msgstr ""
-
-#: src/Connection.php:865
-#, php-format
-msgid ""
-"Registres lus (%1$s) : %2$d versions trouvées, %3$d non suivables, %4$d non "
-"vérifiées, %5$d requêtes."
-msgstr ""
-
-#: src/Connection.php:892
-msgid "Connexion réussie : le registre Harbor accepte ce compte."
-msgstr ""
-
-#: src/Connection.php:894
-msgid ""
-"Connexion réussie : registre joignable sans compte (projets publics "
-"seulement)."
-msgstr ""
-
-#: src/Connection.php:900
-#, php-format
-msgid "API de Harbor : %d projet(s) visible(s) avec ce compte."
-msgstr ""
-
-#: src/Connection.php:905
-#, php-format
-msgid "API de Harbor non lue (projets, analyses) : %s"
-msgstr ""
-
-#: src/Connection.php:942
-#, php-format
-msgid ""
-"Connexion réussie : Kubernetes %1$s, %2$d namespace(s) visible(s) avec ce "
-"jeton."
-msgstr ""
-
-#: src/Connection.php:955
-#, php-format
-msgid "Lecture refusée (403) : %s. Complétez le ClusterRole (voir README)."
-msgstr ""
-
-#: src/Connection.php:964 src/Connection.php:1024
-#, php-format
-msgid "Connexion établie, mais à vérifier : %s"
-msgstr ""
-
-#: src/Connection.php:988
-#, php-format
-msgid "Connexion réussie : WUD %1$s, %2$d conteneur(s) suivi(s)."
-msgstr ""
-
-#: src/Connection.php:1052
-#, php-format
-msgid ""
-"Connexion réussie : %d environnement(s) Portainer visible(s) avec cette clé."
-msgstr ""
-
-#: src/Connection.php:1063
-#, php-format
-msgid "À vérifier (%1$s) : %2$s"
-msgstr ""
-
-#: src/Connection.php:1098
-msgid "Réussi"
-msgstr ""
-
-#: src/Connection.php:1099
-msgid "Partiel"
-msgstr ""
-
-#: src/Connection.php:1100
-msgid "Échec"
-msgstr ""
-
-#: src/Connection.php:1101
-msgid "Avertissement"
-msgstr ""
-
-#: src/Connection.php:1102
-msgid "Jamais lancé"
-msgstr ""
-
-#: src/Connection.php:1112
-msgid "Clé d'API refusée par Portainer (401)."
-msgstr ""
-
-#: src/Connection.php:1113
-msgid "Accès refusé par Portainer (403) pour cette clé."
-msgstr ""
-
-#: src/Connection.php:1114 src/Connection.php:1121
-msgid "Adresse introuvable (404) : vérifier l'adresse."
-msgstr ""
-
-#: src/Connection.php:1115
-msgid "Cet environnement n'est pas un cluster Swarm."
-msgstr ""
-
-#: src/Connection.php:1116 src/Connection.php:1123 src/Connection.php:1162
-#: src/Connection.php:1196
-msgid "Réseau privé refusé par GLPI (voir README)."
-msgstr ""
-
-#: src/Connection.php:1117
-msgid "Réponse inattendue : est-ce bien Portainer ?"
-msgstr ""
-
-#: src/Connection.php:1118
-msgid "Portainer injoignable (réseau, certificat...)."
-msgstr ""
-
-#: src/Connection.php:1119
-msgid "Identifiants refusés par WUD (401)."
-msgstr ""
-
-#: src/Connection.php:1120
-msgid "Accès refusé par WUD (403)."
-msgstr ""
-
-#: src/Connection.php:1122
-msgid "WUD a répondu par une erreur interne (5xx)."
-msgstr ""
-
-#: src/Connection.php:1124
-msgid "Réponse inattendue : est-ce bien What's Up Docker ?"
-msgstr ""
-
-#: src/Connection.php:1125
-msgid "WUD injoignable (réseau, certificat, délai...)."
-msgstr ""
-
-#: src/Connection.php:1138
-msgid ""
-"Jeton refusé par le cluster (401) : jeton expiré ou compte de service "
-"supprimé ?"
-msgstr ""
-
-#: src/Connection.php:1142
-msgid ""
-"Lecture refusée au compte de service (403) : vérifiez son ClusterRole (voir "
-"README)."
-msgstr ""
-
-#: src/Connection.php:1146
-msgid ""
-"Adresse introuvable (404) : indiquer l'adresse de l'API du cluster (port "
-"6443 en général)."
-msgstr ""
-
-#: src/Connection.php:1150
-msgid ""
-"Liste modifiée pendant la lecture (410) : nouvel essai au prochain import."
-msgstr ""
-
-#: src/Connection.php:1154
-msgid ""
-"Limite de requêtes de l'API atteinte (429) : la suite est lue au prochain "
-"import."
-msgstr ""
-
-#: src/Connection.php:1158
-msgid "L'API du cluster a répondu par une erreur interne (5xx)."
-msgstr ""
-
-#: src/Connection.php:1166
-msgid ""
-"Certificat du cluster non reconnu : coller le certificat d'autorité du "
-"cluster (voir README)."
-msgstr ""
-
-#: src/Connection.php:1170
-msgid "Réponse inattendue : est-ce bien l'API d'un cluster Kubernetes ?"
-msgstr ""
-
-#: src/Connection.php:1173
-msgid "Cluster injoignable (réseau, nom, délai...)."
-msgstr ""
-
-#: src/Connection.php:1185
-msgid "Compte refusé par le registre (401)."
-msgstr ""
-
-#: src/Connection.php:1186
-msgid "Accès refusé par le registre (403)."
-msgstr ""
-
-#: src/Connection.php:1187
-msgid "Image introuvable dans le registre, ou privée."
-msgstr ""
-
-#: src/Connection.php:1189
-msgid "Limite de requêtes du registre atteinte (429) : nouvel essai plus tard."
-msgstr ""
-
-#: src/Connection.php:1193
-msgid "Le registre a répondu par une erreur interne (5xx)."
-msgstr ""
-
-#: src/Connection.php:1197
-msgid "Réponse inattendue du registre."
-msgstr ""
-
-#: src/Connection.php:1199
-msgid "Registre injoignable (réseau, certificat, délai...)."
-msgstr ""
-
-#: src/Connection.php:1203
-msgid "Registre non pris en charge : ni Docker Hub, ni un Harbor déclaré."
-msgstr ""
-
-#: src/Connection.php:1207
-msgid "Registre privé : renseigner un compte robot sur la connexion Harbor."
-msgstr ""
-
-#: src/Connection.php:1211
-msgid ""
-"Docker Hub non interrogé cette fois (limite ou réseau) : nouvel essai plus "
-"tard."
-msgstr ""
-
-#: src/Connection.php:1220
-msgid "HTTPS obligatoire (sauf « Autoriser HTTP »)."
-msgstr ""
-
-#: src/Connection.php:1221
-msgid "L'adresse ne doit pas contenir d'identifiants."
-msgstr ""
-
-#: src/Connection.php:1222
-#, php-format
-msgid "Adresse invalide (exemple : %s)."
-msgstr ""
-
-#: src/Connection.php:1243
-msgid ""
-"Dernières versions dans les registres (Docker Hub, Harbor) pour les services "
-"sans WUD"
-msgstr ""
-
-#: src/Connection.php:1249
-msgid "Projets, artefacts et analyses de vulnérabilités depuis Harbor"
-msgstr ""
-
-#: src/Connection.php:1255
-msgid "Import des namespaces, charges de travail et nœuds depuis Kubernetes"
-msgstr ""
-
-#: src/Connection.php:1260
-msgid "Lecture des versions des images depuis What's Up Docker"
-msgstr ""
-
-#: src/Connection.php:1264
-msgid ""
-"Import des stacks et services Docker (Swarm et Compose) depuis Portainer"
-msgstr ""
-
-#: src/Connection.php:1356
-#, php-format
-msgid "%1$s : %2$s (%3$d conteneurs, %4$d services suivis, %5$d sans service)"
-msgstr ""
-
-#: src/Connection.php:1386
-#, php-format
-msgid "%1$s : %2$s (%3$d services, %4$d retirés, %5$d nœuds ou hôtes)"
-msgstr ""
-
-#: src/Service.php:44
-msgid "Services de conteneurs"
-msgstr ""
-
-#: src/Service.php:45
-msgid "Service de conteneur"
-msgstr ""
-
-#: src/Service.php:101
-msgid "Tag"
-msgstr ""
-
-#: src/Service.php:103
-msgid "Réplicas voulus"
-msgstr ""
-
-#: src/Service.php:104
-msgid "Réplicas en cours"
-msgstr ""
-
-#: src/Service.php:112
-msgid "Retiré le"
-msgstr ""
-
-#: src/Service.php:167
-msgid "Service Swarm"
-msgstr ""
-
-#: src/Service.php:168
-msgid "Service Compose"
-msgstr ""
-
-#: src/Service.php:169
-msgid "Conteneur autonome"
-msgstr ""
-
-#: src/Service.php:185
-msgid "Disponible"
-msgstr ""
-
-#: src/Service.php:186
-msgid "Mise à jour en cours"
-msgstr ""
-
-#: src/Service.php:187
-msgid "Dégradé"
-msgstr ""
-
-#: src/Service.php:188
-msgid "Indisponible"
-msgstr ""
-
-#: src/Service.php:189
-msgid "Arrêté (0 réplica)"
-msgstr ""
-
-#: src/Service.php:190
-msgid "Suspendu"
-msgstr ""
-
-#: src/Service.php:191
-msgid "Tâche en cours"
-msgstr ""
-
-#: src/Service.php:192
-msgid "Planifié"
-msgstr ""
-
-#: src/Service.php:306
-#, php-format
-msgid "%d tâche(s) active(s)"
-msgstr ""
-
-#: src/Service.php:307
-#, php-format
-msgid "%d (global)"
-msgstr ""
-
-#: src/Service.php:328
-#, php-format
-msgid "volume anonyme %s"
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Voir les vulnérabilités des images déployées, lues dans Harbor."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Repérer les images qui ne viennent pas d’un registre maîtrisé."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid ""
-"Filtrez par gravité ou par projet ; traitez d’abord les vulnérabilités "
-"critiques et hautes."
-msgstr ""
-
-#: templates/harbor_images.html.twig
-msgid "Faites reconstruire ou remplacer les images non maîtrisées."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Savoir quelles images tournent sur une branche qui ne reçoit plus de "
-"correctifs."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid ""
-"Activez la source, puis associez chaque image sans correspondance au produit "
-"qui lui convient."
-msgstr ""
-
-#: templates/lifecycle.html.twig
-msgid "Le résultat apparaît dans « Versions des images »."
-msgstr ""
-
-#: templates/_page_help.html.twig
-msgid "À quoi sert cette page ?"
-msgstr ""
-
-#: templates/_page_help.html.twig
-msgid "Ce qui est attendu :"
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Déclarer les sources lues par le plugin : Portainer, Kubernetes, What’s Up "
-"Docker et Harbor."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Le plugin les lit seulement, sans rien y modifier."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid ""
-"Ajoutez une connexion avec un compte aux droits minimaux, testez-la, puis "
-"lancez un import."
-msgstr ""
-
-#: templates/managed_registries.html.twig
-msgid "Les imports tournent ensuite tout seuls."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Repérer les images à mettre à jour : version déployée, dernière version, "
-"écart, fin de support."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid ""
-"Cliquez sur un compteur ou filtrez par écart ou par environnement, puis "
-"planifiez les mises à jour."
-msgstr ""
-
-#: templates/versions.html.twig
-msgid "Le plugin ne met rien à jour lui-même."
-msgstr ""
-
-#: front/service.php:29
-msgid ""
-"Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs "
-"autonomes et Kubernetes."
-msgstr ""
-
-#: front/service.php:33
-msgid ""
-"Recherchez ou filtrez, puis ouvrez un service pour voir son image, sa "
-"version et son état."
-msgstr ""
-
-#: front/service.php:35
-msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
-msgstr ""
-
-msgid "Demandez à l’administrateur de GLPI de l’activer dans la configuration du plugin."
-msgstr ""
-
-msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
-msgstr ""
-
-msgid "Planifiez d’abord le passage des images en fin de support vers une branche encore maintenue."
-msgstr ""
-
-msgid "Voir les images concernées"
-msgstr ""
-
-msgid "« Support inconnu » : image sans correspondance avec un produit, ou branche absente de la source."
-msgstr ""
-
-msgid "Ajouter une connexion"
 msgstr ""

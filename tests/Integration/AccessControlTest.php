@@ -24,6 +24,7 @@ use Glpi\Exception\RedirectException;
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\ImageVersion;
@@ -147,7 +148,7 @@ final class AccessControlTest extends TestCase
         ]);
         $this->serviceA = (int) (new Service())->add([
             'name' => 'service-a-' . $this->suffix, 'service_uid' => 'a-' . $this->suffix,
-            'entities_id' => $this->entityA, 'image' => 'nginx',
+            'entities_id' => $this->entityA, 'image' => 'nginx', 'ports' => '8443:443/tcp',
         ]);
         $this->serviceB = (int) (new Service())->add([
             'name'          => 'service-b-' . $this->suffix,
@@ -155,6 +156,7 @@ final class AccessControlTest extends TestCase
             'entities_id'   => $this->entityB,
             'appliances_id' => $this->applianceB,
             'image'         => 'nginx',
+            'ports'         => '8443:443/tcp',
         ]);
         $this->connectionB = (int) (new Connection())->add([
             'name'        => 'portainer-b-' . $this->suffix,
@@ -346,6 +348,8 @@ final class AccessControlTest extends TestCase
         yield 'images Harbor' => ['front/version.php', ['view' => 'harbor'], []];
         yield 'fin de support' => ['front/version.php', ['view' => 'eol'], []];
         yield 'fin de support, tous les états' => ['front/version.php', ['view' => 'eol', 'eol' => 'all'], []];
+        yield 'exposition' => ['front/version.php', ['view' => 'exposure'], []];
+        yield 'exposition sur Internet' => ['front/version.php', ['view' => 'exposure', 'filter' => 'internet'], []];
     }
 
     /**
@@ -404,6 +408,11 @@ final class AccessControlTest extends TestCase
         );
         $this->assertNotSame('', $this->open('front/service.php'));
         $this->assertNotSame('', $this->open('front/imageversion.php'));
+        // Exposition (#72) : lecture seule, sans lien vers la configuration.
+        $exposure = $this->open('front/version.php', ['view' => 'exposure']);
+        $this->assertStringContainsString('service-a-' . $this->suffix, $exposure);
+        $this->assertStringContainsString('ti-world-share', $exposure);
+        $this->assertStringNotContainsString('front/config.php', $exposure);
     }
 
     /**
@@ -446,6 +455,7 @@ final class AccessControlTest extends TestCase
             ['front/version.php', []],
             ['front/version.php', ['view' => 'harbor']],
             ['front/version.php', ['view' => 'eol']],
+            ['front/version.php', ['view' => 'exposure']],
         ];
         foreach ($pages as [$page, $get]) {
             $html = $this->open($page, $get);
@@ -503,6 +513,13 @@ final class AccessControlTest extends TestCase
         $this->assertStringContainsString('service-a-' . $this->suffix, $versions);
         $this->assertStringNotContainsString('service-b-' . $this->suffix, $versions);
         $this->assertStringNotContainsString('image-b-' . $this->suffix, $versions);
+        $exposure = $this->open('front/version.php', ['view' => 'exposure']);
+        $this->assertStringContainsString('service-a-' . $this->suffix, $exposure);
+        $this->assertStringNotContainsString('service-b-' . $this->suffix, $exposure);
+        $this->assertSame([$this->serviceA], array_column(Exposure::overview()['services'], 'id'));
+        $serviceB = new Service();
+        $this->assertTrue($serviceB->getFromDB($this->serviceB));
+        $this->assertFalse(Exposure::displayTabContentForItem($serviceB));
         $harbor = $this->open('front/version.php', ['view' => 'harbor', 'artifacts' => 'all']);
         $this->assertStringContainsString('projet-a-' . $this->suffix, $harbor);
         $this->assertStringNotContainsString('projet-b-' . $this->suffix, $harbor);

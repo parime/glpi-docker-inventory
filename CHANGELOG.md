@@ -5,6 +5,26 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Exposition des services ([#72](https://github.com/parime/glpi-docker-inventory/issues/72)) : à chaque
+  import, le plugin relève les routes Traefik déclarées par les étiquettes des services Swarm et des
+  conteneurs (hôtes, chemins, TLS, point d'entrée), les ingress Kubernetes (hôtes, chemins, TLS) et les
+  services Kubernetes NodePort ou LoadBalancer, rattachés aux charges par leurs sélecteurs ; les ports
+  publiés étaient déjà relevés. Onglet **Exposition** de chaque service et sous-page **Exposition** de
+  **Parc > Inventaire Docker** : portée de chaque exposition (Internet probable, réseau de l'hôte, réseau
+  interne, hôte seul), filtre « Exposés sur Internet ». Lecture seule : uniquement des GET,
+  `GET /api/v1/services` et `GET /apis/networking.k8s.io/v1/ingresses` en plus pour Kubernetes (droits
+  `get`, `list`, `watch` à ajouter au ClusterRole ; sans eux, avertissement et routes gardées).
+- Avec GRC Manager : chaque exposition est comparée aux flux actifs de la matrice des flux (application
+  du service ou libellé de destination, port, protocole). Une exposition sans flux documenté est
+  signalée (filtre « Sans flux documenté ») et le bouton **Proposer le flux** ouvre le formulaire d'un
+  nouveau flux de GRC (« publié sur Internet » ou « interne », service en destination), les valeurs
+  proposées étant aussi affichées : rien n'est créé sans la personne. Sans GRC Manager, l'onglet
+  fonctionne seul.
+- API de lecture : `Evidence::exposure()` (services exposés et portée de chaque exposition ; clé
+  ajoutée, version de l'API inchangée).
+
 ### Changed
 
 - CI : contrôles de sécurité communs glpi-plugin-security v1.9.0 (charte commune et contrôle des menus bloquants par défaut).

@@ -19,6 +19,8 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory\Portainer;
 
+use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
+
 /**
  * Traduction des réponses de l'API Portainer (et de l'API Docker qu'elle relaie) en valeurs à
  * enregistrer. Fonctions pures, sans GLPI : testées sans base de données.
@@ -31,11 +33,14 @@ namespace GlpiPlugin\Dockerinventory\Portainer;
  * - tâche : ServiceID, NodeID, Status.State ;
  * - hôte autonome (/docker/info) : ID, Name, ServerVersion ;
  * - conteneur (/docker/containers/json?all=1) : Id, Names[], Image, ImageID, State, Labels (étiquettes
- *   Compose seulement), Ports[].{IP, PrivatePort, PublicPort, Type}, NetworkSettings.Networks (noms),
+ *   Compose et Traefik seulement), Ports[].{IP, PrivatePort, PublicPort, Type}, NetworkSettings.Networks (noms),
  *   Mounts[].{Type, Name, Destination} ;
  * - image (/docker/images/json) : Id, RepoTags[], RepoDigests[] ;
  * - détail d'un conteneur : HostConfig.RestartPolicy.{Name, MaximumRetryCount} uniquement. Les
  *   variables d'environnement (Config.Env) et le contenu des secrets ne sont jamais lus.
+ * Étiquettes Traefik des services et des conteneurs (routes, #72) : voir ExposureMapper.
+ *
+ * @phpstan-import-type Route from ExposureMapper
  */
 final class PortainerMapper
 {
@@ -104,7 +109,8 @@ final class PortainerMapper
      * @param array<string, int> $runningByService Identifiant de service => tâches en cours.
      * @return array{service_uid: string, name: string, stack_name: string, image: string, tag: string,
      *     digest: string, mode: string, replicas: int|null, running_replicas: int, ports: string,
-     *     networks: string, secrets: string}|null Null si le service n'a pas d'identifiant.
+     *     networks: string, secrets: string, routes: string}|null Null si le service n'a pas d'identifiant.
+     *     `routes` : routes Traefik des étiquettes du service (JSON, ExposureMapper).
      */
     public static function mapService(array $service, array $networkNames = [], array $runningByService = []): ?array
     {
@@ -184,6 +190,7 @@ final class PortainerMapper
             'ports'            => self::join($portList),
             'networks'         => self::join($networkList),
             'secrets'          => self::join($secretList),
+            'routes'           => ExposureMapper::encode(ExposureMapper::traefikRoutes($labels)),
         ];
     }
 
@@ -312,7 +319,7 @@ final class PortainerMapper
      * @param array<string, array{tags: list<string>, digests: list<string>}> $images imageIndex().
      * @return array{uid: string, name: string, project: string, compose_service: string, image: string,
      *     tag: string, digest: string, state: string, ports: list<string>, networks: list<string>,
-     *     volumes: list<string>, secrets: list<string>}|null
+     *     volumes: list<string>, secrets: list<string>, routes: list<Route>}|null
      */
     public static function mapContainer(array $container, array $images = []): ?array
     {
@@ -392,6 +399,7 @@ final class PortainerMapper
             'networks'        => $networks,
             'volumes'         => $volumes,
             'secrets'         => $secrets,
+            'routes'          => ExposureMapper::traefikRoutes($labels),
         ];
     }
 
@@ -401,12 +409,12 @@ final class PortainerMapper
      *
      * @param list<array{uid: string, name: string, project: string, compose_service: string, image: string,
      *     tag: string, digest: string, state: string, ports: list<string>, networks: list<string>,
-     *     volumes: list<string>, secrets: list<string>}> $containers mapContainer().
+     *     volumes: list<string>, secrets: list<string>, routes?: list<Route>}> $containers mapContainer().
      * @param array<string, string> $restartPolicies Identifiant du conteneur => restartPolicy().
      * @return list<array{service_uid: string, name: string, stack_name: string, kind: string, image: string,
      *     tag: string, digest: string, mode: string, replicas: int, running_replicas: int, ports: string,
      *     networks: string, secrets: string, volumes: string, state: string, restart_policy: string,
-     *     container_uids: string, container_names: string}>
+     *     container_uids: string, container_names: string, routes: string}>
      */
     public static function groupContainers(int $endpointId, array $containers, array $restartPolicies = []): array
     {
@@ -445,6 +453,10 @@ final class PortainerMapper
                     $policies[] = $restartPolicies[$member['uid']];
                 }
             }
+            $routes = [];
+            foreach ($members as $member) {
+                $routes = array_merge($routes, $member['routes'] ?? []);
+            }
             $uid = strlen($key) > self::UID_MAX ? substr($key, 0, self::UID_MAX - 41) . ':' . sha1($key) : $key;
 
             $services[] = [
@@ -466,6 +478,11 @@ final class PortainerMapper
                 'restart_policy'   => self::join($policies),
                 'container_uids'   => self::join(array_column($members, 'uid')),
                 'container_names'  => self::join(array_column($members, 'name')),
+                'routes'           => ExposureMapper::encode(array_slice(
+                    array_values(array_unique($routes, SORT_REGULAR)),
+                    0,
+                    ExposureMapper::MAX_ROUTES
+                )),
             ];
         }
 

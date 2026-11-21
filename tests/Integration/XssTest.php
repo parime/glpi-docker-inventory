@@ -21,6 +21,7 @@ namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborClient;
 use GlpiPlugin\Dockerinventory\Harbor\HarborImporter;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
@@ -203,6 +204,12 @@ final class XssTest extends TestCase
                 $portainer['docker']['1']['services'][$i]['Spec']['Name'] = 'boutique_cache' . self::SCRIPT;
                 $portainer['docker']['1']['services'][$i]['Spec']['Labels']['com.docker.stack.namespace']
                     = 'boutique' . self::IMG;
+                // Route Traefik piégée (#72) : nom du routeur et point d'entrée.
+                $router = 'traefik.http.routers.cache' . self::SCRIPT;
+                $portainer['docker']['1']['services'][$i]['Spec']['Labels'][$router . '.rule']
+                    = 'Host(`cache.exemple.test`)';
+                $portainer['docker']['1']['services'][$i]['Spec']['Labels'][$router . '.entrypoints']
+                    = 'web' . self::IMG;
             }
             foreach ($service['Spec']['TaskTemplate']['ContainerSpec']['Secrets'] ?? [] as $j => $secret) {
                 $portainer['docker']['1']['services'][$i]['Spec']['TaskTemplate']['ContainerSpec']['Secrets'][$j]
@@ -331,6 +338,7 @@ final class XssTest extends TestCase
             'images Harbor'
         );
         $this->assertEscaped($this->open('front/service.form.php', ['id' => (int) $service['id']]), 'fiche service');
+        $this->assertEscaped($this->open('front/version.php', ['view' => 'exposure']), 'exposition');
         $this->assertEscaped($this->open('front/service.php'), 'liste des services', false);
         $this->assertEscaped($this->open('front/imageversion.php'), 'recherche des versions', false);
         $this->assertEscaped(
@@ -349,6 +357,10 @@ final class XssTest extends TestCase
             $this->capture(static fn () => ImageVersion::displayTabContentForItem($item)),
             'onglet Versions du service',
             false
+        );
+        $this->assertEscaped(
+            $this->capture(static fn () => Exposure::displayTabContentForItem($item)),
+            'onglet Exposition du service'
         );
         $appliance = new Appliance();
         if ((int) $service['appliances_id'] > 0 && $appliance->getFromDB((int) $service['appliances_id'])) {

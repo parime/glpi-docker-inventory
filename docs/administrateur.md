@@ -175,13 +175,16 @@ metadata:
   name: glpi-inventaire-lecture
 rules:
   - apiGroups: [""]
-    resources: ["namespaces", "nodes", "pods"]
+    resources: ["namespaces", "nodes", "pods", "services"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["apps"]
     resources: ["deployments", "statefulsets", "daemonsets", "replicasets"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["batch"]
     resources: ["cronjobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
     verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1

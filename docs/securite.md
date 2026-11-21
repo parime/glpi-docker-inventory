@@ -94,6 +94,22 @@ Chaque import Portainer note, pour chaque service, le passage à une autre image
 à une autre empreinte sous le même tag (image reconstruite). Ce journal est en lecture seule et
 jamais purgé automatiquement : il sert de preuve de gestion des changements (A.8.32).
 
+## Exposition et matrice des flux
+
+**Parc > Inventaire Docker**, sous-page **Exposition** (et onglet **Exposition** de chaque service) :
+ports publiés, routes Traefik, ingress et services Kubernetes exposés, relevés à chaque import, avec
+leur portée (Internet probable, réseau de l'hôte, réseau interne, hôte seul). Le filtre « **Exposés
+sur Internet** » donne la liste des services publiés.
+
+Avec GRC Manager, chaque exposition est comparée aux flux actifs de la **matrice des flux** : une
+exposition sans flux documenté est signalée (filtre « **Sans flux documenté** »). Le bouton
+**Proposer le flux** ouvre le formulaire d'un nouveau flux dans GRC (« publié sur Internet » ou
+« interne », service en destination) : la personne relit, complète la justification et le
+propriétaire, puis enregistre. Le plugin n'écrit jamais dans GRC.
+
+La portée est déduite du nom d'hôte ou de l'adresse : un nom public n'est pas forcément joignable
+(pare-feu, DNS interne). À vérifier avec l'équipe réseau.
+
 ## Ce que l'auditeur peut vérifier
 
 - **Lecture seule** : le plugin n'envoie que des requêtes de lecture aux sources, avec des comptes

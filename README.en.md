@@ -37,7 +37,7 @@ replicas or version.
 | Registries (without WUD) | Docker Hub and Harbor v2 API | Same version table, computed by the plugin |
 | Lifecycles (endoflife.date, disabled by default) | End-of-support dates of the image products (explicit mapping) | End of support, soon, maintained or unknown per service; optional end-of-support tickets |
 | Harbor | Projects, repositories, artifacts, vulnerability scan overview | Vulnerabilities per image, images outside the managed registry flagged |
-| Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets and CronJobs (image, tag, digest, ready and desired replicas, state), nodes | Namespace = native Appliance; Service record per container; nodes linked to computers (name or IP address); same versions and Harbor vulnerabilities |
+| Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets and CronJobs (image, tag, digest, ready and desired replicas, state), nodes, NodePort and LoadBalancer services, ingresses | Namespace = native Appliance; Service record per container; nodes linked to computers (name or IP address); same versions and Harbor vulnerabilities |
 
 ## Compatibility
 
@@ -116,6 +116,9 @@ API, what the auditor can check).
    longer maintained.
 4. **Harbor images and vulnerabilities** sub-page, "**Only outside managed registry**" filter:
    images from a registry that is not allowed.
+5. **Exposure** sub-page: published ports, Traefik routes and ingresses; "Exposed on the Internet"
+   filter and, with GRC Manager, "No documented flow" (**Suggest the flow** button towards the flow
+   matrix, never an automatic creation).
 
 ## Links with the other plugins
 

@@ -1,0 +1,102 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Sous-page « Exposition » de l'entrée Inventaire Docker (#72) : services actifs qui publient un port
+   ou déclarent une route d'entrée ; filtres « exposés sur Internet » et « sans flux documenté »
+   (GRC Manager). Lecture seule (GET), entités actives. #}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'exposure',
+        purpose: __(
+            'Voir ce qui est réellement joignable : ports publiés, routes Traefik, ingress et services Kubernetes.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Vérifiez que chaque service exposé sur Internet est voulu et documenté dans la matrice des flux.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin ne modifie rien, ni dans les plateformes ni dans GRC Manager.', 'dockerinventory'),
+    }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="card-title mb-0">
+                <i class="ti ti-world-share me-2" aria-hidden="true"></i>{{ __('Services exposés', 'dockerinventory') }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ page_url }}" class="btn btn-sm {{ filter == '' ? 'btn-dark' : 'btn-outline-dark' }}">
+                    <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Tous', 'dockerinventory') }}
+                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">{{ counts.exposed }}</span>
+                </a>
+                <a href="{{ page_url }}&filter={{ internet }}"
+                   class="btn btn-sm {{ filter == internet ? 'btn-danger' : 'btn-outline-danger' }}">
+                    <i class="ti ti-world me-1" aria-hidden="true"></i>
+                    {{ __('Exposés sur Internet', 'dockerinventory') }}
+                    <span class="badge bg-danger-subtle text-danger-emphasis ms-1">{{ counts.internet }}</span>
+                </a>
+                {% if grc.available %}
+                    <a href="{{ page_url }}&filter={{ undocumented }}"
+                       class="btn btn-sm {{ filter == undocumented ? 'btn-warning' : 'btn-outline-warning' }}">
+                        <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                        {{ __('Sans flux documenté', 'dockerinventory') }}
+                        <span class="badge bg-warning-subtle text-warning-emphasis ms-1">
+                            {{ counts.undocumented }}
+                        </span>
+                    </a>
+                {% endif %}
+            </div>
+            {{ include('@dockerinventory/_exposure_grc.html.twig') }}
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        {% if services is empty %}
+            <div class="card-body">
+                <div class="empty">
+                    <div class="empty-icon"><i class="ti ti-shield-check text-success" aria-hidden="true"></i></div>
+                    <p class="empty-title">{{ __('Aucun service ne correspond à ces filtres.', 'dockerinventory') }}</p>
+                    <p class="empty-subtitle text-muted">
+                        {{ __(
+                            'Les ports et les routes sont relevés à chaque import Portainer ou Kubernetes.',
+                            'dockerinventory'
+                        ) }}
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    {{ include('@dockerinventory/_exposure_head.html.twig', {show_service: true}) }}
+                    <tbody>
+                        {% for service in services %}
+                            {{ include('@dockerinventory/_exposure_rows.html.twig', {
+                                service: service,
+                                show_service: true,
+                            }) }}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+    <p class="text-muted small">
+        <i class="ti ti-help-circle me-1" aria-hidden="true"></i>
+        {{ __(
+            'Une route HTTP est comptée sur le port 443 avec TLS, 80 sinon : le port réel est celui du point d’entrée.',
+            'dockerinventory'
+        ) }}
+    </p>
+</div>
