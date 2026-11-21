@@ -21,6 +21,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   Versions du service, filtre **Exploitées activement** de la sous-page Analyses importées. Adresses
   changeables par `PLUGIN_DOCKERINVENTORY_KEV_URL` et `PLUGIN_DOCKERINVENTORY_EPSS_URL` (miroir interne).
 
+## [0.14.0] - 2026-11-21
+
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ## [0.13.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
