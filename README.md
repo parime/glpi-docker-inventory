@@ -1,21 +1,29 @@
 # Inventaire Docker pour GLPI
 
-[🇬🇧 English](README.en.md)
+<p align="center"><img src="logo.png" alt="Logo d'Inventaire Docker" width="140"></p>
+
+🇫🇷 **Français** | [🇬🇧 English](README.en.md)
 
 Plugin GLPI qui donne une vue sur les applications en conteneurs, **en lecture seule** :
 
 - **Portainer** : stacks et services Docker Swarm, nœuds du cluster ; hôtes Docker autonomes, leurs
   stacks Compose et leurs conteneurs ;
 - **What's Up Docker (WUD)** : version déployée et dernière version disponible de chaque image ;
-- **Harbor** : projets, dépôts, artefacts et résumé d'analyse de vulnérabilités des images.
+- **Harbor** : projets, dépôts, artefacts et résumé d'analyse de vulnérabilités des images ;
+- **Kubernetes** : namespaces, charges de travail, nœuds, services exposés et ingress.
+
+Il relève aussi l'**exposition** des services (ports publiés, routes Traefik, ingress) et leur
+**configuration à risque** (mode privilégié, socket Docker monté, exécution en root...).
 
 Il répond à la question « qu'est-ce qui tourne, en quelle version, est-ce à jour, est-ce
-vulnérable ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
+vulnérable, est-ce exposé ? », que GLPI ne sait pas traiter seul : son onglet « Virtualisation » liste des
 conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 
-> **État** : version 0.9.0 publiée : Portainer (Swarm et hôtes Docker autonomes), Kubernetes, versions
-> des images par What's Up Docker ou les registres, Harbor (artefacts et vulnérabilités), fin de
-> support des images, tickets selon des seuils, preuves pour GRC Manager. Voir [ROADMAP.md](ROADMAP.md).
+> **État** : disponible sur le [marketplace GLPI](https://plugins.glpi-project.org/#/plugin/dockerinventory)
+> depuis la version 0.11.0 : Portainer (Swarm et hôtes Docker autonomes), Kubernetes, versions des
+> images par What's Up Docker ou les registres, Harbor (artefacts et vulnérabilités), fin de support
+> des images, tickets selon des seuils, exposition des services, configuration à risque, preuves pour
+> GRC Manager. Voir [CHANGELOG.md](CHANGELOG.md) et [ROADMAP.md](ROADMAP.md).
 
 ## Principes
 
@@ -39,6 +47,19 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 | Harbor | Projets, dépôts, artefacts, résumé d'analyse de vulnérabilités | Vulnérabilités par image, images hors registre maîtrisé signalées |
 | Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets et CronJobs (image, tag, empreinte, réplicas prêts et voulus, état), nœuds, services NodePort et LoadBalancer, ingress | Namespace = Application native ; fiche Service par conteneur ; nœuds rattachés aux ordinateurs (nom ou adresse IP) ; mêmes versions et vulnérabilités Harbor |
 
+## Aperçu
+
+| | |
+| --- | --- |
+| ![Services de conteneurs](docs/screenshots/services.png) | ![Exposition des services](docs/screenshots/exposition.png) |
+| **Services** : stacks, services, image, tag et réplicas de chaque plateforme | **Exposition** : ports publiés, routes et ingress, portée et flux documentés dans GRC Manager |
+| ![Configuration à risque](docs/screenshots/configuration-risque.png) | ![Fiche d'un service](docs/screenshots/fiche-service.png) |
+| **Configuration à risque** : écarts par gravité, correction conseillée, exceptions datées | **Fiche d'un service** : image, empreinte, réplicas, ports, réseaux, nœuds et onglets |
+| ![Versions des images](docs/screenshots/versions-images.png) | ![Réglages](docs/screenshots/reglages.png) |
+| **Versions des images** : version déployée, dernière version et écart | **Réglages** : connexions, registres maîtrisés et fin de support, dans la page du plugin |
+
+Captures prises sur une instance de test avec des données fictives.
+
 ## Compatibilité
 
 - GLPI 11.0 et 12.x
@@ -50,7 +71,15 @@ dans le [guide de l'administrateur](docs/administrateur.md#droits-minimaux-dans-
 
 ## Installation
 
-Téléchargez l'archive `glpi-docker-inventory-X.Y.Z.zip` de la [dernière version](https://github.com/parime/glpi-docker-inventory/releases/latest) (son
+**Prérequis** : GLPI 11.0 ou 12.x, PHP 8.2 ou plus (8.3 ou plus avec GLPI 12), et au moins une
+source accessible depuis le serveur GLPI (Portainer, Kubernetes, WUD ou Harbor) avec un compte en
+lecture seule. L'archive contient déjà ses dépendances : aucun Composer n'est nécessaire.
+
+**Depuis le marketplace** (le plus simple) : **Configuration > Plugins > Marketplace**, cherchez
+« Inventaire Docker » ou `dockerinventory`, puis **Installer** et **Activer**. Fiche du catalogue :
+[plugins.glpi-project.org](https://plugins.glpi-project.org/#/plugin/dockerinventory).
+
+**Depuis les releases** : téléchargez l'archive `glpi-docker-inventory-X.Y.Z.zip` de la [dernière version](https://github.com/parime/glpi-docker-inventory/releases/latest) (son
 empreinte SHA-256 est publiée à côté), puis décompressez-la dans le dossier `plugins` de GLPI :
 
 ```sh
@@ -64,7 +93,7 @@ Puis **Configuration > Plugins**, installer et activer « Inventaire Docker ».
 
 | Écran | Chemin | Droit |
 | --- | --- | --- |
-| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Fin de support des images** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
+| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Fin de support des images**, **Exposition**, **Configuration à risque** | **Lire** (Administration > Profils, onglet « Inventaire Docker ») |
 | Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker** (Portainer, Kubernetes, WUD, Harbor), **Registres maîtrisés**, **Fin de support des images** | Configuration de GLPI en modification |
 
 Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
@@ -153,6 +182,11 @@ Règles communes à tous les plugins de parime, à lire avant de contribuer : [c
 - [ARCHITECTURE.md](ARCHITECTURE.md) : arborescence, classes, tests
 - [ROADMAP.md](ROADMAP.md) : lots et issues
 - [CHANGELOG.md](CHANGELOG.md)
+
+**Liens** : [dépôt](https://github.com/parime/glpi-docker-inventory) ·
+[releases](https://github.com/parime/glpi-docker-inventory/releases) ·
+[signaler un problème ou proposer une idée](https://github.com/parime/glpi-docker-inventory/issues) ·
+[fiche du marketplace](https://plugins.glpi-project.org/#/plugin/dockerinventory)
 
 ## Traductions
 
