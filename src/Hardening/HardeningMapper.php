@@ -434,7 +434,7 @@ final class HardeningMapper
      */
     public static function encode(array $findings): string
     {
-        return (string) json_encode($findings,JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return (string) json_encode($findings, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /**
