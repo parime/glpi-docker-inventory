@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory\Kubernetes;
 
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
 
 /**
@@ -29,7 +30,7 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  * - Deployment, StatefulSet, DaemonSet, CronJob => une fiche de service par conteneur du modèle de
  *   pod (les init containers ne sont pas inventoriés) : image, tag, empreinte lue dans le statut
  *   des pods (imageID), réplicas voulus et prêts, état, ports, noms des secrets et des volumes
- *   persistants, jamais les variables d'environnement.
+ *   persistants, réglages de sécurité (#71, HardeningMapper), jamais les variables d'environnement.
  * - Pod => rattaché à sa charge par ses propriétaires (ReplicaSet => Deployment, Job => CronJob
  *   par le nom du Job « <cronjob>-<horodatage> », les Jobs n'étant pas lus).
  * - Nœud => nom, rôle (control-plane ou worker), état (Ready), version du kubelet, adresses.
@@ -38,7 +39,7 @@ use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
  *     image: string, tag: string, digest: string, mode: string, replicas: int|null,
  *     running_replicas: int, ports: string, networks: string, secrets: string, volumes: string,
  *     state: string, restart_policy: string, container_uids: string, container_names: string,
- *     placement: array<string, int>, routes?: string}
+ *     placement: array<string, int>, routes?: string, hardening: string}
  * @phpstan-type PodIndex array<string, array{digests: array<string, array<string, int>>,
  *     placement: array<string, int>}>
  * @phpstan-type K8sNode array{node_uid: string, hostname: string, role: string, availability: string,
@@ -363,6 +364,8 @@ final class KubernetesMapper
                     'container_uids'   => '',
                     'container_names'  => $containerName,
                     'placement'        => $index['placement'],
+                    // Configuration à risque (#71) : réglages de sécurité du modèle de pod seulement.
+                    'hardening'        => HardeningMapper::encode(HardeningMapper::fromPodSpec($podSpec, $container)),
                 ];
             }
         }

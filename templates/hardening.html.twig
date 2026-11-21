@@ -1,0 +1,148 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Sous-page « Configuration à risque » de l'entrée Inventaire Docker (#71) : carte de synthèse,
+   filtres par gravité la plus haute et par exception, écarts des services actifs (entités actives). #}
+<div class="container-fluid">
+    {{ include('@dockerinventory/_page_help.html.twig', {
+        page: 'hardening',
+        purpose: __(
+            'Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de limites.',
+            'dockerinventory'
+        ),
+        expected: __(
+            'Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart voulu, enregistrez une exception justifiée et datée.',
+            'dockerinventory'
+        ) ~ ' ' ~ __('Le plugin ne modifie rien sur les plateformes.', 'dockerinventory'),
+        reference: __('Durcissement et gestion des configurations (ISO 27001, mesure A.8.9).', 'dockerinventory'),
+    }) }}
+    {{ include('@dockerinventory/_section_nav.html.twig') }}
+    <div class="row row-cards mb-3">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-shield-check text-success me-1" aria-hidden="true"></i>
+                        {{ __('Services sans écart ouvert', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ rate is null ? '-' : rate ~ ' %' }}</div>
+                    <div class="small text-muted">
+                        {{ __('%1$d sur %2$d services analysés', 'dockerinventory')|format(counts.compliant, counts.analysed) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-alert-octagon text-danger me-1" aria-hidden="true"></i>
+                        {{ __('Sans écart critique ni haut', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ rate_serious is null ? '-' : rate_serious ~ ' %' }}</div>
+                    <div class="small text-muted">{{ __('Écarts couverts par une exception en cours exclus', 'dockerinventory') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-shield-half text-info me-1" aria-hidden="true"></i>
+                        {{ __('Avec une exception', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ counts.with_exception }}</div>
+                    <div class="small text-muted">{{ __('En cours ou expirée', 'dockerinventory') }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm">
+                <div class="card-body">
+                    <div class="text-muted small">
+                        <i class="ti ti-hourglass text-secondary me-1" aria-hidden="true"></i>
+                        {{ __('Pas encore analysés', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ counts.not_analysed }}</div>
+                    <div class="small text-muted">{{ __('Lus au prochain import', 'dockerinventory') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card mb-3">
+        <div class="card-header">
+            <h2 class="card-title mb-0">
+                <i class="ti ti-shield-exclamation me-2" aria-hidden="true"></i>{{ __('Écarts par service', 'dockerinventory') }}
+            </h2>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap gap-2">
+                <a href="{{ page_url }}" class="btn btn-sm {{ filter == '' ? 'btn-dark' : 'btn-outline-dark' }}">
+                    <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Tous', 'dockerinventory') }}
+                </a>
+                {% for code, severity in severities %}
+                    {% set s = tone.semantic(severity.color) %}
+                    <a href="{{ page_url }}&filter={{ code }}" title="{{ severity.help }}"
+                       class="btn btn-sm {{ filter == code ? 'btn-' ~ s : 'btn-outline-' ~ s }}">
+                        <i class="{{ severity.icon }} me-1" aria-hidden="true"></i>{{ severity.label }}
+                        <span class="badge {{ tone.badge(severity.color) }} ms-1">{{ counts[code] }}</span>
+                    </a>
+                {% endfor %}
+                <a href="{{ page_url }}&filter={{ exception_filter }}"
+                   class="btn btn-sm {{ filter == exception_filter ? 'btn-success' : 'btn-outline-success' }}">
+                    <i class="ti ti-shield-half me-1" aria-hidden="true"></i>{{ __('Avec une exception', 'dockerinventory') }}
+                    <span class="badge bg-success-subtle text-success-emphasis ms-1">{{ counts.with_exception }}</span>
+                </a>
+            </div>
+            <p class="small text-muted mt-2 mb-0">
+                <i class="ti ti-filter me-1" aria-hidden="true"></i>
+                {{ __(
+                    'Un filtre de gravité montre les services dont l’écart ouvert le plus grave a cette gravité.',
+                    'dockerinventory'
+                ) }}
+            </p>
+        </div>
+        {% if services is empty %}
+            <div class="card-body">
+                <div class="empty">
+                    <div class="empty-icon"><i class="ti ti-shield-check text-success" aria-hidden="true"></i></div>
+                    <p class="empty-title">{{ __('Aucun service ne correspond à ces filtres.', 'dockerinventory') }}</p>
+                    <p class="empty-subtitle text-muted">
+                        {{ __(
+                            'La configuration des conteneurs est lue à chaque import Portainer ou Kubernetes.',
+                            'dockerinventory'
+                        ) }}
+                    </p>
+                </div>
+            </div>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-vcenter card-table">
+                    {{ include('@dockerinventory/_hardening_head.html.twig', {show_service: true}) }}
+                    <tbody>
+                        {% for service in services %}
+                            {{ include('@dockerinventory/_hardening_rows.html.twig', {
+                                service: service,
+                                show_service: true,
+                            }) }}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+</div>

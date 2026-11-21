@@ -20,6 +20,8 @@ use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
+use GlpiPlugin\Dockerinventory\Hardening;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
@@ -31,8 +33,8 @@ use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 
 // Sous-pages « Versions des images » (par défaut), « Images Harbor et vulnérabilités »
-// (?view=harbor), « Fin de support des images » (?view=eol) et « Exposition » (?view=exposure, #72)
-// de l'entrée Parc > Inventaire Docker :
+// (?view=harbor), « Fin de support des images » (?view=eol), « Exposition » (?view=exposure, #72)
+// et « Configuration à risque » (?view=hardening, #71) de l'entrée Parc > Inventaire Docker :
 // lecture seule, droit de lecture du plugin, entités actives.
 Session::checkRight(Service::RIGHTNAME, READ);
 
@@ -42,7 +44,7 @@ $tabs = [
     'versions_url' => ImageVersion::getOverviewURL(),
     'harbor_url'   => HarborArtifact::getPageURL(),
     'tabs'         => Menu::tabs(
-        in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL, Menu::TAB_EXPOSURE], true) ? $view : Menu::TAB_VERSIONS
+        in_array($view, [Menu::TAB_HARBOR, Menu::TAB_EOL, Menu::TAB_EXPOSURE, Menu::TAB_HARDENING], true) ? $view : Menu::TAB_VERSIONS
     ),
 ];
 
@@ -70,6 +72,28 @@ if ($view === Menu::TAB_EXPOSURE) {
         'grc'          => $grc,
         'page_url'     => Exposure::getPageURL(),
     ]);
+    Html::footer();
+
+    return;
+}
+if ($view === Menu::TAB_HARDENING) {
+    // Configuration à risque : services analysés avec leurs écarts, filtrés par gravité la plus
+    // haute ou par exception. Les exceptions s'enregistrent par front/hardening.form.php.
+    $filter = (string) ($_GET['filter'] ?? '');
+    if (!in_array($filter, array_merge(HardeningMapper::SEVERITIES, [Hardening::FILTER_EXCEPTION]), true)) {
+        $filter = '';
+    }
+    $data = Hardening::overview($filter);
+
+    Html::header(Hardening::getTypeName(1), '', 'assets', Menu::class, Menu::TAB_HARDENING);
+    TemplateRenderer::getInstance()->display('@dockerinventory/hardening.html.twig', $tabs + [
+        'services'         => $data['services'],
+        'counts'           => $data['counts'],
+        'rate'             => $data['rate'],
+        'rate_serious'     => $data['rate_serious'],
+        'filter'           => $filter,
+        'exception_filter' => Hardening::FILTER_EXCEPTION,
+    ] + Hardening::viewContext());
     Html::footer();
 
     return;

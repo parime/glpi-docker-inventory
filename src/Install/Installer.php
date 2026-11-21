@@ -24,6 +24,7 @@ use DBConnection;
 use DisplayPreference;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
+use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
@@ -56,6 +57,7 @@ final class Installer
         'glpi_plugin_dockerinventory_harborartifacts',
         'glpi_plugin_dockerinventory_vulntickets',
         'glpi_plugin_dockerinventory_versionchanges',
+        'glpi_plugin_dockerinventory_hardeningexceptions',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -90,6 +92,12 @@ final class Installer
             $this->grantReadToAdministrators();
             $this->installDisplayPreferences(Service::class, self::DEFAULT_COLUMNS);
         }
+        // 0.12.0 => exceptions aux écarts de configuration (#71) : droit ajouté une seule fois,
+        // accordé aux administrateurs de la configuration de GLPI.
+        if (countElementsInTable('glpi_profilerights', ['name' => HardeningException::RIGHTNAME]) === 0) {
+            ProfileRight::addProfileRights([HardeningException::RIGHTNAME]);
+            $this->grantToAdministrators([HardeningException::RIGHTNAME => CREATE | PURGE]);
+        }
         $defaults = [ImageVersion::class => self::VERSION_COLUMNS, Connection::class => self::CONNECTION_COLUMNS];
         foreach ($defaults as $itemtype => $columns) {
             if (countElementsInTable(DisplayPreference::getTable(), ['itemtype' => $itemtype]) === 0) {
@@ -120,7 +128,7 @@ final class Installer
         global $DB;
 
         CronTask::unregister('dockerinventory');
-        ProfileRight::deleteProfileRights([Service::RIGHTNAME]);
+        ProfileRight::deleteProfileRights([Service::RIGHTNAME, HardeningException::RIGHTNAME]);
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
         HarborSettings::delete();
@@ -458,6 +466,22 @@ final class Installer
                 KEY `is_recursive` (`is_recursive`),
                 KEY `plugin_dockerinventory_services_id` (`plugin_dockerinventory_services_id`),
                 KEY `date_change` (`date_change`)",
+            // Exceptions justifiées et datées aux écarts de configuration (#71) : une par service et par écart.
+            'glpi_plugin_dockerinventory_hardeningexceptions' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `plugin_dockerinventory_services_id` int {$sign} NOT NULL DEFAULT '0',
+                `code` varchar(32) NOT NULL DEFAULT '',
+                `justification` text,
+                `date_end` date DEFAULT NULL,
+                `users_id` int {$sign} NOT NULL DEFAULT '0',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`, `code`),
+                KEY `entities_id` (`entities_id`),
+                KEY `users_id` (`users_id`),
+                KEY `date_end` (`date_end`)",
         ];
 
         $created = [];
@@ -612,11 +636,19 @@ final class Installer
      */
     private function grantReadToAdministrators(): void
     {
+        $this->grantToAdministrators([Service::RIGHTNAME => READ]);
+    }
+
+    /**
+     * @param array<string, int> $rights Droit => valeur, pour les profils qui modifient la configuration.
+     */
+    private function grantToAdministrators(array $rights): void
+    {
         global $DB;
 
         foreach ($DB->request(['FROM' => 'glpi_profilerights', 'WHERE' => ['name' => 'config']]) as $row) {
             if (((int) $row['rights'] & UPDATE) === UPDATE) {
-                ProfileRight::updateProfileRights((int) $row['profiles_id'], [Service::RIGHTNAME => READ]);
+                ProfileRight::updateProfileRights((int) $row['profiles_id'], $rights);
             }
         }
     }

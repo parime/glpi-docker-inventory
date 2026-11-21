@@ -58,6 +58,12 @@ class Profile extends CommonGLPI
                     'field'    => Service::RIGHTNAME,
                     'rights'   => [READ => __('Read')],
                 ],
+                [
+                    'itemtype' => HardeningException::class,
+                    'label'    => HardeningException::getTypeName(2),
+                    'field'    => HardeningException::RIGHTNAME,
+                    'rights'   => (new HardeningException())->getRights(),
+                ],
             ],
         ]);
 
