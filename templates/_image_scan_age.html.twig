@@ -1,0 +1,33 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Outil, date et ancienneté d'une analyse importée (#73) ; trop ancienne : pastille d'alerte. #}
+<div class="text-nowrap">{{ scan.scanner }}{% if scan.tool_version %} {{ scan.tool_version }}{% endif %}</div>
+<div class="small text-nowrap">
+    {% if scan.scan_date %}
+        {{ scan.scan_date|slice(0, 16) }}
+    {% else %}
+        {{ __('Date inconnue', 'dockerinventory') }}
+    {% endif %}
+    {% if scan.stale %}
+        <span class="badge bg-warning-subtle text-warning-emphasis ms-1"
+              title="{{ __('Analyse trop ancienne : relancez-la et déposez le nouveau rapport.', 'dockerinventory') }}"
+              data-bs-toggle="tooltip">
+            <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>{{ __('Trop ancienne', 'dockerinventory') }}
+        </span>
+    {% elseif scan.age is not null %}
+        <span class="text-muted">({{ __('il y a %d j', 'dockerinventory')|format(scan.age) }})</span>
+    {% endif %}
+</div>

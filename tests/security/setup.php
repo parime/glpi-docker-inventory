@@ -27,6 +27,7 @@
  */
 
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Importer;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
@@ -158,6 +159,16 @@ $registryReport = (new RegistryImporter(static function (?Connection $harbor) us
             $transport
         );
 }))->run();
+
+// Analyse d'image importée (#73) : rapport Trivy fictif, rattaché au service redis.
+$scan = ImageScan::import(
+    (string) file_get_contents(dirname(__DIR__) . '/fixtures/scans/trivy.json'),
+    'trivy.json'
+);
+if (!$scan['ok']) {
+    fwrite(STDERR, $scan['message'] . "
+");
+}
 
 echo sprintf(
     "connexion %d, %d services importés ; connexion WUD %d, %d versions de services ; "

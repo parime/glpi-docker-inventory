@@ -385,6 +385,8 @@ class ImageVersion extends CommonDBTM
             'can_configure_lifecycle' => LifecycleProduct::canView(),
             // Service : provenance de l'image et analyse Harbor (#9), même sans ligne de version.
             'harbor'        => $item instanceof Service ? HarborArtifact::forService($item) : null,
+            // Service : analyse importée de Trivy, Grype ou Docker Scout rattachée (#73).
+            'image_scan'    => $item instanceof Service ? ImageScan::forService($item) : null,
         ]);
 
         return true;

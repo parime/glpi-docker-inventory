@@ -1,0 +1,27 @@
+{
+  "matches": [
+    {
+      "vulnerability": {"id": "CVE-2099-1001", "severity": "High",
+        "fix": {"versions": ["3.1.2"], "state": "fixed"}},
+      "artifact": {"name": "paquet-fictif", "version": "3.1.0", "type": "deb"}
+    },
+    {
+      "vulnerability": {"id": "CVE-2099-1002", "severity": "Medium", "fix": {"versions": [], "state": "not-fixed"}},
+      "artifact": {"name": "paquet-fictif", "version": "3.1.0", "type": "deb"}
+    },
+    {
+      "vulnerability": {"id": "CVE-2099-1003", "severity": "Negligible", "fix": {"versions": [], "state": "wont-fix"}},
+      "artifact": {"name": "autre-fictif", "version": "0.9", "type": "deb"}
+    }
+  ],
+  "source": {
+    "type": "image",
+    "target": {
+      "userInput": "grafana/grafana:11.2.0",
+      "tags": ["grafana/grafana:11.2.0"],
+      "repoDigests": ["grafana/grafana@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"]
+    }
+  },
+  "distro": {"name": "alpine", "version": "3.20"},
+  "descriptor": {"name": "grype", "version": "0.84.0", "timestamp": "2026-11-03T10:00:00Z"}
+}

@@ -30,6 +30,7 @@ use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\HardeningException;
+use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
@@ -57,6 +58,7 @@ final class AccessControlTest extends TestCase
         'front/connection.form.php',
         'front/connection.php',
         'front/hardening.form.php',
+        'front/imagescan.form.php',
         'front/imageversion.php',
         'front/lifecycle.php',
         'front/service.form.php',
@@ -91,6 +93,9 @@ final class AccessControlTest extends TestCase
 
     /** @var list<int> */
     private array $artifacts = [];
+
+    /** @var array<string, int> Analyses importées des entités A et B, par lettre (#73). */
+    private array $scans = [];
 
     /** @var array<string, mixed> */
     private array $profile = [];
@@ -207,6 +212,20 @@ final class AccessControlTest extends TestCase
             ]);
             $this->assertGreaterThan(0, $this->harbors[$letter]);
         }
+        foreach (['a' => $this->entityA, 'b' => $this->entityB] as $letter => $entity) {
+            $this->scans[$letter] = (int) (new ImageScan())->add([
+                'name'        => 'analyse-' . $letter . '-' . $this->suffix,
+                'entities_id' => $entity,
+                'image'       => 'nginx',
+                'image_key'   => 'docker.io/library/nginx',
+                'tag'         => $letter . '-' . $this->suffix,
+                'scanner'     => 'trivy',
+                'critical'    => 1,
+                'total'       => 1,
+                'findings'    => '[]',
+            ]);
+            $this->assertGreaterThan(0, $this->scans[$letter]);
+        }
         HarborArtifact::resetCache();
     }
 
@@ -234,6 +253,9 @@ final class AccessControlTest extends TestCase
         }
         foreach ($this->artifacts as $id) {
             (new HarborArtifact())->delete(['id' => $id], true);
+        }
+        foreach ($this->scans as $id) {
+            (new ImageScan())->delete(['id' => $id], true);
         }
         (new Service())->delete(['id' => $this->serviceA], true);
         (new Service())->delete(['id' => $this->serviceB], true);
@@ -310,11 +332,12 @@ final class AccessControlTest extends TestCase
         $this->fail($page . ' : pas de redirection');
     }
 
-    private function setRights(int $service, int $config, int $exception = 0): void
+    private function setRights(int $service, int $config, int $exception = 0, int $scan = 0): void
     {
         $_SESSION['glpiactiveprofile'][Service::RIGHTNAME] = $service;
         $_SESSION['glpiactiveprofile'][Connection::RIGHTNAME] = $config;
         $_SESSION['glpiactiveprofile'][HardeningException::RIGHTNAME] = $exception;
+        $_SESSION['glpiactiveprofile'][ImageScan::RIGHTNAME] = $scan;
     }
 
     /**
@@ -389,6 +412,13 @@ final class AccessControlTest extends TestCase
         yield 'exceptions : page' => ['front/hardening.form.php', [], []];
         yield 'exceptions : ajout' => ['front/hardening.form.php', [], ['add_exception' => 1, 'code' => 'root_user']];
         yield 'exceptions : suppression' => ['front/hardening.form.php', [], ['purge_exception' => 1, 'id' => 1]];
+        yield 'analyses importées' => ['front/version.php', ['view' => 'scans'], []];
+        yield 'analyses importées critiques' => [
+            'front/version.php', ['view' => 'scans', 'filter' => 'critical_high'], [],
+        ];
+        yield 'analyses : page' => ['front/imagescan.form.php', [], []];
+        yield 'analyses : import' => ['front/imagescan.form.php', [], ['import_scan' => 1, 'reference' => 'nginx:1']];
+        yield 'analyses : suppression' => ['front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => 1]];
     }
 
     /**
@@ -462,6 +492,68 @@ final class AccessControlTest extends TestCase
         $this->assertSame(0, countElementsInTable(HardeningException::getTable(), [
             'plugin_dockerinventory_services_id' => $this->serviceA,
         ]));
+        // Analyses importées (#73) : lecture sans formulaire d'import ni suppression.
+        $scans = $this->open('front/version.php', ['view' => 'scans']);
+        $this->assertStringContainsString('analyse-a-' . $this->suffix, $scans);
+        $this->assertStringContainsString('ti-file-search', $scans);
+        $this->assertStringNotContainsString('import_scan', $scans);
+        $this->assertStringNotContainsString('purge_scan', $scans);
+        $this->assertRefused('front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => $this->scans['a']]);
+        $this->assertFalse(ImageScan::import('{"matches": []}', 'r.json', 'nginx:1')['ok']);
+        $this->assertTrue((new ImageScan())->getFromDB($this->scans['a']));
+    }
+
+    /**
+     * Analyses importées (#73) : import dans l'entité active avec le droit, nouveau dépôt de la même
+     * image qui remplace l'analyse, rattachement au service, suppression avec le droit.
+     */
+    public function testImageScanIsImportedThenRemovedWithTheRight(): void
+    {
+        \Session::changeActiveEntities($this->entityA, false);
+        $this->setRights(READ, 0, 0, CREATE);
+        $service = new Service();
+        $this->assertTrue($service->update(['id' => $this->serviceA, 'tag' => '7.4.1', 'image' => 'redis']));
+        $this->assertTrue($service->getFromDB($this->serviceA));
+        $report = (string) file_get_contents(dirname(__DIR__) . '/fixtures/scans/trivy.json');
+
+        $result = ImageScan::import($report, '../../etc/trivy.json');
+        $this->assertTrue($result['ok'], $result['message']);
+        $this->scans['import'] = $result['id'];
+        $scan = new ImageScan();
+        $this->assertTrue($scan->getFromDB($result['id']));
+        $this->assertSame($this->entityA, (int) $scan->fields['entities_id']);
+        $this->assertSame('trivy.json', $scan->fields['filename']);
+        $this->assertSame(6, (int) $scan->fields['total']);
+        $this->assertSame($result['id'], ImageScan::import($report, 'trivy.json')['id']);
+        $this->assertSame(1, countElementsInTable(ImageScan::getTable(), [
+            'image_key'   => 'docker.io/library/redis',
+            'entities_id' => $this->entityA,
+        ]));
+        $this->assertFalse(ImageScan::import('{"a":', 'piege.json')['ok']);
+
+        $card = ImageScan::forService($service);
+        $this->assertIsArray($card);
+        $this->assertSame($result['id'], $card['id']);
+        $this->assertSame('critical', $card['severity_code']);
+        $page = $this->open('front/version.php', ['view' => 'scans']);
+        $this->assertStringContainsString('import_scan', $page);
+        $this->assertStringContainsString('CVE-2099-0001', $page);
+        $this->assertStringContainsString('service-a-' . $this->suffix, $page);
+        $this->assertStringNotContainsString('analyse-b-' . $this->suffix, $page);
+        $this->assertStringNotContainsString('purge_scan', $page);
+
+        // Suppression : refusée sans le droit, et pour une analyse d'une autre entité.
+        $this->assertRefused('front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => $result['id']]);
+        $this->setRights(READ, 0, 0, CREATE | PURGE);
+        $this->assertStringContainsString('purge_scan', $this->open('front/version.php', ['view' => 'scans']));
+        $this->assertRefused('front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => $this->scans['b']]);
+        $this->assertFalse(ImageScan::remove($this->scans['b']));
+        $this->assertTrue((new ImageScan())->getFromDB($this->scans['b']));
+        $this->assertSame(
+            ImageScan::getPageURL(),
+            $this->redirectionOf('front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => $result['id']])
+        );
+        $this->assertFalse($scan->getFromDB($result['id']));
     }
 
     /**
@@ -546,6 +638,7 @@ final class AccessControlTest extends TestCase
             ['front/version.php', ['view' => 'harbor']],
             ['front/version.php', ['view' => 'eol']],
             ['front/version.php', ['view' => 'exposure']],
+            ['front/version.php', ['view' => 'scans']],
         ];
         foreach ($pages as [$page, $get]) {
             $html = $this->open($page, $get);

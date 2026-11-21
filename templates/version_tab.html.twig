@@ -17,6 +17,9 @@
 {% if harbor %}
     {{ include('@dockerinventory/_harbor_service.html.twig') }}
 {% endif %}
+{% if image_scan is defined and image_scan %}
+    {{ include('@dockerinventory/_image_scan_service.html.twig') }}
+{% endif %}
 {% if rows is empty %}
     <div class="alert alert-info">
         <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
