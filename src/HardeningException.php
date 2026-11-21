@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory;
 
-use CommonDBTM;
+use GlpiPlugin\Dockerinventory\Compat\Base\HardeningExceptionBase;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use Session;
 
@@ -31,16 +31,12 @@ use Session;
  * Une exception par service et par écart ; l'entité est celle du service. Droit propre au
  * plugin : enregistrer (CREATE) et supprimer (PURGE), en plus de la lecture des services.
  */
-class HardeningException extends CommonDBTM
+class HardeningException extends HardeningExceptionBase
 {
     public const RIGHTNAME = 'plugin_dockerinventory_hardeningexception';
 
     /** Durée maximale d'une exception, en jours (à renouveler ensuite). */
     public const MAX_DAYS = 366;
-
-    public static $rightname = self::RIGHTNAME;
-
-    public $dohistory = true;
 
     public static function getTypeName($nb = 0)
     {
@@ -194,11 +190,24 @@ class HardeningException extends CommonDBTM
                 'justification' => (string) $row['justification'],
                 'date_end'      => substr((string) $row['date_end'], 0, 10),
                 'users_id'      => (int) $row['users_id'],
-                'user'          => (int) $row['users_id'] > 0 ? getUserName((int) $row['users_id']) : '',
+                'user'          => self::userName((int) $row['users_id']),
                 'date_mod'      => (string) ($row['date_mod'] ?? ''),
             ];
         }
 
         return $byService;
+    }
+
+    /**
+     * Nom affiché de l'auteur d'une exception, '' s'il est inconnu.
+     */
+    private static function userName(int $userId): string
+    {
+        if ($userId <= 0) {
+            return '';
+        }
+        $name = (new \DbUtils())->getUserName($userId);
+
+        return is_string($name) ? $name : '';
     }
 }
