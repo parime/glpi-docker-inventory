@@ -23,6 +23,7 @@ use CronTask;
 use DBConnection;
 use DisplayPreference;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
 use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageScan;
