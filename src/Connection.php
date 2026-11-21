@@ -41,6 +41,11 @@ use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
 use GlpiPlugin\Dockerinventory\Registry\RegistryResolver;
 use GlpiPlugin\Dockerinventory\Ticket\TicketPolicy;
 use GlpiPlugin\Dockerinventory\Ticket\VulnTicketPolicy;
+use GlpiPlugin\Dockerinventory\Traefik\TraefikClient;
+use GlpiPlugin\Dockerinventory\Traefik\TraefikContext;
+use GlpiPlugin\Dockerinventory\Traefik\TraefikException;
+use GlpiPlugin\Dockerinventory\Traefik\TraefikMapper;
+use GlpiPlugin\Dockerinventory\Traefik\TraefikReader;
 use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudContext;
 use GlpiPlugin\Dockerinventory\Wud\WudException;
@@ -62,6 +67,8 @@ use Session;
  * - Kubernetes : adresse de l'API du cluster (HTTPS), jeton d'un compte de service en lecture seule
  *   (chiffré dans la même colonne, jamais réaffiché), certificat d'autorité facultatif, namespaces
  *   ignorés, environnement des applications créées et tickets, comme Portainer (#31).
+ * - Traefik : adresse de l'API, utilisateur et mot de passe (basicAuth) ou jeton porteur, chiffré et
+ *   jamais réaffiché ; lecture sur clic seulement des routes appliquées (#80).
  * Le type se choisit à la création et ne change plus.
  *
  * Réservé aux administrateurs de la configuration de GLPI (droit « Configuration » en
@@ -90,6 +97,7 @@ class Connection extends ConnectionBase
     public const TYPE_WUD = 'wud';
     public const TYPE_HARBOR = 'harbor';
     public const TYPE_KUBERNETES = 'kubernetes';
+    public const TYPE_TRAEFIK = 'traefik';
 
     /** Types dont l'import donne des services (applications, tickets réglés sur la connexion). */
     public const WORKLOAD_TYPES = [self::TYPE_PORTAINER, self::TYPE_KUBERNETES];
@@ -112,6 +120,7 @@ class Connection extends ConnectionBase
             self::TYPE_WUD       => "What's Up Docker (WUD)",
             self::TYPE_HARBOR    => 'Harbor',
             self::TYPE_KUBERNETES => 'Kubernetes',
+            self::TYPE_TRAEFIK => 'Traefik',
         ];
     }
 
@@ -145,6 +154,11 @@ class Connection extends ConnectionBase
             VulnTicketPolicy::THRESHOLD_CRITICAL => __('Vulnérabilités critiques', 'dockerinventory'),
             VulnTicketPolicy::THRESHOLD_HIGH     => __('Vulnérabilités critiques ou hautes', 'dockerinventory'),
         ];
+    }
+
+    public function isTraefik(): bool
+    {
+        return ($this->fields['type'] ?? self::TYPE_PORTAINER) === self::TYPE_TRAEFIK;
     }
 
     public function isKubernetes(): bool
@@ -328,6 +342,7 @@ class Connection extends ConnectionBase
             $this->isWud()    => 'wud_actions',
             $this->isHarbor() => 'harbor_actions',
             $this->isKubernetes() => 'kubernetes_actions',
+            $this->isTraefik() => 'traefik_actions',
             default           => 'connection_actions',
         };
 
@@ -337,6 +352,7 @@ class Connection extends ConnectionBase
             'is_wud'      => $this->isWud(),
             'is_harbor'   => $this->isHarbor(),
             'is_kubernetes' => $this->isKubernetes(),
+            'is_traefik'  => $this->isTraefik(),
             'excluded_default' => KubernetesMapper::DEFAULT_EXCLUDED,
             'type_label'  => self::typeLabels()[(string) $this->fields['type']] ?? '',
             'has_api_key' => trim((string) ($this->fields['api_key'] ?? '')) !== '',
@@ -360,12 +376,16 @@ class Connection extends ConnectionBase
                     $this->isWud()    => WudContext::class,
                     $this->isHarbor() => RegistryContext::class,
                     $this->isKubernetes() => KubernetesContext::class,
+                    $this->isTraefik() => TraefikContext::class,
                     default           => Portainer\PortainerContext::class,
                 },
                 'registry_host' => $this->isHarbor() ? RegistryResolver::harborHost(
                     (string) $this->fields['url'],
                     (string) ($this->fields['registry_host'] ?? '')
                 ) : '',
+                'traefik_labels' => $this->isTraefik() ? self::traefikLabels() : [],
+                'exposure_infos' => $this->isTraefik() ? Exposure::infos() : [],
+                'service_url'   => Service::getFormURL(),
             ]);
         }
 
@@ -483,7 +503,7 @@ class Connection extends ConnectionBase
         // Clé (ou mot de passe WUD) laissée vide en modification : celle enregistrée est conservée.
         // Case « Effacer le mot de passe » (WUD sans authentification) : vidée explicitement.
         $key = trim((string) ($input['api_key'] ?? ''));
-        if (!empty($input['_clear_api_key']) && ($this->isWud() || $this->isHarbor())) {
+        if (!empty($input['_clear_api_key']) && ($this->isWud() || $this->isHarbor() || $this->isTraefik())) {
             $input['api_key'] = '';
         } elseif ($key === '') {
             unset($input['api_key']);
@@ -593,6 +613,18 @@ class Connection extends ConnectionBase
     /**
      * Client de lecture de ce registre Harbor (API v2 des registres).
      */
+    /**
+     * Client de lecture de cette API Traefik (adresse enregistrée seulement).
+     */
+    public function getTraefikClient(): TraefikClient
+    {
+        return new TraefikClient(
+            (string) $this->fields['url'],
+            (string) ($this->fields['username'] ?? ''),
+            $this->getDecryptedApiKey()
+        );
+    }
+
     public function getRegistryClient(): RegistryClient
     {
         return RegistryClient::harbor(
@@ -679,6 +711,7 @@ class Connection extends ConnectionBase
             // Harbor : vérification de tous les registres (Docker Hub compris).
             $this->isHarbor() => (new RegistryImporter())->run(),
             $this->isKubernetes() => (new KubernetesImporter())->import($this),
+            $this->isTraefik() => (new TraefikReader())->read($this),
             default           => (new Importer())->import($this),
         };
     }
@@ -701,6 +734,9 @@ class Connection extends ConnectionBase
         }
         if ($this->isKubernetes()) {
             return self::kubernetesMessage($report);
+        }
+        if ($this->isTraefik()) {
+            return self::traefikMessage($report);
         }
         if ($this->isWud()) {
             return sprintf(
@@ -981,6 +1017,83 @@ class Connection extends ConnectionBase
      *
      * @return array{ok: bool, message: string}
      */
+    /**
+     * Message de la lecture d'une API Traefik.
+     *
+     * @param array<string, mixed> $report
+     */
+    public static function traefikMessage(array $report): string
+    {
+        $counts = is_array($report['counts'] ?? null) ? $report['counts'] : [];
+        $flagged = 0;
+        foreach (TraefikMapper::CHECKS as $check) {
+            $flagged += (int) ($counts[$check] ?? 0);
+        }
+
+        return sprintf(
+            __(
+                'Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s).',
+                'dockerinventory'
+            ),
+            self::statusLabel((int) $report['status']),
+            (int) ($counts['routes'] ?? 0),
+            $flagged,
+            (int) ($counts['not_applied'] ?? 0)
+        );
+    }
+
+    /**
+     * Libellés des rapprochements et des signalements de la lecture de Traefik.
+     *
+     * @return array{matches: array<string, string>, checks: array<string, string>}
+     */
+    public static function traefikLabels(): array
+    {
+        return [
+            'matches' => [
+                TraefikMapper::MATCH_DECLARED => __('Conforme aux étiquettes', 'dockerinventory'),
+                TraefikMapper::MATCH_DIFFERS => __('Différente des étiquettes', 'dockerinventory'),
+                TraefikMapper::MATCH_NOT_INVENTORIED => __('Service non inventorié', 'dockerinventory'),
+                TraefikMapper::MATCH_OTHER_PROVIDER => __('Hors étiquettes Docker', 'dockerinventory'),
+                TraefikMapper::MATCH_INTERNAL => __('Interne à Traefik', 'dockerinventory'),
+            ],
+            'checks' => [
+                TraefikMapper::CHECK_DASHBOARD => __(
+                    'Tableau de bord ou API de Traefik sans authentification',
+                    'dockerinventory'
+                ),
+                TraefikMapper::CHECK_NO_TLS => __('Route publique sans TLS ni redirection HTTPS', 'dockerinventory'),
+                TraefikMapper::CHECK_NO_AUTH => __("Route d'administration sans authentification", 'dockerinventory'),
+                TraefikMapper::CHECK_NO_HEADERS => __('Route publique sans en-têtes de sécurité', 'dockerinventory'),
+            ],
+        ];
+    }
+
+    /**
+     * « Tester la connexion » d'une API Traefik : version et nombre de routes HTTP.
+     *
+     * @return array{ok: bool, message: string}
+     */
+    public function testTraefikConnection(?TraefikClient $client = null): array
+    {
+        $client ??= $this->getTraefikClient();
+        try {
+            $version = $client->version();
+            $routers = $client->listOf('/api/http/routers');
+        } catch (TraefikException $e) {
+            return ['ok' => false, 'message' => self::errorLabels()[$e->getMessage()] ?? $e->getMessage()];
+        }
+
+        return [
+            'ok'      => true,
+            'message' => sprintf(
+                __('Connexion réussie : Traefik %1$s, %2$d route(s) HTTP.', 'dockerinventory'),
+                $version !== '' ? $version : '?',
+                count($routers)
+            ),
+        ];
+    }
+
     public function testWudConnection(?WudClient $client = null): array
     {
         $client ??= $this->getWudClient();
@@ -1012,6 +1125,9 @@ class Connection extends ConnectionBase
     {
         if ($this->isWud()) {
             return $this->testWudConnection();
+        }
+        if ($this->isTraefik()) {
+            return $this->testTraefikConnection();
         }
         if ($this->isHarbor()) {
             return $this->testHarborConnection();
@@ -1126,6 +1242,13 @@ class Connection extends ConnectionBase
             PortainerException::UNEXPECTED => __("Réponse inattendue : est-ce bien Portainer ?", 'dockerinventory'),
             PortainerException::UNREACHABLE => __('Portainer injoignable (réseau, certificat...).', 'dockerinventory'),
             WudException::UNAUTHORIZED => __('Identifiants refusés par WUD (401).', 'dockerinventory'),
+            TraefikException::UNAUTHORIZED => __('Identifiants ou jeton refusés par Traefik (401).', 'dockerinventory'),
+            TraefikException::FORBIDDEN => __('Accès refusé par Traefik (403).', 'dockerinventory'),
+            TraefikException::NOT_FOUND => __("API introuvable (404) : l'API de Traefik est-elle activée ?", 'dockerinventory'),
+            TraefikException::SERVER_ERROR => __('Traefik a répondu par une erreur interne (5xx).', 'dockerinventory'),
+            TraefikException::PRIVATE_NETWORK => __('Réseau privé refusé par GLPI (voir README).', 'dockerinventory'),
+            TraefikException::UNEXPECTED => __("Réponse inattendue : est-ce bien l'API de Traefik ?", 'dockerinventory'),
+            TraefikException::UNREACHABLE => __('Traefik injoignable (réseau, certificat, délai...).', 'dockerinventory'),
             WudException::FORBIDDEN => __('Accès refusé par WUD (403).', 'dockerinventory'),
             WudException::NOT_FOUND => __("Adresse introuvable (404) : vérifier l'adresse.", 'dockerinventory'),
             WudException::SERVER_ERROR => __('WUD a répondu par une erreur interne (5xx).', 'dockerinventory'),
@@ -1238,6 +1361,7 @@ class Connection extends ConnectionBase
             $this->isWud()    => 'https://wud.exemple.test:3000',
             $this->isHarbor() => 'https://harbor.exemple.test',
             $this->isKubernetes() => 'https://kubernetes.exemple.test:6443',
+            $this->isTraefik() => 'https://traefik.exemple.test',
             default           => 'https://portainer.exemple.test:9443',
         };
     }

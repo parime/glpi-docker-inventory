@@ -21,6 +21,7 @@
         {{ __('Commencez par Portainer : WUD complète les services que Portainer a importés.', 'dockerinventory') }}
         {{ __('Sans WUD, Docker Hub est lu directement ; Harbor sert aux images de vos projets.', 'dockerinventory') }}
         {{ __('Kubernetes remplace Portainer pour les applications qui tournent sur un cluster.', 'dockerinventory') }}
+        {{ __('Traefik montre les routes réellement appliquées, à comparer aux étiquettes.', 'dockerinventory') }}
     </p>
     <div class="row g-3">
         <div class="col-md-6 col-xl-3">
@@ -87,6 +88,25 @@
                     <p class="text-muted mb-0">
                         {{ __(
                             'Namespaces, Deployments, StatefulSets, DaemonSets, CronJobs et nœuds d’un cluster.',
+                            'dockerinventory'
+                        ) }}
+                    </p>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <a class="card card-link card-link-pop h-100 text-reset text-decoration-none"
+               href="{{ form_url }}?type=traefik">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="avatar bg-cyan text-white me-3">
+                            <i class="ti ti-route fs-2" aria-hidden="true"></i>
+                        </span>
+                        <h2 class="h4 card-title mb-0">Traefik</h2>
+                    </div>
+                    <p class="text-muted mb-0">
+                        {{ __(
+                            'Routes, points d’entrée et middlewares appliqués, contrôles TLS et authentification.',
                             'dockerinventory'
                         ) }}
                     </p>
