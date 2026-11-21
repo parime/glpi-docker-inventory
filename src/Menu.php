@@ -26,8 +26,8 @@ use CommonGLPI;
  * Ses écrans sont des sous-pages reliées par une barre d'onglets commune
  * (templates/_section_nav.html.twig) : services, versions des images, images Harbor et
  * vulnérabilités, analyses importées (#73), fin de support des images, exposition, configuration
- * à risque. Visible avec le droit de lecture du plugin. Les réglages (connexions, registres maîtrisés, fin de support) sont
- * dans la page de configuration du plugin (ConfigPage).
+ * à risque. Visible avec le droit de lecture du plugin. Les réglages (connexions, registres
+ * maîtrisés, fin de support) sont dans la page de configuration du plugin (ConfigPage).
  */
 class Menu extends CommonGLPI
 {
