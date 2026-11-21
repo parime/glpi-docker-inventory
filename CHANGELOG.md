@@ -5,6 +5,19 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Source Traefik en lecture seule ([#80](https://github.com/parime/glpi-docker-inventory/issues/80)) :
+  nouveau type de connexion **Traefik** (adresse de l'API, utilisateur et mot de passe `basicAuth` ou
+  jeton porteur, chiffré et jamais réaffiché). « Lire Traefik maintenant » (lecture sur clic, aucune
+  tâche automatique) lit les routes HTTP et TCP, points d'entrée, services et middlewares
+  réellement appliqués, par des GET sur des chemins fixes sous la seule adresse enregistrée, et les
+  compare aux routes des étiquettes des services inventoriés (conformes, différentes, service non
+  inventorié, hors étiquettes Docker, déclarées mais non appliquées). Signalements sans correction :
+  tableau de bord ou API de Traefik sans authentification (`api.insecure`), route publique sans TLS
+  ni redirection HTTPS, route d'administration sans authentification, route publique sans en-têtes
+  de sécurité. Faux Traefik `tests/mock-traefik` pour les tests.
+
 ### Changed
 
 - Marketplace et forum : logo du plugin (`logo.svg`, `logo.png`, `logo-40.png`), captures d'écran

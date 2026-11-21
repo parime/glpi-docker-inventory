@@ -46,6 +46,7 @@ conteneurs isolés, sans stack, sans service, sans réplicas ni version.
 | Cycles de vie (endoflife.date, désactivé par défaut) | Dates de fin de support des produits des images (correspondance explicite) | Fin de support, bientôt, maintenue ou inconnue par service ; tickets de fin de support facultatifs |
 | Harbor | Projets, dépôts, artefacts, résumé d'analyse de vulnérabilités | Vulnérabilités par image, images hors registre maîtrisé signalées |
 | Kubernetes | Namespaces, Deployments, StatefulSets, DaemonSets et CronJobs (image, tag, empreinte, réplicas prêts et voulus, état), nœuds, services NodePort et LoadBalancer, ingress | Namespace = Application native ; fiche Service par conteneur ; nœuds rattachés aux ordinateurs (nom ou adresse IP) ; mêmes versions et vulnérabilités Harbor |
+| Traefik (lecture sur clic) | API de Traefik : routes HTTP et TCP appliquées, points d'entrée, services, middlewares | Routes comparées aux étiquettes (conformes, différentes, hors étiquettes, déclarées non appliquées) ; signalements : tableau de bord exposé, route publique sans TLS ou sans en-têtes de sécurité, administration sans authentification |
 
 ## Aperçu
 

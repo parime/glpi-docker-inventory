@@ -129,6 +129,29 @@ de requêtes ; seuls les noms des images publiques sont envoyés) et **Harbor** 
 Harbor. Un registre inconnu ou privé sans identifiants donne une version « non vérifiée », sans
 erreur. Pour ne jamais interroger Docker Hub, désactiver l'action automatique `registrycheck`.
 
+## Connexion Traefik (routes appliquées, lecture sur clic)
+
+L'API de [Traefik](https://doc.traefik.io/traefik/operations/api/) donne la configuration
+**réellement appliquée** : routes HTTP et TCP, points d'entrée, services et middlewares, y compris
+les routes définies hors des étiquettes Docker (fichiers, Kubernetes, Consul). Le plugin la lit
+**en lecture seule** et la compare aux routes des étiquettes relevées à l'import (#72).
+
+1. Activer l'API de Traefik **sans** `api.insecure` : la publier par un routeur protégé
+   (middleware `basicAuth` ou `forwardAuth`), par exemple `https://traefik.example.org`.
+2. Onglet **Connexions Docker** : « Ajouter une connexion », choisir **Traefik**, saisir l'adresse
+   (sans `/api`), puis l'utilisateur et le mot de passe du `basicAuth`. Sans utilisateur, le secret
+   est envoyé comme jeton (`Authorization: Bearer`). Le secret est chiffré et jamais réaffiché.
+3. « Tester la connexion » (version de Traefik, nombre de routes HTTP), puis « **Lire Traefik
+   maintenant** ». Il n'y a pas de tâche automatique : la lecture se fait au clic.
+
+Seuls des GET sont envoyés, uniquement sous l'adresse de la connexion (`/api/version`,
+`/api/entrypoints`, `/api/http/routers`, `/api/http/services`, `/api/http/middlewares`,
+`/api/tcp/routers`) ; les redirections ne sont pas suivies et les adresses des serveurs des
+services ne sont jamais appelées. Au plus 100 routes sont affichées.
+
+> La correspondance avec l'API suit la documentation publique de Traefik 3.x et un faux Traefik
+> (`tests/mock-traefik`) ; elle reste à valider sur une vraie instance.
+
 ## Connexion Harbor (versions et vulnérabilités)
 
 1. Onglet **Connexions Docker** : « Ajouter une connexion », choisir **Harbor**, saisir l'adresse

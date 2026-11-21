@@ -129,6 +129,29 @@ limit is hit; only the names of the public images are sent) and **Harbor** throu
 connection. An unknown registry, or a private one without credentials, gives a "not checked"
 version, without error. To never query Docker Hub, disable the `registrycheck` automatic action.
 
+## Traefik connection (applied routes, read on click)
+
+The [Traefik](https://doc.traefik.io/traefik/operations/api/) API gives the configuration
+**actually applied**: HTTP and TCP routes, entry points, services and middlewares, including routes
+defined outside Docker labels (files, Kubernetes, Consul). The plugin reads it **read-only** and
+compares it with the label routes collected at import (#72).
+
+1. Enable the Traefik API **without** `api.insecure`: publish it through a protected router
+   (`basicAuth` or `forwardAuth` middleware), for example `https://traefik.example.org`.
+2. **Docker connections** tab: "Add a connection", choose **Traefik**, enter the address (without
+   `/api`), then the `basicAuth` user and password. Without a user, the secret is sent as a token
+   (`Authorization: Bearer`). The secret is encrypted and never displayed again.
+3. "Test the connection" (Traefik version, number of HTTP routes), then "**Read Traefik now**".
+   There is no automatic action: reading happens on click.
+
+Only GET requests are sent, only under the connection address (`/api/version`, `/api/entrypoints`,
+`/api/http/routers`, `/api/http/services`, `/api/http/middlewares`, `/api/tcp/routers`); redirects
+are not followed and the addresses of service servers are never called. At most 100 routes are
+displayed.
+
+> The mapping follows the public Traefik 3.x documentation and a fake Traefik
+> (`tests/mock-traefik`); it remains to be validated on a real instance.
+
 ## Harbor connection (versions and vulnerabilities)
 
 1. **Docker connections** tab: "Add a connection", choose **Harbor**, enter the address
