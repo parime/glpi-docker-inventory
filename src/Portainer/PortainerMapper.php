@@ -20,6 +20,7 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Portainer;
 
 use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 
 /**
  * Traduction des réponses de l'API Portainer (et de l'API Docker qu'elle relaie) en valeurs à
@@ -36,11 +37,13 @@ use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
  *   Compose et Traefik seulement), Ports[].{IP, PrivatePort, PublicPort, Type}, NetworkSettings.Networks (noms),
  *   Mounts[].{Type, Name, Destination} ;
  * - image (/docker/images/json) : Id, RepoTags[], RepoDigests[] ;
- * - détail d'un conteneur : HostConfig.RestartPolicy.{Name, MaximumRetryCount} uniquement. Les
- *   variables d'environnement (Config.Env) et le contenu des secrets ne sont jamais lus.
+ * - détail d'un conteneur : HostConfig.RestartPolicy.{Name, MaximumRetryCount} ; réglages de sécurité
+ *   (#71, voir HardeningMapper). Les variables d'environnement (Config.Env) et le contenu des secrets
+ *   ne sont jamais lus.
  * Étiquettes Traefik des services et des conteneurs (routes, #72) : voir ExposureMapper.
  *
  * @phpstan-import-type Route from ExposureMapper
+ * @phpstan-import-type Finding from HardeningMapper
  */
 final class PortainerMapper
 {
@@ -109,8 +112,9 @@ final class PortainerMapper
      * @param array<string, int> $runningByService Identifiant de service => tâches en cours.
      * @return array{service_uid: string, name: string, stack_name: string, image: string, tag: string,
      *     digest: string, mode: string, replicas: int|null, running_replicas: int, ports: string,
-     *     networks: string, secrets: string, routes: string}|null Null si le service n'a pas d'identifiant.
-     *     `routes` : routes Traefik des étiquettes du service (JSON, ExposureMapper).
+     *     networks: string, secrets: string, routes: string, hardening: string}|null Null si le service
+     *     n'a pas d'identifiant. `routes` : routes Traefik des étiquettes du service (JSON, ExposureMapper) ;
+     *     `hardening` : configuration à risque (JSON, HardeningMapper, #71).
      */
     public static function mapService(array $service, array $networkNames = [], array $runningByService = []): ?array
     {
@@ -191,6 +195,7 @@ final class PortainerMapper
             'networks'         => self::join($networkList),
             'secrets'          => self::join($secretList),
             'routes'           => ExposureMapper::encode(ExposureMapper::traefikRoutes($labels)),
+            'hardening'        => HardeningMapper::encode(HardeningMapper::fromSwarmService($service, $networkNames)),
         ];
     }
 
@@ -411,13 +416,19 @@ final class PortainerMapper
      *     tag: string, digest: string, state: string, ports: list<string>, networks: list<string>,
      *     volumes: list<string>, secrets: list<string>, routes?: list<Route>}> $containers mapContainer().
      * @param array<string, string> $restartPolicies Identifiant du conteneur => restartPolicy().
+     * @param array<string, list<Finding>> $hardening Identifiant du conteneur => écarts lus dans son
+     *     détail (#71). Sans détail lu pour aucun conteneur du service, `hardening` est absent.
      * @return list<array{service_uid: string, name: string, stack_name: string, kind: string, image: string,
      *     tag: string, digest: string, mode: string, replicas: int, running_replicas: int, ports: string,
      *     networks: string, secrets: string, volumes: string, state: string, restart_policy: string,
-     *     container_uids: string, container_names: string, routes: string}>
+     *     container_uids: string, container_names: string, routes: string, hardening?: string}>
      */
-    public static function groupContainers(int $endpointId, array $containers, array $restartPolicies = []): array
-    {
+    public static function groupContainers(
+        int $endpointId,
+        array $containers,
+        array $restartPolicies = [],
+        array $hardening = []
+    ): array {
         $groups = [];
         foreach ($containers as $container) {
             if ($container['project'] !== '') {
@@ -457,9 +468,15 @@ final class PortainerMapper
             foreach ($members as $member) {
                 $routes = array_merge($routes, $member['routes'] ?? []);
             }
+            $findings = [];
+            foreach ($members as $member) {
+                if (isset($hardening[$member['uid']])) {
+                    $findings[] = $hardening[$member['uid']];
+                }
+            }
             $uid = strlen($key) > self::UID_MAX ? substr($key, 0, self::UID_MAX - 41) . ':' . sha1($key) : $key;
 
-            $services[] = [
+            $row = [
                 'service_uid'      => $uid,
                 'name'             => $name,
                 'stack_name'       => $stack,
@@ -484,6 +501,10 @@ final class PortainerMapper
                     ExposureMapper::MAX_ROUTES
                 )),
             ];
+            if ($findings !== []) {
+                $row['hardening'] = HardeningMapper::encode(HardeningMapper::merge($findings));
+            }
+            $services[] = $row;
         }
 
         return $services;

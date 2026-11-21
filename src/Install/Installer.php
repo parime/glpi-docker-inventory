@@ -231,6 +231,7 @@ final class Installer
                 `container_uids` text,
                 `container_names` text,
                 `routes` text,
+                `hardening` text,
                 `is_retired` tinyint NOT NULL DEFAULT '0',
                 `date_retired` timestamp NULL DEFAULT NULL,
                 `last_seen` timestamp NULL DEFAULT NULL,
@@ -594,6 +595,8 @@ final class Installer
                 'container_names' => 'text',
                 // Routes Traefik, ingress et services Kubernetes exposés (JSON, #72).
                 'routes'          => 'text',
+                // Configuration à risque lue à l'import (JSON, #71) ; NULL tant que rien n'est analysé.
+                'hardening'       => 'text',
             ] as $field => $definition
         ) {
             $migration->addField($services, $field, $definition, ['after' => $after]);
