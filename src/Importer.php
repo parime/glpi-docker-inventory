@@ -19,6 +19,7 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory;
 
+use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerClient;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerException;
 use GlpiPlugin\Dockerinventory\Portainer\PortainerMapper;
