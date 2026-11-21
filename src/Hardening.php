@@ -63,7 +63,9 @@ class Hardening extends CommonGLPI
 
     public static function getFormURLForActions(): string
     {
-        return \Plugin::getWebDir('dockerinventory') . '/front/hardening.form.php';
+        global $CFG_GLPI;
+
+        return (string) $CFG_GLPI['root_doc'] . '/plugins/dockerinventory/front/hardening.form.php';
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
