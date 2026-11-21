@@ -206,8 +206,8 @@ class HardeningException extends HardeningExceptionBase
         if ($userId <= 0) {
             return '';
         }
-        $name = (new \DbUtils())->getUserName($userId);
+        $user = new \User();
 
-        return is_string($name) ? $name : '';
+        return $user->getFromDB($userId) ? (string) $user->getFriendlyName() : '';
     }
 }
