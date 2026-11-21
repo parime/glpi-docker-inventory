@@ -46,7 +46,11 @@ $tabs = [
     'versions_url' => ImageVersion::getOverviewURL(),
     'harbor_url'   => HarborArtifact::getPageURL(),
     'tabs'         => Menu::tabs(
-        in_array($view, [Menu::TAB_HARBOR, Menu::TAB_SCANS, Menu::TAB_EOL, Menu::TAB_EXPOSURE, Menu::TAB_HARDENING], true)
+        in_array(
+            $view,
+            [Menu::TAB_HARBOR, Menu::TAB_SCANS, Menu::TAB_EOL, Menu::TAB_EXPOSURE, Menu::TAB_HARDENING],
+            true
+        )
             ? $view
             : Menu::TAB_VERSIONS
     ),

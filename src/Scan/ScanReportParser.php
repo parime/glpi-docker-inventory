@@ -285,7 +285,8 @@ final class ScanReportParser
         foreach ($runs as $run) {
             $run = self::arr($run);
             $rules = [];
-            foreach (self::arr(self::arr(self::arr($run['tool'] ?? null)['driver'] ?? null)['rules'] ?? null) as $rule) {
+            $driver = self::arr(self::arr($run['tool'] ?? null)['driver'] ?? null);
+            foreach (self::arr($driver['rules'] ?? null) as $rule) {
                 $rule = self::arr($rule);
                 $id = self::str($rule['id'] ?? '', 64);
                 if ($id !== '') {

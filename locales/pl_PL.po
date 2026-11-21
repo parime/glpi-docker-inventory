@@ -3020,3 +3020,210 @@ msgstr "Błędna etykieta, zatrzymana usługa, sieć niewspółdzielona z Traefi
 
 msgid "Étiquettes"
 msgstr "Etykiety"
+
+msgid "Choisissez un fichier de rapport."
+msgstr "Wybierz plik raportu."
+
+msgid "Analyse supprimée."
+msgstr "Skan usunięty."
+
+msgid "Analyses d’images importées"
+msgstr "Zaimportowane skany obrazów"
+
+msgid "Analyse d’image importée"
+msgstr "Zaimportowany skan obrazu"
+
+msgid "Importer une analyse"
+msgstr "Importuj skan"
+
+msgid "Supprimer une analyse"
+msgstr "Usuń skan"
+
+msgid "Le fichier est vide."
+msgstr "Plik jest pusty."
+
+#, php-format
+msgid "Le fichier dépasse %d Mo."
+msgstr "Plik przekracza %d MB."
+
+msgid "Le fichier n’est pas du JSON valide."
+msgstr "Plik nie jest poprawnym JSON."
+
+msgid "Le fichier est trop imbriqué pour être lu."
+msgstr "Plik jest zbyt głęboko zagnieżdżony, aby go odczytać."
+
+msgid ""
+"Format non reconnu : rapport JSON de Trivy ou de Grype, ou SARIF, attendu."
+msgstr ""
+"Nierozpoznany format: oczekiwany raport JSON z Trivy lub Grype albo SARIF."
+
+msgid "Image analysée inconnue : indiquez-la (nom:tag) dans le formulaire."
+msgstr "Nieznany skanowany obraz: podaj go (nazwa:tag) w formularzu."
+
+#, php-format
+msgid "Le rapport compte plus de %d vulnérabilités."
+msgstr "Raport zawiera ponad %d podatności."
+
+msgid "Par tag : empreinte déployée différente de celle de l’analyse"
+msgstr "Po tagu: wdrożony skrót różni się od skanowanego"
+
+msgid "Gravité inconnue"
+msgstr "Nieznana waga"
+
+msgid "Gravité inconnue ou négligeable selon l’outil d’analyse."
+msgstr "Nieznana lub pomijalna waga według skanera."
+
+msgid "Vous n’avez pas le droit d’importer une analyse."
+msgstr "Nie masz uprawnień do importu skanu."
+
+msgid "Fichier refusé."
+msgstr "Plik odrzucony."
+
+#, php-format
+msgid "Analyse importée : %1$s, %2$d vulnérabilités."
+msgstr "Skan zaimportowany: %1$s, %2$d podatności."
+
+msgid "L’analyse n’a pas pu être enregistrée."
+msgstr "Nie udało się zapisać skanu."
+
+msgid "Analyses importées"
+msgstr "Zaimportowane skany"
+
+msgid "Analyse trop ancienne : relancez-la et déposez le nouveau rapport."
+msgstr "Skan zbyt stary: uruchom go ponownie i prześlij nowy raport."
+
+msgid "Date inconnue"
+msgstr "Nieznana data"
+
+msgid "Trop ancienne"
+msgstr "Zbyt stary"
+
+#, php-format
+msgid "il y a %d j"
+msgstr "%d d temu"
+
+msgid "Corrigée en"
+msgstr "Naprawiona w"
+
+msgid "Paquet"
+msgstr "Pakiet"
+
+#, php-format
+msgid ""
+"Seules les %d plus graves sont détaillées ; les compteurs portent sur "
+"toutes."
+msgstr ""
+"Szczegółowo pokazano tylko %d najpoważniejszych; liczniki obejmują "
+"wszystkie."
+
+msgid "Version installée"
+msgstr "Zainstalowana wersja"
+
+msgid "Vulnérabilité"
+msgstr "Podatność"
+
+#, php-format
+msgid "Vulnérabilités détaillées (%d)"
+msgstr "Szczegóły podatności (%d)"
+
+msgid "Aucun service déployé avec cette image"
+msgstr "Brak usług wdrożonych z tym obrazem"
+
+msgid "Vulnérabilités corrigeables sur le total"
+msgstr "Podatności możliwe do naprawy wśród wszystkich"
+
+#, php-format
+msgid "%1$d vulnérabilités, dont %2$d corrigeables."
+msgstr "%1$d podatności, w tym %2$d możliwych do naprawy."
+
+msgid "Image analysée"
+msgstr "Skanowany obraz"
+
+msgid "Vulnérabilités de l’image (analyse importée)"
+msgstr "Podatności obrazu (zaimportowany skan)"
+
+#, php-format
+msgid "%1$d sur %2$d services"
+msgstr "%1$d z %2$d usług"
+
+#, php-format
+msgid "%d Mo au plus."
+msgstr "Maksymalnie %d MB."
+
+msgid "Analyses trop anciennes"
+msgstr "Zbyt stare skany"
+
+msgid "Analyses à traiter en priorité"
+msgstr "Skany do obsłużenia w pierwszej kolejności"
+
+msgid "Aucune analyse ne correspond à ces filtres."
+msgstr "Żaden skan nie pasuje do tych filtrów."
+
+msgid "Avec une vulnérabilité critique ou haute"
+msgstr "Z podatnością krytyczną lub wysoką"
+
+msgid ""
+"Connaître les vulnérabilités des images hors de Harbor, à partir des "
+"analyses faites en CI."
+msgstr ""
+"Poznaj podatności obrazów spoza Harbora na podstawie skanów wykonanych w CI."
+
+msgid "Corrigeables"
+msgstr "Do naprawy"
+
+msgid "Corrigez d’abord les vulnérabilités critiques et hautes."
+msgstr "Najpierw napraw podatności krytyczne i wysokie."
+
+msgid ""
+"Déposez le rapport de Trivy, de Grype ou de Docker Scout de chaque image "
+"déployée."
+msgstr ""
+"Prześlij raport Trivy, Grype lub Docker Scout każdego wdrożonego obrazu."
+
+msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgstr ""
+"Zarządzanie podatnościami technicznymi (ISO 27001, zabezpieczenie A.8.8)."
+
+msgid "Image analysée (facultatif)"
+msgstr "Skanowany obraz (opcjonalnie)"
+
+msgid "Importer"
+msgstr "Importuj"
+
+msgid "Importer un rapport"
+msgstr "Importuj raport"
+
+msgid "Le plugin ne lance aucune analyse."
+msgstr "Wtyczka nie uruchamia żadnego skanu."
+
+msgid ""
+"Les images stockées dans Harbor ont leur onglet : Images Harbor et "
+"vulnérabilités."
+msgstr ""
+"Obrazy przechowywane w Harborze mają własną kartę: Obrazy Harbor i "
+"podatności."
+
+msgid "Nécessaire si le rapport ne la nomme pas (SARIF de Docker Scout)."
+msgstr "Wymagane, jeśli raport go nie podaje (SARIF z Docker Scout)."
+
+#, php-format
+msgid "Plus de %d jours, ou date inconnue"
+msgstr "Ponad %d dni lub nieznana data"
+
+msgid "Rapport (JSON ou SARIF)"
+msgstr "Raport (JSON lub SARIF)"
+
+msgid "Rapports acceptés, produits par vos outils (en CI par exemple) :"
+msgstr "Akceptowane raporty, tworzone przez Twoje narzędzia (np. w CI):"
+
+msgid "Services couverts par une analyse"
+msgstr "Usługi objęte skanem"
+
+msgid "Trop anciennes"
+msgstr "Zbyt stare"
+
+msgid "Une par image, tag et empreinte"
+msgstr "Jeden na obraz, tag i skrót"
+
+msgid "Vulnérabilités par image"
+msgstr "Podatności według obrazu"

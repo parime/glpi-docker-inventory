@@ -39,7 +39,7 @@ inventory evidence**" section, read live through the plugin's read API
 | Control | Evidence |
 | --- | --- |
 | A.5.9 Inventory of information and other associated assets | Services, stacks, nodes; date of the last successful import of each connection (inventory freshness) |
-| A.8.8 Management of technical vulnerabilities | Version gaps (major, minor, patch); Harbor vulnerabilities of the deployed images |
+| A.8.8 Management of technical vulnerabilities | Version gaps (major, minor, patch); Harbor vulnerabilities of the deployed images; imported Trivy, Grype or Docker Scout scans |
 | A.8.9 Configuration management | Service configuration and image provenance (managed registry or not) |
 | A.8.32 Change management | Version changes of the last 90 days (other image, other tag, image rebuilt under the same tag) |
 
@@ -85,6 +85,28 @@ is linked to a scan only by the **digest** of the running image, otherwise by it
 mention "digest different from Harbor's": this is what allows saying that the scan really covers
 the deployed image. An image not scanned, or whose scan failed, is shown as such, never as "no
 vulnerability".
+
+### Images outside Harbor: imported scans
+
+For images from another registry, **Assets > Docker Inventory**, **Imported scans** sub-page: upload
+the report produced by your tool, in CI for example.
+
+| Tool | Command that produces the report |
+|------|----------------------------------|
+| Trivy | `trivy image --format json --output report.json IMAGE` |
+| Grype | `grype IMAGE --output json --file report.json` |
+| Docker Scout | `docker scout cves --format sarif --output report.sarif IMAGE` |
+
+Any SARIF 2.1.0 report is accepted too. Docker Scout's SARIF does not name the image: enter
+"name:tag" in the **Scanned image** field. The file is read then discarded: 20 MB at most, bounded
+JSON depth and number of vulnerabilities, no content executed. One scan per image, tag and digest: a
+new upload replaces the previous one (history kept).
+
+The scan is linked to services like Harbor's: by digest, otherwise by tag. The page gives the
+vulnerabilities by severity, the fixable ones, the scan date (flagged after 30 days or when unknown),
+the rate of covered services and the detail of the 500 most severe vulnerabilities. The service's
+**Versions** tab shows the same card. **Imported image scans** profile right: import, delete
+(granted to administrators).
 
 ## Version changes
 

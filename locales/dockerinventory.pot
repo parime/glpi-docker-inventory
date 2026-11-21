@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 14:21+0000\n"
+"POT-Creation-Date: 2026-11-21 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,6 +43,14 @@ msgstr ""
 msgid "Exception supprimée."
 msgstr ""
 
+#: front/imagescan.form.php:30
+msgid "Choisissez un fichier de rapport."
+msgstr ""
+
+#: front/imagescan.form.php:59
+msgid "Analyse supprimée."
+msgstr ""
+
 #: front/service.php:31
 msgid ""
 "Tous les services de conteneurs inventoriés : Swarm, Compose, conteneurs "
@@ -59,7 +67,7 @@ msgstr ""
 msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
 msgstr ""
 
-#: front/version.php:122 src/LifecycleProduct.php:50 src/Menu.php:117
+#: front/version.php:156 src/LifecycleProduct.php:50 src/Menu.php:123
 #: templates/eol.html.twig templates/lifecycle.html.twig
 msgid "Fin de support des images"
 msgstr ""
@@ -725,11 +733,11 @@ msgstr ""
 msgid "Jamais analysée"
 msgstr ""
 
-#: src/HarborArtifact.php:209
+#: src/HarborArtifact.php:209 src/ImageScan.php:158
 msgid "Par empreinte : c’est l’image qui tourne"
 msgstr ""
 
-#: src/HarborArtifact.php:211
+#: src/HarborArtifact.php:211 src/ImageScan.php:160
 msgid "Par tag (empreinte déployée inconnue) : probablement l’image qui tourne"
 msgstr ""
 
@@ -779,11 +787,11 @@ msgstr ""
 msgid "Go"
 msgstr ""
 
-#: src/HarborArtifact.php:602 src/ImageVersion.php:605 src/Service.php:347
+#: src/HarborArtifact.php:602 src/ImageVersion.php:607 src/Service.php:347
 msgid "Namespace"
 msgstr ""
 
-#: src/HarborArtifact.php:603 src/ImageVersion.php:237 src/ImageVersion.php:606
+#: src/HarborArtifact.php:603 src/ImageVersion.php:237 src/ImageVersion.php:608
 #: src/Service.php:107 src/Service.php:347 templates/_service_rows.html.twig
 #: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig
 #: templates/harbor_images.html.twig templates/ticket_content.html.twig
@@ -997,6 +1005,82 @@ msgstr ""
 msgid "L’exception n’a pas pu être enregistrée."
 msgstr ""
 
+#: src/ImageScan.php:54
+msgid "Analyses d’images importées"
+msgstr ""
+
+#: src/ImageScan.php:55
+msgid "Analyse d’image importée"
+msgstr ""
+
+#: src/ImageScan.php:94
+msgid "Importer une analyse"
+msgstr ""
+
+#: src/ImageScan.php:95 templates/_image_scan_row.html.twig
+msgid "Supprimer une analyse"
+msgstr ""
+
+#: src/ImageScan.php:117
+msgid "Le fichier est vide."
+msgstr ""
+
+#: src/ImageScan.php:119
+#, php-format
+msgid "Le fichier dépasse %d Mo."
+msgstr ""
+
+#: src/ImageScan.php:122
+msgid "Le fichier n’est pas du JSON valide."
+msgstr ""
+
+#: src/ImageScan.php:123
+msgid "Le fichier est trop imbriqué pour être lu."
+msgstr ""
+
+#: src/ImageScan.php:125
+msgid ""
+"Format non reconnu : rapport JSON de Trivy ou de Grype, ou SARIF, attendu."
+msgstr ""
+
+#: src/ImageScan.php:129
+msgid "Image analysée inconnue : indiquez-la (nom:tag) dans le formulaire."
+msgstr ""
+
+#: src/ImageScan.php:133
+#, php-format
+msgid "Le rapport compte plus de %d vulnérabilités."
+msgstr ""
+
+#: src/ImageScan.php:164
+msgid "Par tag : empreinte déployée différente de celle de l’analyse"
+msgstr ""
+
+#: src/ImageScan.php:182
+msgid "Gravité inconnue"
+msgstr ""
+
+#: src/ImageScan.php:185
+msgid "Gravité inconnue ou négligeable selon l’outil d’analyse."
+msgstr ""
+
+#: src/ImageScan.php:197
+msgid "Vous n’avez pas le droit d’importer une analyse."
+msgstr ""
+
+#: src/ImageScan.php:202
+msgid "Fichier refusé."
+msgstr ""
+
+#: src/ImageScan.php:245
+#, php-format
+msgid "Analyse importée : %1$s, %2$d vulnérabilités."
+msgstr ""
+
+#: src/ImageScan.php:249
+msgid "L’analyse n’a pas pu être enregistrée."
+msgstr ""
+
 #: src/ImageVersion.php:69
 msgid "Version d'image"
 msgstr ""
@@ -1134,9 +1218,10 @@ msgstr ""
 
 #: src/ImageVersion.php:272 src/Service.php:102
 #: templates/_version_rows.html.twig templates/eol_ticket_content.html.twig
-#: templates/harbor_images.html.twig templates/lifecycle.html.twig
-#: templates/service_form.html.twig templates/ticket_content.html.twig
-#: templates/version_tab.html.twig templates/vuln_ticket_content.html.twig
+#: templates/harbor_images.html.twig templates/image_scans.html.twig
+#: templates/lifecycle.html.twig templates/service_form.html.twig
+#: templates/ticket_content.html.twig templates/version_tab.html.twig
+#: templates/vuln_ticket_content.html.twig
 msgid "Image"
 msgstr ""
 
@@ -1158,7 +1243,7 @@ msgid "Dernière empreinte"
 msgstr ""
 
 #: src/ImageVersion.php:277 templates/_harbor_service.html.twig
-#: templates/version_tab.html.twig
+#: templates/_image_scan_service.html.twig templates/version_tab.html.twig
 msgid "Rattachement"
 msgstr ""
 
@@ -1343,19 +1428,24 @@ msgid ""
 "fin de support"
 msgstr ""
 
-#: src/Menu.php:43 src/Profile.php:35
+#: src/Menu.php:44 src/Profile.php:35
 msgid "Inventaire Docker"
 msgstr ""
 
-#: src/Menu.php:102 src/Service.php:264 templates/connection_actions.html.twig
-#: templates/eol.html.twig templates/kubernetes_actions.html.twig
-#: templates/versions.html.twig
+#: src/Menu.php:103 src/Service.php:264 templates/connection_actions.html.twig
+#: templates/eol.html.twig templates/image_scans.html.twig
+#: templates/kubernetes_actions.html.twig templates/versions.html.twig
 msgid "Services"
 msgstr ""
 
-#: src/Menu.php:112 templates/harbor_actions.html.twig
+#: src/Menu.php:113 templates/harbor_actions.html.twig
 #: templates/harbor_images.html.twig templates/managed_registries.html.twig
 msgid "Images Harbor et vulnérabilités"
+msgstr ""
+
+#: src/Menu.php:118 templates/_image_scan_service.html.twig
+#: templates/image_scans.html.twig
+msgid "Analyses importées"
 msgstr ""
 
 #: src/Node.php:39
@@ -1619,7 +1709,8 @@ msgid ""
 "(ni par son empreinte, ni par son tag). Harbor est lu toutes les heures."
 msgstr ""
 
-#: templates/_harbor_service.html.twig templates/harbor_images.html.twig
+#: templates/_harbor_service.html.twig templates/_image_scan_service.html.twig
+#: templates/harbor_images.html.twig templates/image_scans.html.twig
 #: templates/vuln_ticket_content.html.twig
 msgid "Analyse"
 msgstr ""
@@ -1720,7 +1811,8 @@ msgstr ""
 msgid "Correction conseillée"
 msgstr ""
 
-#: templates/_hardening_head.html.twig templates/harbor_images.html.twig
+#: templates/_hardening_head.html.twig templates/_image_scan_findings.html.twig
+#: templates/harbor_images.html.twig templates/image_scans.html.twig
 msgid "Gravité"
 msgstr ""
 
@@ -1769,6 +1861,71 @@ msgstr ""
 
 #: templates/_hardening_rows.html.twig
 msgid "À traiter"
+msgstr ""
+
+#: templates/_image_scan_age.html.twig
+msgid "Analyse trop ancienne : relancez-la et déposez le nouveau rapport."
+msgstr ""
+
+#: templates/_image_scan_age.html.twig
+msgid "Date inconnue"
+msgstr ""
+
+#: templates/_image_scan_age.html.twig
+msgid "Trop ancienne"
+msgstr ""
+
+#: templates/_image_scan_age.html.twig
+#, php-format
+msgid "il y a %d j"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Corrigée en"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Paquet"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+#, php-format
+msgid ""
+"Seules les %d plus graves sont détaillées ; les compteurs portent sur toutes."
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Version installée"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+msgid "Vulnérabilité"
+msgstr ""
+
+#: templates/_image_scan_findings.html.twig
+#, php-format
+msgid "Vulnérabilités détaillées (%d)"
+msgstr ""
+
+#: templates/_image_scan_row.html.twig
+msgid "Aucun service déployé avec cette image"
+msgstr ""
+
+#: templates/_image_scan_row.html.twig
+msgid "Vulnérabilités corrigeables sur le total"
+msgstr ""
+
+#: templates/_image_scan_service.html.twig
+#, php-format
+msgid "%1$d vulnérabilités, dont %2$d corrigeables."
+msgstr ""
+
+#: templates/_image_scan_service.html.twig
+msgid "Image analysée"
+msgstr ""
+
+#: templates/_image_scan_service.html.twig
+msgid "Vulnérabilités de l’image (analyse importée)"
 msgstr ""
 
 #: templates/_page_help.html.twig
@@ -2753,7 +2910,7 @@ msgstr ""
 msgid "Connexions et registres maîtrisés"
 msgstr ""
 
-#: templates/harbor_images.html.twig
+#: templates/harbor_images.html.twig templates/image_scans.html.twig
 msgid "Critique ou haute"
 msgstr ""
 
@@ -2825,7 +2982,7 @@ msgstr ""
 msgid "Taille"
 msgstr ""
 
-#: templates/harbor_images.html.twig
+#: templates/harbor_images.html.twig templates/image_scans.html.twig
 msgid "Toutes"
 msgstr ""
 
@@ -2872,7 +3029,7 @@ msgid ""
 "Kubernetes."
 msgstr ""
 
-#: templates/hardening.html.twig
+#: templates/hardening.html.twig templates/image_scans.html.twig
 msgid "Le plugin ne modifie rien sur les plateformes."
 msgstr ""
 
@@ -2947,6 +3104,111 @@ msgstr ""
 
 #: templates/hardening_tab.html.twig
 msgid "Tous les services"
+msgstr ""
+
+#: templates/image_scans.html.twig
+#, php-format
+msgid "%1$d sur %2$d services"
+msgstr ""
+
+#: templates/image_scans.html.twig
+#, php-format
+msgid "%d Mo au plus."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Analyses trop anciennes"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Analyses à traiter en priorité"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Aucune analyse ne correspond à ces filtres."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Avec une vulnérabilité critique ou haute"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid ""
+"Connaître les vulnérabilités des images hors de Harbor, à partir des "
+"analyses faites en CI."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Corrigeables"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Corrigez d’abord les vulnérabilités critiques et hautes."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid ""
+"Déposez le rapport de Trivy, de Grype ou de Docker Scout de chaque image "
+"déployée."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Image analysée (facultatif)"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Importer"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Importer un rapport"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Le plugin ne lance aucune analyse."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid ""
+"Les images stockées dans Harbor ont leur onglet : Images Harbor et "
+"vulnérabilités."
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Nécessaire si le rapport ne la nomme pas (SARIF de Docker Scout)."
+msgstr ""
+
+#: templates/image_scans.html.twig
+#, php-format
+msgid "Plus de %d jours, ou date inconnue"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Rapport (JSON ou SARIF)"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Rapports acceptés, produits par vos outils (en CI par exemple) :"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Services couverts par une analyse"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Trop anciennes"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Une par image, tag et empreinte"
+msgstr ""
+
+#: templates/image_scans.html.twig
+msgid "Vulnérabilités par image"
 msgstr ""
 
 #: templates/kubernetes_actions.html.twig

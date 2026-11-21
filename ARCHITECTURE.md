@@ -38,6 +38,12 @@ dockerinventory/
 │   ├── Exposure/
 │   │   └── ExposureMapper.php routes Traefik (étiquettes), ingress et services Kubernetes, ports
 │   │                          publiés, portée, flux proposé (fonctions pures)
+│   ├── ImageScan.php          analyse d'image importée (#73) : import, rattachement aux services,
+│   │                          sous-page « Analyses importées », carte de l'onglet « Versions »
+│   ├── Scan/
+│   │   ├── ScanReportParser.php   rapports JSON de Trivy et Grype, SARIF (Docker Scout...) : lecture
+│   │   │                          bornée, gravités, corrigeables (fonctions pures)
+│   │   └── ScanReportException.php codes stables, jamais le contenu du fichier
 │   ├── Hardening.php          configuration à risque (#71) : onglet des services, sous-page, synthèse
 │   ├── HardeningException.php exception justifiée et datée sur un écart (droit propre, CREATE et PURGE)
 │   ├── Hardening/
@@ -163,6 +169,7 @@ dockerinventory/
 | `glpi_plugin_dockerinventory_harborprojects` | Projet d'une connexion Harbor : nom, public ou non, nombre de dépôts, état « retiré » |
 | `glpi_plugin_dockerinventory_harborartifacts` | Artefact d'un dépôt Harbor (une ligne par connexion, dépôt et empreinte) : projet, tags, empreintes par plateforme, taille, date de publication, état de l'analyse, gravité, analyseur, date d'analyse, nombre de vulnérabilités par gravité et corrigibles, état « retiré » |
 | `glpi_plugin_dockerinventory_vulntickets` | Ticket de vulnérabilité suivi pour chaque service (un seul) et l'image qu'il décrit : empreinte, nombre de vulnérabilités critiques et hautes |
+| `glpi_plugin_dockerinventory_imagescans` | Analyse d'image importée (#73) : entité, image et clé normalisée, tag, empreinte, outil, date d'analyse, compteurs par gravité, corrigeables, vulnérabilités détaillées (JSON, 500 au plus), nom du fichier, auteur |
 | `glpi_plugin_dockerinventory_registrytags` | Cache des tags de Docker Hub : dépôt, tags et empreintes (JSON), raison d'un échec durable (introuvable), date de lecture ; valable un jour |
 
 ## Portainer (lot 1)
@@ -407,6 +414,24 @@ dockerinventory/
   (`flow_type` `internet_publication` ou `internal`, `name`, `source_label`, `destination_itemtype` et
   `destination_items_id` de l'application, `destination_label`, `protocol`, `ports`). Rien n'est jamais
   écrit dans GRC.
+
+## Analyses importées (#73)
+
+- Dépôt d'un fichier par `front/imagescan.form.php` (droit `plugin_dockerinventory_imagescan` CREATE,
+  suppression PURGE, en plus de la lecture des services) ; le fichier n'est pas gardé.
+- `ScanReportParser` : 20 Mo au plus (`MAX_BYTES`, vérifié avant de décoder), `json_decode` limité à
+  64 niveaux, 100 000 vulnérabilités au plus (au-delà : refus), chaque valeur lue avec son type
+  attendu, sans caractère de contrôle, tronquée. Formats : Trivy (`Results[].Vulnerabilities[]`,
+  `ArtifactName`, `Metadata.RepoDigests`, `CreatedAt`), Grype (`matches[]`, `source.target`,
+  `descriptor`), SARIF 2.1.0 (gravité de la règle : `security-severity`, `cvssV3_severity` ou
+  étiquette ; sinon niveau du résultat ; paquet et versions lus dans le message ; image dans
+  `runs[0].properties.imageName` ou saisie). Doublons (même identifiant, paquet et version) comptés
+  une fois ; 500 vulnérabilités les plus graves gardées en détail.
+- Table `glpi_plugin_dockerinventory_imagescans` : une ligne par entité active, image (clé normalisée
+  `WudMapper::referenceKey`), tag et empreinte ; compteurs par gravité, corrigeables, date de
+  l'analyse, outil et version, détail JSON, historique.
+- Rattachement à l'affichage (`HarborLinker::match`) : empreinte, sinon tag ; entités actives.
+  Analyse trop ancienne : plus de 30 jours (`ImageScan::STALE_DAYS`) ou date inconnue.
 
 ## Règles communes
 

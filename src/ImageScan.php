@@ -217,7 +217,10 @@ class ImageScan extends ImageScanBase
             'other'         => $report['counts']['other'],
             'fixable'       => $report['fixable'],
             'total'         => $report['total'],
-            'findings'      => (string) json_encode($report['findings'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+            'findings'      => (string) json_encode(
+                $report['findings'],
+                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            ),
             'is_truncated'  => $report['truncated'] ? 1 : 0,
             'filename'      => mb_substr(basename(str_replace('\\', '/', $filename)), 0, 255),
             'users_id'      => (int) Session::getLoginUserID(),

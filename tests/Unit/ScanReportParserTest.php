@@ -143,7 +143,9 @@ final class ScanReportParserTest extends TestCase
             $matches[] = sprintf($match, $i);
         }
         $this->expectExceptionObject(new ScanReportException(ScanReportException::TOO_MANY));
-        ScanReportParser::parse('{"source":{"target":{"userInput":"nginx:1"}},"matches":[' . implode(',', $matches) . ']}');
+        ScanReportParser::parse(
+            '{"source":{"target":{"userInput":"nginx:1"}},"matches":[' . implode(',', $matches) . ']}'
+        );
     }
 
     public function testOnlyTheMostSevereFindingsAreKept(): void
