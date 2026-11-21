@@ -2870,8 +2870,8 @@ msgstr "Pour un écart voulu, enregistrez une exception justifiée et datée."
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
-msgstr "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
+msgstr "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 
 msgid "Conforme aux étiquettes"
 msgstr "Conforme aux étiquettes"

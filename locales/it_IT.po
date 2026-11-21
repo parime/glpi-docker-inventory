@@ -2870,7 +2870,7 @@ msgstr "Per uno scostamento voluto, registrate un’eccezione giustificata e dat
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Impostazioni di sicurezza rilevate a ogni importazione: privilegiato, root, accesso all’host, limiti, montaggi."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 msgstr "Lettura di Traefik terminata (%1$s): %2$d rotta/e, %3$d segnalazione/i, %4$d rotta/e dichiarata/e non applicata/e."
 
 msgid "Conforme aux étiquettes"

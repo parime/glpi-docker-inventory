@@ -58,7 +58,12 @@ final class TraefikClientTest extends TestCase
     public function testReadsOnlyFixedPathsUnderTheConfiguredAddressWithBasicAuth(): void
     {
         $calls = [];
-        $client = new TraefikClient('https://traefik.exemple.test/', 'lecteur', self::SECRET, self::fakeTraefik($calls));
+        $client = new TraefikClient(
+            'https://traefik.exemple.test/',
+            'lecteur',
+            self::SECRET,
+            self::fakeTraefik($calls)
+        );
 
         $this->assertSame('3.1.2', $client->version());
         $snapshot = $client->snapshot();

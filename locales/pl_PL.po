@@ -2871,7 +2871,7 @@ msgstr "Dla zamierzonego odstępstwa zapisz uzasadniony wyjątek z datą."
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Ustawienia bezpieczeństwa zbierane przy każdym imporcie: uprzywilejowanie, root, dostęp do hosta, limity, montowania."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 msgstr "Odczyt Traefik zakończony (%1$s): tras: %2$d, zgłoszeń: %3$d, zadeklarowanych tras niezastosowanych: %4$d."
 
 msgid "Conforme aux étiquettes"

@@ -2870,7 +2870,7 @@ msgstr "For an intended finding, record a justified and dated exception."
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Security settings collected at each import: privileged, root, host access, limits, mounts."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 msgstr "Traefik read finished (%1$s): %2$d route(s), %3$d finding(s), %4$d declared route(s) not applied."
 
 msgid "Conforme aux étiquettes"

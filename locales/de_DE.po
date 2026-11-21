@@ -2870,7 +2870,7 @@ msgstr "Für eine gewollte Abweichung eine begründete und datierte Ausnahme spe
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Bei jedem Import erfasste Sicherheitseinstellungen: privilegiert, root, Host-Zugriff, Limits, Einbindungen."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 msgstr "Traefik-Lesung beendet (%1$s): %2$d Route(n), %3$d Befund(e), %4$d deklarierte, nicht angewendete Route(n)."
 
 msgid "Conforme aux étiquettes"

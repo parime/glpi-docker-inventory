@@ -2870,7 +2870,7 @@ msgstr "Para um desvio intencional, registre uma exceção justificada e datada.
 msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
 msgstr "Configurações de segurança coletadas a cada importação: privilegiado, root, acesso ao host, limites, montagens."
 
-msgid "Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s)."
+msgid "Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s)."
 msgstr "Leitura do Traefik concluída (%1$s): %2$d rota(s), %3$d alerta(s), %4$d rota(s) declarada(s) não aplicada(s)."
 
 msgid "Conforme aux étiquettes"

@@ -169,7 +169,8 @@ final class TraefikMapper
         }
         $name = $at !== false ? substr($fullName, 0, $at) : $fullName;
         $rule = self::str($router['rule'] ?? null);
-        $hosts = array_map('strtolower', ExposureMapper::ruleValues($rule, $protocol === 'tcp' ? ['HostSNI'] : ['Host']));
+        $hostFunctions = $protocol === 'tcp' ? ['HostSNI'] : ['Host'];
+        $hosts = array_map('strtolower', ExposureMapper::ruleValues($rule, $hostFunctions));
         $hosts = array_values(array_filter($hosts, static fn (string $host): bool => $host !== '*'));
         $paths = ExposureMapper::ruleValues($rule, ['PathPrefix', 'Path']);
         $service = self::qualify(self::str($router['service'] ?? null), $provider);

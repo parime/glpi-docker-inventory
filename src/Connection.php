@@ -1032,7 +1032,7 @@ class Connection extends ConnectionBase
 
         return sprintf(
             __(
-                'Lecture de Traefik terminée (%1$s) : %2$d route(s), %3$d signalement(s), %4$d route(s) déclarée(s) non appliquée(s).',
+                'Traefik lu (%1$s) : %2$d route(s), %3$d signalement(s), %4$d déclarée(s) non appliquée(s).',
                 'dockerinventory'
             ),
             self::statusLabel((int) $report['status']),
@@ -1244,11 +1244,20 @@ class Connection extends ConnectionBase
             WudException::UNAUTHORIZED => __('Identifiants refusés par WUD (401).', 'dockerinventory'),
             TraefikException::UNAUTHORIZED => __('Identifiants ou jeton refusés par Traefik (401).', 'dockerinventory'),
             TraefikException::FORBIDDEN => __('Accès refusé par Traefik (403).', 'dockerinventory'),
-            TraefikException::NOT_FOUND => __("API introuvable (404) : l'API de Traefik est-elle activée ?", 'dockerinventory'),
+            TraefikException::NOT_FOUND => __(
+                "API introuvable (404) : l'API de Traefik est-elle activée ?",
+                'dockerinventory'
+            ),
             TraefikException::SERVER_ERROR => __('Traefik a répondu par une erreur interne (5xx).', 'dockerinventory'),
             TraefikException::PRIVATE_NETWORK => __('Réseau privé refusé par GLPI (voir README).', 'dockerinventory'),
-            TraefikException::UNEXPECTED => __("Réponse inattendue : est-ce bien l'API de Traefik ?", 'dockerinventory'),
-            TraefikException::UNREACHABLE => __('Traefik injoignable (réseau, certificat, délai...).', 'dockerinventory'),
+            TraefikException::UNEXPECTED => __(
+                "Réponse inattendue : est-ce bien l'API de Traefik ?",
+                'dockerinventory'
+            ),
+            TraefikException::UNREACHABLE => __(
+                'Traefik injoignable (réseau, certificat, délai...).',
+                'dockerinventory'
+            ),
             WudException::FORBIDDEN => __('Accès refusé par WUD (403).', 'dockerinventory'),
             WudException::NOT_FOUND => __("Adresse introuvable (404) : vérifier l'adresse.", 'dockerinventory'),
             WudException::SERVER_ERROR => __('WUD a répondu par une erreur interne (5xx).', 'dockerinventory'),
