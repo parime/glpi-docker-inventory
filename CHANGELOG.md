@@ -11,6 +11,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   (`docs/screenshots/`) dans la fiche du catalogue et les README, descriptions et étiquettes du
   catalogue à jour (exposition, configuration à risque, Kubernetes), installation depuis le
   marketplace, annonce du forum GLPI en anglais et en français (`docs/forum-announcement.md`).
+- Fiche du catalogue : logo et captures d'écran (`<logo>`, `<screenshots>`), une fois les images
+  présentes sur `main`.
 
 ## [0.12.0] - 2026-11-21
 
