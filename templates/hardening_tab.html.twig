@@ -18,7 +18,8 @@
 <div class="card">
     <div class="card-header d-flex flex-wrap align-items-center gap-2">
         <h2 class="card-title mb-0">
-            <i class="ti ti-shield-exclamation me-2" aria-hidden="true"></i>{{ __('Configuration à risque', 'dockerinventory') }}
+            <i class="ti ti-shield-exclamation me-2" aria-hidden="true"></i>
+            {{ __('Configuration à risque', 'dockerinventory') }}
         </h2>
         <a href="{{ page_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
             <i class="ti ti-list me-1" aria-hidden="true"></i>{{ __('Tous les services', 'dockerinventory') }}
@@ -27,7 +28,7 @@
     <div class="card-body">
         <p class="text-muted mb-0">
             {{ __(
-                'Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, accès à l’hôte, capacités, limites, montages.',
+                'Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages.',
                 'dockerinventory'
             ) }}
             {{ __(

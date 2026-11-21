@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-21 06:33+0000\n"
+"POT-Creation-Date: 2026-11-21 06:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,7 @@ msgstr ""
 msgid "Un service disparu de la source est marqué « retiré », jamais supprimé."
 msgstr ""
 
-#: front/version.php:120 src/LifecycleProduct.php:50 src/Menu.php:117
+#: front/version.php:122 src/LifecycleProduct.php:50 src/Menu.php:117
 #: templates/eol.html.twig templates/lifecycle.html.twig
 msgid "Fin de support des images"
 msgstr ""
@@ -795,94 +795,94 @@ msgstr ""
 msgid "Ces capacités permettent de sortir du conteneur ou d’agir sur l’hôte."
 msgstr ""
 
-#: src/Hardening.php:200
+#: src/Hardening.php:201
 msgid "Retirer ces capacités ou les remplacer par une permission plus étroite."
 msgstr ""
 
-#: src/Hardening.php:203
+#: src/Hardening.php:206
 msgid "Répertoire sensible de l’hôte monté"
 msgstr ""
 
-#: src/Hardening.php:206
+#: src/Hardening.php:209
 msgid "Le conteneur lit ou modifie des fichiers système de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:209
+#: src/Hardening.php:213
 msgid ""
 "Monter un volume ou un sous-répertoire dédié, en lecture seule si possible."
 msgstr ""
 
-#: src/Hardening.php:212
+#: src/Hardening.php:218
 msgid "Mémoire partagée de l’hôte"
 msgstr ""
 
-#: src/Hardening.php:214
+#: src/Hardening.php:220
 msgid "Le conteneur partage les communications entre processus de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:215
+#: src/Hardening.php:221
 msgid "Retirer le partage de l’espace IPC de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:218
+#: src/Hardening.php:224
 msgid "Capacités ajoutées"
 msgstr ""
 
-#: src/Hardening.php:220
+#: src/Hardening.php:226
 msgid "Droits du noyau en plus de ceux accordés par défaut."
 msgstr ""
 
-#: src/Hardening.php:221
+#: src/Hardening.php:227
 msgid "Vérifier que chaque capacité est nécessaire."
 msgstr ""
 
-#: src/Hardening.php:224
+#: src/Hardening.php:230
 msgid "Exécution en root"
 msgstr ""
 
-#: src/Hardening.php:227
+#: src/Hardening.php:233
 msgid ""
 "Aucun utilisateur non privilégié n’est défini : le processus tourne sans "
 "doute en root."
 msgstr ""
 
-#: src/Hardening.php:230
+#: src/Hardening.php:236
 msgid "Définir un utilisateur non privilégié (user, runAsNonRoot)."
 msgstr ""
 
-#: src/Hardening.php:233
+#: src/Hardening.php:239
 msgid "Aucune limite de mémoire"
 msgstr ""
 
-#: src/Hardening.php:235
+#: src/Hardening.php:241
 msgid "Le conteneur peut épuiser la mémoire de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:236
+#: src/Hardening.php:242
 msgid "Fixer une limite de mémoire adaptée."
 msgstr ""
 
-#: src/Hardening.php:239
+#: src/Hardening.php:245
 msgid "Aucune limite de processeur"
 msgstr ""
 
-#: src/Hardening.php:241
+#: src/Hardening.php:247
 msgid "Le conteneur peut accaparer le processeur de l’hôte."
 msgstr ""
 
-#: src/Hardening.php:242
+#: src/Hardening.php:248
 msgid "Fixer une limite de processeur adaptée."
 msgstr ""
 
-#: src/Hardening.php:245
+#: src/Hardening.php:251
 msgid "Système de fichiers en écriture"
 msgstr ""
 
-#: src/Hardening.php:248
+#: src/Hardening.php:254
 msgid "Un attaquant peut modifier les fichiers de l’image dans le conteneur."
 msgstr ""
 
-#: src/Hardening.php:252
+#: src/Hardening.php:258
 msgid ""
 "Passer le système de fichiers en lecture seule, avec des volumes pour les "
 "données."
@@ -2731,9 +2731,7 @@ msgid "Avec une exception"
 msgstr ""
 
 #: templates/hardening.html.twig
-msgid ""
-"Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart "
-"voulu, enregistrez une exception justifiée et datée."
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
 msgstr ""
 
 #: templates/hardening.html.twig
@@ -2763,10 +2761,12 @@ msgid "Pas encore analysés"
 msgstr ""
 
 #: templates/hardening.html.twig
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr ""
+
+#: templates/hardening.html.twig
 msgid ""
-"Repérer les conteneurs dont la configuration affaiblit la sécurité de "
-"l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de "
-"limites."
+"Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
 msgstr ""
 
 #: templates/hardening.html.twig
@@ -2817,8 +2817,8 @@ msgstr ""
 
 #: templates/hardening_tab.html.twig
 msgid ""
-"Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, "
-"accès à l’hôte, capacités, limites, montages."
+"Réglages de sécurité relevés à chaque import : privilégié, root, accès à "
+"l’hôte, limites, montages."
 msgstr ""
 
 #: templates/hardening_tab.html.twig

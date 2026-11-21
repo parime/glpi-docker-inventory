@@ -2807,9 +2807,6 @@ msgstr "%1$d de %2$d servicios analizados"
 msgid "Avec une exception"
 msgstr "Con una excepción"
 
-msgid "Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart voulu, enregistrez une exception justifiée et datée."
-msgstr "Corrija las desviaciones críticas y altas en la plataforma; para una desviación deseada, registre una excepción justificada y fechada."
-
 msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
 msgstr "Bastionado y gestión de la configuración (ISO 27001, control A.8.9)."
 
@@ -2827,9 +2824,6 @@ msgstr "Se leen en la próxima importación"
 
 msgid "Pas encore analysés"
 msgstr "Aún no analizados"
-
-msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de limites."
-msgstr "Detectar los contenedores cuya configuración debilita la seguridad del host: modo privilegiado, root, socket de Docker, red del host, sin límites."
 
 msgid "Sans écart critique ni haut"
 msgstr "Sin desviación crítica ni alta"
@@ -2861,8 +2855,17 @@ msgstr "La configuración se lee en la próxima importación de Portainer o Kube
 msgid "Pas encore analysé."
 msgstr "Aún no analizado."
 
-msgid "Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, accès à l’hôte, capacités, limites, montages."
-msgstr "Ajustes de seguridad leídos en cada importación: modo privilegiado, usuario, acceso al host, capacidades, límites, montajes."
-
 msgid "Tous les services"
 msgstr "Todos los servicios"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Detectar los contenedores cuya configuración debilita la seguridad del host."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Corrija las desviaciones críticas y altas en la plataforma."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "Para una desviación deseada, registre una excepción justificada y fechada."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Ajustes de seguridad recogidos en cada importación: privilegiado, root, acceso al host, límites, montajes."

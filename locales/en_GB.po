@@ -2807,9 +2807,6 @@ msgstr "%1$d of %2$d services analysed"
 msgid "Avec une exception"
 msgstr "With an exception"
 
-msgid "Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart voulu, enregistrez une exception justifiée et datée."
-msgstr "Fix critical and high findings on the platform; for an intended finding, record a justified and dated exception."
-
 msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
 msgstr "Hardening and configuration management (ISO 27001, control A.8.9)."
 
@@ -2827,9 +2824,6 @@ msgstr "Read at the next import"
 
 msgid "Pas encore analysés"
 msgstr "Not analysed yet"
-
-msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de limites."
-msgstr "Spot the containers whose configuration weakens the host’s security: privileged mode, root, Docker socket, host network, no limits."
 
 msgid "Sans écart critique ni haut"
 msgstr "No critical or high finding"
@@ -2861,8 +2855,17 @@ msgstr "The configuration is read at the next Portainer or Kubernetes import of 
 msgid "Pas encore analysé."
 msgstr "Not analysed yet."
 
-msgid "Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, accès à l’hôte, capacités, limites, montages."
-msgstr "Security settings read at each import: privileged mode, user, host access, capabilities, limits, mounts."
-
 msgid "Tous les services"
 msgstr "All services"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Spot the containers whose configuration weakens the host’s security."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Fix critical and high findings on the platform."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "For an intended finding, record a justified and dated exception."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Security settings collected at each import: privileged, root, host access, limits, mounts."

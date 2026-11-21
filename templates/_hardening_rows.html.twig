@@ -76,7 +76,11 @@
                     <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" href="#{{ form_id }}"
                        role="button" aria-expanded="false" aria-controls="{{ form_id }}">
                         <i class="ti ti-shield-half me-1" aria-hidden="true"></i>
-                        {{ exception ? __('Renouveler l’exception', 'dockerinventory') : __('Accepter le risque', 'dockerinventory') }}
+                        {% if exception %}
+                            {{ __('Renouveler l’exception', 'dockerinventory') }}
+                        {% else %}
+                            {{ __('Accepter le risque', 'dockerinventory') }}
+                        {% endif %}
                     </a>
                 {% endif %}
                 {% if exception and can_purge %}
@@ -84,7 +88,8 @@
                         <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                         <input type="hidden" name="id" value="{{ exception.id }}">
                         <button type="submit" name="purge_exception" value="1" class="btn btn-sm btn-outline-danger">
-                            <i class="ti ti-trash me-1" aria-hidden="true"></i>{{ __('Supprimer l’exception', 'dockerinventory') }}
+                            <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                            {{ __('Supprimer l’exception', 'dockerinventory') }}
                         </button>
                     </form>
                 {% endif %}
@@ -97,8 +102,9 @@
                     <label class="form-label small mb-1" for="{{ form_id }}-why">
                         {{ __('Pourquoi ce risque est-il accepté ?', 'dockerinventory') }}
                     </label>
-                    <textarea class="form-control form-control-sm mb-2" id="{{ form_id }}-why" name="justification"
-                              rows="2" maxlength="2000" required>{{ exception ? exception.justification : '' }}</textarea>
+                    <textarea class="form-control form-control-sm mb-2" id="{{ form_id }}-why"
+                              name="justification" rows="2" maxlength="2000"
+                              required>{{ exception ? exception.justification : '' }}</textarea>
                     <label class="form-label small mb-1" for="{{ form_id }}-end">
                         {{ __('Jusqu’au (à réexaminer ensuite)', 'dockerinventory') }}
                     </label>
@@ -106,7 +112,8 @@
                         <input type="date" class="form-control form-control-sm" id="{{ form_id }}-end" name="date_end"
                                min="{{ today }}" max="{{ max_date }}" value="{{ default_end }}" required>
                         <button type="submit" name="add_exception" value="1" class="btn btn-sm btn-primary text-nowrap">
-                            <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>{{ __('Enregistrer', 'dockerinventory') }}
+                            <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
+                            {{ __('Enregistrer', 'dockerinventory') }}
                         </button>
                     </div>
                 </form>

@@ -2807,9 +2807,6 @@ msgstr "%1$d de %2$d serviços analisados"
 msgid "Avec une exception"
 msgstr "Com uma exceção"
 
-msgid "Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart voulu, enregistrez une exception justifiée et datée."
-msgstr "Corrija os desvios críticos e altos na plataforma; para um desvio intencional, registre uma exceção justificada e datada."
-
 msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
 msgstr "Hardening e gestão de configurações (ISO 27001, controle A.8.9)."
 
@@ -2827,9 +2824,6 @@ msgstr "Lidos na próxima importação"
 
 msgid "Pas encore analysés"
 msgstr "Ainda não analisados"
-
-msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de limites."
-msgstr "Identificar os contêineres cuja configuração enfraquece a segurança do host: modo privilegiado, root, socket do Docker, rede do host, sem limites."
 
 msgid "Sans écart critique ni haut"
 msgstr "Sem desvio crítico nem alto"
@@ -2861,8 +2855,17 @@ msgstr "A configuração é lida na próxima importação do Portainer ou Kubern
 msgid "Pas encore analysé."
 msgstr "Ainda não analisado."
 
-msgid "Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, accès à l’hôte, capacités, limites, montages."
-msgstr "Configurações de segurança lidas a cada importação: modo privilegiado, usuário, acesso ao host, capacidades, limites, montagens."
-
 msgid "Tous les services"
 msgstr "Todos os serviços"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Identificar os contêineres cuja configuração enfraquece a segurança do host."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Corrija os desvios críticos e altos na plataforma."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "Para um desvio intencional, registre uma exceção justificada e datada."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Configurações de segurança coletadas a cada importação: privilegiado, root, acesso ao host, limites, montagens."

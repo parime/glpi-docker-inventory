@@ -2808,9 +2808,6 @@ msgstr "%1$d z %2$d przeanalizowanych usług"
 msgid "Avec une exception"
 msgstr "Z wyjątkiem"
 
-msgid "Corrigez les écarts critiques et hauts sur la plateforme ; pour un écart voulu, enregistrez une exception justifiée et datée."
-msgstr "Popraw krytyczne i wysokie odstępstwa na platformie; dla zamierzonego odstępstwa zapisz uzasadniony wyjątek z datą."
-
 msgid "Durcissement et gestion des configurations (ISO 27001, mesure A.8.9)."
 msgstr "Utwardzanie i zarządzanie konfiguracją (ISO 27001, zabezpieczenie A.8.9)."
 
@@ -2828,9 +2825,6 @@ msgstr "Odczytywane przy następnym imporcie"
 
 msgid "Pas encore analysés"
 msgstr "Jeszcze nieprzeanalizowane"
-
-msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte : mode privilégié, root, socket Docker, réseau de l’hôte, absence de limites."
-msgstr "Wykryć kontenery, których konfiguracja osłabia bezpieczeństwo hosta: tryb uprzywilejowany, root, gniazdo Dockera, sieć hosta, brak limitów."
 
 msgid "Sans écart critique ni haut"
 msgstr "Bez krytycznych i wysokich odstępstw"
@@ -2862,8 +2856,17 @@ msgstr "Konfiguracja zostanie odczytana przy następnym imporcie tej usługi z P
 msgid "Pas encore analysé."
 msgstr "Jeszcze nieprzeanalizowane."
 
-msgid "Réglages de sécurité lus à chaque import : mode privilégié, utilisateur, accès à l’hôte, capacités, limites, montages."
-msgstr "Ustawienia bezpieczeństwa odczytywane przy każdym imporcie: tryb uprzywilejowany, użytkownik, dostęp do hosta, uprawnienia, limity, montowania."
-
 msgid "Tous les services"
 msgstr "Wszystkie usługi"
+
+msgid "Repérer les conteneurs dont la configuration affaiblit la sécurité de l’hôte."
+msgstr "Wykryć kontenery, których konfiguracja osłabia bezpieczeństwo hosta."
+
+msgid "Corrigez les écarts critiques et hauts sur la plateforme."
+msgstr "Popraw krytyczne i wysokie odstępstwa na platformie."
+
+msgid "Pour un écart voulu, enregistrez une exception justifiée et datée."
+msgstr "Dla zamierzonego odstępstwa zapisz uzasadniony wyjątek z datą."
+
+msgid "Réglages de sécurité relevés à chaque import : privilégié, root, accès à l’hôte, limites, montages."
+msgstr "Ustawienia bezpieczeństwa zbierane przy każdym imporcie: uprzywilejowanie, root, dostęp do hosta, limity, montowania."
