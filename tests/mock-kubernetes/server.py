@@ -123,6 +123,8 @@ if __name__ == '__main__':
     cert, key = os.environ.get('MOCK_CERT'), os.environ.get('MOCK_KEY')
     if cert and key:
         context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        # TLS 1.2 au moins, comme un vrai serveur d'API Kubernetes (CodeQL py/insecure-protocol).
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
         context.load_cert_chain(cert, key)
         server.socket = context.wrap_socket(server.socket, server_side=True)
     scheme = 'https' if cert and key else 'http'

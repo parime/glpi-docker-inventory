@@ -1,2 +1,7 @@
 # Exceptions justifiées aux contrôles de sécurité communs (voir parime/glpi-plugin-security).
-# Une ligne par exception : « <contrôle> <identifiant> : <raison> ». Aucune à ce jour.
+# Une ligne par exception : « <contrôle> <identifiant> : <raison> ».
+
+# Clé d'API fictive des tests (« ptr_fictive_cle_… »), envoyée au faux Portainer de la suite ;
+# elle n'ouvre aucun service réel.
+gitleaks tests/Unit/PortainerClientTest.php:generic-api-key:29 : clé d'API fictive de test (ptr_fictive_cle_), aucun service réel
+gitleaks tests/Integration/ImporterTest.php:generic-api-key:41 : clé d'API fictive de test (ptr_fictive_cle_), aucun service réel
