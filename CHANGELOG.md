@@ -5,6 +5,10 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Fixed
+
+- Tests : le faux serveur Harbor encode le chemin repris dans l'en-tête `Link` (alerte CodeQL `py/http-response-splitting` relevée par les contrôles communs v1.10.1).
+
 ### Changed
 
 - CI : contrôles de sécurité communs glpi-plugin-security v1.10.1 (secrets, dépendances, CodeQL,
