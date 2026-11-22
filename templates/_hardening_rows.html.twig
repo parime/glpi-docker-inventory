@@ -48,7 +48,25 @@
             <i class="ti ti-tool me-1 text-muted" aria-hidden="true"></i>{{ info.fix }}
         </td>
         <td>
-            {% if finding.exception == 'active' %}
+            {% if finding.exception == 'active' and finding.expiring %}
+                {# Rappel avant l'expiration (#99) : à renouveler ou à corriger. #}
+                <span class="badge {{ tone.badge('orange') }} text-nowrap" data-dockerinventory-expiring="1">
+                    <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
+                    {{ __('Exception jusqu’au %s', 'dockerinventory')|format(exception.date_end|date('d/m/Y')) }}
+                </span>
+                {# Texte de la couleur du corps, lisible en thème clair comme sombre ; l'icône porte l'orange. #}
+                <div class="small">
+                    <i class="ti ti-alert-triangle text-orange me-1" aria-hidden="true"></i>
+                    {{- finding.days_left == 0
+                        ? __('Expire aujourd’hui : à renouveler ou à corriger', 'dockerinventory')
+                        : _n(
+                            'Expire dans %d jour : à renouveler ou à corriger',
+                            'Expire dans %d jours : à renouveler ou à corriger',
+                            finding.days_left,
+                            'dockerinventory'
+                        )|format(finding.days_left) }}
+                </div>
+            {% elseif finding.exception == 'active' %}
                 <span class="badge bg-success-subtle text-success-emphasis text-nowrap">
                     <i class="ti ti-shield-check me-1" aria-hidden="true"></i>
                     {{ __('Exception jusqu’au %s', 'dockerinventory')|format(exception.date_end|date('d/m/Y')) }}

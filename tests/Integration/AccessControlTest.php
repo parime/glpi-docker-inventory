@@ -580,6 +580,18 @@ final class AccessControlTest extends TestCase
         $page = $this->open('front/version.php', ['view' => 'hardening']);
         $this->assertStringContainsString('add_exception', $page);
         $this->assertStringNotContainsString('purge_exception', $page);
+        // #99 : carte « sans écart critique ni haut » en premier ; l'exception finit aujourd'hui,
+        // elle expire bientôt (badge orange, filtre dédié).
+        $this->assertLessThan(
+            strpos($page, 'data-dockerinventory-card="compliant"'),
+            strpos($page, 'data-dockerinventory-card="serious"')
+        );
+        $this->assertStringContainsString('data-dockerinventory-expiring="1"', $page);
+        $this->assertStringContainsString('bg-orange-subtle text-orange-emphasis', $page);
+        $this->assertStringContainsString(
+            'data-dockerinventory-expiring="1"',
+            $this->open('front/version.php', ['view' => 'hardening', 'filter' => Hardening::FILTER_EXPIRING])
+        );
 
         // Justification vide, date hors limites ou écart inconnu : refusés, rien ne change.
         $today = substr((string) $_SESSION['glpi_currenttime'], 0, 10);

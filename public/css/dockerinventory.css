@@ -1,0 +1,40 @@
+/*
+ * -------------------------------------------------------------------------
+ * Docker Inventory plugin for GLPI
+ * Copyright (C) 2026 Vincent GUILLOTTE
+ * https://github.com/parime/glpi-docker-inventory
+ * -------------------------------------------------------------------------
+ * LICENSE
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version. See LICENSE for the full text.
+ * -------------------------------------------------------------------------
+ */
+
+/*
+ * Gravité haute (#99) : orange distinct du jaune de « warning » (gravité moyenne), sur le modèle
+ * des classes bg-S-subtle et text-S-emphasis de Bootstrap 5.3 (templates/_tone.html.twig), que
+ * Tabler ne fournit pas pour l'orange. Mêmes noms que les badges de GRC Manager. Contraste du
+ * texte sur le fond : 7,6:1 en clair, 8,4:1 en sombre (WCAG 1.4.3 demande 4,5:1). Variante sombre
+ * sous le même sélecteur que celles de Bootstrap, pour suivre les badges jaunes et rouges voisins.
+ * Une valeur fournie un jour par Tabler (--tblr-orange-bg-subtle) l'emporte.
+ */
+:root {
+    --dockerinventory-orange-bg-subtle: #fdd3b5;
+    --dockerinventory-orange-text-emphasis: #6b2c02;
+}
+
+[data-bs-theme="dark"] {
+    --dockerinventory-orange-bg-subtle: #4a1f02;
+    --dockerinventory-orange-text-emphasis: #fdba8c;
+}
+
+.bg-orange-subtle {
+    background-color: var(--tblr-orange-bg-subtle, var(--dockerinventory-orange-bg-subtle)) !important;
+}
+
+.text-orange-emphasis {
+    color: var(--tblr-orange-text-emphasis, var(--dockerinventory-orange-text-emphasis)) !important;
+}

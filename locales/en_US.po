@@ -3448,3 +3448,79 @@ msgstr "Actively exploited"
 #: templates/image_scans.html.twig
 msgid "Réglages de l’exploitation connue"
 msgstr "Known exploitation settings"
+
+#: templates/hardening.html.twig
+msgid "Écarts de gravité basse compris"
+msgstr "Low severity findings included"
+
+#: templates/hardening.html.twig
+#, php-format
+msgid "%1$d exception expire dans les %2$d jours"
+msgid_plural "%1$d exceptions expirent dans les %2$d jours"
+msgstr[0] "%1$d exception expires within %2$d days"
+msgstr[1] "%1$d exceptions expire within %2$d days"
+
+#: templates/hardening.html.twig
+#, php-format
+msgid "Exceptions en cours qui finissent dans les %d jours : à renouveler ou à corriger."
+msgstr "Current exceptions ending within %d days: renew them or fix the finding."
+
+#: templates/hardening.html.twig
+msgid "Expire bientôt"
+msgstr "Expiring soon"
+
+#: templates/_hardening_rows.html.twig
+msgid "Expire aujourd’hui : à renouveler ou à corriger"
+msgstr "Expires today: renew it or fix the finding"
+
+#: templates/_hardening_rows.html.twig
+#, php-format
+msgid "Expire dans %d jour : à renouveler ou à corriger"
+msgid_plural "Expire dans %d jours : à renouveler ou à corriger"
+msgstr[0] "Expires in %d day: renew it or fix the finding"
+msgstr[1] "Expires in %d days: renew it or fix the finding"
+
+#: src/HardeningException.php:247
+#, php-format
+msgid "Configuration à risque : rappel des exceptions qui expirent dans les %d jours"
+msgstr "Risky configuration: reminder of exceptions expiring within %d days"
+
+#: src/HardeningException.php:260
+#, php-format
+msgid "%d rappel d’expiration envoyé"
+msgid_plural "%d rappels d’expiration envoyés"
+msgstr[0] "%d expiry reminder sent"
+msgstr[1] "%d expiry reminders sent"
+
+#: src/Install/ExpiryNotification.php:120
+#: src/NotificationTargetHardeningException.php:134
+msgid "Date de fin"
+msgstr "End date"
+
+#: src/Install/ExpiryNotification.php:121
+#: src/NotificationTargetHardeningException.php:135
+msgid "Jours restants"
+msgstr "Days left"
+
+#: src/Install/ExpiryNotification.php:122
+#: src/NotificationTargetHardeningException.php:136
+msgid "Justification"
+msgstr "Justification"
+
+#: src/Install/ExpiryNotification.php:123
+#: src/NotificationTargetHardeningException.php:52
+#: src/NotificationTargetHardeningException.php:137
+msgid "Auteur de l’exception"
+msgstr "Exception author"
+
+#: src/Install/ExpiryNotification.php:127
+msgid "Renouvelez l’exception avec une justification à jour, ou corrigez l’écart sur la plateforme."
+msgstr "Renew the exception with an up-to-date justification, or fix the finding on the platform."
+
+#: src/NotificationTargetHardeningException.php:44
+msgid "Exception de configuration qui expire bientôt"
+msgstr "Configuration exception expiring soon"
+
+#: src/NotificationTargetHardeningException.php:160
+msgid "Conduite à tenir"
+msgstr "What to do"

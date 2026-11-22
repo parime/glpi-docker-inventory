@@ -133,6 +133,14 @@ final class Installer
             'logs_lifetime' => 30,
         ]);
 
+        // Rappel avant l'expiration d'une exception (#99) : une fois par jour, notification à
+        // l'auteur de l'exception (modèle et notification créés une seule fois).
+        CronTask::register(HardeningException::class, HardeningException::CRON_NAME, DAY_TIMESTAMP, [
+            'state'         => CronTask::STATE_WAITING,
+            'logs_lifetime' => 30,
+        ]);
+        ExpiryNotification::install();
+
         $migration->executeMigration();
 
         return true;
@@ -144,6 +152,8 @@ final class Installer
 
         CronTask::unregister('dockerinventory');
         ProfileRight::deleteProfileRights([Service::RIGHTNAME, HardeningException::RIGHTNAME, ImageScan::RIGHTNAME]);
+        // Avant le nettoyage général : cibles, traductions et liens des notifications avec elles.
+        ExpiryNotification::uninstall();
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
         HarborSettings::delete();
@@ -490,6 +500,7 @@ final class Installer
                 `code` varchar(32) NOT NULL DEFAULT '',
                 `justification` text,
                 `date_end` date DEFAULT NULL,
+                `reminded_date_end` date DEFAULT NULL,
                 `users_id` int {$sign} NOT NULL DEFAULT '0',
                 `date_mod` timestamp NULL DEFAULT NULL,
                 `date_creation` timestamp NULL DEFAULT NULL,
@@ -620,6 +631,11 @@ final class Installer
         }
 
         $this->migrateStandaloneHosts($migration);
+
+        // 0.16.0 => rappel avant l'expiration d'une exception (#99) : date de fin déjà rappelée.
+        $exceptions = HardeningException::getTable();
+        $migration->addField($exceptions, 'reminded_date_end', 'date DEFAULT NULL', ['after' => 'date_end']);
+        $migration->migrationOneTable($exceptions);
     }
 
     /**

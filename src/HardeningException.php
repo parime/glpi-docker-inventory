@@ -19,8 +19,11 @@ declare(strict_types=1);
 
 namespace GlpiPlugin\Dockerinventory;
 
+use CronTask;
 use GlpiPlugin\Dockerinventory\Compat\Base\HardeningExceptionBase;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
+use NotificationEvent;
+use Profile_User;
 use Session;
 
 /**
@@ -37,6 +40,18 @@ class HardeningException extends HardeningExceptionBase
 
     /** Durée maximale d'une exception, en jours (à renouveler ensuite). */
     public const MAX_DAYS = 366;
+
+    /**
+     * Rappel avant l'expiration (#99) : une exception en cours qui finit dans ce nombre de jours
+     * au plus « expire bientôt » (badge orange, compteur) et fait l'objet d'une notification.
+     */
+    public const REMIND_DAYS = 30;
+
+    /** Événement de notification du rappel (NotificationTargetHardeningException). */
+    public const EVENT_EXPIRING = 'expiring';
+
+    /** Tâche automatique quotidienne du rappel. */
+    public const CRON_NAME = 'hardeningexpiry';
 
     public static function getTypeName($nb = 0)
     {
@@ -98,6 +113,31 @@ class HardeningException extends HardeningExceptionBase
         }
 
         return $end >= $start && $end <= $start->modify('+' . self::MAX_DAYS . ' days');
+    }
+
+    /**
+     * Jours restants jusqu'à la date de fin incluse (0 le dernier jour, négatif une fois expirée),
+     * null si une date est illisible.
+     */
+    public static function daysLeft(string $endDate, string $today): ?int
+    {
+        $end = \DateTimeImmutable::createFromFormat('!Y-m-d', substr($endDate, 0, 10));
+        $start = \DateTimeImmutable::createFromFormat('!Y-m-d', substr($today, 0, 10));
+        if ($end === false || $start === false) {
+            return null;
+        }
+
+        return (int) $start->diff($end)->format('%r%a');
+    }
+
+    /**
+     * L'exception est-elle en cours et finit-elle dans REMIND_DAYS jours au plus ?
+     */
+    public static function isExpiringSoon(string $endDate, string $today): bool
+    {
+        $days = self::daysLeft($endDate, $today);
+
+        return $days !== null && $days >= 0 && $days <= self::REMIND_DAYS;
     }
 
     /**
@@ -196,6 +236,110 @@ class HardeningException extends HardeningExceptionBase
         }
 
         return $byService;
+    }
+
+    /**
+     * @return array{description: string}
+     */
+    public static function cronInfo(string $name): array
+    {
+        return ['description' => sprintf(
+            __('Configuration à risque : rappel des exceptions qui expirent dans les %d jours', 'dockerinventory'),
+            self::REMIND_DAYS
+        )];
+    }
+
+    /**
+     * Tâche automatique quotidienne (#99) : une notification par exception qui expire bientôt.
+     */
+    public static function cronHardeningexpiry(CronTask $task): int
+    {
+        $sent = self::remindExpiring((string) ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s')));
+        $task->addVolume($sent);
+        $task->log(sprintf(
+            _n('%d rappel d’expiration envoyé', '%d rappels d’expiration envoyés', $sent, 'dockerinventory'),
+            $sent
+        ));
+
+        return $sent > 0 ? 1 : 0;
+    }
+
+    /**
+     * Rappel avant l'expiration (#99) : pour chaque exception en cours qui finit dans REMIND_DAYS
+     * jours au plus, sur un écart toujours relevé d'un service actif, l'événement EVENT_EXPIRING
+     * est levé une seule fois par date de fin (`reminded_date_end`) ; une exception renouvelée
+     * avec une nouvelle date de fin fera l'objet d'un nouveau rappel. Seule cette colonne est
+     * écrite : ni l'exception, ni le service, ni la plateforme ne changent.
+     *
+     * @return int Nombre d'exceptions rappelées.
+     */
+    public static function remindExpiring(string $today): int
+    {
+        global $DB;
+
+        $start = substr($today, 0, 10);
+        $limit = date('Y-m-d', (int) strtotime($start . ' +' . self::REMIND_DAYS . ' days'));
+        $table = self::getTable();
+        $services = Service::getTable();
+        $rows = $DB->request([
+            'SELECT'     => [$table . '.*', $services . '.hardening'],
+            'FROM'       => $table,
+            'INNER JOIN' => [
+                $services => ['ON' => [$table => 'plugin_dockerinventory_services_id', $services => 'id']],
+            ],
+            'WHERE'      => [
+                $services . '.is_retired' => 0,
+                [$table . '.date_end' => ['>=', $start]],
+                [$table . '.date_end' => ['<=', $limit]],
+            ],
+        ]);
+        $sent = 0;
+        foreach ($rows as $row) {
+            $end = substr((string) $row['date_end'], 0, 10);
+            if (substr((string) ($row['reminded_date_end'] ?? ''), 0, 10) === $end) {
+                continue;
+            }
+            $codes = array_column(HardeningMapper::decode((string) ($row['hardening'] ?? '')) ?? [], 'code');
+            if (!in_array((string) $row['code'], $codes, true)) {
+                // Écart corrigé depuis : rien à renouveler.
+                continue;
+            }
+            $exception = new self();
+            if (!$exception->getFromDB((int) $row['id'])) {
+                continue;
+            }
+            NotificationEvent::raiseEvent(self::EVENT_EXPIRING, $exception);
+            // Écriture directe : la trace du rappel n'est pas une modification de l'exception.
+            $DB->update($table, ['reminded_date_end' => $end], ['id' => (int) $row['id']]);
+            $sent++;
+        }
+
+        return $sent;
+    }
+
+    /**
+     * Le compte peut-il recevoir le rappel ? Il lui faut, sur un profil valable dans l'entité de
+     * l'exception, le droit de lecture des services du plugin. Une adresse sans compte ne reçoit rien.
+     */
+    public static function canReceive(int $usersId, self $exception): bool
+    {
+        if ($usersId <= 0) {
+            return false;
+        }
+        $entity = max(0, (int) ($exception->fields['entities_id'] ?? 0));
+        $profiles = array_map('intval', array_keys(Profile_User::getUserProfiles(
+            $usersId,
+            getEntitiesRestrictCriteria('glpi_profiles_users', '', $entity, true)
+        )));
+        if ($profiles === []) {
+            return false;
+        }
+
+        return countElementsInTable('glpi_profilerights', [
+            'profiles_id' => $profiles,
+            'name'        => Service::RIGHTNAME,
+            'rights'      => ['&', READ],
+        ]) > 0;
     }
 
     /**

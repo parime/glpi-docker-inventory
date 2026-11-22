@@ -383,10 +383,10 @@ final class Evidence
      * par gravité la plus haute et services qui ont au moins un écart, avec leurs exceptions.
      *
      * @return array{analysed: int, compliant: int, not_analysed: int, with_exception: int,
-     *     rate: int|null, rate_serious: int|null, by_severity: array<string, int>,
+     *     expiring: int, rate: int|null, rate_serious: int|null, by_severity: array<string, int>,
      *     services: list<array{service: string, url: string, stack: string, worst: string, open: int,
      *     findings: list<array{code: string, label: string, severity: string, detail: string,
-     *     exception: string, exception_end: string}>, entities_id: int}>, services_total: int,
+     *     exception: string, exception_end: string, expiring: bool}>, entities_id: int}>, services_total: int,
      *     page_url: string}|null
      */
     public static function hardening(int $limit = 50): ?array
@@ -409,6 +409,8 @@ final class Evidence
                     'exception_end' => is_array($finding['exception_row'])
                         ? (string) $finding['exception_row']['date_end']
                         : '',
+                    // #99 : exception en cours qui finit dans HardeningException::REMIND_DAYS jours au plus.
+                    'expiring'      => (bool) $finding['expiring'],
                 ];
             }
             $rows[] = [
@@ -432,6 +434,7 @@ final class Evidence
             'compliant'      => $counts['compliant'],
             'not_analysed'   => $counts['not_analysed'],
             'with_exception' => $counts['with_exception'],
+            'expiring'       => $counts['expiring'],
             'rate'           => $data['rate'],
             'rate_serious'   => $data['rate_serious'],
             'by_severity'    => $bySeverity,

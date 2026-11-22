@@ -38,6 +38,9 @@ class Hardening extends CommonGLPI
     /** Filtre de la sous-page : services avec au moins une exception. */
     public const FILTER_EXCEPTION = 'exception';
 
+    /** Filtre des services dont une exception expire bientôt (#99). */
+    public const FILTER_EXPIRING = 'expiring';
+
     public static function getTypeName($nb = 0)
     {
         return __('Configuration à risque', 'dockerinventory');
@@ -272,7 +275,9 @@ class Hardening extends CommonGLPI
      *     (HardeningException::forServices()) ; null : lues ici.
      * @return array{id: int, name: string, url: string, stack_name: string, entities_id: int,
      *     is_retired: bool, analysed: bool, findings: list<array<string, mixed>>, open: int,
-     *     worst: string, excepted: int, expired: int}
+     *     worst: string, excepted: int, expired: int, expiring: int}
+     *     Chaque écart porte `days_left` (jours restants de son exception en cours, sinon null) et
+     *     `expiring` (exception en cours qui finit dans HardeningException::REMIND_DAYS jours au plus).
      */
     public static function describe(array $row, ?array $exceptions = null): array
     {
@@ -284,15 +289,26 @@ class Hardening extends CommonGLPI
         $open = [];
         $excepted = 0;
         $expired = 0;
+        $expiring = 0;
         $today = (string) $_SESSION['glpi_currenttime'];
         foreach (HardeningMapper::evaluate($findings ?? [], $ends, $today) as $finding) {
+            $daysLeft = null;
+            $soon = false;
             if ($finding['exception'] === 'active') {
                 $excepted++;
+                $end = (string) $ends[$finding['code']];
+                $daysLeft = HardeningException::daysLeft($end, $today);
+                $soon = HardeningException::isExpiringSoon($end, $today);
+                $expiring += $soon ? 1 : 0;
             } else {
                 $open[] = $finding['code'];
                 $expired += $finding['exception'] === 'expired' ? 1 : 0;
             }
-            $rows[] = $finding + ['exception_row' => $exceptions[$finding['code']] ?? null];
+            $rows[] = $finding + [
+                'exception_row' => $exceptions[$finding['code']] ?? null,
+                'days_left'     => $daysLeft,
+                'expiring'      => $soon,
+            ];
         }
 
         return [
@@ -308,6 +324,7 @@ class Hardening extends CommonGLPI
             'worst'       => HardeningMapper::worst($open),
             'excepted'    => $excepted,
             'expired'     => $expired,
+            'expiring'    => $expiring,
         ];
     }
 
@@ -315,7 +332,8 @@ class Hardening extends CommonGLPI
      * Services actifs analysés, visibles dans les entités actives, avec leurs écarts.
      *
      * @return array{services: list<array<string, mixed>>, counts: array{analysed: int, compliant: int,
-     *     not_analysed: int, with_exception: int, critical: int, high: int, medium: int, low: int},
+     *     not_analysed: int, with_exception: int, expiring: int, critical: int, high: int, medium: int,
+     *     low: int},
      *     rate: int|null, rate_serious: int|null}
      *     `rate` : part des services analysés sans écart ouvert (pour cent), null si aucun ;
      *     `rate_serious` : part sans écart ouvert critique ni haut.
@@ -338,7 +356,7 @@ class Hardening extends CommonGLPI
         $exceptions = HardeningException::forServices(array_map(static fn (array $r): int => (int) $r['id'], $rows));
 
         $counts = [
-            'analysed' => 0, 'compliant' => 0, 'not_analysed' => 0, 'with_exception' => 0,
+            'analysed' => 0, 'compliant' => 0, 'not_analysed' => 0, 'with_exception' => 0, 'expiring' => 0,
             HardeningMapper::SEVERITY_CRITICAL => 0, HardeningMapper::SEVERITY_HIGH => 0,
             HardeningMapper::SEVERITY_MEDIUM => 0, HardeningMapper::SEVERITY_LOW => 0,
         ];
@@ -357,11 +375,13 @@ class Hardening extends CommonGLPI
             }
             $hasException = $service['excepted'] + $service['expired'] > 0;
             $counts['with_exception'] += $hasException ? 1 : 0;
+            $counts['expiring'] += $service['expiring'];
             if ($service['findings'] === []) {
                 continue;
             }
             if (
                 ($filter === self::FILTER_EXCEPTION && !$hasException)
+                || ($filter === self::FILTER_EXPIRING && $service['expiring'] === 0)
                 || (in_array($filter, HardeningMapper::SEVERITIES, true) && $service['worst'] !== $filter)
             ) {
                 continue;

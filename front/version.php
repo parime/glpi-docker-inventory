@@ -25,6 +25,7 @@ use GlpiPlugin\Dockerinventory\Harbor\HarborMapper;
 use GlpiPlugin\Dockerinventory\HarborArtifact;
 use GlpiPlugin\Dockerinventory\Hardening;
 use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
+use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageScan;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\CycleMatcher;
@@ -127,7 +128,8 @@ if ($view === Menu::TAB_HARDENING) {
     // Configuration à risque : services analysés avec leurs écarts, filtrés par gravité la plus
     // haute ou par exception. Les exceptions s'enregistrent par front/hardening.form.php.
     $filter = (string) ($_GET['filter'] ?? '');
-    if (!in_array($filter, array_merge(HardeningMapper::SEVERITIES, [Hardening::FILTER_EXCEPTION]), true)) {
+    $filters = array_merge(HardeningMapper::SEVERITIES, [Hardening::FILTER_EXCEPTION, Hardening::FILTER_EXPIRING]);
+    if (!in_array($filter, $filters, true)) {
         $filter = '';
     }
     $data = Hardening::overview($filter);
@@ -140,6 +142,8 @@ if ($view === Menu::TAB_HARDENING) {
         'rate_serious'     => $data['rate_serious'],
         'filter'           => $filter,
         'exception_filter' => Hardening::FILTER_EXCEPTION,
+        'expiring_filter'  => Hardening::FILTER_EXPIRING,
+        'remind_days'      => HardeningException::REMIND_DAYS,
     ] + Hardening::viewContext());
     Html::footer();
 

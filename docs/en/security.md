@@ -176,9 +176,22 @@ counts again; **Renew the exception** extends it after review. **Configuration e
 (record, delete) in **Administration > Profiles**, **Docker Inventory** tab. The plugin never
 changes anything on the platforms.
 
-The summary card gives the share of analysed services with no open finding and with no critical or
-high finding (findings covered by a current exception do not count). GRC Manager can read it through
-`Evidence::hardening()` as evidence for control A.8.9.
+**Reminder before expiry**: an exception ending within 30 days shows an orange badge "Expires in N
+days: renew it or fix the finding", is counted on the **With an exception** card and can be listed
+with the **Expiring soon** filter. The `hardeningexpiry` automatic action (once a day) then sends the
+**Configuration exception expiring soon** notification to the exception author, once per end date (a
+renewed exception will be reminded again); nothing is sent if the finding has been fixed in the
+meantime or if the service is retired. Recipients can be changed in **Setup > Notifications**
+(profiles, groups, administrators); a recipient only gets the reminder if they can read the services
+in the exception's entity. GLPI notifications must be enabled (**Setup > Notifications**, email
+followup).
+
+The summary card puts forward the share of analysed services **with no critical or high finding**:
+low severity findings (memory limits, for instance), which are very common, do not drag it down to
+0 %. The share with no open finding at all, low findings included, comes next. Findings covered by a
+current exception do not count. High severity is orange, distinct from the yellow of medium
+severity, as in GRC Manager. GRC Manager can read this summary through `Evidence::hardening()` as
+evidence for control A.8.9 (`expiring` field: exceptions expiring soon).
 
 ## What the auditor can check
 
