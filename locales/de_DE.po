@@ -3455,3 +3455,75 @@ msgstr "Aktiv ausgenutzt"
 #: templates/image_scans.html.twig
 msgid "Réglages de l’exploitation connue"
 msgstr "Einstellungen der bekannten Ausnutzung"
+
+#: templates/hardening.html.twig
+msgid "Écarts de gravité basse compris"
+msgstr "Abweichungen niedriger Schwere eingeschlossen"
+
+#: templates/hardening.html.twig
+#, php-format
+msgid "%1$d exception expire dans les %2$d jours"
+msgid_plural "%1$d exceptions expirent dans les %2$d jours"
+msgstr[0] "%1$d Ausnahme läuft in den nächsten %2$d Tagen ab"
+msgstr[1] "%1$d Ausnahmen laufen in den nächsten %2$d Tagen ab"
+
+#: templates/hardening.html.twig
+#, php-format
+msgid "Exceptions en cours qui finissent dans les %d jours : à renouveler ou à corriger."
+msgstr "Laufende Ausnahmen, die in den nächsten %d Tagen enden: verlängern oder beheben."
+
+#: templates/hardening.html.twig
+msgid "Expire bientôt"
+msgstr "Läuft bald ab"
+
+#: templates/_hardening_rows.html.twig
+msgid "Expire aujourd’hui : à renouveler ou à corriger"
+msgstr "Läuft heute ab: verlängern oder beheben"
+
+#: templates/_hardening_rows.html.twig
+#, php-format
+msgid "Expire dans %d jour : à renouveler ou à corriger"
+msgid_plural "Expire dans %d jours : à renouveler ou à corriger"
+msgstr[0] "Läuft in %d Tag ab: verlängern oder beheben"
+msgstr[1] "Läuft in %d Tagen ab: verlängern oder beheben"
+
+#: src/HardeningException.php:247
+#, php-format
+msgid "Configuration à risque : rappel des exceptions qui expirent dans les %d jours"
+msgstr "Riskante Konfiguration: Erinnerung an Ausnahmen, die in den nächsten %d Tagen ablaufen"
+
+#: src/HardeningException.php:260
+#, php-format
+msgid "%d rappel d’expiration envoyé"
+msgid_plural "%d rappels d’expiration envoyés"
+msgstr[0] "%d Ablauferinnerung gesendet"
+msgstr[1] "%d Ablauferinnerungen gesendet"
+
+#: src/Install/ExpiryNotification.php:120
+#: src/NotificationTargetHardeningException.php:134
+msgid "Date de fin"
+msgstr "Enddatum"
+
+#: src/Install/ExpiryNotification.php:121
+#: src/NotificationTargetHardeningException.php:135
+msgid "Jours restants"
+msgstr "Verbleibende Tage"
+
+#: src/Install/ExpiryNotification.php:122
+#: src/NotificationTargetHardeningException.php:136
+msgid "Justification"
+msgstr "Begründung"
+
+#: src/Install/ExpiryNotification.php:123
+#: src/NotificationTargetHardeningException.php:52
+#: src/NotificationTargetHardeningException.php:137
+msgid "Auteur de l’exception"
+msgstr "Verfasser der Ausnahme"
+
+#: src/Install/ExpiryNotification.php:127
+msgid "Renouvelez l’exception avec une justification à jour, ou corrigez l’écart sur la plateforme."
+msgstr "Verlängern Sie die Ausnahme mit einer aktuellen Begründung oder beheben Sie die Abweichung auf der Plattform."
+
+#: src/NotificationTargetHardeningException.php:44
+msgid "Exception de configuration qui expire bientôt"
+msgstr "Konfigurationsausnahme läuft bald ab"
