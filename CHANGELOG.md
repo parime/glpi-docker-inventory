@@ -7,6 +7,7 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Fixed
 
+- Tests : l'en-tête `Link` du faux serveur Harbor n'utilise plus aucune donnée de la requête (alerte CodeQL `py/http-response-splitting` encore présente après le premier correctif).
 - Tests : le faux serveur Harbor encode le chemin repris dans l'en-tête `Link` (alerte CodeQL `py/http-response-splitting` relevée par les contrôles communs v1.10.1).
 
 ### Changed
