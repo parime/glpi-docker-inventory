@@ -17,6 +17,7 @@
 
 use Glpi\Plugin\Hooks;
 use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Menu;
@@ -56,6 +57,9 @@ function plugin_init_dockerinventory(): void
     Plugin::registerClass(Profile::class, ['addtabon' => ['Profile']]);
     Plugin::registerClass(Connection::class);
     Plugin::registerClass(LifecycleProduct::class);
+    // Rappel avant l'expiration d'une exception de configuration (#99), réglable dans
+    // Configuration > Notifications.
+    Plugin::registerClass(HardeningException::class, ['notificationtemplates_types' => true]);
 
     // Charte commune, section 9 (#35) : une seule entrée de menu d'usage, Parc > Inventaire Docker
     // (services, versions des images, images Harbor, fin de support, en sous-pages), et tous les

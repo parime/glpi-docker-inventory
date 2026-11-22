@@ -1,0 +1,29 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Contenu HTML du modèle de notification « Exception qui expire bientôt » (#99), rendu une fois à
+   l'installation (ExpiryNotification::content()) ; GLPI remplace ensuite les balises ##exception.*##.
+   labels : libellé par balise ; advice : conduite à tenir. #}
+<p><strong>##exception.action##</strong></p>
+<table cellpadding="4">
+    {% for tag, label in labels %}
+        <tr>
+            <th align="left" valign="top">{{ label }}</th>
+            <td>##exception.{{ tag }}##</td>
+        </tr>
+    {% endfor %}
+</table>
+<p>{{ advice }}</p>
+<p><a href="##exception.url##">##exception.url##</a></p>
