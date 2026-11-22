@@ -3511,7 +3511,7 @@ msgstr "Dias restantes"
 #: src/Install/ExpiryNotification.php:122
 #: src/NotificationTargetHardeningException.php:136
 msgid "Justification"
-msgstr "Justificação"
+msgstr "Justificativa"
 
 #: src/Install/ExpiryNotification.php:123
 #: src/NotificationTargetHardeningException.php:52
@@ -3521,7 +3521,7 @@ msgstr "Autor da exceção"
 
 #: src/Install/ExpiryNotification.php:127
 msgid "Renouvelez l’exception avec une justification à jour, ou corrigez l’écart sur la plateforme."
-msgstr "Renove a exceção com uma justificação atualizada ou corrija o desvio na plataforma."
+msgstr "Renove a exceção com uma justificativa atualizada ou corrija o desvio na plataforma."
 
 #: src/NotificationTargetHardeningException.php:44
 msgid "Exception de configuration qui expire bientôt"

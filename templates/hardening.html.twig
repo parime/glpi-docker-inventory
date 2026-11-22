@@ -16,7 +16,8 @@
 {% import '@dockerinventory/_tone.html.twig' as tone %}
 
 {# Sous-page « Configuration à risque » de l'entrée Inventaire Docker (#71) : carte de synthèse,
-   filtres par gravité la plus haute, par exception et par exception qui expire bientôt (#99), écarts des services actifs (entités actives). #}
+   filtres par gravité la plus haute, par exception et par exception qui expire bientôt (#99),
+   écarts des services actifs (entités actives). #}
 <div class="container-fluid">
     {{ include('@dockerinventory/_page_help.html.twig', {
         page: 'hardening',
@@ -144,7 +145,10 @@
                     <span class="badge bg-success-subtle text-success-emphasis ms-1">{{ counts.with_exception }}</span>
                 </a>
                 <a href="{{ page_url }}&filter={{ expiring_filter }}"
-                   title="{{ __('Exceptions en cours qui finissent dans les %d jours : à renouveler ou à corriger.', 'dockerinventory')|format(remind_days) }}"
+                   title="{{ __(
+                       'Exceptions en cours qui finissent dans les %d jours : à renouveler ou à corriger.',
+                       'dockerinventory'
+                   )|format(remind_days) }}"
                    class="btn btn-sm {{ filter == expiring_filter ? 'btn-orange' : 'btn-outline-orange' }}">
                     <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
                     {{ __('Expire bientôt', 'dockerinventory') }}
