@@ -16,7 +16,7 @@
 {% import '@dockerinventory/_tone.html.twig' as tone %}
 
 {# Sous-page « Configuration à risque » de l'entrée Inventaire Docker (#71) : carte de synthèse,
-   filtres par gravité la plus haute et par exception, écarts des services actifs (entités actives). #}
+   filtres par gravité la plus haute, par exception et par exception qui expire bientôt (#99), écarts des services actifs (entités actives). #}
 <div class="container-fluid">
     {{ include('@dockerinventory/_page_help.html.twig', {
         page: 'hardening',
@@ -32,9 +32,37 @@
         reference: __('Durcissement et gestion des configurations (ISO 27001, mesure A.8.9).', 'dockerinventory'),
     }) }}
     {{ include('@dockerinventory/_section_nav.html.twig') }}
+    {# Carte mise en avant (#99) : la part sans écart critique ni haut, que les écarts bas ne
+       font pas tomber à 0 % ; puis la part sans aucun écart ouvert, bas compris. #}
+    {% set serious_free = counts.analysed - counts.critical - counts.high %}
+    {% set serious_tone = counts.critical > 0 ? 'danger' : (counts.high > 0 ? 'orange' : 'success') %}
     <div class="row row-cards mb-3">
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-sm">
+            <div class="card card-sm" data-dockerinventory-card="serious">
+                {% if counts.analysed > 0 %}<div class="card-status-top bg-{{ serious_tone }}"></div>{% endif %}
+                <div class="card-body">
+                    <div class="small fw-bold">
+                        <i class="ti ti-alert-octagon {{ tone.text(serious_tone) }} me-1" aria-hidden="true"></i>
+                        {{ __('Sans écart critique ni haut', 'dockerinventory') }}
+                    </div>
+                    <div class="h1 mb-0">{{ rate_serious is null ? '-' : rate_serious ~ ' %' }}</div>
+                    <div class="small text-muted">
+                        {{ __(
+                            '%1$d sur %2$d services analysés',
+                            'dockerinventory'
+                        )|format(serious_free, counts.analysed) }}
+                    </div>
+                    <div class="small text-muted">
+                        {{ __(
+                            'Écarts couverts par une exception en cours exclus',
+                            'dockerinventory'
+                        ) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card card-sm" data-dockerinventory-card="compliant">
                 <div class="card-body">
                     <div class="text-muted small">
                         <i class="ti ti-shield-check text-success me-1" aria-hidden="true"></i>
@@ -47,28 +75,12 @@
                             'dockerinventory'
                         )|format(counts.compliant, counts.analysed) }}
                     </div>
+                    <div class="small text-muted">{{ __('Écarts de gravité basse compris', 'dockerinventory') }}</div>
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-sm">
-                <div class="card-body">
-                    <div class="text-muted small">
-                        <i class="ti ti-alert-octagon text-danger me-1" aria-hidden="true"></i>
-                        {{ __('Sans écart critique ni haut', 'dockerinventory') }}
-                    </div>
-                    <div class="h1 mb-0">{{ rate_serious is null ? '-' : rate_serious ~ ' %' }}</div>
-                    <div class="small text-muted">
-                        {{ __(
-                            'Écarts couverts par une exception en cours exclus',
-                            'dockerinventory'
-                        ) }}
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-            <div class="card card-sm">
+            <div class="card card-sm" data-dockerinventory-card="exception">
                 <div class="card-body">
                     <div class="text-muted small">
                         <i class="ti ti-shield-half text-info me-1" aria-hidden="true"></i>
@@ -76,11 +88,24 @@
                     </div>
                     <div class="h1 mb-0">{{ counts.with_exception }}</div>
                     <div class="small text-muted">{{ __('En cours ou expirée', 'dockerinventory') }}</div>
+                    {% if counts.expiring > 0 %}
+                        <a href="{{ page_url }}&filter={{ expiring_filter }}"
+                           class="badge {{ tone.badge('orange') }} mt-1 text-wrap text-start"
+                           data-dockerinventory-expiring-count="{{ counts.expiring }}">
+                            <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
+                            {{ _n(
+                                '%1$d exception expire dans les %2$d jours',
+                                '%1$d exceptions expirent dans les %2$d jours',
+                                counts.expiring,
+                                'dockerinventory'
+                            )|format(counts.expiring, remind_days) }}
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
         <div class="col-sm-6 col-lg-3">
-            <div class="card card-sm">
+            <div class="card card-sm" data-dockerinventory-card="not-analysed">
                 <div class="card-body">
                     <div class="text-muted small">
                         <i class="ti ti-hourglass text-secondary me-1" aria-hidden="true"></i>
@@ -117,6 +142,13 @@
                     <i class="ti ti-shield-half me-1" aria-hidden="true"></i>
                     {{ __('Avec une exception', 'dockerinventory') }}
                     <span class="badge bg-success-subtle text-success-emphasis ms-1">{{ counts.with_exception }}</span>
+                </a>
+                <a href="{{ page_url }}&filter={{ expiring_filter }}"
+                   title="{{ __('Exceptions en cours qui finissent dans les %d jours : à renouveler ou à corriger.', 'dockerinventory')|format(remind_days) }}"
+                   class="btn btn-sm {{ filter == expiring_filter ? 'btn-orange' : 'btn-outline-orange' }}">
+                    <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
+                    {{ __('Expire bientôt', 'dockerinventory') }}
+                    <span class="badge {{ tone.badge('orange') }} ms-1">{{ counts.expiring }}</span>
                 </a>
             </div>
             <p class="small text-muted mt-2 mb-0">

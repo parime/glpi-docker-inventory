@@ -38,6 +38,18 @@ class HardeningException extends HardeningExceptionBase
     /** Durée maximale d'une exception, en jours (à renouveler ensuite). */
     public const MAX_DAYS = 366;
 
+    /**
+     * Rappel avant l'expiration (#99) : une exception en cours qui finit dans ce nombre de jours
+     * au plus « expire bientôt » (badge orange, compteur) et fait l'objet d'une notification.
+     */
+    public const REMIND_DAYS = 30;
+
+    /** Événement de notification du rappel (NotificationTargetHardeningException). */
+    public const EVENT_EXPIRING = 'expiring';
+
+    /** Tâche automatique quotidienne du rappel. */
+    public const CRON_NAME = 'hardeningexpiry';
+
     public static function getTypeName($nb = 0)
     {
         return $nb > 1
@@ -98,6 +110,31 @@ class HardeningException extends HardeningExceptionBase
         }
 
         return $end >= $start && $end <= $start->modify('+' . self::MAX_DAYS . ' days');
+    }
+
+    /**
+     * Jours restants jusqu'à la date de fin incluse (0 le dernier jour, négatif une fois expirée),
+     * null si une date est illisible.
+     */
+    public static function daysLeft(string $endDate, string $today): ?int
+    {
+        $end = \DateTimeImmutable::createFromFormat('!Y-m-d', substr($endDate, 0, 10));
+        $start = \DateTimeImmutable::createFromFormat('!Y-m-d', substr($today, 0, 10));
+        if ($end === false || $start === false) {
+            return null;
+        }
+
+        return (int) $start->diff($end)->format('%r%a');
+    }
+
+    /**
+     * L'exception est-elle en cours et finit-elle dans REMIND_DAYS jours au plus ?
+     */
+    public static function isExpiringSoon(string $endDate, string $today): bool
+    {
+        $days = self::daysLeft($endDate, $today);
+
+        return $days !== null && $days >= 0 && $days <= self::REMIND_DAYS;
     }
 
     /**
