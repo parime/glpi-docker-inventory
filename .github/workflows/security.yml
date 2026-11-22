@@ -1,5 +1,7 @@
 # Contrôles de sécurité communs à tous les plugins GLPI (parime/glpi-plugin-security) : règles
-# Semgrep, onglets sans droit, droits attribuables, traductions, archive, restes après désinstallation.
+# Semgrep, onglets sans droit, droits attribuables, traductions, archive, restes après désinstallation,
+# secrets (Gitleaks), dépendances (Trivy, Dependency Review), CodeQL, mise à jour depuis la version
+# publiée, tests d'intégration en français et parcours de toutes les pages (GLPI 11 et 12).
 name: Sécurité commune
 
 on:
@@ -13,7 +15,7 @@ permissions:
 
 jobs:
   security:
-    uses: parime/glpi-plugin-security/.github/workflows/plugin-security.yml@v1.9.0
+    uses: parime/glpi-plugin-security/.github/workflows/plugin-security.yml@v1.10.1
     with:
       plugin-key: dockerinventory
       seed-command: php plugins/dockerinventory/tests/security/setup.php
@@ -21,3 +23,8 @@ jobs:
       charter-mode: error
       # Matrice d'accès écrite en PHPUnit (#43) : la couverture des pages reste bloquante.
       access-matrix-file: tests/Integration/AccessControlTest.php
+      # Parcours de toutes les pages (avec le jeu de données de seed-command) en avertissement, le
+      # temps de l'issue de navigation #118. (navigation-mode: warning sera à ajouter quand le
+      # workflow commun aura de nouveau son job « navigation » : il manque depuis v1.10.0,
+      # parime/glpi-plugin-security#37.)
+      pages-mode: warning

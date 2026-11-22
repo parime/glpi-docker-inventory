@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- CI : contrôles de sécurité communs glpi-plugin-security v1.10.1 (secrets, dépendances, CodeQL,
+  test de mise à jour depuis la version publiée, tests d'intégration en français, parcours de toutes
+  les pages) ; le faux serveur Kubernetes des tests exige TLS 1.2 au moins.
+
 ### Fixed
 
 - Tests de mise à jour du schéma ([#113](https://github.com/parime/glpi-docker-inventory/issues/113)) :
