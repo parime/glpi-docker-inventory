@@ -3524,3 +3524,7 @@ msgstr "Rinnovate l’eccezione con una giustificazione aggiornata oppure correg
 #: src/NotificationTargetHardeningException.php:44
 msgid "Exception de configuration qui expire bientôt"
 msgstr "Eccezione di configurazione in scadenza"
+
+#: src/NotificationTargetHardeningException.php:160
+msgid "Conduite à tenir"
+msgstr "Cosa fare"

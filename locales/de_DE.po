@@ -3527,3 +3527,7 @@ msgstr "Verlängern Sie die Ausnahme mit einer aktuellen Begründung oder behebe
 #: src/NotificationTargetHardeningException.php:44
 msgid "Exception de configuration qui expire bientôt"
 msgstr "Konfigurationsausnahme läuft bald ab"
+
+#: src/NotificationTargetHardeningException.php:160
+msgid "Conduite à tenir"
+msgstr "Vorgehensweise"

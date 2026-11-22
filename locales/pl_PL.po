@@ -3531,3 +3531,7 @@ msgstr "Odnów wyjątek z aktualnym uzasadnieniem albo popraw odstępstwo na pla
 #: src/NotificationTargetHardeningException.php:44
 msgid "Exception de configuration qui expire bientôt"
 msgstr "Wyjątek konfiguracji wkrótce wygasa"
+
+#: src/NotificationTargetHardeningException.php:160
+msgid "Conduite à tenir"
+msgstr "Co zrobić"
