@@ -3535,3 +3535,79 @@ msgstr "Wyjątek konfiguracji wkrótce wygasa"
 #: src/NotificationTargetHardeningException.php:160
 msgid "Conduite à tenir"
 msgstr "Co zrobić"
+
+msgid "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+msgstr "Jeszcze nie odczytano: brak zadania automatycznego, odczyt następuje po kliknięciu."
+
+msgid "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+msgstr "Aby odczytać bez czekania: Zasoby > Inwentarz Docker > Usługi, blok „Źródła”."
+
+msgid "Catalogues KEV et EPSS"
+msgstr "Katalogi KEV i EPSS"
+
+msgid "Lecture de Traefik"
+msgstr "Odczyt Traefik"
+
+msgid "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+msgstr "Brak zadania automatycznego: odczyt uruchamia się w Zasoby > Inwentarz Docker > Ekspozycja."
+
+msgid "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Odczytane trasy i odczyt po kliknięciu: Zasoby > Inwentarz Docker > Ekspozycja."
+
+msgid "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Wybierz tutaj wyniki EPSS i ich próg; włącz zadanie automatyczne, aby aktualizować codziennie."
+
+msgid "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+msgstr "Pobieranie po kliknięciu i wgrywanie offline: Zasoby > Inwentarz Docker > Zaimportowane skany."
+
+msgid "Mise à jour des catalogues"
+msgstr "Aktualizacja katalogów"
+
+msgid "Correspondances de fin de support"
+msgstr "Powiązania końca wsparcia"
+
+msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Zadanie automatyczne odczytuje je raz dziennie; aby nie czekać: Zasoby > Inwentarz Docker > Koniec wsparcia obrazów."
+
+msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+msgstr "Brak połączeń: administrator dodaje je w konfiguracji wtyczki."
+
+msgid "Connexion"
+msgstr "Połączenie"
+
+msgid "Résultat"
+msgstr "Wynik"
+
+msgid "Actions"
+msgstr "Akcje"
+
+msgid "Lire maintenant"
+msgstr "Odczytaj teraz"
+
+msgid "Lecture de Harbor"
+msgstr "Odczyt Harbor"
+
+msgid "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+msgstr "Projekty, repozytoria, artefakty i podsumowanie skanów, odczytywane co godzinę; „Odczytaj teraz” nie czeka."
+
+msgid "La vérification tourne toutes les heures."
+msgstr "Sprawdzanie uruchamia się co godzinę."
+
+msgid "La lecture tourne toutes les heures."
+msgstr "Odczyt uruchamia się co godzinę."
+
+msgid "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+msgstr "Aby odczytać Harbor bez czekania: Zasoby > Inwentarz Docker > Obrazy Harbor i podatności."
+
+msgid "Sources"
+msgstr "Źródła"
+
+msgid "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+msgstr "Platformy odczytywane przez wtyczkę, bez żadnych zmian, przez zadania automatyczne lub po kliknięciu."
+
+msgid "Cette connexion n’est pas un registre Harbor."
+msgstr "To połączenie nie jest rejestrem Harbor."
+
+#, php-format
+msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+msgstr "Ten odczyt uruchamia się teraz w Zasoby > Inwentarz Docker > %s."

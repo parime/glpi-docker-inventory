@@ -3531,3 +3531,79 @@ msgstr "Konfigurationsausnahme läuft bald ab"
 #: src/NotificationTargetHardeningException.php:160
 msgid "Conduite à tenir"
 msgstr "Vorgehensweise"
+
+msgid "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+msgstr "Noch nicht gelesen: keine automatische Aufgabe, das Lesen erfolgt per Klick."
+
+msgid "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+msgstr "Sofort lesen: Assets > Docker-Inventar > Dienste, Block „Quellen“."
+
+msgid "Catalogues KEV et EPSS"
+msgstr "KEV- und EPSS-Kataloge"
+
+msgid "Lecture de Traefik"
+msgstr "Lesen von Traefik"
+
+msgid "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+msgstr "Keine automatische Aufgabe: das Lesen wird unter Assets > Docker-Inventar > Erreichbarkeit gestartet."
+
+msgid "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Gelesene Routen und Lesen per Klick: Assets > Docker-Inventar > Erreichbarkeit."
+
+msgid "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Wählen Sie hier die EPSS-Werte und ihren Schwellenwert; aktivieren Sie die automatische Aufgabe für eine tägliche Aktualisierung."
+
+msgid "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+msgstr "Herunterladen per Klick und Offline-Ablage: Assets > Docker-Inventar > Importierte Analysen."
+
+msgid "Mise à jour des catalogues"
+msgstr "Aktualisierung der Kataloge"
+
+msgid "Correspondances de fin de support"
+msgstr "Zuordnungen für das Supportende"
+
+msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Die automatische Aufgabe liest sie einmal täglich; ohne zu warten: Assets > Docker-Inventar > Supportende der Images."
+
+msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+msgstr "Noch keine Verbindung: der Administrator fügt sie in der Plugin-Konfiguration hinzu."
+
+msgid "Connexion"
+msgstr "Verbindung"
+
+msgid "Résultat"
+msgstr "Ergebnis"
+
+msgid "Actions"
+msgstr "Aktionen"
+
+msgid "Lire maintenant"
+msgstr "Jetzt lesen"
+
+msgid "Lecture de Harbor"
+msgstr "Lesen von Harbor"
+
+msgid "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+msgstr "Projekte, Repositorys, Artefakte und Analysezusammenfassungen, stündlich gelesen; „Jetzt lesen“ wartet nicht darauf."
+
+msgid "La vérification tourne toutes les heures."
+msgstr "Die Prüfung läuft stündlich."
+
+msgid "La lecture tourne toutes les heures."
+msgstr "Das Lesen läuft stündlich."
+
+msgid "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+msgstr "Harbor sofort lesen: Assets > Docker-Inventar > Harbor-Images und Schwachstellen."
+
+msgid "Sources"
+msgstr "Quellen"
+
+msgid "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+msgstr "Vom Plugin gelesene Plattformen, ohne etwas zu ändern, durch automatische Aufgaben oder per Klick."
+
+msgid "Cette connexion n’est pas un registre Harbor."
+msgstr "Diese Verbindung ist keine Harbor-Registry."
+
+#, php-format
+msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+msgstr "Dieses Lesen wird jetzt unter Assets > Docker-Inventar > %s gestartet."

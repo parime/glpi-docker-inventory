@@ -3524,3 +3524,79 @@ msgstr "Configuration exception expiring soon"
 #: src/NotificationTargetHardeningException.php:160
 msgid "Conduite à tenir"
 msgstr "What to do"
+
+msgid "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+msgstr "Not read yet: no automatic action, reading happens on click."
+
+msgid "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+msgstr "To read without waiting: Assets > Docker Inventory > Services, “Sources” block."
+
+msgid "Catalogues KEV et EPSS"
+msgstr "KEV and EPSS catalogues"
+
+msgid "Lecture de Traefik"
+msgstr "Traefik reading"
+
+msgid "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+msgstr "No automatic action: reading is started from Assets > Docker Inventory > Exposure."
+
+msgid "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Routes read and reading on click: Assets > Docker Inventory > Exposure."
+
+msgid "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Choose here whether to use EPSS scores and their threshold; enable the automatic action for a daily update."
+
+msgid "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+msgstr "Download on click and offline upload: Assets > Docker Inventory > Imported scans."
+
+msgid "Mise à jour des catalogues"
+msgstr "Catalogue update"
+
+msgid "Correspondances de fin de support"
+msgstr "End-of-support mappings"
+
+msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "The automatic action reads them once a day; to avoid waiting: Assets > Docker Inventory > Image end of support."
+
+msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+msgstr "No connection yet: the administrator adds them in the plugin configuration."
+
+msgid "Connexion"
+msgstr "Connection"
+
+msgid "Résultat"
+msgstr "Result"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Lire maintenant"
+msgstr "Read now"
+
+msgid "Lecture de Harbor"
+msgstr "Harbor reading"
+
+msgid "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+msgstr "Projects, repositories, artifacts and scan summaries, read every hour; “Read now” does not wait."
+
+msgid "La vérification tourne toutes les heures."
+msgstr "The check runs every hour."
+
+msgid "La lecture tourne toutes les heures."
+msgstr "Reading runs every hour."
+
+msgid "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+msgstr "To read Harbor without waiting: Assets > Docker Inventory > Harbor images and vulnerabilities."
+
+msgid "Sources"
+msgstr "Sources"
+
+msgid "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+msgstr "Platforms read by the plugin, without changing anything, by automatic actions or on click."
+
+msgid "Cette connexion n’est pas un registre Harbor."
+msgstr "This connection is not a Harbor registry."
+
+#, php-format
+msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+msgstr "This reading is now started from Assets > Docker Inventory > %s."
