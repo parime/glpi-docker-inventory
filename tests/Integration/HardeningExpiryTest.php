@@ -150,7 +150,10 @@ final class HardeningExpiryTest extends TestCase
         $reminded = fn (): array => array_column(iterator_to_array($DB->request([
             'SELECT' => ['plugin_dockerinventory_services_id', 'code', 'reminded_date_end'],
             'FROM'   => HardeningException::getTable(),
-            'WHERE'  => ['plugin_dockerinventory_services_id' => $this->services, 'NOT' => ['reminded_date_end' => null]],
+            'WHERE'  => [
+                'plugin_dockerinventory_services_id' => $this->services,
+                'NOT'                                => ['reminded_date_end' => null],
+            ],
         ]), false), 'reminded_date_end', 'code');
 
         HardeningException::remindExpiring($this->today);

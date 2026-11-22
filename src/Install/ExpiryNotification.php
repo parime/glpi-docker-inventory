@@ -91,18 +91,11 @@ final class ExpiryNotification
     {
         global $DB;
 
-        $itemtype = HardeningException::class;
-        $notification = new Notification();
-        foreach (
-            $DB->request(['SELECT' => 'id', 'FROM' => Notification::getTable(), 'WHERE' => ['itemtype' => $itemtype]]) as $row
-        ) {
-            $notification->delete(['id' => (int) $row['id']], true);
-        }
-        $template = new NotificationTemplate();
-        foreach (
-            $DB->request(['SELECT' => 'id', 'FROM' => NotificationTemplate::getTable(), 'WHERE' => ['itemtype' => $itemtype]]) as $row
-        ) {
-            $template->delete(['id' => (int) $row['id']], true);
+        $where = ['itemtype' => HardeningException::class];
+        foreach ([new Notification(), new NotificationTemplate()] as $item) {
+            foreach ($DB->request(['SELECT' => 'id', 'FROM' => $item::getTable(), 'WHERE' => $where]) as $row) {
+                $item->delete(['id' => (int) $row['id']], true);
+            }
         }
     }
 
