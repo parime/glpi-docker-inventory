@@ -1,0 +1,111 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Bloc « Sources » des écrans d'usage de Parc > Inventaire Docker (#118) : une ligne par connexion
+   visible (type, dernière lecture, résultat) et « Lire maintenant » pour qui a le droit de mise à
+   jour de la configuration. Les identifiants et « Tester la connexion » restent dans la configuration.
+   Variables : sources (Connection::sourceRows()), harbor (vrai : projets, artefacts et analyses de
+   Harbor, sinon import ou vérification), read_url, can_run, form_url (fiche, vide sans le droit),
+   title, help. #}
+{% set harbor = harbor|default(false) %}
+<div class="card my-3" id="dockerinventory-sources">
+    <div class="card-header">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-plug-connected me-2" aria-hidden="true"></i>{{ title }}
+            <span class="badge bg-secondary-subtle text-secondary-emphasis ms-2">{{ sources|length }}</span>
+        </h2>
+    </div>
+    <div class="card-body pb-0">
+        <p class="text-muted">{{ help }}</p>
+    </div>
+    {% if sources is empty %}
+        <div class="card-body pt-0">
+            <p class="text-muted mb-0">
+                <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
+                {{ __('Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin.', 'dockerinventory') }}
+            </p>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                <thead>
+                    <tr>
+                        <th scope="col">{{ __('Connexion', 'dockerinventory') }}</th>
+                        <th scope="col">{{ __('Type', 'dockerinventory') }}</th>
+                        <th scope="col">{{ __('Dernière lecture', 'dockerinventory') }}</th>
+                        <th scope="col">{{ __('Résultat', 'dockerinventory') }}</th>
+                        {% if can_run %}
+                            <th scope="col"><span class="visually-hidden">{{ __('Actions', 'dockerinventory') }}</span></th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for source in sources %}
+                        {% set date = harbor ? source.scan_date : source.date %}
+                        <tr>
+                            <td>
+                                {% if form_url %}
+                                    <a href="{{ form_url }}?id={{ source.id }}">{{ source.name }}</a>
+                                {% else %}
+                                    {{ source.name }}
+                                {% endif %}
+                                {% if not source.is_active %}
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis ms-1">
+                                        <i class="ti ti-circle-off me-1" aria-hidden="true"></i>
+                                        {{- __('Désactivée', 'dockerinventory') -}}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {{ tone.badge('info') }}">{{ source.type_label }}</span>
+                            </td>
+                            <td>
+                                {% if date %}
+                                    {{ date|formatted_datetime }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {{ tone.badge(harbor ? source.scan_color : source.status_color) }}">
+                                    {{- harbor ? source.scan_label : source.status_label -}}
+                                </span>
+                            </td>
+                            {% if can_run %}
+                                <td class="text-end">
+                                    {% if source.is_active %}
+                                        <form method="post" action="{{ read_url }}" class="d-inline">
+                                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="id" value="{{ source.id }}">
+                                            <button type="submit" name="{{ harbor ? 'harbor_read' : 'read' }}" value="1"
+                                                    class="btn btn-outline-primary btn-sm"
+                                                    aria-label="{{ __('Lire maintenant', 'dockerinventory') }} : {{ source.name }}">
+                                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                                                {{- __('Lire maintenant', 'dockerinventory') -}}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

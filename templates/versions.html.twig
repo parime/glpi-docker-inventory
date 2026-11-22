@@ -39,7 +39,7 @@
             </h2>
             <div class="ms-auto d-flex flex-wrap gap-2">
                 {% if can_configure %}
-                    <form method="post" action="{{ connection_form_url }}" class="d-inline">
+                    <form method="post" action="{{ read_url }}" class="d-inline">
                         <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
                         {% set check_help = __(
                             'Docker Hub au plus une fois par jour et par image.',

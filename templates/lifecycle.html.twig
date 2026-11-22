@@ -32,7 +32,7 @@
         <div class="card-header d-flex flex-wrap align-items-center gap-2">
             <h2 class="card-title mb-0">
                 <i class="ti ti-calendar-x me-2" aria-hidden="true"></i>
-                {{ __('Fin de support des images', 'dockerinventory') }}
+                {{ __('Correspondances de fin de support', 'dockerinventory') }}
             </h2>
             {% if settings.enabled %}
                 <span class="badge bg-success-subtle text-success-emphasis">
@@ -43,10 +43,6 @@
                     <i class="ti ti-circle-off me-1" aria-hidden="true"></i>{{ __('Désactivée', 'dockerinventory') }}
                 </span>
             {% endif %}
-            <a href="{{ versions_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
-                <i class="ti ti-calendar-x me-1" aria-hidden="true"></i>
-                {{ __('Voir les images concernées', 'dockerinventory') }}
-            </a>
         </div>
         <div class="card-body">
             <p class="text-muted">
@@ -112,17 +108,6 @@
             <h3 class="card-title mb-0">
                 <i class="ti ti-refresh me-2" aria-hidden="true"></i>{{ __('Dernière mise à jour', 'dockerinventory') }}
             </h3>
-            {% if settings.enabled %}
-                <form method="post" action="{{ page_url }}" class="ms-auto">
-                    <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" name="refresh" value="1" class="btn btn-outline-primary btn-sm"
-                            title="{{ __('Chaque produit au plus une fois par jour.', 'dockerinventory') }}"
-                            data-bs-toggle="tooltip">
-                        <i class="ti ti-refresh me-1" aria-hidden="true"></i>
-                        {{ __('Mettre à jour maintenant', 'dockerinventory') }}
-                    </button>
-                </form>
-            {% endif %}
         </div>
         <div class="card-body">
             {% if source.last_success %}
@@ -142,7 +127,7 @@
                     {{ __('Aucune donnée pour le moment.', 'dockerinventory') }}
                     {% if settings.enabled %}
                         {{ __(
-                'Cliquez sur « Mettre à jour maintenant » ou attendez la tâche automatique (une fois par jour).',
+                            'La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images.',
                             'dockerinventory'
                         ) }}
                     {% else %}

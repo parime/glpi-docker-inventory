@@ -16,7 +16,7 @@
  */
 
 use GlpiPlugin\Dockerinventory\Connection;
-use GlpiPlugin\Dockerinventory\Registry\RegistryImporter;
+use GlpiPlugin\Dockerinventory\ManualRead;
 
 Session::checkRight(Connection::RIGHTNAME, UPDATE);
 
@@ -45,35 +45,13 @@ if (isset($_POST['add'])) {
     Session::addMessageAfterRedirect(htmlescape($result['message']), false, $level);
     Html::back();
 } elseif (isset($_POST['registry_check'])) {
-    // Page des versions : vérification des registres (Docker Hub, Harbor) sans attendre la tâche.
-    $report = (new RegistryImporter())->run();
-    Session::addMessageAfterRedirect(htmlescape(Connection::registryMessage($report)), false, INFO);
+    // Ancien envoi de la page des versions (jusqu'à la version 0.16.0) : front/source.form.php.
+    ManualRead::flash(ManualRead::registries());
     Html::back();
-} elseif (isset($_POST['harbor_import'])) {
-    // Connexion Harbor : projets, artefacts et analyses sans attendre la tâche automatique.
-    $connection->check($id, UPDATE);
-    if ($connection->isHarbor()) {
-        $report = $connection->runHarborImport();
-        Session::addMessageAfterRedirect(
-            htmlescape(Connection::harborMessage($report)),
-            false,
-            $report['status'] === Connection::STATUS_ERROR ? ERROR : INFO
-        );
-    }
-    Html::back();
-} elseif (isset($_POST['import'])) {
-    $connection->check($id, UPDATE);
-    $report = $connection->runImport();
-    Session::addMessageAfterRedirect(
-        htmlescape($connection->importMessage($report)),
-        false,
-        match ($report['status']) {
-            Connection::STATUS_ERROR => ERROR,
-            Connection::STATUS_WARNING, Connection::STATUS_PARTIAL => WARNING,
-            default => INFO,
-        }
-    );
-    Html::back();
+} elseif (($legacy = ManualRead::legacy($_POST, $_FILES)) !== null) {
+    // Anciens boutons « Importer maintenant », « Lire … maintenant » de la fiche (jusqu'à la version
+    // 0.16.0) : la lecture est faite, puis l'utilisateur va à l'écran d'usage qui la propose (#118).
+    Html::redirect($legacy);
 }
 
 $connection->check($id > 0 ? $id : -1, $id > 0 ? READ : CREATE);
