@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.16.0] - 2026-11-22
+
 ### Added
 
 - Rappel avant l'expiration d'une exception de configuration
