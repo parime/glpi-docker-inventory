@@ -34,7 +34,7 @@ import re
 import sys
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, quote, unquote, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 FIXTURE = sys.argv[1]
 PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 5200
@@ -132,9 +132,9 @@ class Handler(BaseHTTPRequestHandler):
         if total is not None:
             self.send_header('X-Total-Count', str(total))
             if page * size < total:
-                # Chemin encodé : un retour à la ligne venu de la requête ne peut pas créer d'en-tête (CodeQL py/http-response-splitting).
-                path = quote(urlsplit(self.path).path, safe='/')
-                self.send_header('Link', f'<{path}?page={page + 1}&page_size={size}>; rel="next"')
+                # Référence relative limitée à la requête (RFC 3986) : aucune donnée de la requête dans l'en-tête
+                # (CodeQL py/http-response-splitting).
+                self.send_header('Link', f'<?page={page + 1}&page_size={size}>; rel="next"')
         self.end_headers()
         self.wfile.write(body)
 
