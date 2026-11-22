@@ -17,12 +17,16 @@
    Les badges bg-X-lt et bg-X text-white de Tabler descendent à 2:1 pour le vert, l'orange ou le
    jaune ; bg-S-subtle text-S-emphasis (Bootstrap 5.3, variantes claire et sombre fournies par
    Tabler) garde la même couleur de sens avec un texte foncé. X : couleur Tabler, S : couleur
-   sémantique. #}
+   sémantique.
+   Gravité haute (#99) : orange gardé à part du jaune de « warning » (gravité moyenne), comme les
+   badges de GRC Manager ; Tabler ne fournit ni bg-orange-subtle ni text-orange-emphasis, définies
+   par public/css/dockerinventory.css (variantes claire et sombre, même contraste). #}
 {% macro semantic(color) -%}
     {{- {
         success: 'success', green: 'success', teal: 'success', lime: 'success',
         info: 'info', blue: 'info', azure: 'info', cyan: 'info', indigo: 'info', primary: 'info',
-        warning: 'warning', orange: 'warning', yellow: 'warning',
+        warning: 'warning', yellow: 'warning',
+        orange: 'orange',
         danger: 'danger', red: 'danger',
         secondary: 'secondary', purple: 'secondary', muted: 'secondary'
     }[color]|default('secondary') -}}

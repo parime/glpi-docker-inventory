@@ -66,6 +66,9 @@ function plugin_init_dockerinventory(): void
         'assets' => [Menu::class],
     ];
     $PLUGIN_HOOKS[Hooks::CONFIG_PAGE]['dockerinventory'] = 'front/config.php';
+
+    // Couleur propre à la gravité haute (#99) : classes orange absentes de Tabler.
+    $PLUGIN_HOOKS[Hooks::ADD_CSS]['dockerinventory'] = ['css/dockerinventory.css'];
 }
 
 /**
