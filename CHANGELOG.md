@@ -5,6 +5,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Fixed
+
+- Tests de mise à jour du schéma ([#113](https://github.com/parime/glpi-docker-inventory/issues/113)) :
+  `InstallerTest` copie les tables du plugin (structure et lignes), ses tâches automatiques et sa
+  configuration avant chaque test et les remet telles quelles après, même en cas d'échec ; une
+  copie laissée par un test interrompu est rendue au lancement suivant. Une instance partagée ne
+  perd plus de colonnes (`kind`, `compose_project`), de clé (`unicity`) ni de données.
+
 ## [0.16.0] - 2026-11-22
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

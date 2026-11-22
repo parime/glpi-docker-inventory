@@ -42,15 +42,29 @@ final class InstallerTest extends TestCase
 {
     private const STACKS = 'glpi_plugin_dockerinventory_stacks';
 
-    /** Connexion fictive, sans ligne dans la table des connexions : rien d'autre n'est touché. */
+    /** Connexion fictive, sans ligne dans la table des connexions. */
     private const CONNECTION = 999001;
+
+    private PluginSchemaSnapshot $snapshot;
+
+    /**
+     * Ces tests changent le schéma des tables réelles du plugin (colonnes, clés, tables) : copie de
+     * sauvegarde avant chaque test, remise en état après, même en cas d'échec (#113).
+     */
+    protected function setUp(): void
+    {
+        $this->snapshot = new PluginSchemaSnapshot();
+        try {
+            $this->snapshot->take();
+        } catch (\Throwable $e) {
+            $this->snapshot->restore();
+            throw $e;
+        }
+    }
 
     protected function tearDown(): void
     {
-        global $DB;
-
-        $DB->delete(self::STACKS, ['plugin_dockerinventory_connections_id' => self::CONNECTION]);
-        $DB->delete(Service::getTable(), ['plugin_dockerinventory_connections_id' => self::CONNECTION]);
+        $this->snapshot->restore();
     }
 
     public function testUpgradeFrom030KeepsSwarmRowsAndAddsComposeColumns(): void
@@ -132,54 +146,39 @@ final class InstallerTest extends TestCase
     {
         global $DB;
 
-        $mappings = [];
-        foreach ($DB->request(['FROM' => LifecycleProduct::getTable()]) as $row) {
-            unset($row['id']);
-            $mappings[] = $row;
+        foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
+            $DB->dropTable($table, true);
         }
-        $settings = Settings::get();
-        try {
-            foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
-                $DB->dropTable($table, true);
-            }
-            $migration = new Migration(PLUGIN_DOCKERINVENTORY_VERSION);
-            $migration->dropField(Connection::getTable(), 'ticket_eol_enabled');
-            $migration->dropField(Connection::getTable(), 'ticket_eol_days');
-            $migration->migrationOneTable(Connection::getTable());
-            Settings::delete();
-            \CronTask::unregister('dockerinventory');
+        $migration = new Migration(PLUGIN_DOCKERINVENTORY_VERSION);
+        $migration->dropField(Connection::getTable(), 'ticket_eol_enabled');
+        $migration->dropField(Connection::getTable(), 'ticket_eol_days');
+        $migration->migrationOneTable(Connection::getTable());
+        Settings::delete();
+        \CronTask::unregister('dockerinventory');
 
-            $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
+        $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
 
-            foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
-                $this->assertTrue($DB->tableExists($table, false), $table);
-            }
-            $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_enabled', false));
-            $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_days', false));
-            $this->assertSame(count(ProductMap::DEFAULTS), countElementsInTable(LifecycleProduct::getTable()));
-            $this->assertSame(1, countElementsInTable(
-                LifecycleProduct::getTable(),
-                ['image' => 'postgres', 'product' => 'postgresql', 'is_default' => 1]
-            ));
-            $this->assertFalse(Settings::enabled());
-            $this->assertSame(Settings::DEFAULT_WARNING_DAYS, Settings::warningDays());
-            $this->assertSame(1, countElementsInTable('glpi_crontasks', [
-                'itemtype' => LifecycleProduct::class,
-                'name'     => LifecycleProduct::CRON_NAME,
-            ]));
-
-            // Correspondance supprimée par l'administrateur : pas rajoutée à la mise à jour suivante.
-            $DB->delete(LifecycleProduct::getTable(), ['image' => 'postgres']);
-            $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
-            $this->assertSame(0, countElementsInTable(LifecycleProduct::getTable(), ['image' => 'postgres']));
-        } finally {
-            $DB->delete(LifecycleProduct::getTable(), ['id' => ['>', 0]]);
-            foreach ($mappings as $row) {
-                $DB->insert(LifecycleProduct::getTable(), $row);
-            }
-            Settings::save($settings['enabled'], $settings['warning_days']);
-            (new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION));
+        foreach ([LifecycleProduct::getTable(), LifecycleChecker::CACHE_TABLE, EolTickets::TABLE] as $table) {
+            $this->assertTrue($DB->tableExists($table, false), $table);
         }
+        $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_enabled', false));
+        $this->assertTrue($DB->fieldExists(Connection::getTable(), 'ticket_eol_days', false));
+        $this->assertSame(count(ProductMap::DEFAULTS), countElementsInTable(LifecycleProduct::getTable()));
+        $this->assertSame(1, countElementsInTable(
+            LifecycleProduct::getTable(),
+            ['image' => 'postgres', 'product' => 'postgresql', 'is_default' => 1]
+        ));
+        $this->assertFalse(Settings::enabled());
+        $this->assertSame(Settings::DEFAULT_WARNING_DAYS, Settings::warningDays());
+        $this->assertSame(1, countElementsInTable('glpi_crontasks', [
+            'itemtype' => LifecycleProduct::class,
+            'name'     => LifecycleProduct::CRON_NAME,
+        ]));
+
+        // Correspondance supprimée par l'administrateur : pas rajoutée à la mise à jour suivante.
+        $DB->delete(LifecycleProduct::getTable(), ['image' => 'postgres']);
+        $this->assertTrue((new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION)));
+        $this->assertSame(0, countElementsInTable(LifecycleProduct::getTable(), ['image' => 'postgres']));
     }
 
     /**
@@ -231,7 +230,6 @@ final class InstallerTest extends TestCase
             $this->assertSame([], HarborSettings::configuredHosts());
         } finally {
             (new Connection())->delete(['id' => $connectionId], true);
-            (new Installer())->install(new Migration(PLUGIN_DOCKERINVENTORY_VERSION));
         }
     }
 
@@ -241,6 +239,11 @@ final class InstallerTest extends TestCase
     private function downgradeTo030(): void
     {
         global $DB;
+
+        // Tables vidées (rendues par la copie de sauvegarde) : des stacks Compose déjà importées
+        // (stack_uid 0) empêcheraient de recréer la clé d'unicité de la 0.3.0.
+        $DB->delete(self::STACKS, ['id' => ['>', 0]]);
+        $DB->delete(Service::getTable(), ['id' => ['>', 0]]);
 
         $migration = new Migration(PLUGIN_DOCKERINVENTORY_VERSION);
         $migration->dropKey(self::STACKS, 'unicity');
