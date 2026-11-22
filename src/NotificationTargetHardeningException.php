@@ -31,6 +31,8 @@ use User;
  *
  * Un destinataire ne reçoit le contenu que s'il peut lire les services dans l'entité de
  * l'exception (HardeningException::canReceive()), quelle que soit la cible.
+ *
+ * @extends NotificationTarget<HardeningException>
  */
 class NotificationTargetHardeningException extends NotificationTarget
 {
@@ -52,6 +54,10 @@ class NotificationTargetHardeningException extends NotificationTarget
         $this->addTarget(self::TARGET_AUTHOR, __('Auteur de l’exception', 'dockerinventory'));
     }
 
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $options
+     */
     public function addSpecificTargets($data, $options)
     {
         if ((int) ($data['items_id'] ?? 0) !== self::TARGET_AUTHOR) {
@@ -67,6 +73,9 @@ class NotificationTargetHardeningException extends NotificationTarget
         }
     }
 
+    /**
+     * @param array<string, mixed> $infos
+     */
     public function validateSendTo($event, array $infos, $notify_me = false, $emitter = null)
     {
         if (
