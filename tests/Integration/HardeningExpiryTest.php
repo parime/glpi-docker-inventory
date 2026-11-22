@@ -205,6 +205,8 @@ final class HardeningExpiryTest extends TestCase
         $this->assertSame('donnees-' . $this->suffix, $target->data['##exception.service##']);
         $this->assertSame('7', $target->data['##exception.days##']);
         $this->assertSame('Motif fictif', $target->data['##exception.justification##']);
+        $this->assertSame(NotificationTargetHardeningException::advice(), $target->data['##exception.advice##']);
+        $this->assertNotSame('', $target->data['##lang.exception.enddate##']);
         $this->assertStringContainsString('Service_' . $id, rawurldecode($target->data['##exception.url##']));
 
         // Le compte de test (super-administrateur, racine récursive) lit les services ; un compte
@@ -236,5 +238,13 @@ final class HardeningExpiryTest extends TestCase
         $this->assertStringContainsString('##exception.url##', $content['content_html']);
         $this->assertStringContainsString('##exception.days##', $content['content_text']);
         $this->assertStringNotContainsString('{{', $content['content_html']);
+        $this->assertStringContainsString('##lang.exception.enddate##', $content['content_html']);
+        // Libellés et conduite à tenir traduits à l'envoi, dans la langue du destinataire.
+        $target = new NotificationTargetHardeningException(0, HardeningException::EVENT_EXPIRING);
+        $target->getTags();
+        $this->assertArrayHasKey(
+            '##lang.exception.enddate##',
+            $target->tag_descriptions[\NotificationTarget::TAG_LANGUAGE]
+        );
     }
 }

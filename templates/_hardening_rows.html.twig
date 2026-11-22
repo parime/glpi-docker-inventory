@@ -54,8 +54,10 @@
                     <i class="ti ti-clock-exclamation me-1" aria-hidden="true"></i>
                     {{ __('Exception jusqu’au %s', 'dockerinventory')|format(exception.date_end|date('d/m/Y')) }}
                 </span>
-                <div class="small {{ tone.text('orange') }}">
-                    {{ finding.days_left == 0
+                {# Texte de la couleur du corps, lisible en thème clair comme sombre ; l'icône porte l'orange. #}
+                <div class="small">
+                    <i class="ti ti-alert-triangle text-orange me-1" aria-hidden="true"></i>
+                    {{- finding.days_left == 0
                         ? __('Expire aujourd’hui : à renouveler ou à corriger', 'dockerinventory')
                         : _n(
                             'Expire dans %d jour : à renouveler ou à corriger',

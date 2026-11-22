@@ -15,15 +15,15 @@
 
 {# Contenu HTML du modèle de notification « Exception qui expire bientôt » (#99), rendu une fois à
    l'installation (ExpiryNotification::content()) ; GLPI remplace ensuite les balises ##exception.*##.
-   labels : libellé par balise ; advice : conduite à tenir. #}
+   fields : balises affichées avec leur libellé (##lang.exception.x##, traduit à l'envoi). #}
 <p><strong>##exception.action##</strong></p>
 <table cellpadding="4">
-    {% for tag, label in labels %}
+    {% for field in fields %}
         <tr>
-            <th align="left" valign="top">{{ label }}</th>
-            <td>##exception.{{ tag }}##</td>
+            <th align="left" valign="top">##lang.exception.{{ field }}##</th>
+            <td>##exception.{{ field }}##</td>
         </tr>
     {% endfor %}
 </table>
-<p>{{ advice }}</p>
+<p>##exception.advice##</p>
 <p><a href="##exception.url##">##exception.url##</a></p>

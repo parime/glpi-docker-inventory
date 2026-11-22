@@ -38,6 +38,9 @@ final class ExpiryNotification
 {
     public const NAME = 'Docker Inventory - Exception expiring';
 
+    /** Balises affichées avec leur libellé (##lang.exception.x## : x), dans cet ordre. */
+    public const FIELDS = ['service', 'finding', 'severity', 'enddate', 'days', 'justification', 'author', 'entity'];
+
     public static function install(): void
     {
         $itemtype = HardeningException::class;
@@ -100,41 +103,30 @@ final class ExpiryNotification
     }
 
     /**
-     * Sujet et contenus du modèle, dans la langue de l'installation.
+     * Sujet et contenus du modèle. Libellés et conduite à tenir sont des balises, traduites à
+     * l'envoi dans la langue de chaque destinataire : le modèle ne dépend pas de la langue de
+     * l'installation.
      *
      * @return array{language: string, subject: string, content_text: string, content_html: string}
      */
     public static function content(): array
     {
-        $labels = [
-            'service'       => __('Service', 'dockerinventory'),
-            'finding'       => __('Écart', 'dockerinventory'),
-            'severity'      => __('Gravité', 'dockerinventory'),
-            'enddate'       => __('Date de fin', 'dockerinventory'),
-            'days'          => __('Jours restants', 'dockerinventory'),
-            'justification' => __('Justification', 'dockerinventory'),
-            'author'        => __('Auteur de l’exception', 'dockerinventory'),
-            'entity'        => __('Entity'),
-        ];
-        $advice = __(
-            'Renouvelez l’exception avec une justification à jour, ou corrigez l’écart sur la plateforme.',
-            'dockerinventory'
-        );
         $text = ['##exception.action##', ''];
-        foreach ($labels as $tag => $label) {
-            $text[] = $label . ' : ##exception.' . $tag . '##';
+        foreach (self::FIELDS as $field) {
+            $text[] = '##lang.exception.' . $field . '## : ##exception.' . $field . '##';
         }
-        $text = array_merge($text, ['', $advice, '##exception.url##']);
+        $text = array_merge($text, ['', '##exception.advice##', '##exception.url##']);
 
         return [
             'language'     => '',
             'subject'      => '##exception.action## : ##exception.service## (##exception.finding##)',
-            'content_text' => implode("\n", $text),
+            'content_text' => implode("
+", $text),
             // Gabarit lu comme une chaîne : pendant l'installation, l'espace Twig @dockerinventory
             // n'est pas encore monté (GLPI ne le monte que pour les plugins actifs).
             'content_html' => TemplateRenderer::getInstance()->renderFromStringTemplate(
                 (string) file_get_contents(dirname(__DIR__, 2) . '/templates/notification_expiring.html.twig'),
-                ['labels' => $labels, 'advice' => $advice]
+                ['fields' => self::FIELDS]
             ),
         ];
     }

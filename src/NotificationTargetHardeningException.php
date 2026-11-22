@@ -117,6 +117,7 @@ class NotificationTargetHardeningException extends NotificationTarget
             Entity::getTable(),
             (int) ($fields['entities_id'] ?? 0)
         );
+        $this->data['##exception.advice##']        = self::advice();
         $this->data['##exception.url##']           = $hasService
             ? $this->formatURL(
                 $options['additionnaloption']['usertype'] ?? self::GLPI_USER,
@@ -132,6 +133,17 @@ class NotificationTargetHardeningException extends NotificationTarget
         }
     }
 
+    /**
+     * Conduite à tenir, dans la langue du destinataire (calculée à l'envoi).
+     */
+    public static function advice(): string
+    {
+        return __(
+            'Renouvelez l’exception avec une justification à jour, ou corrigez l’écart sur la plateforme.',
+            'dockerinventory'
+        );
+    }
+
     public function getTags()
     {
         $tags = [
@@ -145,6 +157,7 @@ class NotificationTargetHardeningException extends NotificationTarget
             'exception.justification' => __('Justification', 'dockerinventory'),
             'exception.author'        => __('Auteur de l’exception', 'dockerinventory'),
             'exception.entity'        => Entity::getTypeName(1),
+            'exception.advice'        => __('Conduite à tenir', 'dockerinventory'),
             'exception.url'           => __('URL'),
         ];
         foreach ($tags as $tag => $label) {

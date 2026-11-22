@@ -42,7 +42,7 @@
                 {% if counts.analysed > 0 %}<div class="card-status-top bg-{{ serious_tone }}"></div>{% endif %}
                 <div class="card-body">
                     <div class="small fw-bold">
-                        <i class="ti ti-alert-octagon {{ tone.text(serious_tone) }} me-1" aria-hidden="true"></i>
+                        <i class="ti ti-alert-octagon text-{{ serious_tone }} me-1" aria-hidden="true"></i>
                         {{ __('Sans écart critique ni haut', 'dockerinventory') }}
                     </div>
                     <div class="h1 mb-0">{{ rate_serious is null ? '-' : rate_serious ~ ' %' }}</div>
