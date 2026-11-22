@@ -5,6 +5,34 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Rappel avant l'expiration d'une exception de configuration
+  ([#99](https://github.com/parime/glpi-docker-inventory/issues/99)) : une exception qui finit dans
+  les 30 jours porte un badge orange « Expire dans N jours : à renouveler ou à corriger », est
+  comptée sur la carte **Avec une exception** et listée par le nouveau filtre **Expire bientôt**.
+  Nouvelle tâche automatique quotidienne `hardeningexpiry` : notification GLPI **Exception de
+  configuration qui expire bientôt**, créée à l'installation et adressée à l'auteur de l'exception
+  (destinataires réglables dans Configuration > Notifications, réservés aux comptes qui lisent les
+  services de l'entité), envoyée une seule fois par date de fin, jamais pour un écart corrigé ou un
+  service retiré. Champ `expiring` dans `Evidence::hardening()`.
+
+### Changed
+
+- Configuration à risque ([#99](https://github.com/parime/glpi-docker-inventory/issues/99)) : la
+  gravité **haute** a sa propre couleur orange, distincte du jaune de la gravité moyenne (badges,
+  filtres, analyses importées et images Harbor), comme les badges de GRC Manager, en thème clair
+  comme sombre. La carte **Sans écart critique ni haut** passe en premier et en avant ; la carte
+  « Services sans écart ouvert » précise que les écarts de gravité basse comptent.
+
+### Fixed
+
+- Documentation des réseaux privés sous GLPI 12
+  ([#99](https://github.com/parime/glpi-docker-inventory/issues/99)) : GLPI lit
+  `config/local_define.php` dans le dossier `config/` de son installation (pages, ligne de commande
+  et tâches automatiques), pas dans `GLPI_CONFIG_DIR` (sauf paquet de distribution qui le prévoit
+  dans `inc/downstream.php`) : en cas de doute, le placer dans `config/` du dossier de GLPI.
+
 ## [0.15.0] - 2026-11-21
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

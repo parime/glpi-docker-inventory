@@ -178,9 +178,22 @@ l'écart compte de nouveau ; **Renouveler l'exception** prolonge après réexame
 **Exceptions de configuration** (enregistrer, supprimer) dans **Administration > Profils**, onglet
 **Inventaire Docker**. Le plugin ne modifie jamais rien sur les plateformes.
 
-La carte de synthèse donne la part des services analysés sans écart ouvert et sans écart critique
-ni haut (les écarts couverts par une exception en cours ne comptent pas). GRC Manager peut la lire
-par `Evidence::hardening()` comme preuve de la mesure A.8.9.
+**Rappel avant l'expiration** : une exception qui finit dans les 30 jours porte un badge orange
+« Expire dans N jours : à renouveler ou à corriger », est comptée sur la carte **Avec une exception**
+et se retrouve par le filtre **Expire bientôt**. La tâche automatique `hardeningexpiry` (une fois par
+jour) envoie alors la notification **Exception de configuration qui expire bientôt** à l'auteur de
+l'exception, une seule fois par date de fin (une exception renouvelée sera rappelée de nouveau) ; rien
+n'est envoyé si l'écart a été corrigé entre-temps ou si le service est retiré. Destinataires réglables
+dans **Configuration > Notifications** (profils, groupes, administrateurs) ; un destinataire ne reçoit
+le rappel que s'il peut lire les services dans l'entité de l'exception. Les notifications de GLPI
+doivent être activées (**Configuration > Notifications**, suivi par courriel).
+
+La carte de synthèse met en avant la part des services analysés **sans écart critique ni haut** :
+les écarts de gravité basse (limites de mémoire, par exemple), très fréquents, ne la font pas tomber
+à 0 %. La part sans aucun écart ouvert, écarts bas compris, vient ensuite. Les écarts couverts par
+une exception en cours ne comptent pas. Gravité haute en orange, distincte du jaune de la gravité
+moyenne, comme dans GRC Manager. GRC Manager peut lire cette synthèse par `Evidence::hardening()`
+comme preuve de la mesure A.8.9 (champ `expiring` : exceptions qui expirent bientôt).
 
 ## Ce que l'auditeur peut vérifier
 

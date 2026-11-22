@@ -343,11 +343,18 @@ statut, de priorité ou d'affectation. Le détail, côté technicien, est dans l
 | `harborimport` | toutes les heures | Projets, artefacts et vulnérabilités Harbor |
 | `lifecyclecheck` | une fois par jour | Fin de support (si activée) |
 | `exploitsignals` | une fois par jour | Catalogue CISA KEV et scores EPSS (désactivée par défaut) |
+| `hardeningexpiry` | une fois par jour | Rappel des exceptions de configuration qui expirent dans les 30 jours (notification) |
 
 ## Réseaux privés sous GLPI 12, miroirs
 
 GLPI 12 refuse par défaut les appels vers une adresse privée. Pour les autoriser pour ces sources
-seulement, ajouter dans `config/local_define.php` les contextes utiles :
+seulement, ajouter dans `config/local_define.php` les contextes utiles. GLPI lit ce fichier dans le
+dossier `config/` de son installation (par exemple `/var/www/glpi/config/local_define.php`), pour
+les pages comme pour la ligne de commande et les tâches automatiques, et non dans le dossier
+désigné par `GLPI_CONFIG_DIR` (sauf si le paquet de la distribution le prévoit dans
+`inc/downstream.php`). En cas de doute, placer le fichier dans `config/` du dossier de GLPI, même
+si la configuration est rangée ailleurs (`/etc/glpi`). Les tests automatisés de GLPI (constante
+`TU_USER`) ne le lisent pas.
 
 ```php
 define('GLPI_SERVERSIDE_URL_ALLOWED_PRIVATE_NETWORKS_CONTEXTS', [
