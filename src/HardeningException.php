@@ -256,7 +256,10 @@ class HardeningException extends HardeningExceptionBase
     {
         $sent = self::remindExpiring((string) ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s')));
         $task->addVolume($sent);
-        $task->log(sprintf(__('%d rappel(s) d’expiration envoyé(s)', 'dockerinventory'), $sent));
+        $task->log(sprintf(
+            _n('%d rappel d’expiration envoyé', '%d rappels d’expiration envoyés', $sent, 'dockerinventory'),
+            $sent
+        ));
 
         return $sent > 0 ? 1 : 0;
     }
