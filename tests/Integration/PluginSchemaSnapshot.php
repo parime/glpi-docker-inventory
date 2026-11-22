@@ -25,11 +25,15 @@ use RuntimeException;
  * Copie de sauvegarde des tables du plugin pour les tests qui changent le schéma (#113).
  *
  * take() copie chaque table `glpi_plugin_dockerinventory_*` (structure et lignes) dans une table
- * `zz_ditest_*`, ainsi que les tâches automatiques et la configuration du plugin. restore() remet
- * les tables d'origine telles quelles (RENAME TABLE : colonnes, clés et lignes identiques), supprime
- * celles que le test a créées et rend les tâches et la configuration. Si un test précédent a été
- * interrompu avant restore() (processus tué, erreur fatale), les copies restées en base sont
- * rendues au take() suivant, avant toute nouvelle copie.
+ * `zz_ditest_*`, ainsi que les tâches automatiques et la configuration du plugin, puis note la liste
+ * des tables copiées dans la table témoin `zz_ditestok`, en dernier. restore() remet les tables
+ * d'origine telles quelles (RENAME TABLE : colonnes, clés et lignes identiques), supprime celles que
+ * le test a créées, rend les tâches et la configuration, puis supprime le témoin.
+ *
+ * Processus interrompu (tué, erreur fatale) : le take() suivant reprend avant toute nouvelle copie.
+ * Témoin présent : la remise en état est terminée (elle peut reprendre là où elle s'est arrêtée).
+ * Témoin absent : la copie n'était pas finie, donc le test n'avait encore rien changé, et les copies
+ * partielles sont seulement supprimées.
  *
  * Réservé aux tests : le SQL brut (CREATE TABLE … LIKE, RENAME TABLE) n'a pas d'équivalent dans
  * l'API de GLPI.
@@ -38,6 +42,7 @@ final class PluginSchemaSnapshot
 {
     private const PREFIX = 'glpi_plugin_dockerinventory_';
     private const BACKUP_PREFIX = 'zz_ditest_';
+    private const MARKER = 'zz_ditestok';
     private const CRON_ITEMTYPE = 'GlpiPlugin\\\\Dockerinventory\\\\%';
     private const CONFIG_CONTEXT = 'plugin:dockerinventory';
 
@@ -53,18 +58,21 @@ final class PluginSchemaSnapshot
     {
         global $DB;
 
-        // Copies laissées par un test interrompu : on les rend d'abord, sans les écraser.
-        if (self::backupTables() !== []) {
-            self::restoreTables();
-        }
+        // Copies laissées par un test interrompu : traitées d'abord, jamais écrasées.
+        self::restoreTables();
 
-        foreach (self::pluginTables() as $table) {
+        $tables = self::pluginTables();
+        foreach ($tables as $table) {
             $backup = self::backupName($table);
             $DB->doQuery('CREATE TABLE ' . $DB->quoteName($backup) . ' LIKE ' . $DB->quoteName($table));
             $DB->doQuery('INSERT INTO ' . $DB->quoteName($backup) . ' SELECT * FROM ' . $DB->quoteName($table));
         }
         $this->crontasks = self::rows('glpi_crontasks', ['itemtype' => ['LIKE', self::CRON_ITEMTYPE]]);
         $this->configs = self::rows('glpi_configs', ['context' => self::CONFIG_CONTEXT]);
+        $DB->doQuery('CREATE TABLE ' . $DB->quoteName(self::MARKER) . ' (`name` varchar(64) NOT NULL PRIMARY KEY)');
+        foreach ($tables as $table) {
+            $DB->insert(self::MARKER, ['name' => $table]);
+        }
         $this->taken = true;
     }
 
@@ -73,6 +81,8 @@ final class PluginSchemaSnapshot
         global $DB;
 
         if (!$this->taken) {
+            self::restoreTables();
+
             return;
         }
         self::restoreTables();
@@ -89,23 +99,31 @@ final class PluginSchemaSnapshot
     }
 
     /**
-     * Remet chaque copie à la place de sa table et supprime les tables du plugin sans copie (créées
-     * pendant le test). Ne fait rien s'il n'y a aucune copie.
+     * Remet chaque table copiée (liste du témoin) à sa place et supprime les tables du plugin hors de
+     * cette liste (créées pendant le test). Sans témoin, supprime seulement les copies partielles.
+     * Peut être relancée après une interruption : une table déjà rendue n'a plus de copie.
      */
     private static function restoreTables(): void
     {
         global $DB;
 
-        $backups = self::backupTables();
-        if ($backups === []) {
+        if (!$DB->tableExists(self::MARKER, false)) {
+            foreach (self::backupTables() as $backup) {
+                $DB->doQuery('DROP TABLE IF EXISTS ' . $DB->quoteName($backup));
+            }
+
             return;
         }
         $kept = [];
-        foreach ($backups as $backup) {
-            $table = self::PREFIX . substr($backup, strlen(self::BACKUP_PREFIX));
-            $kept[] = $table;
-            $DB->doQuery('DROP TABLE IF EXISTS ' . $DB->quoteName($table));
-            $DB->doQuery('RENAME TABLE ' . $DB->quoteName($backup) . ' TO ' . $DB->quoteName($table));
+        foreach ($DB->request(['FROM' => self::MARKER]) as $row) {
+            $kept[] = (string) $row['name'];
+        }
+        foreach ($kept as $table) {
+            $backup = self::backupName($table);
+            if ($DB->tableExists($backup, false)) {
+                $DB->doQuery('DROP TABLE IF EXISTS ' . $DB->quoteName($table));
+                $DB->doQuery('RENAME TABLE ' . $DB->quoteName($backup) . ' TO ' . $DB->quoteName($table));
+            }
         }
         foreach (self::pluginTables() as $table) {
             if (!in_array($table, $kept, true)) {
@@ -115,6 +133,7 @@ final class PluginSchemaSnapshot
         if (self::backupTables() !== []) {
             throw new RuntimeException('Copies de sauvegarde des tables du plugin non rendues.');
         }
+        $DB->doQuery('DROP TABLE ' . $DB->quoteName(self::MARKER));
     }
 
     /** @return list<string> */
