@@ -26,6 +26,12 @@ parameters:
             path: src/Compat/GlpiVersion.php
             reportUnmatched: false
         -
+            # Glpi\Toolbox\HttpClient n'existe qu'en GLPI 12 : Compat\Http ne l'appelle qu'après
+            # class_exists() et passe par Toolbox::getGuzzleClient() en GLPI 11 (comme FinOps #44).
+            identifier: class.notFound
+            path: src/Compat/Http.php
+            reportUnmatched: false
+        -
             identifier: if.alwaysFalse
             path: setup.php
             reportUnmatched: false
