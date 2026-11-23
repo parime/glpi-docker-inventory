@@ -126,8 +126,9 @@
                 <p class="text-muted mb-2">
                     {{ __('Aucune donnée pour le moment.', 'dockerinventory') }}
                     {% if settings.enabled %}
+                        {{ __('La tâche automatique les lit une fois par jour.', 'dockerinventory') }}
                         {{ __(
-                            'La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images.',
+                            'Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images.',
                             'dockerinventory'
                         ) }}
                     {% else %}
@@ -253,7 +254,7 @@
                                        placeholder="{{ __('Produit', 'dockerinventory') }}"
                                        aria-label="{{ __('Produit de la nouvelle image', 'dockerinventory') }}">
                             </td>
-                            <td colspan="3" class="small text-muted">
+                            <td colspan="3" class="small">
                                 <i class="ti ti-plus me-1" aria-hidden="true"></i>
                                 {{ __('Nouvelle correspondance', 'dockerinventory') }}
                             </td>

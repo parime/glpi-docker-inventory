@@ -23,6 +23,7 @@
    Harbor, sinon import ou vérification), read_url, can_run, form_url (fiche, vide sans le droit),
    title, help. #}
 {% set harbor = harbor|default(false) %}
+{% set read_label = __('Lire maintenant', 'dockerinventory') %}
 <div class="card my-3" id="dockerinventory-sources">
     <div class="card-header">
         <h2 class="card-title mb-0">
@@ -37,7 +38,10 @@
         <div class="card-body pt-0">
             <p class="text-muted mb-0">
                 <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
-                {{ __('Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin.', 'dockerinventory') }}
+                {{ __(
+                    'Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin.',
+                    'dockerinventory'
+                ) }}
             </p>
         </div>
     {% else %}
@@ -50,7 +54,9 @@
                         <th scope="col">{{ __('Dernière lecture', 'dockerinventory') }}</th>
                         <th scope="col">{{ __('Résultat', 'dockerinventory') }}</th>
                         {% if can_run %}
-                            <th scope="col"><span class="visually-hidden">{{ __('Actions', 'dockerinventory') }}</span></th>
+                            <th scope="col">
+                                <span class="visually-hidden">{{ __('Actions', 'dockerinventory') }}</span>
+                            </th>
                         {% endif %}
                     </tr>
                 </thead>
@@ -94,7 +100,7 @@
                                             <input type="hidden" name="id" value="{{ source.id }}">
                                             <button type="submit" name="{{ harbor ? 'harbor_read' : 'read' }}" value="1"
                                                     class="btn btn-outline-primary btn-sm"
-                                                    aria-label="{{ __('Lire maintenant', 'dockerinventory') }} : {{ source.name }}">
+                                                    aria-label="{{ read_label }} : {{ source.name }}">
                                                 <i class="ti ti-refresh me-1" aria-hidden="true"></i>
                                                 {{- __('Lire maintenant', 'dockerinventory') -}}
                                             </button>

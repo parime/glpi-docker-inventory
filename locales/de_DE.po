@@ -3562,8 +3562,6 @@ msgstr "Aktualisierung der Kataloge"
 msgid "Correspondances de fin de support"
 msgstr "Zuordnungen für das Supportende"
 
-msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
-msgstr "Die automatische Aufgabe liest sie einmal täglich; ohne zu warten: Assets > Docker-Inventar > Supportende der Images."
 
 msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
 msgstr "Noch keine Verbindung: der Administrator fügt sie in der Plugin-Konfiguration hinzu."
@@ -3607,3 +3605,9 @@ msgstr "Diese Verbindung ist keine Harbor-Registry."
 #, php-format
 msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
 msgstr "Dieses Lesen wird jetzt unter Assets > Docker-Inventar > %s gestartet."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "Die automatische Aufgabe liest sie einmal täglich."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Ohne zu warten: Assets > Docker-Inventar > Supportende der Images."

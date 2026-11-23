@@ -3559,8 +3559,6 @@ msgstr "Mise à jour des catalogues"
 msgid "Correspondances de fin de support"
 msgstr "Correspondances de fin de support"
 
-msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
-msgstr "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
 
 msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
 msgstr "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
@@ -3604,3 +3602,9 @@ msgstr "Cette connexion n’est pas un registre Harbor."
 #, php-format
 msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
 msgstr "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "La tâche automatique les lit une fois par jour."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."

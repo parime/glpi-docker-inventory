@@ -36,7 +36,10 @@
             ) }}
             {{ __('Seule cette liste est lue : rien n’est modifié dans Harbor.', 'dockerinventory') }}
             {{ __('La vérification tourne toutes les heures.', 'dockerinventory') }}
-            {{ __('Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources ».', 'dockerinventory') }}
+            {{ __(
+                'Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources ».',
+                'dockerinventory'
+            ) }}
         </p>
         <div class="alert alert-info">
             <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
@@ -177,7 +180,10 @@
         {% endif %}
         <p class="small text-muted mb-0">
             <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
-            {{ __('Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités.', 'dockerinventory') }}
+            {{ __(
+                'Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités.',
+                'dockerinventory'
+            ) }}
         </p>
     </div>
 </div>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-22 22:50+0000\n"
+"POT-Creation-Date: 2026-11-23 03:16+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1686,9 +1686,12 @@ msgid "Aucune donnée pour le moment."
 msgstr ""
 
 #: templates/lifecycle.html.twig
+msgid "La tâche automatique les lit une fois par jour."
+msgstr ""
+
+#: templates/lifecycle.html.twig
 msgid ""
-"La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc "
-"> Inventaire Docker > Fin de support des images."
+"Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
 msgstr ""
 
 #: templates/lifecycle.html.twig
@@ -1838,7 +1841,7 @@ msgid ""
 "encore maintenue."
 msgstr ""
 
-#: templates/eol.html.twig front/version.php:187 src/ManualRead.php:221
+#: templates/eol.html.twig front/version.php:188 src/ManualRead.php:221
 #: src/Menu.php:123
 msgid "Fin de support des images"
 msgstr ""
@@ -2204,6 +2207,10 @@ msgid "B"
 msgstr ""
 
 #: templates/_sources.html.twig
+msgid "Lire maintenant"
+msgstr ""
+
+#: templates/_sources.html.twig
 msgid ""
 "Aucune connexion pour le moment : l’administrateur les ajoute dans la "
 "configuration du plugin."
@@ -2219,10 +2226,6 @@ msgstr ""
 
 #: templates/_sources.html.twig
 msgid "Actions"
-msgstr ""
-
-#: templates/_sources.html.twig
-msgid "Lire maintenant"
 msgstr ""
 
 #: templates/_exposure_rows.html.twig

@@ -3555,8 +3555,6 @@ msgstr "Catalogue update"
 msgid "Correspondances de fin de support"
 msgstr "End-of-support mappings"
 
-msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
-msgstr "The automatic action reads them once a day; to avoid waiting: Assets > Docker Inventory > Image end of support."
 
 msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
 msgstr "No connection yet: the administrator adds them in the plugin configuration."
@@ -3600,3 +3598,9 @@ msgstr "This connection is not a Harbor registry."
 #, php-format
 msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
 msgstr "This reading is now started from Assets > Docker Inventory > %s."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "The automatic action reads them once a day."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "To avoid waiting: Assets > Docker Inventory > Image end of support."

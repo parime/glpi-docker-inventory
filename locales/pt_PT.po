@@ -3561,8 +3561,6 @@ msgstr "Atualização dos catálogos"
 msgid "Correspondances de fin de support"
 msgstr "Correspondências de fim do suporte"
 
-msgid "La tâche automatique les lit une fois par jour ; pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
-msgstr "A ação automática os lê uma vez por dia; para não esperar: Ativos > Inventário Docker > Fim do suporte das imagens."
 
 msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
 msgstr "Nenhuma conexão por enquanto: o administrador as adiciona na configuração do plugin."
@@ -3606,3 +3604,9 @@ msgstr "Esta conexão não é um registro Harbor."
 #, php-format
 msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
 msgstr "Esta leitura agora é iniciada em Ativos > Inventário Docker > %s."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "A ação automática os lê uma vez por dia."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Para não esperar: Ativos > Inventário Docker > Fim do suporte das imagens."

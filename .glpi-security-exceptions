@@ -5,3 +5,13 @@
 # elle n'ouvre aucun service réel.
 gitleaks tests/Unit/PortainerClientTest.php:generic-api-key:29 : clé d'API fictive de test (ptr_fictive_cle_), aucun service réel
 gitleaks tests/Integration/ImporterTest.php:generic-api-key:41 : clé d'API fictive de test (ptr_fictive_cle_), aucun service réel
+
+# Parcours des pages (#118, mode bloquant) : anciennes adresses gardées pour les favoris, qui
+# redirigent vers la page de configuration (aucun écran propre, aucun menu n'y mène exprès).
+crawl orphan front/connection.php : ancienne adresse des connexions (0.8.0), redirige vers Configuration > Plugins > Inventaire Docker
+crawl orphan front/lifecycle.php : ancienne adresse de la fin de support (0.8.0), redirige vers la configuration ou Parc > Inventaire Docker
+# Fiches génériques que le parcours ouvre pour chaque classe du plugin (id=-1) : les versions
+# d'images sont lues dans WUD et les registres, jamais saisies, et la cible de notification n'a pas
+# de fiche propre (réglée dans Configuration > Notifications) ; GLPI refuse donc à juste titre.
+crawl http-403 front/imageversion.form.php : pas de saisie manuelle des versions d'images, lues dans WUD et les registres
+crawl http-403 front/notificationtargethardeningexception.form.php : cible de notification sans fiche propre, réglée dans Configuration > Notifications
