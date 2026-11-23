@@ -3683,3 +3683,6 @@ msgstr "Liest höchstens alle 12 Stunden die neueste auf GitHub veröffentlichte
 
 msgid "À désactiver sur un serveur sans accès à Internet."
 msgstr "Auf einem Server ohne Internetzugang deaktivieren."
+
+msgid "Analyses"
+msgstr "Analysen"

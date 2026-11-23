@@ -95,6 +95,11 @@ final class Http
      */
     private static function responseWithGlpi12(string $url, array $headers, int $timeout): array
     {
+        // Vérifié ici (et non seulement dans response()) : l'analyse face au cœur GLPI 11 sait
+        // alors que la classe, propre à GLPI 12, existe dans la suite de la méthode.
+        if (!class_exists(\Glpi\Toolbox\HttpClient::class)) {
+            return self::responseWithGlpi11($url, $headers, $timeout);
+        }
         $options = [
             'headers'       => $headers,
             'timeout'       => $timeout,

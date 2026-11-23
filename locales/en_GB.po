@@ -3676,3 +3676,6 @@ msgstr "Reads the latest release published on GitHub at most every 12 hours, wit
 
 msgid "À désactiver sur un serveur sans accès à Internet."
 msgstr "Turn it off on a server without Internet access."
+
+msgid "Analyses"
+msgstr "Scans"

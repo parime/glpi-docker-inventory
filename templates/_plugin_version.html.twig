@@ -72,7 +72,8 @@
                 <div class="mt-2 d-flex flex-wrap gap-2">
                     <a href="{{ pv.release_url }}" target="_blank" rel="noopener noreferrer"
                        class="btn btn-sm btn-outline-secondary">
-                        <i class="ti ti-notes me-1" aria-hidden="true"></i>{{ __('Notes de version', 'dockerinventory') }}
+                        <i class="ti ti-notes me-1" aria-hidden="true"></i>
+                        {{- __('Notes de version', 'dockerinventory') -}}
                     </a>
                     {% if pv.download_url %}
                         <a href="{{ pv.download_url }}" target="_blank" rel="noopener noreferrer"
@@ -134,7 +135,7 @@
             </form>
             <div class="form-hint">
                 {{ __(
-                    'Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, sans rien envoyer de ce GLPI.',
+               'Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, sans rien envoyer de ce GLPI.',
                     'dockerinventory'
                 ) }}
                 {{ __('À désactiver sur un serveur sans accès à Internet.', 'dockerinventory') }}

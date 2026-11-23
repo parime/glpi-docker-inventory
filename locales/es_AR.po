@@ -3681,3 +3681,6 @@ msgstr "Lee la última versión publicada en GitHub como máximo cada 12 horas, 
 
 msgid "À désactiver sur un serveur sans accès à Internet."
 msgstr "Desactívela en un servidor sin acceso a Internet."
+
+msgid "Analyses"
+msgstr "Análisis"

@@ -23,7 +23,7 @@
 <h1 class="h2 mb-2"><i class="ti ti-settings me-2" aria-hidden="true"></i>{{ nav_title }}</h1>
 {% else %}
     {% for tab in tabs|filter(t => t.active) %}
-<h1 class="visually-hidden">{{ tab.label }}</h1>
+<h1 class="visually-hidden">{{ tab.title ?? tab.label }}</h1>
     {% endfor %}
 {% endif %}
 {% if tabs|length > 1 %}
@@ -34,6 +34,7 @@
         <li class="nav-item" role="presentation">
             <a href="{{ tab.url }}" class="nav-link text-body {{ tab.active ? 'active' : '' }}" role="tab"
                aria-selected="{{ tab.active ? 'true' : 'false' }}"
+               {% if tab.title is defined and tab.title != tab.label %}title="{{ tab.title }}"{% endif %}
                {% if tab.active %}aria-current="page"{% endif %}>
                 <i class="{{ tab.icon }} me-1" aria-hidden="true"></i>{{ tab.label }}
             </a>
