@@ -184,7 +184,7 @@
                     </span>
                 {% endif %}
                 {% if exploits.config_url %}
-                    <a href="{{ exploits.config_url }}">
+                    <a href="{{ exploits.config_url }}" class="text-decoration-underline">
                         {{- __('Réglages de l’exploitation connue', 'dockerinventory') -}}
                     </a>
                 {% endif %}
@@ -229,4 +229,10 @@
             </div>
         {% endif %}
     </div>
+
+    {# Catalogues CISA KEV et EPSS (#118) : état, téléchargement sur clic et dépôt hors ligne. #}
+    <h2 class="h3 mt-4" id="dockerinventory-exploit-catalogs">
+        <i class="ti ti-flame me-2" aria-hidden="true"></i>{{ __('Catalogues KEV et EPSS', 'dockerinventory') }}
+    </h2>
+    {{ include('@dockerinventory/_exploit_catalogs.html.twig', exploit_catalogs) }}
 </div>

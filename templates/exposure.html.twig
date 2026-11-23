@@ -13,9 +13,12 @@
  # -------------------------------------------------------------------------
  #}
 
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
 {# Sous-page « Exposition » de l'entrée Inventaire Docker (#72) : services actifs qui publient un port
    ou déclarent une route d'entrée ; filtres « exposés sur Internet » et « sans flux documenté »
-   (GRC Manager). Lecture seule (GET), entités actives. #}
+   (GRC Manager), routes appliquées par chaque Traefik. Lecture seule (GET), entités actives ; seule
+   « Lire Traefik maintenant » (droit de mise à jour de la configuration) lit Traefik (#118). #}
 <div class="container-fluid">
     {{ include('@dockerinventory/_page_help.html.twig', {
         page: 'exposure',
@@ -99,4 +102,71 @@
             'dockerinventory'
         ) }}
     </p>
+    {# Routes appliquées par Traefik (#80), d'après la dernière lecture de chaque connexion, et
+       lecture sur clic (#118) : avant sur la fiche de la connexion, dans la configuration. #}
+    {% for source in traefik_sources %}
+        <div class="card mb-3">
+            <div class="card-header d-flex flex-wrap align-items-center gap-2">
+                <h2 class="card-title mb-0">
+                    <i class="ti ti-route me-2" aria-hidden="true"></i>
+                    {{ __('Routes appliquées par Traefik', 'dockerinventory') }} :
+                    {% if form_url %}
+                        <a href="{{ form_url }}?id={{ source.id }}">{{ source.name }}</a>
+                    {% else %}
+                        {{ source.name }}
+                    {% endif %}
+                </h2>
+                <span class="badge {{ tone.badge(source.status_color) }}">{{ source.status_label }}</span>
+                {% if source.date %}
+                    <span class="text-muted small">{{ source.date|formatted_datetime }}</span>
+                {% endif %}
+                {% if source.report and source.report.traefik_version|default('') %}
+                    <span class="badge bg-success-subtle text-success-emphasis">
+                        Traefik {{ source.report.traefik_version }}
+                    </span>
+                {% endif %}
+                {% if can_run and source.is_active %}
+                    <form method="post" action="{{ read_url }}" class="ms-auto">
+                        <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="id" value="{{ source.id }}">
+                        <button type="submit" name="read" value="1" class="btn btn-outline-primary btn-sm">
+                            <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                            {{- __('Lire Traefik maintenant', 'dockerinventory') -}}
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    {{ __(
+                        'Comparer les routes vraiment appliquées par Traefik aux étiquettes des services inventoriés.',
+                        'dockerinventory'
+                    ) }}
+                    {{ __(
+                'Rien n’est modifié dans Traefik : seules des lectures GET sont envoyées, à l’adresse de la connexion.',
+                        'dockerinventory'
+                    ) }}
+                </p>
+                {% if source.report and source.report.errors|default([]) is not empty %}
+                    <div class="alert alert-warning">
+                        <ul class="mb-0">
+                            {% for error in source.report.errors %}
+                                <li>{{ error_labels[error.code] ?? error.code }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% if source.report %}
+                    {{ include('@dockerinventory/_traefik_routes.html.twig', {report: source.report}) }}
+                {% else %}
+                    <p class="text-muted mb-0">
+                        {{ __(
+                            'Pas encore lu : pas de tâche automatique, la lecture se fait sur clic.',
+                            'dockerinventory'
+                        ) }}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
 </div>

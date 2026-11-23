@@ -47,7 +47,7 @@ class LifecycleProduct extends CommonDBTM
 
     public static function getTypeName($nb = 0)
     {
-        return __('Fin de support des images', 'dockerinventory');
+        return __('Correspondances de fin de support', 'dockerinventory');
     }
 
     public static function getIcon()

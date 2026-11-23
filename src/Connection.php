@@ -365,13 +365,11 @@ class Connection extends ConnectionBase
                 'item'          => $this,
                 'scan_status_label' => self::statusLabel((int) ($this->fields['last_scan_status'] ?? 0)),
                 'scan_report'   => is_array($scanReport) ? $scanReport : null,
-                'harbor_url'    => HarborArtifact::getPageURL(),
                 'status_label'  => self::statusLabel((int) ($this->fields['last_import_status'] ?? 0)),
                 'report'        => is_array($report) ? $report : null,
                 'error_labels'  => self::errorLabels(),
                 'warning_labels' => self::warningLabels(),
                 'gaps'          => ImageVersion::gapInfos(),
-                'versions_url'  => ImageVersion::getOverviewURL(),
                 'context_class' => match (true) {
                     $this->isWud()    => WudContext::class,
                     $this->isHarbor() => RegistryContext::class,
@@ -383,9 +381,6 @@ class Connection extends ConnectionBase
                     (string) $this->fields['url'],
                     (string) ($this->fields['registry_host'] ?? '')
                 ) : '',
-                'traefik_labels' => $this->isTraefik() ? self::traefikLabels() : [],
-                'exposure_infos' => $this->isTraefik() ? Exposure::infos() : [],
-                'service_url'   => Service::getFormURL(),
             ]);
         }
 
@@ -1215,6 +1210,64 @@ class Connection extends ConnectionBase
         global $DB;
 
         return $DB->fieldExists(self::getTable(), 'last_success_date');
+    }
+
+    /**
+     * Sources visibles dans les entités actives, pour les écrans d'usage de Parc > Inventaire Docker
+     * (#118) : bloc « Sources » des Services, lecture de Harbor, routes Traefik de l'Exposition.
+     * Ni adresse ni identifiant : nom, type, état et date des deux dernières lectures (import ou
+     * vérification ; projets, artefacts et analyses pour Harbor), compte rendu décodé.
+     *
+     * @param list<string> $types Types retenus, tous si vide.
+     * @return list<array<string, mixed>>
+     */
+    public static function sourceRows(array $types = []): array
+    {
+        global $DB;
+
+        $where = (new \DbUtils())->getEntitiesRestrictCriteria(self::getTable(), '', '', true);
+        if ($types !== []) {
+            $where['type'] = $types;
+        }
+        $colors = [
+            self::STATUS_NEVER   => 'secondary',
+            self::STATUS_OK      => 'success',
+            self::STATUS_PARTIAL => 'warning',
+            self::STATUS_ERROR   => 'danger',
+            self::STATUS_WARNING => 'warning',
+        ];
+        $rows = [];
+        foreach (
+            $DB->request([
+                'SELECT' => [
+                    'id', 'name', 'type', 'is_active', 'last_import_date', 'last_import_status',
+                    'last_import_report', 'last_scan_date', 'last_scan_status',
+                ],
+                'FROM'   => self::getTable(),
+                'WHERE'  => $where,
+                'ORDER'  => ['type', 'name'],
+            ]) as $row
+        ) {
+            $status = (int) $row['last_import_status'];
+            $scanStatus = (int) ($row['last_scan_status'] ?? 0);
+            $report = json_decode((string) ($row['last_import_report'] ?? ''), true);
+            $rows[] = [
+                'id'           => (int) $row['id'],
+                'name'         => (string) $row['name'],
+                'type'         => (string) $row['type'],
+                'type_label'   => self::typeLabels()[(string) $row['type']] ?? (string) $row['type'],
+                'is_active'    => (bool) $row['is_active'],
+                'date'         => (string) ($row['last_import_date'] ?? ''),
+                'status_label' => self::statusLabel($status),
+                'status_color' => $colors[$status] ?? 'secondary',
+                'scan_date'    => (string) ($row['last_scan_date'] ?? ''),
+                'scan_label'   => self::statusLabel($scanStatus),
+                'scan_color'   => $colors[$scanStatus] ?? 'secondary',
+                'report'       => is_array($report) ? $report : null,
+            ];
+        }
+
+        return $rows;
     }
 
     public static function statusLabel(int $status): string

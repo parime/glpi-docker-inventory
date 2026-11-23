@@ -3530,3 +3530,83 @@ msgstr "Exceção de configuração que expira em breve"
 #: src/NotificationTargetHardeningException.php:160
 msgid "Conduite à tenir"
 msgstr "O que fazer"
+
+msgid "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+msgstr "Ainda não lido: sem ação automática, a leitura é feita com um clique."
+
+msgid "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+msgstr "Para ler sem esperar: Ativos > Inventário Docker > Serviços, bloco “Fontes”."
+
+msgid "Catalogues KEV et EPSS"
+msgstr "Catálogos KEV e EPSS"
+
+msgid "Lecture de Traefik"
+msgstr "Leitura do Traefik"
+
+msgid "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+msgstr "Sem ação automática: a leitura é iniciada em Ativos > Inventário Docker > Exposição."
+
+msgid "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Rotas lidas e leitura com um clique: Ativos > Inventário Docker > Exposição."
+
+msgid "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Escolha aqui as pontuações EPSS e seu limite; ative a ação automática para uma atualização diária."
+
+msgid "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+msgstr "Download com um clique e envio offline: Ativos > Inventário Docker > Análises importadas."
+
+msgid "Mise à jour des catalogues"
+msgstr "Atualização dos catálogos"
+
+msgid "Correspondances de fin de support"
+msgstr "Correspondências de fim do suporte"
+
+
+msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+msgstr "Nenhuma conexão por enquanto: o administrador as adiciona na configuração do plugin."
+
+msgid "Connexion"
+msgstr "Conexão"
+
+msgid "Résultat"
+msgstr "Resultado"
+
+msgid "Actions"
+msgstr "Ações"
+
+msgid "Lire maintenant"
+msgstr "Ler agora"
+
+msgid "Lecture de Harbor"
+msgstr "Leitura do Harbor"
+
+msgid "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+msgstr "Projetos, repositórios, artefatos e resumo das análises, lidos a cada hora; “Ler agora” não espera."
+
+msgid "La vérification tourne toutes les heures."
+msgstr "A verificação é executada a cada hora."
+
+msgid "La lecture tourne toutes les heures."
+msgstr "A leitura é executada a cada hora."
+
+msgid "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+msgstr "Para ler o Harbor sem esperar: Ativos > Inventário Docker > Imagens do Harbor e vulnerabilidades."
+
+msgid "Sources"
+msgstr "Fontes"
+
+msgid "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+msgstr "Plataformas lidas pelo plugin, sem alterar nada, pelas ações automáticas ou com um clique."
+
+msgid "Cette connexion n’est pas un registre Harbor."
+msgstr "Esta conexão não é um registro Harbor."
+
+#, php-format
+msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+msgstr "Esta leitura agora é iniciada em Ativos > Inventário Docker > %s."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "A ação automática os lê uma vez por dia."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Para não esperar: Ativos > Inventário Docker > Fim do suporte das imagens."

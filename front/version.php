@@ -33,6 +33,7 @@ use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleChecker;
 use GlpiPlugin\Dockerinventory\Lifecycle\LifecycleClient;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
+use GlpiPlugin\Dockerinventory\ManualRead;
 use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Scan\ScanReportParser;
 use GlpiPlugin\Dockerinventory\Service;
@@ -83,6 +84,15 @@ if ($view === Menu::TAB_EXPOSURE) {
         'infos'        => Exposure::infos(),
         'grc'          => $grc,
         'page_url'     => Exposure::getPageURL(),
+        // Routes appliquées par Traefik et lecture sur clic (#118), avant sur la fiche de la connexion.
+        'traefik_sources' => Connection::sourceRows([Connection::TYPE_TRAEFIK]),
+        'traefik_labels'  => Connection::traefikLabels(),
+        'exposure_infos'  => Exposure::infos(),
+        'error_labels'    => Connection::errorLabels(),
+        'service_url'     => Service::getFormURL(),
+        'read_url'        => ManualRead::formURL(),
+        'can_run'         => ManualRead::canRun(),
+        'form_url'        => Connection::canView() ? Connection::getFormURL() : '',
     ]);
     Html::footer();
 
@@ -113,6 +123,12 @@ if ($view === Menu::TAB_SCANS) {
             'config_url' => (bool) Session::haveRight(Connection::RIGHTNAME, UPDATE)
                 ? ConfigPage::url(ConfigPage::TAB_EXPLOITS) : '',
         ],
+        // Catalogues KEV et EPSS (#118) : téléchargement et dépôt hors ligne, avant dans la configuration.
+        // Lien vers la tâche automatique (configuration de GLPI) : seulement pour qui peut lire.
+        'exploit_catalogs' => [
+            'read_url' => ManualRead::formURL(),
+            'can_run'  => ManualRead::canRun(),
+        ] + (ManualRead::canRun() ? [] : ['cron_url' => '']) + ExploitSignal::catalogView(),
         'stale_days'    => ImageScan::STALE_DAYS,
         'max_mb'        => intdiv(ScanReportParser::MAX_BYTES, 1024 * 1024),
         'page_url'      => ImageScan::getPageURL(),
@@ -157,6 +173,7 @@ $eolSource = [
     'eol_errors'     => LifecycleProduct::errorLabels(),
     'lifecycle_url'  => LifecycleProduct::getPageURL(),
     'can_configure_lifecycle' => LifecycleProduct::canView(),
+    'read_url'       => ManualRead::formURL(),
 ];
 
 if ($view === Menu::TAB_EOL) {
@@ -221,6 +238,11 @@ if ($view === Menu::TAB_HARBOR) {
         'can_configure'  => Connection::canView(),
         'connection_url' => Connection::getSearchURL(),
         'connection_form_url' => Connection::getFormURL(),
+        // Lecture de Harbor sur clic (#118).
+        'harbor_sources' => Connection::sourceRows([Connection::TYPE_HARBOR]),
+        'read_url'       => ManualRead::formURL(),
+        'can_run'        => ManualRead::canRun(),
+        'form_url'       => Connection::canView() ? Connection::getFormURL() : '',
     ]);
     Html::footer();
 

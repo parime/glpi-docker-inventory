@@ -332,4 +332,17 @@
             {% endif %}
         </div>
     </div>
+
+    {# Lecture de Harbor sur clic (#118), avant sur la fiche de la connexion dans la configuration. #}
+    {% if has_harbor %}
+        {{ include('@dockerinventory/_sources.html.twig', {
+            sources: harbor_sources,
+            harbor: true,
+            title: __('Lecture de Harbor', 'dockerinventory'),
+            help: __(
+    'Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas.',
+                'dockerinventory'
+            ),
+        }) }}
+    {% endif %}
 </div>

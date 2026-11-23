@@ -149,7 +149,7 @@ La portée est déduite du nom d'hôte ou de l'adresse : un nom public n'est pas
 ### Routes réellement appliquées par Traefik
 
 Avec une connexion **Traefik** (voir le guide de l'administrateur), « Lire Traefik maintenant »
-liste les routes appliquées et les rapproche des étiquettes : **conforme**, **différente** (autres
+(**Parc > Inventaire Docker > Exposition**) liste les routes appliquées et les rapproche des étiquettes : **conforme**, **différente** (autres
 noms d'hôte), **service non inventorié**, **hors étiquettes Docker** (fichier, Kubernetes...),
 **interne à Traefik**. Les routes déclarées dans les étiquettes mais absentes de Traefik sont
 listées à part. Signalements, jamais corrigés par le plugin : tableau de bord ou API de Traefik

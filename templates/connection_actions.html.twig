@@ -15,7 +15,8 @@
 
 {% import '@dockerinventory/_tone.html.twig' as tone %}
 
-{# Sous le formulaire d'une connexion enregistrée : test, import immédiat, dernier compte rendu. #}
+{# Sous le formulaire d'une connexion enregistrée : test et dernier compte rendu (à titre d'information).
+   La lecture sur clic est dans Parc > Inventaire Docker > Services, bloc « Sources » (#118). #}
 {% set status_colors = {0: 'secondary', 1: 'success', 2: 'warning', 3: 'danger', 4: 'warning'} %}
 {% set status = item.fields['last_import_status']|default(0) %}
 
@@ -28,7 +29,10 @@
     <div class="card-body">
         <p class="text-muted">
             {{ __("L'import lit Portainer sans rien y modifier et tourne toutes les heures.", 'dockerinventory') }}
-            {{ __('Le bouton « Importer maintenant » le lance tout de suite.', 'dockerinventory') }}
+            {{ __(
+                'Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources ».',
+                'dockerinventory'
+            ) }}
         </p>
 
         <div class="mb-3">
@@ -100,10 +104,6 @@
             <button type="submit" name="test" value="1" class="btn btn-outline-secondary">
                 <i class="ti ti-plug-connected me-1" aria-hidden="true"></i>
                 {{ __('Tester la connexion', 'dockerinventory') }}
-            </button>
-            <button type="submit" name="import" value="1" class="btn btn-primary">
-                <i class="ti ti-download me-1" aria-hidden="true"></i>
-                {{ __('Importer maintenant', 'dockerinventory') }}
             </button>
         </form>
 

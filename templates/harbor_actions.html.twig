@@ -15,8 +15,9 @@
 
 {% import '@dockerinventory/_tone.html.twig' as tone %}
 
-{# Sous le formulaire d'une connexion Harbor enregistrée : test, vérification immédiate des
-   registres, dernier compte rendu pour ce Harbor. #}
+{# Sous le formulaire d'une connexion Harbor enregistrée : test et derniers comptes rendus, à titre
+   d'information. Les lectures sur clic sont dans Parc > Inventaire Docker (#118) : Services (registres)
+   et Images Harbor et vulnérabilités (projets, artefacts, analyses). #}
 {% set status_colors = {0: 'secondary', 1: 'success', 2: 'warning', 3: 'danger'} %}
 {% set status = item.fields['last_import_status']|default(0) %}
 
@@ -34,7 +35,11 @@
                 'dockerinventory'
             ) }}
             {{ __('Seule cette liste est lue : rien n’est modifié dans Harbor.', 'dockerinventory') }}
-            {{ __('La vérification tourne toutes les heures ; le bouton la lance tout de suite.', 'dockerinventory') }}
+            {{ __('La vérification tourne toutes les heures.', 'dockerinventory') }}
+            {{ __(
+                'Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources ».',
+                'dockerinventory'
+            ) }}
         </p>
         <div class="alert alert-info">
             <i class="ti ti-info-circle me-2" aria-hidden="true"></i>
@@ -84,14 +89,6 @@
                 <i class="ti ti-plug-connected me-1" aria-hidden="true"></i>
                 {{ __('Tester la connexion', 'dockerinventory') }}
             </button>
-            <button type="submit" name="import" value="1" class="btn btn-primary">
-                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
-                {{ __('Vérifier les registres maintenant', 'dockerinventory') }}
-            </button>
-            <a href="{{ versions_url }}" class="btn btn-outline-primary">
-                <i class="ti ti-tags me-1" aria-hidden="true"></i>
-                {{ __('Voir les versions des images', 'dockerinventory') }}
-            </a>
         </form>
 
         <details class="mt-3 text-muted">
@@ -126,7 +123,7 @@
      'Droits suffisants : lecture des projets, dépôts et artefacts ; aucun droit d’écriture ni de lancement d’analyse.',
                 'dockerinventory'
             ) }}
-            {{ __('La lecture tourne toutes les heures ; le bouton la lance tout de suite.', 'dockerinventory') }}
+            {{ __('La lecture tourne toutes les heures.', 'dockerinventory') }}
         </p>
         <div class="mb-3">
             <span class="me-2">{{ __('Dernière lecture', 'dockerinventory') }} :</span>
@@ -181,17 +178,12 @@
                 </div>
             {% endif %}
         {% endif %}
-        <form method="post" action="{{ item.getFormURL() }}" class="d-flex flex-wrap gap-2">
-            <input type="hidden" name="id" value="{{ item.getID() }}">
-            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" name="harbor_import" value="1" class="btn btn-primary">
-                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
-                {{ __('Lire Harbor maintenant', 'dockerinventory') }}
-            </button>
-            <a href="{{ harbor_url }}" class="btn btn-outline-primary">
-                <i class="ti ti-shield-search me-1" aria-hidden="true"></i>
-                {{ __('Images Harbor et vulnérabilités', 'dockerinventory') }}
-            </a>
-        </form>
+        <p class="small text-muted mb-0">
+            <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
+            {{ __(
+                'Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités.',
+                'dockerinventory'
+            ) }}
+        </p>
     </div>
 </div>

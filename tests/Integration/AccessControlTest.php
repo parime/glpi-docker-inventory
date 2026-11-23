@@ -63,11 +63,14 @@ final class AccessControlTest extends TestCase
         'front/lifecycle.php',
         'front/service.form.php',
         'front/service.php',
+        'front/source.form.php',
         'front/version.php',
     ];
 
     /** Pages réservées aux administrateurs de la configuration (droit config, UPDATE). */
-    private const CONFIG_PAGES = ['front/config.php', 'front/connection.form.php', 'front/connection.php'];
+    private const CONFIG_PAGES = [
+        'front/config.php', 'front/connection.form.php', 'front/connection.php', 'front/source.form.php',
+    ];
 
     private string $suffix = '';
 
@@ -395,6 +398,12 @@ final class AccessControlTest extends TestCase
         foreach (['add', 'update', 'purge', 'test', 'import', 'harbor_import', 'registry_check'] as $action) {
             yield 'connexion : ' . $action => ['front/connection.form.php', [], [$action => 1, 'id' => 1]];
         }
+        // Lectures manuelles des écrans d'usage (#118).
+        yield 'lecture : page' => ['front/source.form.php', [], []];
+        $reads = ['read', 'harbor_read', 'registry_check', 'eol_refresh', 'download_exploits', 'import_exploits'];
+        foreach ($reads as $action) {
+            yield 'lecture : ' . $action => ['front/source.form.php', [], [$action => 1, 'id' => 1]];
+        }
         yield 'recherche des versions' => ['front/imageversion.php', [], []];
         yield 'ancienne fin de support' => ['front/lifecycle.php', [], []];
         foreach (['save_settings', 'refresh', 'save_mappings'] as $action) {
@@ -460,6 +469,15 @@ final class AccessControlTest extends TestCase
             $this->redirectionOf('front/lifecycle.php', [], ['save_settings' => 1, 'enabled' => 1])
         );
         $this->assertSame($settings, \Config::getConfigurationValues(Settings::CONTEXT));
+        // Lectures manuelles (#118) : état des sources visible, sans bouton de lecture.
+        $this->assertRefused('front/source.form.php', [], ['read' => 1, 'id' => $this->harbors['a']]);
+        $services = $this->open('front/service.php');
+        $this->assertStringContainsString('dockerinventory-sources', $services);
+        $this->assertStringNotContainsString('source.form.php', $services);
+        $this->assertStringNotContainsString('connection.form.php', $services);
+        $this->assertStringNotContainsString('harbor_read', $this->open('front/version.php', ['view' => 'harbor']));
+        $scans = $this->open('front/version.php', ['view' => 'scans']);
+        $this->assertStringNotContainsString('download_exploits', $scans);
         // Une seule entrée de menu ; aucun lien vers la configuration pour ce profil.
         $menu = Menu::getMenuContent();
         $this->assertIsArray($menu);
@@ -667,6 +685,75 @@ final class AccessControlTest extends TestCase
         $this->setRights(0, READ | UPDATE);
         $this->assertFalse(Menu::getMenuContent());
         $this->assertSame(LifecycleProduct::getPageURL(), $this->redirectionOf('front/lifecycle.php'));
+    }
+
+    /**
+     * Navigation (#118) : les lectures « … maintenant » sont dans les écrans d'usage de Parc >
+     * Inventaire Docker, la configuration ne garde que les réglages et « Tester la connexion », et
+     * les anciens boutons de la configuration redirigent vers le nouvel écran.
+     */
+    public function testManualReadsAreInUsageScreensOnly(): void
+    {
+        \Session::changeActiveEntities($this->entityA, false);
+        $this->setRights(READ, READ | UPDATE);
+
+        $services = $this->open('front/service.php');
+        $this->assertStringContainsString('dockerinventory-sources', $services);
+        $this->assertStringContainsString('harbor-a-' . $this->suffix, $services);
+        // Entités actives seulement (la page peut citer les requêtes SQL en mode débogage).
+        $names = array_column(Connection::sourceRows(), 'name');
+        $this->assertContains('harbor-a-' . $this->suffix, $names);
+        $this->assertNotContains('harbor-b-' . $this->suffix, $names);
+        $this->assertStringContainsString('name="read"', $services);
+        $this->assertStringContainsString('source.form.php', $services);
+        $this->assertStringContainsString('name="harbor_read"', $this->open('front/version.php', ['view' => 'harbor']));
+        $scans = $this->open('front/version.php', ['view' => 'scans']);
+        $this->assertStringContainsString('download_exploits', $scans);
+        $this->assertStringContainsString('import_exploits', $scans);
+        $this->assertStringContainsString('name="registry_check"', $this->open('front/version.php'));
+
+        // Configuration : réglages seulement, ni lecture ni lien vers un écran d'usage.
+        $forbidden = [
+            // Le menu de GLPI, dans l'en-tête, mène aux écrans d'usage : seuls les liens du contenu comptent.
+            'name="import"', 'harbor_import', 'name="refresh"', 'download_exploits', 'import_exploits',
+            'source.form.php', 'front/service.form.php', 'filter=kev',
+        ];
+        $pages = [];
+        foreach (ConfigPage::TABS as $tab) {
+            $pages['onglet ' . $tab] = $this->open('front/config.php', ['tab' => $tab]);
+        }
+        // Fiche d'une connexion : son contenu est chargé par l'onglet principal, rendu ici directement.
+        $connection = new Connection();
+        $this->assertTrue($connection->getFromDB($this->harbors['a']));
+        ob_start();
+        $connection->showForm($this->harbors['a']);
+        $pages['fiche Harbor'] = (string) ob_get_clean();
+        $this->assertStringContainsString('name="test"', $pages['fiche Harbor']);
+        foreach ($pages as $where => $html) {
+            foreach ($forbidden as $needle) {
+                $this->assertStringNotContainsString($needle, $html, $where);
+            }
+        }
+
+        // Anciens boutons : encore acceptés, puis l'écran d'usage (fin de support désactivée : aucun appel).
+        $settings = \Config::getConfigurationValues(Settings::CONTEXT);
+        Settings::save(false, Settings::DEFAULT_WARNING_DAYS);
+        try {
+            $this->assertSame(
+                ImageVersion::getEolURL(),
+                $this->redirectionOf('front/config.php', [], ['refresh' => 1])
+            );
+        } finally {
+            \Config::setConfigurationValues(Settings::CONTEXT, $settings);
+        }
+        $this->assertSame(Service::getSearchURL(), $this->redirectionOf('front/source.form.php'));
+
+        // Connexion d'une autre entité : lecture refusée, rien n'est lu.
+        $this->assertRefused('front/source.form.php', [], ['read' => 1, 'id' => $this->harbors['b']]);
+        $this->assertRefused('front/source.form.php', [], ['harbor_read' => 1, 'id' => $this->harbors['b']]);
+        $connection = new Connection();
+        $this->assertTrue($connection->getFromDB($this->harbors['b']));
+        $this->assertNull($connection->fields['last_scan_date']);
     }
 
     public function testObjectOfAnotherEntityIsRefused(): void

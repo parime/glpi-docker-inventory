@@ -16,6 +16,8 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\Connection;
+use GlpiPlugin\Dockerinventory\ManualRead;
 use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
 
@@ -40,4 +42,17 @@ TemplateRenderer::getInstance()->display('@dockerinventory/_section_nav.html.twi
     'tabs' => Menu::tabs(Menu::TAB_SERVICES),
 ]);
 Search::show(Service::class);
+// Bloc « Sources » sous la liste (#118) : état de chaque connexion et « Lire maintenant » (avant sur la fiche de
+// la connexion, dans la configuration). Les registres Harbor y sont vérifiés (versions des images).
+TemplateRenderer::getInstance()->display('@dockerinventory/_sources.html.twig', [
+    'sources'  => Connection::sourceRows(),
+    'title'    => __('Sources', 'dockerinventory'),
+    'help'     => __(
+        'Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic.',
+        'dockerinventory'
+    ),
+    'read_url' => ManualRead::formURL(),
+    'can_run'  => ManualRead::canRun(),
+    'form_url' => Connection::canView() ? Connection::getFormURL() : '',
+]);
 Html::footer();

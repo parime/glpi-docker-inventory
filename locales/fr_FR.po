@@ -3528,3 +3528,83 @@ msgstr "Exception de configuration qui expire bientôt"
 #: src/NotificationTargetHardeningException.php:160
 msgid "Conduite à tenir"
 msgstr "Conduite à tenir"
+
+msgid "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+msgstr "Pas encore lu : pas de tâche automatique, la lecture se fait sur clic."
+
+msgid "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+msgstr "Pour lire sans attendre : Parc > Inventaire Docker > Services, bloc « Sources »."
+
+msgid "Catalogues KEV et EPSS"
+msgstr "Catalogues KEV et EPSS"
+
+msgid "Lecture de Traefik"
+msgstr "Lecture de Traefik"
+
+msgid "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+msgstr "Pas de tâche automatique : la lecture se lance depuis Parc > Inventaire Docker > Exposition."
+
+msgid "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Routes lues et lecture sur clic : Parc > Inventaire Docker > Exposition."
+
+msgid "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+msgstr "Choisissez ici les scores EPSS et leur seuil ; activez la tâche automatique pour une mise à jour quotidienne."
+
+msgid "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+msgstr "Téléchargement sur clic et dépôt hors ligne : Parc > Inventaire Docker > Analyses importées."
+
+msgid "Mise à jour des catalogues"
+msgstr "Mise à jour des catalogues"
+
+msgid "Correspondances de fin de support"
+msgstr "Correspondances de fin de support"
+
+
+msgid "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+msgstr "Aucune connexion pour le moment : l’administrateur les ajoute dans la configuration du plugin."
+
+msgid "Connexion"
+msgstr "Connexion"
+
+msgid "Résultat"
+msgstr "Résultat"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Lire maintenant"
+msgstr "Lire maintenant"
+
+msgid "Lecture de Harbor"
+msgstr "Lecture de Harbor"
+
+msgid "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+msgstr "Projets, dépôts, artefacts et résumé des analyses, lus toutes les heures ; « Lire maintenant » ne les attend pas."
+
+msgid "La vérification tourne toutes les heures."
+msgstr "La vérification tourne toutes les heures."
+
+msgid "La lecture tourne toutes les heures."
+msgstr "La lecture tourne toutes les heures."
+
+msgid "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+msgstr "Pour lire Harbor sans attendre : Parc > Inventaire Docker > Images Harbor et vulnérabilités."
+
+msgid "Sources"
+msgstr "Sources"
+
+msgid "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+msgstr "Plateformes lues par le plugin, sans rien y modifier, par les tâches automatiques ou sur clic."
+
+msgid "Cette connexion n’est pas un registre Harbor."
+msgstr "Cette connexion n’est pas un registre Harbor."
+
+#, php-format
+msgid "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+msgstr "Cette lecture se lance désormais depuis Parc > Inventaire Docker > %s."
+
+msgid "La tâche automatique les lit une fois par jour."
+msgstr "La tâche automatique les lit une fois par jour."
+
+msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
+msgstr "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."

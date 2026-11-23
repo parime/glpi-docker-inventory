@@ -47,10 +47,24 @@
                 </span>
             {% endif %}
             {% if can_configure_lifecycle %}
-                <a href="{{ lifecycle_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
-                    <i class="ti ti-settings me-1" aria-hidden="true"></i>
-                    {{ __('Réglages et correspondances', 'dockerinventory') }}
-                </a>
+                <div class="ms-auto d-flex flex-wrap gap-2">
+                    {% if eol_enabled %}
+                        {# Lecture sur clic (#118), avant dans la configuration. #}
+                        <form method="post" action="{{ read_url }}" class="d-inline">
+                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" name="eol_refresh" value="1" class="btn btn-outline-primary btn-sm"
+                                    title="{{ __('Chaque produit au plus une fois par jour.', 'dockerinventory') }}"
+                                    data-bs-toggle="tooltip">
+                                <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                                {{ __('Mettre à jour maintenant', 'dockerinventory') }}
+                            </button>
+                        </form>
+                    {% endif %}
+                    <a href="{{ lifecycle_url }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="ti ti-settings me-1" aria-hidden="true"></i>
+                        {{ __('Réglages et correspondances', 'dockerinventory') }}
+                    </a>
+                </div>
             {% endif %}
         </div>
         <div class="card-body">
