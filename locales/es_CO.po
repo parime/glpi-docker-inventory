@@ -3609,3 +3609,78 @@ msgstr "La acción automática los lee una vez al día."
 
 msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
 msgstr "Para no esperar: Bienes > Inventario Docker > Fin de soporte de las imágenes."
+
+msgid "la vérification est désactivée ci-dessous"
+msgstr "la verificación está desactivada abajo"
+
+msgid "GitHub est injoignable depuis le serveur GLPI (pas d’accès à Internet, proxy ou pare-feu)"
+msgstr "GitHub no es accesible desde el servidor GLPI (sin acceso a Internet, proxy o cortafuegos)"
+
+msgid "la limite de requêtes de GitHub est atteinte, nouvel essai dans une heure au plus"
+msgstr "se ha alcanzado el límite de solicitudes de GitHub, nuevo intento en una hora como máximo"
+
+msgid "GitHub n’a pas répondu dans les 3 secondes"
+msgstr "GitHub no respondió en 3 segundos"
+
+msgid "aucune version n’est encore publiée sur GitHub"
+msgstr "aún no hay ninguna versión publicada en GitHub"
+
+msgid "la réponse de GitHub n’a pas pu être lue"
+msgstr "no se pudo leer la respuesta de GitHub"
+
+msgid "Version du plugin"
+msgstr "Versión del plugin"
+
+msgid "Dernière version sur GitHub"
+msgstr "Última versión en GitHub"
+
+#, php-format
+msgid "Mise à jour disponible : %s"
+msgstr "Actualización disponible: %s"
+
+msgid "Dernière version inconnue"
+msgstr "Última versión desconocida"
+
+msgid "Notes de version"
+msgstr "Notas de la versión"
+
+msgid "Télécharger l’archive"
+msgstr "Descargar el archivo"
+
+#, php-format
+msgid "Dernière vérification en échec : %s."
+msgstr "Última verificación fallida: %s."
+
+#, php-format
+msgid "Résultat de la dernière vérification réussie (%s)."
+msgstr "Resultado de la última verificación correcta (%s)."
+
+#, php-format
+msgid "Raison : %s."
+msgstr "Motivo: %s."
+
+#, php-format
+msgid "Dernière vérification réussie : %s."
+msgstr "Última verificación correcta: %s."
+
+msgid "Aucune vérification réussie pour le moment."
+msgstr "Aún no hay ninguna verificación correcta."
+
+msgid "Voir les versions sur GitHub"
+msgstr "Ver las versiones en GitHub"
+
+#, php-format
+msgid "Dernière vérification : %s (renouvelée toutes les 12 heures)."
+msgstr "Última verificación: %s (se repite cada 12 horas)."
+
+msgid "Vérifier les nouvelles versions sur GitHub"
+msgstr "Buscar nuevas versiones en GitHub"
+
+msgid "Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, sans rien envoyer de ce GLPI."
+msgstr "Lee la última versión publicada en GitHub como máximo cada 12 horas, sin enviar nada de este GLPI."
+
+msgid "À désactiver sur un serveur sans accès à Internet."
+msgstr "Desactívela en un servidor sin acceso a Internet."
+
+msgid "Analyses"
+msgstr "Análisis"

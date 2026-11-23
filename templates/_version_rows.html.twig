@@ -55,7 +55,7 @@
                 {% else %}
                     <td>
                         {% if row.service %}
-                            <a href="{{ row.service.url }}" class="fw-semibold">
+                            <a href="{{ row.service.url }}" class="fw-semibold text-body">
                                 <i class="ti ti-brand-docker me-1" aria-hidden="true"></i>{{ row.service.name }}
                             </a>
                             {% if row.service.is_retired %}

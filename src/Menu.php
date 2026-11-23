@@ -94,7 +94,10 @@ class Menu extends CommonGLPI
     /**
      * Écrans de l'entrée, dans l'ordre des onglets (adresses relatives à la racine de GLPI).
      *
-     * @return array<string, array{label: string, icon: string, url: string}>
+     * label : titre de l'écran (menu, fil d'Ariane) ; short : libellé court de l'onglet, pour que la
+     * barre des 7 sous-pages tienne sur une ligne à 1280 px dans toutes les langues (#121).
+     *
+     * @return array<string, array{label: string, short?: string, icon: string, url: string}>
      */
     private static function screens(): array
     {
@@ -106,21 +109,25 @@ class Menu extends CommonGLPI
             ],
             self::TAB_VERSIONS => [
                 'label' => ImageVersion::getTypeName(2),
+                'short' => __('Versions', 'dockerinventory'),
                 'icon'  => ImageVersion::getIcon(),
                 'url'   => ImageVersion::getOverviewURL(false),
             ],
             self::TAB_HARBOR => [
                 'label' => __('Images Harbor et vulnérabilités', 'dockerinventory'),
+                'short' => 'Harbor',
                 'icon'  => HarborArtifact::getIcon(),
                 'url'   => HarborArtifact::getPageURL(false),
             ],
             self::TAB_SCANS => [
                 'label' => __('Analyses importées', 'dockerinventory'),
+                'short' => __('Analyses', 'dockerinventory'),
                 'icon'  => ImageScan::getIcon(),
                 'url'   => ImageScan::getPageURL(false),
             ],
             self::TAB_EOL => [
                 'label' => __('Fin de support des images', 'dockerinventory'),
+                'short' => __('Fin de support', 'dockerinventory'),
                 'icon'  => 'ti ti-calendar-x',
                 'url'   => ImageVersion::getEolURL(false),
             ],
@@ -140,7 +147,7 @@ class Menu extends CommonGLPI
     /**
      * Onglets des sous-pages, pour templates/_section_nav.html.twig (adresses complètes).
      *
-     * @return list<array{label: string, icon: string, url: string, active: bool}>
+     * @return list<array{label: string, title: string, icon: string, url: string, active: bool}>
      */
     public static function tabs(string $active): array
     {
@@ -149,7 +156,8 @@ class Menu extends CommonGLPI
         $tabs = [];
         foreach (self::screens() as $key => $screen) {
             $tabs[] = [
-                'label'  => $screen['label'],
+                'label'  => $screen['short'] ?? $screen['label'],
+                'title'  => $screen['label'],
                 'icon'   => $screen['icon'],
                 'url'    => (string) $CFG_GLPI['root_doc'] . $screen['url'],
                 'active' => $key === $active,

@@ -8,7 +8,9 @@ Inventaire Docker** (droit de configuration de GLPI), en quatre onglets : **Conn
 **Registres maîtrisés**, **Correspondances de fin de support** et **Exploitation connue**. Il n'y a
 pas d'autre menu de réglage, et rien de l'exploitation : les lectures sur clic (« Lire maintenant »,
 « Mettre à jour maintenant », « Télécharger maintenant ») sont dans **Parc > Inventaire Docker**, à
-côté de leur résultat.
+côté de leur résultat. En tête de la page, l'encadré **Version du plugin** indique la version
+installée et la dernière version publiée sur GitHub (vérification désactivable pour un serveur sans
+accès à Internet).
 
 - [Première configuration (8 étapes)](#première-configuration-8-étapes)
 - [Installation](#installation)

@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Encadré « Version du plugin » ([#121](https://github.com/parime/glpi-docker-inventory/issues/121)),
+  composant commun du modèle : en tête de **Configuration > Plugins > Inventaire Docker**, version
+  installée, dernière version publiée sur GitHub (« À jour », « Mise à jour disponible », « Dernière
+  version inconnue » avec la raison : GitHub injoignable, limite de requêtes, délai de 3 s dépassé,
+  aucune version publiée). Résultat gardé 12 h dans le cache de GLPI, dernier résultat réussi
+  réutilisé si GitHub ne répond pas, client HTTP du cœur (proxy de GLPI). Vérification désactivable
+  pour un serveur sans accès à Internet ; rien n'est envoyé sur l'instance.
+
+### Changed
+
+- CI : contrôles de sécurité communs v1.11.2 ; contrôles lourds sautés pour une PR de documentation
+  seule (`heavy-paths`) ; un nouveau commit sur une PR annule l'exécution précédente, jamais un push
+  de `main`. Barres d'onglets du plugin avec les rôles ARIA `tablist` et `tab`.
+
 ### Changed
 
 - Navigation ([#118](https://github.com/parime/glpi-docker-inventory/issues/118)) : les lectures sur

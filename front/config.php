@@ -39,6 +39,11 @@ if (($legacy = ManualRead::legacy($_POST, $_FILES)) !== null) {
     // des catalogues (jusqu'à la version 0.16.0) : la lecture est faite, puis l'utilisateur va à
     // l'écran d'usage qui la propose désormais (#118). La configuration ne garde que les réglages.
     Html::redirect($legacy);
+} elseif (isset($_POST['save_version_check'])) {
+    // Encadré « Version du plugin » (#121) : vérification sur GitHub activée ou non.
+    ConfigPage::saveVersionCheck(!empty($_POST['version_check']));
+    Session::addMessageAfterRedirect(htmlescape(__('Réglages enregistrés.', 'dockerinventory')), false, INFO);
+    Html::redirect(ConfigPage::url());
 } elseif (isset($_POST['save_managed_registries'])) {
     $hosts = HarborSettings::save((string) ($_POST['managed_registries'] ?? ''));
     Session::addMessageAfterRedirect(htmlescape(sprintf(
@@ -108,6 +113,10 @@ if ($tab === ConfigPage::TAB_CONNECTIONS) {
         'tabs'      => $tabs,
         'nav_title' => $navTitle,
         'add_url'   => Connection::getFormURL(),
+        // Encadré « Version du plugin » (#121), premier onglet seulement : un seul appel à GitHub.
+        'plugin_version' => ConfigPage::pluginVersion(),
+        'version_check'  => ConfigPage::versionCheck(),
+        'page_url'       => ConfigPage::url(),
     ]);
     Search::show(Connection::class);
 } elseif ($tab === ConfigPage::TAB_REGISTRIES) {

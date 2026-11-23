@@ -23,14 +23,18 @@
 <h1 class="h2 mb-2"><i class="ti ti-settings me-2" aria-hidden="true"></i>{{ nav_title }}</h1>
 {% else %}
     {% for tab in tabs|filter(t => t.active) %}
-<h1 class="visually-hidden">{{ tab.label }}</h1>
+<h1 class="visually-hidden">{{ tab.title ?? tab.label }}</h1>
     {% endfor %}
 {% endif %}
 {% if tabs|length > 1 %}
-<ul class="nav nav-tabs mb-3">
+{# Rôles ARIA (tablist, tab, aria-selected) et texte en text-body : barre reconnue et lisible au
+   clavier, l'onglet focalisé gardant un contraste suffisant (contrôles communs v1.11, #121). #}
+<ul class="nav nav-tabs mb-3" role="tablist">
     {% for tab in tabs %}
-        <li class="nav-item">
-            <a href="{{ tab.url }}" class="nav-link {{ tab.active ? 'active' : '' }}"
+        <li class="nav-item" role="presentation">
+            <a href="{{ tab.url }}" class="nav-link text-body {{ tab.active ? 'active' : '' }}" role="tab"
+               aria-selected="{{ tab.active ? 'true' : 'false' }}"
+               {% if tab.title is defined and tab.title != tab.label %}title="{{ tab.title }}"{% endif %}
                {% if tab.active %}aria-current="page"{% endif %}>
                 <i class="{{ tab.icon }} me-1" aria-hidden="true"></i>{{ tab.label }}
             </a>

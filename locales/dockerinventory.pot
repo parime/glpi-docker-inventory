@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 03:16+0000\n"
+"POT-Creation-Date: 2026-11-23 04:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -245,7 +245,7 @@ msgstr ""
 
 #: templates/kubernetes_actions.html.twig templates/versions.html.twig
 #: templates/image_scans.html.twig templates/connection_actions.html.twig
-#: templates/eol.html.twig src/ManualRead.php:211 src/Menu.php:103
+#: templates/eol.html.twig src/ManualRead.php:211 src/Menu.php:106
 #: src/Service.php:264
 msgid "Services"
 msgstr ""
@@ -483,6 +483,7 @@ msgstr ""
 #: templates/versions.html.twig templates/eol_ticket_content.html.twig
 #: templates/_version_rows.html.twig templates/eol_ticket_followup.html.twig
 #: templates/version_tab.html.twig src/LifecycleProduct.php:200
+#: src/Menu.php:130
 msgid "Fin de support"
 msgstr ""
 
@@ -578,7 +579,7 @@ msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
 msgstr ""
 
 #: templates/managed_registries.html.twig templates/harbor_images.html.twig
-#: src/ConfigPage.php:71
+#: src/ConfigPage.php:112
 msgid "Registres maîtrisés"
 msgstr ""
 
@@ -611,7 +612,8 @@ msgid "aucune connexion Harbor"
 msgstr ""
 
 #: templates/managed_registries.html.twig templates/_hardening_rows.html.twig
-#: templates/exploits.html.twig templates/lifecycle.html.twig
+#: templates/_plugin_version.html.twig templates/exploits.html.twig
+#: templates/lifecycle.html.twig
 msgid "Enregistrer"
 msgstr ""
 
@@ -874,7 +876,7 @@ msgid "Gestion des vulnérabilités techniques (ISO 27001, mesure A.8.8)."
 msgstr ""
 
 #: templates/image_scans.html.twig templates/_image_scan_service.html.twig
-#: src/ManualRead.php:226 src/ManualRead.php:231 src/Menu.php:118
+#: src/ManualRead.php:226 src/ManualRead.php:231 src/Menu.php:123
 msgid "Analyses importées"
 msgstr ""
 
@@ -1521,6 +1523,114 @@ msgstr ""
 msgid "Un service disparu est marqué « Retiré », jamais supprimé."
 msgstr ""
 
+#: templates/_plugin_version.html.twig
+msgid "la vérification est désactivée ci-dessous"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"GitHub est injoignable depuis le serveur GLPI (pas d’accès à Internet, proxy "
+"ou pare-feu)"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"la limite de requêtes de GitHub est atteinte, nouvel essai dans une heure au "
+"plus"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "GitHub n’a pas répondu dans les 3 secondes"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "aucune version n’est encore publiée sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "la réponse de GitHub n’a pas pu être lue"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Version du plugin"
+msgstr ""
+
+#: templates/_plugin_version.html.twig templates/_image_scan_findings.html.twig
+msgid "Version installée"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Dernière version sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig src/ImageVersion.php:177
+msgid "À jour"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Mise à jour disponible : %s"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Dernière version inconnue"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Notes de version"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Télécharger l’archive"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification en échec : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Résultat de la dernière vérification réussie (%s)."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Raison : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification réussie : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Aucune vérification réussie pour le moment."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Voir les versions sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification : %s (renouvelée toutes les 12 heures)."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Vérifier les nouvelles versions sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, "
+"sans rien envoyer de ce GLPI."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "À désactiver sur un serveur sans accès à Internet."
+msgstr ""
+
 #: templates/exploits.html.twig
 msgid ""
 "Repérer les vulnérabilités des images exploitées activement, pour les "
@@ -1842,7 +1952,7 @@ msgid ""
 msgstr ""
 
 #: templates/eol.html.twig front/version.php:188 src/ManualRead.php:221
-#: src/Menu.php:123
+#: src/Menu.php:129
 msgid "Fin de support des images"
 msgstr ""
 
@@ -2321,7 +2431,7 @@ msgstr ""
 msgid "Faites reconstruire ou remplacer les images non maîtrisées."
 msgstr ""
 
-#: templates/harbor_images.html.twig src/ManualRead.php:215 src/Menu.php:113
+#: templates/harbor_images.html.twig src/ManualRead.php:215 src/Menu.php:117
 msgid "Images Harbor et vulnérabilités"
 msgstr ""
 
@@ -2721,10 +2831,6 @@ msgid "Paquet"
 msgstr ""
 
 #: templates/_image_scan_findings.html.twig
-msgid "Version installée"
-msgstr ""
-
-#: templates/_image_scan_findings.html.twig
 msgid "Corrigée en"
 msgstr ""
 
@@ -2769,20 +2875,20 @@ msgstr ""
 msgid "Arrêté"
 msgstr ""
 
-#: front/config.php:45
+#: front/config.php:45 front/config.php:60 front/config.php:64
+msgid "Réglages enregistrés."
+msgstr ""
+
+#: front/config.php:50
 #, php-format
 msgid "Registres maîtrisés enregistrés : %s"
 msgstr ""
 
-#: front/config.php:46
+#: front/config.php:51
 msgid "ceux des connexions Harbor"
 msgstr ""
 
-#: front/config.php:55 front/config.php:59
-msgid "Réglages enregistrés."
-msgstr ""
-
-#: front/config.php:92
+#: front/config.php:97
 msgid "Correspondances enregistrées."
 msgstr ""
 
@@ -3895,10 +4001,6 @@ msgid ""
 "pris en charge."
 msgstr ""
 
-#: src/ImageVersion.php:177
-msgid "À jour"
-msgstr ""
-
 #: src/ImageVersion.php:180
 msgid "Aucune version plus récente connue."
 msgstr ""
@@ -3939,7 +4041,7 @@ msgstr ""
 msgid "Mise à jour disponible"
 msgstr ""
 
-#: src/ImageVersion.php:359
+#: src/ImageVersion.php:359 src/Menu.php:112
 msgid "Versions"
 msgstr ""
 
@@ -4120,6 +4222,10 @@ msgstr ""
 
 #: src/Menu.php:44 src/Profile.php:35
 msgid "Inventaire Docker"
+msgstr ""
+
+#: src/Menu.php:124
+msgid "Analyses"
 msgstr ""
 
 #: src/Node.php:39

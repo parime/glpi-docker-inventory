@@ -3615,3 +3615,78 @@ msgstr "Zadanie automatyczne odczytuje je raz dziennie."
 
 msgid "Pour ne pas attendre : Parc > Inventaire Docker > Fin de support des images."
 msgstr "Aby nie czekać: Zasoby > Inwentarz Docker > Koniec wsparcia obrazów."
+
+msgid "la vérification est désactivée ci-dessous"
+msgstr "sprawdzanie jest wyłączone poniżej"
+
+msgid "GitHub est injoignable depuis le serveur GLPI (pas d’accès à Internet, proxy ou pare-feu)"
+msgstr "GitHub jest nieosiągalny z serwera GLPI (brak dostępu do Internetu, proxy lub zapora)"
+
+msgid "la limite de requêtes de GitHub est atteinte, nouvel essai dans une heure au plus"
+msgstr "osiągnięto limit zapytań GitHub, ponowna próba najpóźniej za godzinę"
+
+msgid "GitHub n’a pas répondu dans les 3 secondes"
+msgstr "GitHub nie odpowiedział w ciągu 3 sekund"
+
+msgid "aucune version n’est encore publiée sur GitHub"
+msgstr "na GitHub nie opublikowano jeszcze żadnej wersji"
+
+msgid "la réponse de GitHub n’a pas pu être lue"
+msgstr "nie udało się odczytać odpowiedzi GitHub"
+
+msgid "Version du plugin"
+msgstr "Wersja wtyczki"
+
+msgid "Dernière version sur GitHub"
+msgstr "Najnowsza wersja na GitHub"
+
+#, php-format
+msgid "Mise à jour disponible : %s"
+msgstr "Dostępna aktualizacja: %s"
+
+msgid "Dernière version inconnue"
+msgstr "Najnowsza wersja nieznana"
+
+msgid "Notes de version"
+msgstr "Informacje o wersji"
+
+msgid "Télécharger l’archive"
+msgstr "Pobierz archiwum"
+
+#, php-format
+msgid "Dernière vérification en échec : %s."
+msgstr "Ostatnie sprawdzenie nie powiodło się: %s."
+
+#, php-format
+msgid "Résultat de la dernière vérification réussie (%s)."
+msgstr "Wynik ostatniego udanego sprawdzenia (%s)."
+
+#, php-format
+msgid "Raison : %s."
+msgstr "Powód: %s."
+
+#, php-format
+msgid "Dernière vérification réussie : %s."
+msgstr "Ostatnie udane sprawdzenie: %s."
+
+msgid "Aucune vérification réussie pour le moment."
+msgstr "Brak udanego sprawdzenia."
+
+msgid "Voir les versions sur GitHub"
+msgstr "Zobacz wersje na GitHub"
+
+#, php-format
+msgid "Dernière vérification : %s (renouvelée toutes les 12 heures)."
+msgstr "Ostatnie sprawdzenie: %s (ponawiane co 12 godzin)."
+
+msgid "Vérifier les nouvelles versions sur GitHub"
+msgstr "Sprawdzaj nowe wersje na GitHub"
+
+msgid "Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, sans rien envoyer de ce GLPI."
+msgstr "Odczytuje najnowszą wersję opublikowaną na GitHub najwyżej co 12 godzin, nie wysyłając nic o tym GLPI."
+
+msgid "À désactiver sur un serveur sans accès à Internet."
+msgstr "Wyłącz na serwerze bez dostępu do Internetu."
+
+msgid "Analyses"
+msgstr "Skany"
