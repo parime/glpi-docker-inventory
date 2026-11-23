@@ -124,10 +124,11 @@ if ($view === Menu::TAB_SCANS) {
                 ? ConfigPage::url(ConfigPage::TAB_EXPLOITS) : '',
         ],
         // Catalogues KEV et EPSS (#118) : téléchargement et dépôt hors ligne, avant dans la configuration.
-        'exploit_catalogs' => ExploitSignal::catalogView() + [
+        // Lien vers la tâche automatique (configuration de GLPI) : seulement pour qui peut lire.
+        'exploit_catalogs' => [
             'read_url' => ManualRead::formURL(),
             'can_run'  => ManualRead::canRun(),
-        ],
+        ] + (ManualRead::canRun() ? [] : ['cron_url' => '']) + ExploitSignal::catalogView(),
         'stale_days'    => ImageScan::STALE_DAYS,
         'max_mb'        => intdiv(ScanReportParser::MAX_BYTES, 1024 * 1024),
         'page_url'      => ImageScan::getPageURL(),

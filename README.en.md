@@ -114,7 +114,8 @@ Kubernetes manifest, tickets, automatic actions, private networks under GLPI 12)
 2. In Portainer (or Kubernetes), create a **dedicated read-only account** and its token.
 3. **Setup > Plugins > Docker Inventory**, **Docker connections** tab: "Add a connection",
    **Portainer** (or **Kubernetes**), address, token, environment of the appliances.
-4. On the connection: "**Test the connection**", then "**Import now**".
+4. On the connection: "**Test the connection**". Read every hour, or at once with "**Read now**" in
+   **Assets > Docker Inventory > Services**, "Sources" block.
 5. Optional: **What's Up Docker** and **Harbor** connections (versions, vulnerabilities),
    **Managed registries** and **Image end of support** tabs (disabled by default), automatic
    tickets on the Portainer or Kubernetes connection (disabled by default).

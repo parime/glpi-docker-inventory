@@ -4,8 +4,11 @@
 
 Pour la personne qui installe le plugin, déclare les sources (Portainer, What's Up Docker, Harbor,
 Kubernetes) et donne les droits. Tous les réglages sont dans **Configuration > Plugins >
-Inventaire Docker** (droit de configuration de GLPI), en trois onglets : **Connexions Docker**,
-**Registres maîtrisés** et **Fin de support des images**. Il n'y a pas d'autre menu de réglage.
+Inventaire Docker** (droit de configuration de GLPI), en quatre onglets : **Connexions Docker**,
+**Registres maîtrisés**, **Correspondances de fin de support** et **Exploitation connue**. Il n'y a
+pas d'autre menu de réglage, et rien de l'exploitation : les lectures sur clic (« Lire maintenant »,
+« Mettre à jour maintenant », « Télécharger maintenant ») sont dans **Parc > Inventaire Docker**, à
+côté de leur résultat.
 
 - [Première configuration (8 étapes)](#première-configuration-8-étapes)
 - [Installation](#installation)
@@ -30,10 +33,11 @@ Inventaire Docker** (droit de configuration de GLPI), en trois onglets : **Conne
 3. **Configuration > Plugins > Inventaire Docker**, onglet **Connexions Docker** : « Ajouter une
    connexion », choisir **Portainer** (ou **Kubernetes**), saisir l'adresse et le jeton, choisir
    l'environnement des applications créées, puis « Ajouter ».
-4. Sur la connexion : **« Tester la connexion »**, puis **« Importer maintenant »**. Un
-   avertissement (et non un succès) signale un compte qui ne voit rien.
-5. Facultatif : ajouter une connexion **What's Up Docker** (« Lire WUD maintenant ») ou **Harbor**
-   (« Lire Harbor maintenant ») pour les versions et les vulnérabilités.
+4. Sur la connexion : **« Tester la connexion »**. Un avertissement (et non un succès) signale un
+   compte qui ne voit rien. Pour lire sans attendre la tâche automatique : **Parc > Inventaire Docker > Services**, bloc « Sources »,
+   « **Lire maintenant** » (la configuration ne garde que les réglages, #118).
+5. Facultatif : ajouter une connexion **What's Up Docker** ou **Harbor** pour les versions et les
+   vulnérabilités.
 6. Facultatif : onglet **Registres maîtrisés** (d'où les images doivent venir) et onglet **Fin de
    support des images** (désactivé par défaut).
 7. **Administration > Profils**, onglet **Inventaire Docker** : donner le droit **Lire** aux
@@ -58,8 +62,9 @@ Où se trouve quoi (depuis la version 0.9.0) :
 
 | Écran | Chemin | Droit |
 | --- | --- | --- |
-| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Fin de support des images** | Lire (profil, onglet « Inventaire Docker ») |
-| Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker**, **Registres maîtrisés**, **Fin de support des images** | Configuration de GLPI en modification |
+| Consultation | **Parc > Inventaire Docker** : sous-pages **Services**, **Versions des images**, **Images Harbor et vulnérabilités**, **Analyses importées**, **Fin de support des images**, **Exposition**, **Configuration à risque** | Lire (profil, onglet « Inventaire Docker ») |
+| Lectures sur clic | **Parc > Inventaire Docker** : bloc « Sources » des **Services**, « Lecture de Harbor », « Mettre à jour maintenant » (fin de support), catalogues KEV et EPSS (**Analyses importées**), « Lire Traefik maintenant » (**Exposition**) | Configuration de GLPI en modification |
+| Réglages | **Configuration > Plugins > Inventaire Docker** : onglets **Connexions Docker**, **Registres maîtrisés**, **Correspondances de fin de support**, **Exploitation connue** | Configuration de GLPI en modification |
 | Droits | **Administration > Profils**, onglet **Inventaire Docker** | Profils de GLPI |
 
 Les anciennes adresses (*Configuration > Connexions Docker*, *Configuration > Fin de support des
@@ -98,8 +103,8 @@ de l'inventaire : une perte de droits ne vide jamais l'inventaire.
    connexion », choisir **Portainer**.
 2. Saisir l'adresse (`https://portainer.example.org:9443`) et la clé, choisir l'**environnement**
    (Production, Préproduction...) à donner aux applications que l'import créera, « Ajouter ».
-3. « **Tester la connexion** », puis « **Importer maintenant** ». L'import tourne ensuite toutes
-   les heures (action automatique `portainerimport`).
+3. « **Tester la connexion** ». L'import tourne ensuite toutes les heures (action automatique
+   `portainerimport`) ; « **Lire maintenant** » dans **Parc > Inventaire Docker > Services**, bloc « Sources » le lance tout de suite.
 
 Une même connexion peut mêler environnements Swarm et hôtes Docker autonomes (stacks Compose et
 conteneurs hors Compose). Ce que le plugin écrit hors de ses propres tables : uniquement la
@@ -116,8 +121,8 @@ chaque image. Le plugin lit ce résultat sans rien modifier dans WUD.
 1. Importer d'abord Portainer : les conteneurs vus par WUD sont rattachés aux services importés.
 2. Onglet **Connexions Docker** : « Ajouter une connexion », choisir **What's Up Docker**, saisir l'adresse
    (`https://wud.example.org:3000`) et, si besoin, l'utilisateur et le mot de passe.
-3. « Tester la connexion » (version de WUD, nombre de conteneurs suivis), puis « **Lire WUD
-   maintenant** ». Ensuite toutes les heures (`wudimport`).
+3. « Tester la connexion » (version de WUD, nombre de conteneurs suivis). Lecture toutes les
+   heures (`wudimport`), ou tout de suite par « **Lire maintenant** » dans **Parc > Inventaire Docker > Services**, bloc « Sources ».
 
 > La correspondance avec l'API de WUD suit la documentation publique de WUD 8.x et un faux WUD
 > (`tests/mock-wud`) ; elle reste à valider sur une vraie instance
@@ -141,8 +146,9 @@ les routes définies hors des étiquettes Docker (fichiers, Kubernetes, Consul).
 2. Onglet **Connexions Docker** : « Ajouter une connexion », choisir **Traefik**, saisir l'adresse
    (sans `/api`), puis l'utilisateur et le mot de passe du `basicAuth`. Sans utilisateur, le secret
    est envoyé comme jeton (`Authorization: Bearer`). Le secret est chiffré et jamais réaffiché.
-3. « Tester la connexion » (version de Traefik, nombre de routes HTTP), puis « **Lire Traefik
-   maintenant** ». Il n'y a pas de tâche automatique : la lecture se fait au clic.
+3. « Tester la connexion » (version de Traefik, nombre de routes HTTP). Il n'y a pas de tâche
+   automatique : « **Lire Traefik maintenant** » est dans **Parc > Inventaire Docker > Exposition**,
+   qui affiche aussi les routes lues (ou « Lire maintenant » dans le bloc « Sources » des services).
 
 Seuls des GET sont envoyés, uniquement sous l'adresse de la connexion (`/api/version`,
 `/api/entrypoints`, `/api/http/routers`, `/api/http/services`, `/api/http/middlewares`,
@@ -158,10 +164,10 @@ services ne sont jamais appelées. Au plus 100 routes sont affichées.
    (`https://harbor.example.org`), le compte robot en lecture seule et, s'il diffère, l'hôte tel
    qu'il est écrit dans les images (`registry.example.org:5000`). La connexion couvre les services
    de son entité et de ses sous-entités.
-2. « Tester la connexion » (nombre de projets visibles), puis « **Vérifier les registres
-   maintenant** » (versions) et « **Lire Harbor maintenant** » (projets, dépôts, artefacts et
-   résumé d'analyse de vulnérabilités). Ensuite toutes les heures (`registrycheck`,
-   `harborimport`).
+2. « Tester la connexion » (nombre de projets visibles). Lectures toutes les heures
+   (`registrycheck`, `harborimport`), ou tout de suite : « **Lire maintenant** » dans le bloc
+   « Sources » des services (versions) et dans **Parc > Inventaire Docker > Images Harbor et
+   vulnérabilités**, bloc « Lecture de Harbor » (projets, dépôts, artefacts et résumé d'analyse).
 
 Le plugin ne lance aucune analyse et ne modifie rien dans Harbor. Pagination par pages de 100
 (20 pages au plus par liste) ; un artefact, un dépôt ou un projet absent d'une liste lue en entier
@@ -251,7 +257,8 @@ kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventa
    `kube-node-lease` sont ignorés par défaut (liste modifiable, `*` accepté : `cattle-*`).
 3. « **Tester la connexion** » affiche la version du cluster et le nombre de namespaces visibles,
    ou un avertissement qui nomme les ressources illisibles.
-4. « **Importer maintenant** », puis toutes les heures (`kubernetesimport`). Chaque namespace qui a
+4. Import toutes les heures (`kubernetesimport`), ou tout de suite par « **Lire maintenant** »
+   dans **Parc > Inventaire Docker > Services**, bloc « Sources ». Chaque namespace qui a
    des charges devient une Application, chaque conteneur d'un Deployment, StatefulSet, DaemonSet ou
    CronJob une fiche Service ; les nœuds sont rattachés aux ordinateurs par nom ou adresse IP.
 
@@ -267,12 +274,13 @@ registre maîtrisé »** aux techniciens et aux responsables sécurité.
 
 ## Fin de support des images
 
-**Désactivé par défaut : aucun appel sortant tant que la source n'est pas activée.** Onglet **Fin
-de support des images** de la page de configuration :
+**Désactivé par défaut : aucun appel sortant tant que la source n'est pas activée.** Onglet
+**Correspondances de fin de support** de la page de configuration :
 
 1. Cocher « **Lire les cycles de vie (fin de support)** », choisir le seuil de « bientôt en fin de
    support » (90 jours par défaut), « Enregistrer ».
-2. « **Mettre à jour maintenant** », ou attendre l'action automatique quotidienne `lifecyclecheck`.
+2. Attendre l'action automatique quotidienne `lifecyclecheck`, ou « **Mettre à jour maintenant** »
+   dans **Parc > Inventaire Docker > Fin de support des images**.
    Seul le nom du produit (`postgresql`, `nodejs`...) est envoyé à
    [endoflife.date](https://endoflife.date), au plus une fois par jour et par produit.
 3. Vérifier la **correspondance image → produit** : 33 images officielles courantes sont fournies,
@@ -286,7 +294,8 @@ configuration :
 
 1. Choisir de « **Télécharger aussi les scores EPSS (facultatif)** » et le seuil « EPSS élevé »
    (10 % par défaut), « Enregistrer ».
-2. « **Télécharger maintenant** » : le plugin lit les fichiers publics complets, à une adresse fixe,
+2. « **Télécharger maintenant** », dans **Parc > Inventaire Docker > Analyses importées**, bloc
+   « Catalogues KEV et EPSS » : le plugin lit les fichiers publics complets, à une adresse fixe,
    sans rien envoyer (aucune CVE, image ni hôte). Catalogue CISA KEV
    (`known_exploited_vulnerabilities.json`, environ 1 Mo) et, si retenus, scores EPSS du jour
    (`epss_scores-current.csv.gz`, quelques Mo). Les fichiers sont gardés dans

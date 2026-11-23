@@ -114,7 +114,8 @@ connexion, manifeste Kubernetes, tickets, actions automatiques, réseaux privés
 2. Dans Portainer (ou Kubernetes), créer un **compte dédié en lecture seule** et son jeton.
 3. **Configuration > Plugins > Inventaire Docker**, onglet **Connexions Docker** : « Ajouter une
    connexion », **Portainer** (ou **Kubernetes**), adresse, jeton, environnement des applications.
-4. Sur la connexion : « **Tester la connexion** », puis « **Importer maintenant** ».
+4. Sur la connexion : « **Tester la connexion** ». Lecture toutes les heures, ou tout de suite par
+   « **Lire maintenant** » dans **Parc > Inventaire Docker > Services**, bloc « Sources ».
 5. Facultatif : connexions **What's Up Docker** et **Harbor** (versions, vulnérabilités), onglets
    **Registres maîtrisés** et **Fin de support des images** (désactivée par défaut), tickets
    automatiques sur la connexion Portainer ou Kubernetes (désactivés par défaut).

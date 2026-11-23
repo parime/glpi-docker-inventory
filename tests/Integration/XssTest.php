@@ -430,6 +430,62 @@ final class XssTest extends TestCase
     }
 
     /**
+     * Navigation (#118) : bloc « Sources » des services (nom de connexion saisi par une personne) et
+     * routes Traefik de l'Exposition (noms, hôtes, chemins, services lus dans Traefik).
+     */
+    public function testSourcesAndTraefikRoutesAreEscaped(): void
+    {
+        global $DB;
+
+        $_SESSION['glpiactiveprofile'][Connection::RIGHTNAME] = READ | UPDATE;
+        $DB->update(Connection::getTable(), ['name' => 'Portainer ' . self::SCRIPT], ['id' => $this->portainerId]);
+        $traefikId = (int) (new Connection())->add([
+            'name'        => 'Traefik ' . self::IMG,
+            'type'        => Connection::TYPE_TRAEFIK,
+            'entities_id' => $this->entityId,
+            'url'         => 'https://traefik.exemple.test:8080',
+        ]);
+        $this->assertGreaterThan(0, $traefikId);
+        try {
+            $route = [
+                'name' => 'web' . self::SCRIPT, 'protocol' => 'http', 'provider' => 'docker' . self::IMG,
+                'status' => 'enabled', 'hosts' => ['h' . self::SCRIPT], 'paths' => ['/' . self::IMG],
+                'scope' => 'internet', 'entrypoints' => ['web' . self::SCRIPT], 'tls' => false,
+                'service' => 'svc' . self::IMG, 'servers' => 1, 'middlewares' => ['m' . self::SCRIPT],
+                'match' => 'declared', 'services' => [['id' => 1, 'name' => 'service' . self::SCRIPT]],
+                'checks' => ['no_tls'],
+            ];
+            $DB->update(Connection::getTable(), [
+                'last_import_status' => Connection::STATUS_OK,
+                'last_import_date'   => $_SESSION['glpi_currenttime'],
+                'last_import_report' => (string) json_encode([
+                    'status' => Connection::STATUS_OK, 'errors' => [['endpoint' => '', 'code' => self::IMG]],
+                    'traefik_version' => '3.' . self::SCRIPT, 'truncated' => false,
+                    'counts' => ['routes' => 1, 'internet' => 1, 'not_applied' => 1, 'declared' => 1, 'no_tls' => 1],
+                    'routes' => [$route],
+                    'not_applied' => [[
+                        'name' => 'oubli' . self::SCRIPT, 'host' => 'o' . self::IMG,
+                        'service_id' => 1, 'service' => 's' . self::SCRIPT,
+                    ]],
+                ]),
+            ], ['id' => $traefikId]);
+
+            $services = $this->open('front/service.php');
+            $this->assertStringContainsString('dockerinventory-sources', $services);
+            $this->assertEscaped($services, 'bloc Sources des services');
+            $exposure = $this->open('front/version.php', ['view' => 'exposure']);
+            $this->assertStringContainsString(htmlescape('oubli' . self::SCRIPT), $exposure);
+            $this->assertEscaped($exposure, 'routes Traefik de l\'exposition');
+            $this->assertEscaped(
+                $this->open('front/connection.form.php', ['id' => $traefikId]),
+                'fiche de la connexion Traefik'
+            );
+        } finally {
+            (new Connection())->delete(['id' => $traefikId], true);
+        }
+    }
+
+    /**
      * Noms piégés lus dans un cluster Kubernetes : namespace, charge, conteneur, nœud, secret.
      */
     public function testKubernetesNamesAreEscaped(): void

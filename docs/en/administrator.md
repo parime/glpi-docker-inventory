@@ -4,8 +4,10 @@
 
 For the person who installs the plugin, declares the sources (Portainer, What's Up Docker, Harbor,
 Kubernetes) and grants the rights. All settings are in **Setup > Plugins > Docker Inventory** (GLPI
-setup right), in three tabs: **Docker connections**, **Managed registries** and **Image end of
-support**. There is no other settings menu.
+setup right), in four tabs: **Docker connections**, **Managed registries**, **End-of-support
+mappings** and **Known exploitation**. There is no other settings menu, and nothing operational:
+on-click readings ("Read now", "Update now", "Download now") are in **Assets > Docker Inventory**,
+next to their result.
 
 - [First setup (8 steps)](#first-setup-8-steps)
 - [Installation](#installation)
@@ -30,10 +32,10 @@ support**. There is no other settings menu.
 3. **Setup > Plugins > Docker Inventory**, **Docker connections** tab: "Add a connection", choose
    **Portainer** (or **Kubernetes**), enter the address and the token, choose the environment of
    the created applications, then "Add".
-4. On the connection: **"Test the connection"**, then **"Import now"**. A warning (not a success)
-   reports an account that sees nothing.
-5. Optional: add a **What's Up Docker** connection ("Read WUD now") or a **Harbor** connection
-   ("Read Harbor now") for versions and vulnerabilities.
+4. On the connection: **"Test the connection"**. A warning (not a success) reports an account that
+   sees nothing. To read without waiting for the automatic action: **Assets > Docker Inventory > Services**, "Sources" block, "**Read now**"
+   (the setup page only keeps settings, #118).
+5. Optional: add a **What's Up Docker** or **Harbor** connection for versions and vulnerabilities.
 6. Optional: **Managed registries** tab (where images must come from) and **Image end of support**
    tab (disabled by default).
 7. **Administration > Profiles**, **Docker Inventory** tab: give the **Read** right to the
@@ -58,8 +60,9 @@ Where things are (since version 0.9.0):
 
 | Screen | Path | Right |
 | --- | --- | --- |
-| Viewing | **Assets > Docker Inventory**: **Services**, **Image versions**, **Harbor images and vulnerabilities**, **Image end of support** sub-pages | Read (profile, "Docker Inventory" tab) |
-| Settings | **Setup > Plugins > Docker Inventory**: **Docker connections**, **Managed registries**, **Image end of support** tabs | GLPI setup, update |
+| Viewing | **Assets > Docker Inventory**: **Services**, **Image versions**, **Harbor images and vulnerabilities**, **Imported scans**, **Image end of support**, **Exposure**, **Risky configuration** sub-pages | Read (profile, "Docker Inventory" tab) |
+| On-click readings | **Assets > Docker Inventory**: "Sources" block of **Services**, "Harbor reading", "Update now" (end of support), KEV and EPSS catalogues (**Imported scans**), "Read Traefik now" (**Exposure**) | GLPI setup, update |
+| Settings | **Setup > Plugins > Docker Inventory**: **Docker connections**, **Managed registries**, **End-of-support mappings**, **Known exploitation** tabs | GLPI setup, update |
 | Rights | **Administration > Profiles**, **Docker Inventory** tab | GLPI profiles |
 
 The former addresses (*Setup > Docker connections*, *Setup > Image end of support*, up to version
@@ -99,8 +102,8 @@ a loss of rights never empties the inventory.
 2. Enter the address (`https://portainer.example.org:9443`) and the key, choose the
    **environment** (Production, Staging...) given to the applications the import will create,
    "Add".
-3. "**Test the connection**", then "**Import now**". The import then runs every hour (automatic
-   action `portainerimport`).
+3. "**Test the connection**". The import then runs every hour (automatic action
+   `portainerimport`); "**Read now**" in **Assets > Docker Inventory > Services**, "Sources" block starts it at once.
 
 One connection can mix Swarm environments and standalone Docker hosts (Compose stacks and
 containers outside Compose). What the plugin writes outside its own tables: only the creation,
@@ -116,8 +119,8 @@ each image. The plugin reads this result without changing anything in WUD.
 1. Import Portainer first: containers seen by WUD are linked to the imported services.
 2. **Docker connections** tab: "Add a connection", choose **What's Up Docker**, enter the address
    (`https://wud.example.org:3000`) and, if needed, the user and password.
-3. "Test the connection" (WUD version, number of watched containers), then "**Read WUD now**".
-   Then every hour (`wudimport`).
+3. "Test the connection" (WUD version, number of watched containers). Read every hour
+   (`wudimport`), or at once with "**Read now**" in **Assets > Docker Inventory > Services**, "Sources" block.
 
 > The mapping to the WUD API follows the public WUD 8.x documentation and a fake WUD
 > (`tests/mock-wud`); it remains to be validated on a real instance
@@ -141,8 +144,9 @@ compares it with the label routes collected at import (#72).
 2. **Docker connections** tab: "Add a connection", choose **Traefik**, enter the address (without
    `/api`), then the `basicAuth` user and password. Without a user, the secret is sent as a token
    (`Authorization: Bearer`). The secret is encrypted and never displayed again.
-3. "Test the connection" (Traefik version, number of HTTP routes), then "**Read Traefik now**".
-   There is no automatic action: reading happens on click.
+3. "Test the connection" (Traefik version, number of HTTP routes). There is no automatic action:
+   "**Read Traefik now**" is in **Assets > Docker Inventory > Exposure**, which also shows the routes
+   read (or "Read now" in the "Sources" block of the services).
 
 Only GET requests are sent, only under the connection address (`/api/version`, `/api/entrypoints`,
 `/api/http/routers`, `/api/http/services`, `/api/http/middlewares`, `/api/tcp/routers`); redirects
@@ -158,9 +162,10 @@ displayed.
    (`https://harbor.example.org`), the read-only robot account and, if different, the host as
    written in the images (`registry.example.org:5000`). The connection covers the services of its
    entity and sub-entities.
-2. "Test the connection" (number of visible projects), then "**Check the registries now**"
-   (versions) and "**Read Harbor now**" (projects, repositories, artifacts and vulnerability scan
-   overview). Then every hour (`registrycheck`, `harborimport`).
+2. "Test the connection" (number of visible projects). Read every hour (`registrycheck`,
+   `harborimport`), or at once: "**Read now**" in the "Sources" block of the services (versions) and
+   in **Assets > Docker Inventory > Harbor images and vulnerabilities**, "Harbor reading" block
+   (projects, repositories, artifacts and vulnerability scan overview).
 
 The plugin never starts a scan and changes nothing in Harbor. Pages of 100 (at most 20 pages per
 list); an artifact, repository or project missing from a fully read list is "retired", never
@@ -248,7 +253,7 @@ kubectl auth can-i create deployments -A --as=system:serviceaccount:glpi-inventa
    namespaces are ignored by default (editable list, `*` accepted: `cattle-*`).
 3. "**Test the connection**" shows the cluster version and the number of visible namespaces, or a
    warning naming the resources that cannot be read.
-4. "**Import now**", then every hour (`kubernetesimport`). Each namespace with workloads becomes an
+4. Import every hour (`kubernetesimport`), or at once with "**Read now**" in **Assets > Docker Inventory > Services**, "Sources" block. Each namespace with workloads becomes an
    Appliance, each container of a Deployment, StatefulSet, DaemonSet or CronJob a Service record;
    nodes are linked to computers by name or IP address.
 
@@ -264,12 +269,13 @@ registry"** to technicians and security officers.
 
 ## Image end of support
 
-**Disabled by default: no outgoing call until the source is enabled.** **Image end of support** tab
-of the setup page:
+**Disabled by default: no outgoing call until the source is enabled.** **End-of-support mappings**
+tab of the setup page:
 
 1. Tick "**Read lifecycles (end of support)**", choose the "end of support soon" threshold (90 days
    by default), "Save".
-2. "**Update now**", or wait for the daily `lifecyclecheck` automatic action. Only the product
+2. Wait for the daily `lifecyclecheck` automatic action, or "**Update now**" in **Assets > Docker
+   Inventory > Image end of support**. Only the product
    name (`postgresql`, `nodejs`...) is sent to [endoflife.date](https://endoflife.date), at most
    once a day per product.
 3. Check the **image → product mapping**: 33 common official images are provided, editable. Images
@@ -282,7 +288,8 @@ of the setup page:
 
 1. Choose whether to "**Also download the EPSS scores (optional)**" and the "high EPSS" threshold
    (10% by default), "Save".
-2. "**Download now**": the plugin reads the complete public files, from a fixed address, without
+2. "**Download now**", in **Assets > Docker Inventory > Imported scans**, "KEV and EPSS catalogues"
+   block: the plugin reads the complete public files, from a fixed address, without
    sending anything (no CVE, image or host). CISA KEV catalog (`known_exploited_vulnerabilities.json`,
    about 1 MB) and, if selected, the day's EPSS scores (`epss_scores-current.csv.gz`, a few MB). The
    files are kept in `files/_plugins/dockerinventory/exploits`; scans imported later are enriched

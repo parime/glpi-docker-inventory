@@ -5,6 +5,22 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- Navigation ([#118](https://github.com/parime/glpi-docker-inventory/issues/118)) : les lectures sur
+  clic quittent la page de configuration pour les écrans d'usage de **Parc > Inventaire Docker**, à
+  côté de leur résultat. Bloc « Sources » sous la liste des **Services** (une ligne par connexion :
+  type, dernière lecture, résultat, « Lire maintenant ») ; « Lecture de Harbor » dans **Images
+  Harbor et vulnérabilités** ; routes Traefik et « Lire Traefik maintenant » dans **Exposition** ;
+  « Mettre à jour maintenant » dans **Fin de support des images** ; téléchargement et dépôt hors
+  ligne des catalogues KEV et EPSS dans **Analyses importées**. Les boutons ne sont montrés qu'à qui
+  a le droit de mise à jour de la configuration, comme avant. La configuration ne garde que les
+  réglages, « Tester la connexion » et la date de la dernière lecture, sans lien vers un écran
+  d'usage ; son onglet de fin de support s'appelle « Correspondances de fin de support ». Les
+  anciens boutons (`import`, `harbor_import`, `refresh`, `download_exploits`, `import_exploits`)
+  restent acceptés une version : la lecture est faite, puis l'écran d'usage s'ouvre avec un message.
+- CI : contrôles d'ergonomie et parcours de toutes les pages bloquants (fin du mode avertissement).
+
 ### Fixed
 
 - Tests : l'en-tête `Link` du faux serveur Harbor n'utilise plus aucune donnée de la requête (alerte CodeQL `py/http-response-splitting` encore présente après le premier correctif).
