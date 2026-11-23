@@ -15,3 +15,6 @@ crawl orphan front/lifecycle.php : ancienne adresse de la fin de support (0.8.0)
 # de fiche propre (réglée dans Configuration > Notifications) ; GLPI refuse donc à juste titre.
 crawl http-403 front/imageversion.form.php : pas de saisie manuelle des versions d'images, lues dans WUD et les registres
 crawl http-403 front/notificationtargethardeningexception.form.php : cible de notification sans fiche propre, réglée dans Configuration > Notifications
+# En-tête de fiche du cœur GLPI 11 (.card-subtitle, nom de l'entité en gris) : gabarit du cœur, pas du
+# plugin ; signalé seulement sur GLPI 11, la fiche du service n'a pas changé dans cette version.
+crawl axe:color-contrast front/service.form.php : en-tête de fiche du cœur GLPI 11 (.card-subtitle), hors gabarits du plugin
