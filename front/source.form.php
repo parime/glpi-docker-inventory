@@ -26,7 +26,7 @@ use GlpiPlugin\Dockerinventory\Service;
 // de GLPI. Aucune page affichée : retour à l'écran d'où vient le formulaire.
 Session::checkRight(Connection::RIGHTNAME, UPDATE);
 
-$result = $_SERVER['REQUEST_METHOD'] === 'POST' ? ManualRead::run($_POST, $_FILES) : null;
+$result = ManualRead::run($_POST, $_FILES);
 if ($result === null) {
     Html::redirect(Service::getSearchURL());
 }

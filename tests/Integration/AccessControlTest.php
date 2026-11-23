@@ -700,7 +700,10 @@ final class AccessControlTest extends TestCase
         $services = $this->open('front/service.php');
         $this->assertStringContainsString('dockerinventory-sources', $services);
         $this->assertStringContainsString('harbor-a-' . $this->suffix, $services);
-        $this->assertStringNotContainsString('harbor-b-' . $this->suffix, $services);
+        // Entités actives seulement (la page peut citer les requêtes SQL en mode débogage).
+        $names = array_column(Connection::sourceRows(), 'name');
+        $this->assertContains('harbor-a-' . $this->suffix, $names);
+        $this->assertNotContains('harbor-b-' . $this->suffix, $names);
         $this->assertStringContainsString('name="read"', $services);
         $this->assertStringContainsString('source.form.php', $services);
         $this->assertStringContainsString('name="harbor_read"', $this->open('front/version.php', ['view' => 'harbor']));
@@ -715,19 +718,22 @@ final class AccessControlTest extends TestCase
             'name="import"', 'harbor_import', 'name="refresh"', 'download_exploits', 'import_exploits',
             'source.form.php', 'front/service.form.php', 'filter=kev',
         ];
-        $pages = [['front/connection.form.php', ['id' => $this->harbors['a']]]];
+        $pages = [];
         foreach (ConfigPage::TABS as $tab) {
-            $pages[] = ['front/config.php', ['tab' => $tab]];
+            $pages['onglet ' . $tab] = $this->open('front/config.php', ['tab' => $tab]);
         }
-        foreach ($pages as [$page, $get]) {
-            $html = $this->open($page, $get);
+        // Fiche d'une connexion : son contenu est chargé par l'onglet principal, rendu ici directement.
+        $connection = new Connection();
+        $this->assertTrue($connection->getFromDB($this->harbors['a']));
+        ob_start();
+        $connection->showForm($this->harbors['a']);
+        $pages['fiche Harbor'] = (string) ob_get_clean();
+        $this->assertStringContainsString('name="test"', $pages['fiche Harbor']);
+        foreach ($pages as $where => $html) {
             foreach ($forbidden as $needle) {
-                $this->assertStringNotContainsString($needle, $html, $page . json_encode($get));
+                $this->assertStringNotContainsString($needle, $html, $where);
             }
         }
-        $this->assertStringContainsString('name="test"', $this->open('front/connection.form.php', [
-            'id' => $this->harbors['a'],
-        ]));
 
         // Anciens boutons : encore acceptés, puis l'écran d'usage (fin de support désactivée : aucun appel).
         $settings = \Config::getConfigurationValues(Settings::CONTEXT);
