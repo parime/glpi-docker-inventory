@@ -1,0 +1,33 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Filtre « sans sauvegarde » de la liste des services (#78) : nombre de services actifs visibles dont un
+   volume n'a pas de sauvegarde déclarée, et lien vers la liste filtrée. backups : VolumeBackup::overview(). #}
+{% if backups.services_with_volumes > 0 %}
+    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <span class="text-muted">
+            <i class="ti ti-database-export me-1" aria-hidden="true"></i>
+            {{ __('Volumes déclarés sauvegardés : %1$d sur %2$d', 'dockerinventory')
+                |format(backups.backed_up, backups.volumes) }}
+        </span>
+        {% if backups.services_unbacked > 0 %}
+            <a href="{{ list_url }}" class="btn btn-sm btn-outline-warning">
+                <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                {{ __('Sans sauvegarde déclarée', 'dockerinventory') }}
+                <span class="badge bg-warning-subtle text-warning-emphasis ms-1">{{ backups.services_unbacked }}</span>
+            </a>
+        {% endif %}
+    </div>
+{% endif %}

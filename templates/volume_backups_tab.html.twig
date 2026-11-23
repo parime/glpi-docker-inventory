@@ -1,0 +1,181 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Onglet « Volumes et sauvegarde » d'un service (#78) : volumes nommés (Docker, Swarm) ou persistants
+   (Kubernetes) relevés par l'import, et pour chacun la sauvegarde déclarée (« sauvegardé par… », date
+   de la dernière vérification). Le plugin ne lance ni ne vérifie aucune sauvegarde. #}
+<div class="card">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-database-export me-2" aria-hidden="true"></i>
+            {{ __('Volumes et sauvegarde', 'dockerinventory') }}
+        </h2>
+        {% if service.unbacked > 0 %}
+            <span class="badge bg-warning-subtle text-warning-emphasis">
+                <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                {{ _n(
+                    '%d volume sans sauvegarde déclarée',
+                    '%d volumes sans sauvegarde déclarée',
+                    service.unbacked,
+                    'dockerinventory'
+                )|format(service.unbacked) }}
+            </span>
+        {% endif %}
+        <a href="{{ list_url }}" class="btn btn-outline-secondary btn-sm ms-auto">
+            <i class="ti ti-list me-1" aria-hidden="true"></i>
+            {{ __('Services avec un volume sans sauvegarde', 'dockerinventory') }}
+        </a>
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-0">
+            {{ __(
+                'Les données de ces volumes survivent au conteneur : indiquez ce qui les sauvegarde.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+                'Notez la date de la dernière vérification (restauration testée, rapport relu).',
+                'dockerinventory'
+            ) }}
+            {{ __('Le plugin ne lance ni ne contrôle aucune sauvegarde.', 'dockerinventory') }}
+        </p>
+    </div>
+    {% if service.volumes is empty %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon"><i class="ti ti-database-off text-secondary" aria-hidden="true"></i></div>
+                <p class="empty-title">{{ __('Aucun volume persistant connu pour ce service.', 'dockerinventory') }}</p>
+                <p class="empty-subtitle text-muted">
+                    {{ __(
+                        'Sont relevés les volumes nommés (Docker, Swarm) et les volumes persistants (Kubernetes).',
+                        'dockerinventory'
+                    ) }}
+                    {{ __('Les répertoires de l’hôte montés dans le conteneur ne le sont pas.', 'dockerinventory') }}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('Volume', 'dockerinventory') }}</th>
+                        <th>{{ __('Sauvegarde', 'dockerinventory') }}</th>
+                        <th>{{ __('Dernière vérification', 'dockerinventory') }}</th>
+                        {% if can_create or can_purge %}<th>{{ __('Actions', 'dockerinventory') }}</th>{% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for volume in service.volumes %}
+                        {% set backup = volume.backup %}
+                        {% set form_id = 'dockerinventory-backup-' ~ service.id ~ '-' ~ loop.index %}
+                        <tr>
+                            <td>
+                                <i class="ti ti-database me-1 text-muted" aria-hidden="true"></i>
+                                <code>{{ volume.label }}</code>
+                            </td>
+                            <td>
+                                {% if backup %}
+                                    <span class="badge bg-success-subtle text-success-emphasis">
+                                        <i class="ti ti-circle-check me-1" aria-hidden="true"></i>
+                                        {{ __('Sauvegarde déclarée', 'dockerinventory') }}
+                                    </span>
+                                    <div class="small mt-1">{{ backup.backed_up_by }}</div>
+                                    {% if backup.user %}
+                                        <div class="small text-muted">{{ backup.user }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="badge bg-warning-subtle text-warning-emphasis">
+                                        <i class="ti ti-alert-triangle me-1" aria-hidden="true"></i>
+                                        {{ __('Sans sauvegarde déclarée', 'dockerinventory') }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if backup and backup.date_verified %}
+                                    <i class="ti ti-calendar-check me-1 text-muted" aria-hidden="true"></i>
+                                    {{- backup.date_verified|formatted_date -}}
+                                {% elseif backup %}
+                                    <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                                        {{ __('Jamais vérifiée', 'dockerinventory') }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            {% if can_create or can_purge %}
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        {% if can_create %}
+                                            <a class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse"
+                                               href="#{{ form_id }}" role="button" aria-expanded="false"
+                                               aria-controls="{{ form_id }}">
+                                                <i class="ti ti-pencil me-1" aria-hidden="true"></i>
+                                                {{ backup
+                                                    ? __('Mettre à jour', 'dockerinventory')
+                                                    : __('Déclarer la sauvegarde', 'dockerinventory') }}
+                                            </a>
+                                        {% endif %}
+                                        {% if backup and can_purge %}
+                                            <form method="post" action="{{ action_url }}" class="d-inline">
+                                                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="id" value="{{ backup.id }}">
+                                                <button type="submit" name="purge_backup" value="1"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                    <i class="ti ti-trash me-1" aria-hidden="true"></i>
+                                                    {{ __('Supprimer la déclaration', 'dockerinventory') }}
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                    {% if can_create %}
+                                        <form method="post" action="{{ action_url }}" class="collapse mt-2"
+                                              id="{{ form_id }}">
+                                            <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="plugin_dockerinventory_services_id"
+                                                   value="{{ service.id }}">
+                                            <input type="hidden" name="volume" value="{{ volume.name }}">
+                                            <label class="form-label small mb-1" for="{{ form_id }}-by">
+                                                {{ __(
+                                                    'Sauvegardé par (outil, tâche ou procédure)',
+                                                    'dockerinventory'
+                                                ) }}
+                                            </label>
+                                            <input type="text" class="form-control form-control-sm mb-2"
+                                                   id="{{ form_id }}-by" name="backed_up_by" maxlength="255"
+                                                   value="{{ backup ? backup.backed_up_by : '' }}" required>
+                                            <label class="form-label small mb-1" for="{{ form_id }}-date">
+                                                {{ __('Dernière vérification (facultatif)', 'dockerinventory') }}
+                                            </label>
+                                            <div class="d-flex gap-2">
+                                                <input type="date" class="form-control form-control-sm"
+                                                       id="{{ form_id }}-date" name="date_verified" max="{{ today }}"
+                                                       value="{{ backup ? backup.date_verified : '' }}">
+                                                <button type="submit" name="add_backup" value="1"
+                                                        class="btn btn-sm btn-primary text-nowrap">
+                                                    <i class="ti ti-device-floppy me-1" aria-hidden="true"></i>
+                                                    {{ __('Enregistrer', 'dockerinventory') }}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

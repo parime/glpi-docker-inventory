@@ -90,6 +90,7 @@ class Service extends ServiceBase
         $this->addStandardTab(ImageVersion::class, $tabs, $options);
         $this->addStandardTab(Exposure::class, $tabs, $options);
         $this->addStandardTab(Hardening::class, $tabs, $options);
+        $this->addStandardTab(VolumeBackup::class, $tabs, $options);
 
         return $tabs;
     }
@@ -116,6 +117,12 @@ class Service extends ServiceBase
             19 => ['state', __('État des conteneurs', 'dockerinventory'), 'string'],
             20 => ['restart_policy', __('Politique de redémarrage', 'dockerinventory'), 'string'],
             21 => ['volumes', __('Volumes (noms)', 'dockerinventory'), 'text'],
+            // #78 : volumes sans sauvegarde déclarée (VolumeBackup::refreshService()).
+            VolumeBackup::SEARCH_OPTION => [
+                'volumes_unbacked',
+                __('Volumes sans sauvegarde déclarée', 'dockerinventory'),
+                'number',
+            ],
         ];
         $options = parent::rawSearchOptions();
         foreach ($own as $id => [$field, $name, $datatype]) {
@@ -230,11 +237,13 @@ class Service extends ServiceBase
     }
 
     /**
-     * Exceptions aux écarts de configuration du service (#71) : sans objet sans lui.
+     * Exceptions aux écarts de configuration (#71) et sauvegardes déclarées des volumes (#78) du
+     * service : sans objet sans lui.
      */
     public function cleanDBonPurge()
     {
         (new HardeningException())->deleteByCriteria(['plugin_dockerinventory_services_id' => $this->getID()], true);
+        (new VolumeBackup())->deleteByCriteria(['plugin_dockerinventory_services_id' => $this->getID()], true);
     }
 
     public function showForm($ID, array $options = [])

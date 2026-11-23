@@ -319,12 +319,16 @@ final class InventoryStore
                 'tag'    => (string) $existing['tag'],
                 'digest' => (string) $existing['digest'],
             ], $values);
+            // #78 : volumes sans sauvegarde déclarée, d'après les volumes de cet import.
+            VolumeBackup::refreshService((int) $existing['id']);
 
             return (int) $existing['id'];
         }
         $DB->insert($table, $where + $values + ['date_creation' => $this->now]);
+        $id = (int) $DB->insertId();
+        VolumeBackup::refreshService($id);
 
-        return (int) $DB->insertId();
+        return $id;
     }
 
     /**

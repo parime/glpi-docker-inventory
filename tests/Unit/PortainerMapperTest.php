@@ -74,6 +74,11 @@ final class PortainerMapperTest extends TestCase
                             ['SecretID' => 'sec-1', 'SecretName' => 'boutique_tls_cert', 'File' => ['Name' => 'tls']],
                             ['SecretID' => 'sec-2', 'SecretName' => 'boutique_db_password'],
                         ],
+                        'Mounts'  => [
+                            ['Type' => 'volume', 'Source' => 'boutique_uploads', 'Target' => '/srv/uploads'],
+                            ['Type' => 'volume', 'Target' => '/tmp/cache'],
+                            ['Type' => 'bind', 'Source' => '/srv/boutique/conf', 'Target' => '/etc/boutique'],
+                        ],
                     ],
                     'Networks' => [['Target' => 'net-1'], ['Target' => 'net-inconnu']],
                 ],
@@ -96,7 +101,10 @@ final class PortainerMapperTest extends TestCase
         $this->assertSame('443:8443/tcp, 5353:53/udp (host)', $mapped['ports']);
         $this->assertSame('boutique_front, net-inconnu', $mapped['networks']);
         $this->assertSame('boutique_db_password, boutique_tls_cert', $mapped['secrets']);
+        // #78 : volumes nommés seulement, ni volume anonyme ni chemin de l'hôte.
+        $this->assertSame('boutique_uploads', $mapped['volumes']);
         $this->assertStringNotContainsString('sec-1', json_encode($mapped) ?: '');
+        $this->assertStringNotContainsString('/srv/boutique', json_encode($mapped) ?: '');
     }
 
     public function testMapGlobalServiceWithoutStack(): void

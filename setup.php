@@ -16,6 +16,7 @@
  */
 
 use Glpi\Plugin\Hooks;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\HardeningException;
 use GlpiPlugin\Dockerinventory\ImageVersion;
@@ -60,6 +61,8 @@ function plugin_init_dockerinventory(): void
     // Rappel avant l'expiration d'une exception de configuration (#99), réglable dans
     // Configuration > Notifications.
     Plugin::registerClass(HardeningException::class, ['notificationtemplates_types' => true]);
+    // Rappel avant l'expiration d'un certificat TLS d'une route d'entrée (#78).
+    Plugin::registerClass(Certificate::class, ['notificationtemplates_types' => true]);
 
     // Charte commune, section 9 (#35) : une seule entrée de menu d'usage, Parc > Inventaire Docker
     // (services, versions des images, images Harbor, fin de support, en sous-pages), et tous les

@@ -1,0 +1,119 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# Certificats TLS des routes HTTPS (#78), sous-page « Exposition » : un par hôte, les plus proches de
+   l'expiration d'abord, avec les services qui le présentent. certificates : Certificate::overview().
+   « Lire les certificats maintenant » (droit de mise à jour de la configuration) : poignée de main TLS
+   sur chaque hôte, certificat public seulement ; rien n'est renouvelé. #}
+<div class="card mb-3">
+    <div class="card-header d-flex flex-wrap align-items-center gap-2">
+        <h2 class="card-title mb-0">
+            <i class="ti ti-certificate me-2" aria-hidden="true"></i>{{ __('Certificats TLS', 'dockerinventory') }}
+        </h2>
+        {% if certificates.counts.expired > 0 %}
+            <span class="badge bg-danger-subtle text-danger-emphasis">
+                <i class="ti ti-certificate-off me-1" aria-hidden="true"></i>
+                {{ _n('%d expiré', '%d expirés', certificates.counts.expired, 'dockerinventory')
+                    |format(certificates.counts.expired) }}
+            </span>
+        {% endif %}
+        {% if certificates.counts.expiring > 0 %}
+            <span class="badge bg-warning-subtle text-warning-emphasis">
+                <i class="ti ti-alarm me-1" aria-hidden="true"></i>
+                {{ _n(
+                    '%d expire bientôt',
+                    '%d expirent bientôt',
+                    certificates.counts.expiring,
+                    'dockerinventory'
+                )|format(certificates.counts.expiring) }}
+            </span>
+        {% endif %}
+        {% if can_run and certificates.counts.total > 0 %}
+            <form method="post" action="{{ read_url }}" class="ms-auto">
+                <input type="hidden" name="_glpi_csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" name="{{ certificate_action }}" value="1" class="btn btn-outline-primary btn-sm">
+                    <i class="ti ti-refresh me-1" aria-hidden="true"></i>
+                    {{- __('Lire les certificats maintenant', 'dockerinventory') -}}
+                </button>
+            </form>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <p class="text-muted mb-0">
+            {{ __(
+                'Certificat présenté sur le port 443 par chaque route HTTPS (Traefik, ingress) avec un nom d’hôte.',
+                'dockerinventory'
+            ) }}
+            {{ __(
+                'Alerte %d jours avant l’expiration (réglage du plugin) ; le plugin ne renouvelle rien.',
+                'dockerinventory'
+            )|format(certificates.warning_days) }}
+        </p>
+    </div>
+    {% if certificates.certificates is empty %}
+        <div class="card-body">
+            <div class="empty">
+                <div class="empty-icon"><i class="ti ti-certificate text-secondary" aria-hidden="true"></i></div>
+                <p class="empty-title">{{ __('Aucune route HTTPS avec un nom d’hôte.', 'dockerinventory') }}</p>
+            </div>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-vcenter card-table">
+                <thead>
+                    <tr>
+                        <th>{{ __('Nom d’hôte', 'dockerinventory') }}</th>
+                        <th>{{ __('Certificat', 'dockerinventory') }}</th>
+                        <th>{{ __('Sujet', 'dockerinventory') }}</th>
+                        <th>{{ __('Services', 'dockerinventory') }}</th>
+                        <th>{{ __('Dernière lecture', 'dockerinventory') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for certificate in certificates.certificates %}
+                        <tr>
+                            <td><code>{{ certificate.host }}:{{ certificate.port }}</code></td>
+                            <td>
+                                {{ include('@dockerinventory/_certificate_badge.html.twig', {
+                                    certificate: certificate,
+                                }) }}
+                            </td>
+                            <td>
+                                {{ certificate.subject ?: '-' }}
+                                {% if certificate.sans %}
+                                    <div class="small text-muted">{{ certificate.sans }}</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for service in certificate.services %}
+                                    <a href="{{ service.url }}" class="d-block">{{ service.name }}</a>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if certificate.date_check %}
+                                    {{ certificate.date_check|formatted_datetime }}
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>

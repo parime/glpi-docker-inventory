@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * -------------------------------------------------------------------------
+ * Docker Inventory plugin for GLPI
+ * Copyright (C) 2026 Vincent GUILLOTTE
+ * https://github.com/parime/glpi-docker-inventory
+ * -------------------------------------------------------------------------
+ * LICENSE
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version. See LICENSE for the full text.
+ * -------------------------------------------------------------------------
+ */
+
+declare(strict_types=1);
+
+namespace GlpiPlugin\Dockerinventory\Compat\Base;
+
+use CommonDBTM;
+use GlpiPlugin\Dockerinventory\Compat\GlpiVersion;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
+
+/*
+ * Parent de \GlpiPlugin\Dockerinventory\VolumeBackup : redéclare $rightname et $dohistory
+ * (historique des déclarations de sauvegarde) sans type en GLPI 11, typés en GLPI 12 (voir
+ * GlpiVersion). Le droit vient de la constante de la classe enfant.
+ */
+if (GlpiVersion::isAtLeast12()) {
+    abstract class VolumeBackupBase extends CommonDBTM
+    {
+        public static string $rightname = VolumeBackup::RIGHTNAME;
+        public bool $dohistory = true;
+    }
+} else {
+    abstract class VolumeBackupBase extends CommonDBTM
+    {
+        public static $rightname = VolumeBackup::RIGHTNAME;
+        public $dohistory = true;
+    }
+}

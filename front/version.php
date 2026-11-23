@@ -16,6 +16,7 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Exploit\ExploitCatalog;
@@ -93,6 +94,9 @@ if ($view === Menu::TAB_EXPOSURE) {
         'read_url'        => ManualRead::formURL(),
         'can_run'         => ManualRead::canRun(),
         'form_url'        => Connection::canView() ? Connection::getFormURL() : '',
+        // Certificats TLS des routes HTTPS (#78) et lecture sur clic.
+        'certificates'    => Certificate::overview(),
+        'certificate_action' => ManualRead::ACTION_CERTIFICATES,
     ]);
     Html::footer();
 

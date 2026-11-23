@@ -27,7 +27,8 @@ use Session;
 /**
  * Lectures manuelles (« … maintenant ») des écrans d'usage de Parc > Inventaire Docker (#118) :
  * sources Portainer, Kubernetes, WUD, Traefik et registres (onglet Services), Harbor (onglet Images
- * Harbor), cycles de vie (onglet Fin de support), catalogues KEV et EPSS (onglet Analyses importées).
+ * Harbor), cycles de vie (onglet Fin de support), catalogues KEV et EPSS (onglet Analyses importées),
+ * certificats TLS des routes d'entrée (onglet Exposition, #78).
  * Envoyées à front/source.form.php ; même droit qu'avant le déplacement (mise à jour de la
  * configuration de GLPI). La page de configuration garde les réglages et « Tester la connexion ».
  *
@@ -41,6 +42,7 @@ final class ManualRead
     public const ACTION_LIFECYCLE = 'eol_refresh';
     public const ACTION_EXPLOITS_DOWNLOAD = 'download_exploits';
     public const ACTION_EXPLOITS_FILE = 'import_exploits';
+    public const ACTION_CERTIFICATES = 'certificate_read';
 
     /**
      * Seul l'administrateur de la configuration lance une lecture (contrôle d'avant #118).
@@ -135,6 +137,19 @@ final class ManualRead
     }
 
     /**
+     * Certificats TLS des routes HTTPS des services des entités actives (#78) : poignée de main TLS
+     * sur chaque hôte, certificat public seulement.
+     *
+     * @return array{0: string, 1: int}
+     */
+    public static function certificates(): array
+    {
+        $report = Certificate::check(true);
+
+        return [Certificate::checkMessage($report), $report['errors'] > 0 ? WARNING : INFO];
+    }
+
+    /**
      * Mode hors ligne : fichier KEV (JSON) ou EPSS (CSV, compressé ou non) déposé.
      *
      * @param mixed $file Entrée de $_FILES.
@@ -181,6 +196,7 @@ final class ManualRead
             isset($post[self::ACTION_LIFECYCLE]) => self::lifecycle(),
             isset($post[self::ACTION_EXPLOITS_DOWNLOAD]) => self::exploitsDownload(),
             isset($post[self::ACTION_EXPLOITS_FILE]) => self::exploitsFile($files['catalog'] ?? null),
+            isset($post[self::ACTION_CERTIFICATES]) => self::certificates(),
             default => null,
         };
     }

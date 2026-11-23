@@ -1,0 +1,30 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{# Contenu HTML du modèle de notification « Certificat TLS qui expire bientôt » (#78), rendu une fois à
+   l'installation (CertificateNotification::content()) ; GLPI remplace ensuite les balises
+   ##certificate.*##. fields : balises affichées avec leur libellé (##lang.certificate.x##, traduit à
+   l'envoi). #}
+<p><strong>##certificate.action##</strong></p>
+<table cellpadding="4">
+    {% for field in fields %}
+        <tr>
+            <th align="left" valign="top">##lang.certificate.{{ field }}##</th>
+            <td>##certificate.{{ field }}##</td>
+        </tr>
+    {% endfor %}
+</table>
+<p>##certificate.advice##</p>
+<p><a href="##certificate.url##">##certificate.url##</a></p>

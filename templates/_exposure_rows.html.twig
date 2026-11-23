@@ -57,6 +57,11 @@
                     <span class="badge bg-success-subtle text-success-emphasis">
                         <i class="ti ti-lock me-1" aria-hidden="true"></i>HTTPS
                     </span>
+                    {% if exposure.certificate %}
+                        {{ include('@dockerinventory/_certificate_badge.html.twig', {
+                            certificate: exposure.certificate,
+                        }) }}
+                    {% endif %}
                 {% else %}
                     <span class="badge bg-warning-subtle text-warning-emphasis">
                         <i class="ti ti-lock-open me-1" aria-hidden="true"></i>

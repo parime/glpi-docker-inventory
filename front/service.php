@@ -20,6 +20,7 @@ use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ManualRead;
 use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
 
 // Liste des services, première sous-page de l'entrée Parc > Inventaire Docker : droit de lecture du
 // plugin ; la recherche filtre par entités actives.
@@ -40,6 +41,11 @@ TemplateRenderer::getInstance()->display('@dockerinventory/_page_help.html.twig'
 ]);
 TemplateRenderer::getInstance()->display('@dockerinventory/_section_nav.html.twig', [
     'tabs' => Menu::tabs(Menu::TAB_SERVICES),
+]);
+// Filtre « sans sauvegarde » (#78) : services actifs dont un volume n'a pas de sauvegarde déclarée.
+TemplateRenderer::getInstance()->display('@dockerinventory/_backup_filter.html.twig', [
+    'backups'  => VolumeBackup::overview(),
+    'list_url' => VolumeBackup::unbackedSearchURL(),
 ]);
 Search::show(Service::class);
 // Bloc « Sources » sous la liste (#118) : état de chaque connexion et « Lire maintenant » (avant sur la fiche de

@@ -30,8 +30,15 @@ final class ConfigPage
     public const TAB_REGISTRIES = 'registries';
     public const TAB_LIFECYCLE = 'lifecycle';
     public const TAB_EXPLOITS = 'exploits';
+    public const TAB_CERTIFICATES = 'certificates';
 
-    public const TABS = [self::TAB_CONNECTIONS, self::TAB_REGISTRIES, self::TAB_LIFECYCLE, self::TAB_EXPLOITS];
+    public const TABS = [
+        self::TAB_CONNECTIONS,
+        self::TAB_REGISTRIES,
+        self::TAB_LIFECYCLE,
+        self::TAB_EXPLOITS,
+        self::TAB_CERTIFICATES,
+    ];
 
     /** Réglage du composant « Version du plugin » (#121) : vérification sur GitHub, active par défaut. */
     public const VERSION_CHECK = 'version_check';
@@ -63,6 +70,24 @@ final class ConfigPage
     {
         return (new PluginVersion('dockerinventory', self::REPOSITORY, PLUGIN_DOCKERINVENTORY_VERSION))
             ->status(self::versionCheck());
+    }
+
+    /**
+     * Onglet « Certificats TLS » (#78) : délai d'alerte, état de la tâche automatique.
+     *
+     * @return array{warning_days: int, max_days: int, cron_active: bool, cron_url: string}
+     */
+    public static function certificateSettings(): array
+    {
+        $cron = new \CronTask();
+        $found = $cron->getFromDBbyName(Certificate::class, Certificate::CRON_NAME);
+
+        return [
+            'warning_days' => Certificate::warningDays(),
+            'max_days'     => Certificate::MAX_WARNING_DAYS,
+            'cron_active'  => $found && (int) $cron->fields['state'] !== \CronTask::STATE_DISABLE,
+            'cron_url'     => $found ? \CronTask::getFormURLWithID((int) $cron->getID()) : '',
+        ];
     }
 
     /**
@@ -112,6 +137,7 @@ final class ConfigPage
             self::TAB_REGISTRIES  => [__('Registres maîtrisés', 'dockerinventory'), 'ti ti-building-warehouse'],
             self::TAB_LIFECYCLE   => [LifecycleProduct::getTypeName(2), LifecycleProduct::getIcon()],
             self::TAB_EXPLOITS    => [ExploitSignal::getTypeName(), ExploitSignal::getIcon()],
+            self::TAB_CERTIFICATES => [Certificate::getTypeName(2), Certificate::getIcon()],
         ];
         $tabs = [];
         foreach ($labels as $tab => [$label, $icon]) {
