@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-23 03:16+0000\n"
+"POT-Creation-Date: 2026-11-23 03:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -578,7 +578,7 @@ msgid "Indiquez les hôtes de vos registres, un par ligne, puis enregistrez."
 msgstr ""
 
 #: templates/managed_registries.html.twig templates/harbor_images.html.twig
-#: src/ConfigPage.php:71
+#: src/ConfigPage.php:112
 msgid "Registres maîtrisés"
 msgstr ""
 
@@ -611,7 +611,8 @@ msgid "aucune connexion Harbor"
 msgstr ""
 
 #: templates/managed_registries.html.twig templates/_hardening_rows.html.twig
-#: templates/exploits.html.twig templates/lifecycle.html.twig
+#: templates/_plugin_version.html.twig templates/exploits.html.twig
+#: templates/lifecycle.html.twig
 msgid "Enregistrer"
 msgstr ""
 
@@ -1519,6 +1520,114 @@ msgstr ""
 
 #: templates/appliance_services.html.twig
 msgid "Un service disparu est marqué « Retiré », jamais supprimé."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "la vérification est désactivée ci-dessous"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"GitHub est injoignable depuis le serveur GLPI (pas d’accès à Internet, proxy "
+"ou pare-feu)"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"la limite de requêtes de GitHub est atteinte, nouvel essai dans une heure au "
+"plus"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "GitHub n’a pas répondu dans les 3 secondes"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "aucune version n’est encore publiée sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "la réponse de GitHub n’a pas pu être lue"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Version du plugin"
+msgstr ""
+
+#: templates/_plugin_version.html.twig templates/_image_scan_findings.html.twig
+msgid "Version installée"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Dernière version sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig src/ImageVersion.php:177
+msgid "À jour"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Mise à jour disponible : %s"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Dernière version inconnue"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Notes de version"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Télécharger l’archive"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification en échec : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Résultat de la dernière vérification réussie (%s)."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Raison : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification réussie : %s."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Aucune vérification réussie pour le moment."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Voir les versions sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+#, php-format
+msgid "Dernière vérification : %s (renouvelée toutes les 12 heures)."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "Vérifier les nouvelles versions sur GitHub"
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid ""
+"Lit la dernière version publiée sur GitHub toutes les 12 heures au plus, "
+"sans rien envoyer de ce GLPI."
+msgstr ""
+
+#: templates/_plugin_version.html.twig
+msgid "À désactiver sur un serveur sans accès à Internet."
 msgstr ""
 
 #: templates/exploits.html.twig
@@ -2721,10 +2830,6 @@ msgid "Paquet"
 msgstr ""
 
 #: templates/_image_scan_findings.html.twig
-msgid "Version installée"
-msgstr ""
-
-#: templates/_image_scan_findings.html.twig
 msgid "Corrigée en"
 msgstr ""
 
@@ -2769,20 +2874,20 @@ msgstr ""
 msgid "Arrêté"
 msgstr ""
 
-#: front/config.php:45
+#: front/config.php:45 front/config.php:60 front/config.php:64
+msgid "Réglages enregistrés."
+msgstr ""
+
+#: front/config.php:50
 #, php-format
 msgid "Registres maîtrisés enregistrés : %s"
 msgstr ""
 
-#: front/config.php:46
+#: front/config.php:51
 msgid "ceux des connexions Harbor"
 msgstr ""
 
-#: front/config.php:55 front/config.php:59
-msgid "Réglages enregistrés."
-msgstr ""
-
-#: front/config.php:92
+#: front/config.php:97
 msgid "Correspondances enregistrées."
 msgstr ""
 
@@ -3893,10 +3998,6 @@ msgstr ""
 msgid ""
 "Aucune version trouvée pour cette image (WUD ou registre), ou registre non "
 "pris en charge."
-msgstr ""
-
-#: src/ImageVersion.php:177
-msgid "À jour"
 msgstr ""
 
 #: src/ImageVersion.php:180

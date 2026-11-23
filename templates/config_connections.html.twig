@@ -28,6 +28,7 @@
         ) ~ ' ' ~ __('Les imports tournent ensuite tout seuls.', 'dockerinventory'),
     }) }}
     {{ include('@dockerinventory/_section_nav.html.twig') }}
+    {{ include('@dockerinventory/_plugin_version.html.twig') }}
     <div class="d-flex mb-3">
         <a href="{{ add_url }}" class="btn btn-primary ms-auto">
             <i class="ti ti-plus me-1" aria-hidden="true"></i>{{ __('Ajouter une connexion', 'dockerinventory') }}

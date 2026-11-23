@@ -385,6 +385,7 @@ final class AccessControlTest extends TestCase
         ];
         $actions = [
             'save_settings', 'refresh', 'save_mappings', 'save_exploits', 'download_exploits', 'import_exploits',
+            'save_version_check',
         ];
         foreach ($actions as $action) {
             yield 'configuration : ' . $action => ['front/config.php', [], [$action => 1, 'enabled' => 1]];
@@ -655,6 +656,27 @@ final class AccessControlTest extends TestCase
         );
         $this->assertStringContainsString('tab=lifecycle', LifecycleProduct::getPageURL());
         $this->assertSame(ConfigPage::url(), Connection::getSearchURL());
+
+        // Encadré « Version du plugin » (#121) : premier onglet seulement, avec son réglage.
+        $values = \Config::getConfigurationValues(Settings::CONTEXT, [ConfigPage::VERSION_CHECK]);
+        try {
+            ConfigPage::saveVersionCheck(false);
+            $html = $this->open('front/config.php');
+            $this->assertStringContainsString('dockerinventory-plugin-version', $html);
+            $this->assertStringContainsString('name="save_version_check"', $html);
+            $this->assertStringContainsString('v' . PLUGIN_DOCKERINVENTORY_VERSION, $html);
+            $this->assertStringNotContainsString(
+                'dockerinventory-plugin-version',
+                $this->open('front/config.php', ['tab' => ConfigPage::TAB_REGISTRIES])
+            );
+            $this->assertSame(
+                ConfigPage::url(),
+                $this->redirectionOf('front/config.php', [], ['save_version_check' => 1, 'version_check' => 1])
+            );
+            $this->assertTrue(ConfigPage::versionCheck());
+        } finally {
+            \Config::setConfigurationValues(Settings::CONTEXT, $values + [ConfigPage::VERSION_CHECK => '1']);
+        }
 
         // Page de configuration : chaque onglet s'ouvre, avec la barre d'onglets.
         foreach (ConfigPage::TABS as $tab) {

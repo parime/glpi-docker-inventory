@@ -33,6 +33,47 @@ final class ConfigPage
 
     public const TABS = [self::TAB_CONNECTIONS, self::TAB_REGISTRIES, self::TAB_LIFECYCLE, self::TAB_EXPLOITS];
 
+    /** Réglage du composant « Version du plugin » (#121) : vérification sur GitHub, active par défaut. */
+    public const VERSION_CHECK = 'version_check';
+
+    /** Dépôt GitHub dont la dernière version publiée est lue. */
+    public const REPOSITORY = 'parime/glpi-docker-inventory';
+
+    /**
+     * Vérification des nouvelles versions activée (désactivable pour une instance hors ligne).
+     */
+    public static function versionCheck(): bool
+    {
+        $values = \Config::getConfigurationValues(Lifecycle\Settings::CONTEXT, [self::VERSION_CHECK]);
+
+        return ($values[self::VERSION_CHECK] ?? '1') !== '0';
+    }
+
+    public static function saveVersionCheck(bool $enabled): void
+    {
+        \Config::setConfigurationValues(Lifecycle\Settings::CONTEXT, [self::VERSION_CHECK => $enabled ? '1' : '0']);
+    }
+
+    /**
+     * État de l'encadré « Version du plugin », lu sur GitHub au plus toutes les 12 heures.
+     *
+     * @return array<string, mixed>
+     */
+    public static function pluginVersion(): array
+    {
+        return (new PluginVersion('dockerinventory', self::REPOSITORY, PLUGIN_DOCKERINVENTORY_VERSION))
+            ->status(self::versionCheck());
+    }
+
+    /**
+     * Désinstallation : réglage et état mis en cache retirés.
+     */
+    public static function uninstallVersionCheck(): void
+    {
+        \Config::deleteConfigurationValues(Lifecycle\Settings::CONTEXT, [self::VERSION_CHECK]);
+        PluginVersion::uninstall('dockerinventory');
+    }
+
     /**
      * Adresse de la page, sur un onglet (connexions par défaut, sans paramètre : la recherche GLPI
      * des connexions y ajoute les siens).

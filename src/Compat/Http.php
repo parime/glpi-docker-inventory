@@ -71,4 +71,81 @@ final class Http
 
         return (string) $response->getBody();
     }
+
+    /**
+     * Requête GET sans clé d'API, qui renvoie la réponse entière (composant commun « Version du
+     * plugin », PluginVersion, #121). Un code HTTP (2xx à 5xx) est renvoyé tel quel, jamais levé en exception ; un
+     * échec réseau (nom inconnu, connexion refusée, délai dépassé) lève une exception.
+     *
+     * @param array<string, string> $headers
+     * @return array{status: int, body: string, headers: array<string, string>} en-têtes en minuscules
+     */
+    public static function response(string $url, array $headers = [], int $timeout = 10): array
+    {
+        $timeout = max(1, $timeout);
+
+        return class_exists(\Glpi\Toolbox\HttpClient::class)
+            ? self::responseWithGlpi12($url, $headers, $timeout)
+            : self::responseWithGlpi11($url, $headers, $timeout);
+    }
+
+    /**
+     * @param array<string, string> $headers
+     * @return array{status: int, body: string, headers: array<string, string>}
+     */
+    private static function responseWithGlpi12(string $url, array $headers, int $timeout): array
+    {
+        $options = [
+            'headers'       => $headers,
+            'timeout'       => $timeout,
+            'max_duration'  => $timeout,
+            'max_redirects' => 0,
+        ];
+        try {
+            $response = (new \Glpi\Toolbox\HttpClient(\GlpiPlugin\Dockerinventory\Menu::class))
+                ->request('GET', $url, $options);
+        } catch (\Throwable $e) {
+            // Le client du cœur lève une exception pour toute réponse 3xx, 4xx ou 5xx, qui porte la
+            // réponse (HttpExceptionInterface de Symfony) ; sans réponse, c'est un échec réseau.
+            $response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+            if (!is_object($response) || !method_exists($response, 'getStatusCode')) {
+                throw $e;
+            }
+        }
+        $flat = [];
+        foreach ($response->getHeaders(false) as $name => $values) {
+            $flat[strtolower((string) $name)] = (string) ($values[0] ?? '');
+        }
+
+        return [
+            'status'  => (int) $response->getStatusCode(),
+            'body'    => (string) $response->getContent(false),
+            'headers' => $flat,
+        ];
+    }
+
+    /**
+     * @param array<string, string> $headers
+     * @return array{status: int, body: string, headers: array<string, string>}
+     */
+    private static function responseWithGlpi11(string $url, array $headers, int $timeout): array
+    {
+        $response = \Toolbox::getGuzzleClient(['timeout' => $timeout, 'connect_timeout' => $timeout])
+            ->request('GET', $url, [
+                'headers'         => $headers,
+                'timeout'         => $timeout,
+                'allow_redirects' => false,
+                'http_errors'     => false,
+            ]);
+        $flat = [];
+        foreach ($response->getHeaders() as $name => $values) {
+            $flat[strtolower((string) $name)] = (string) ($values[0] ?? '');
+        }
+
+        return [
+            'status'  => $response->getStatusCode(),
+            'body'    => (string) $response->getBody(),
+            'headers' => $flat,
+        ];
+    }
 }

@@ -7,7 +7,8 @@ Kubernetes) and grants the rights. All settings are in **Setup > Plugins > Docke
 setup right), in four tabs: **Docker connections**, **Managed registries**, **End-of-support
 mappings** and **Known exploitation**. There is no other settings menu, and nothing operational:
 on-click readings ("Read now", "Update now", "Download now") are in **Assets > Docker Inventory**,
-next to their result.
+next to their result. At the top of the page, the **Plugin version** box shows the installed version
+and the latest release on GitHub (the check can be turned off on a server without Internet access).
 
 - [First setup (8 steps)](#first-setup-8-steps)
 - [Installation](#installation)

@@ -10,9 +10,11 @@ on:
     - cron: "23 3 * * *"
   workflow_dispatch:
 
+# Un nouveau commit sur une pull request annule l'exécution précédente de cette PR ; push sur main,
+# planification et lancement manuel : un groupe par exécution (run_id), jamais annulés.
 concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

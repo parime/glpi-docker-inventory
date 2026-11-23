@@ -22,6 +22,7 @@ namespace GlpiPlugin\Dockerinventory\Install;
 use CronTask;
 use DBConnection;
 use DisplayPreference;
+use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\Harbor\HarborSettings;
@@ -158,6 +159,8 @@ final class Installer
         Settings::delete();
         HarborSettings::delete();
         ExploitSignal::uninstall();
+        // Composant « Version du plugin » (#121) : réglage et état mis en cache.
+        ConfigPage::uninstallVersionCheck();
 
         foreach (self::TABLES as $table) {
             $DB->dropTable($table, true);
