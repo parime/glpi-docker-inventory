@@ -5,6 +5,12 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Changed
+
+- Contrôles de sécurité communs v1.11.3 : l'encadré « Version du plugin » est vérifié comme premier
+  bloc de la page de configuration (écart `config-version-premier`, parime/glpi-plugin-template#18) ;
+  il l'était déjà, en tête du premier onglet.
+
 ### Added
 
 - Encadré « Version du plugin » ([#121](https://github.com/parime/glpi-docker-inventory/issues/121)),
