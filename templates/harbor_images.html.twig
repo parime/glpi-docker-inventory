@@ -194,7 +194,7 @@
                             {% for row in deployed %}
                                 <tr>
                                     <td>
-                                        <a href="{{ row.url }}" class="fw-semibold">{{ row.name }}</a>
+                                        <a href="{{ row.url }}" class="fw-semibold text-body">{{ row.name }}</a>
                                         {% if row.stack_name %}
                                             <div class="text-muted small">
                                                 {{- row.stack_label|default(__('Stack', 'dockerinventory')) }}
