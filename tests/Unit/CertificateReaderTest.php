@@ -102,7 +102,7 @@ final class CertificateReaderTest extends TestCase
         }
         [$pem] = self::selfSigned('ok.exemple.test', 5);
         $seen = [];
-        $reader = new CertificateReader(static function (string $host, int $port) use ($pem, &$seen): ?string {
+        $reader = new CertificateReader(static function (string $host, int $port) use ($pem, &$seen): string {
             $seen[] = $host . ':' . $port;
 
             return $pem;
