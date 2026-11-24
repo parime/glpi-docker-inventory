@@ -101,6 +101,7 @@ d'ajouter la correspondance. Branche d'un tag : la plus précise qui commence la
 | Application (stack ou namespace) | **Services**, **Versions** | services de la stack, leurs versions |
 | Ordinateur (nœud Swarm, hôte Docker, nœud Kubernetes) | **Services du nœud** | services qui tournent sur la machine |
 | Service | **Versions** | versions, fin de support, carte « Vulnérabilités de l'image (Harbor) », liens vers les tickets |
+| Service | **Volumes et sauvegarde** | volumes nommés ou persistants, sauvegarde déclarée (« sauvegardé par… », dernière vérification), volumes sans sauvegarde déclarée |
 | Service | **Configuration à risque** | écarts de sécurité (privilégié, root, socket Docker, réseau de l'hôte, limites…), gravité, correction conseillée, exceptions en cours |
 
 ## Tickets

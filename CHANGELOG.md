@@ -5,6 +5,27 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Added
+
+- Volumes sans sauvegarde connue ([#78](https://github.com/parime/glpi-docker-inventory/issues/78)) :
+  onglet **Volumes et sauvegarde** des services, avec les volumes nommés (Docker, désormais aussi
+  ceux des services Swarm) et persistants (Kubernetes). Pour chaque volume, « Déclarer la
+  sauvegarde » : ce qui le sauvegarde et la date de la dernière vérification, avec historique (droit
+  **Sauvegardes des volumes**, enregistrer et supprimer, accordé aux administrateurs de la
+  configuration). Volume sans déclaration signalé ; filtre « Sans sauvegarde déclarée » et nombre de
+  volumes déclarés sauvegardés au-dessus de la liste des **Services**. Le plugin ne lance ni ne
+  contrôle aucune sauvegarde. Preuve A.8.13 : `Evidence::backups()`.
+- Certificats TLS des routes d'entrée (#78) : pour chaque route HTTPS avec un nom d'hôte (Traefik,
+  ingress), le certificat présenté sur le port 443 (poignée de main TLS, certificat public seulement,
+  sans validation) : émetteur, sujet, date d'expiration, auto-signé. Bloc **Certificats TLS** et
+  « Lire les certificats maintenant » dans **Parc > Inventaire Docker > Exposition**, état du
+  certificat dans la colonne « Chiffrement » des expositions. Délai d'alerte dans le nouvel onglet
+  **Certificats TLS** de la configuration (30 jours par défaut) ; action automatique quotidienne
+  `certificatecheck`, désactivée à l'installation, avec la notification « Certificat TLS qui expire
+  bientôt » (une fois par date d'expiration, aucun renouvellement). Ni l'API de Traefik (qui ne
+  donne pas les certificats) ni les secrets Kubernetes (qui contiennent la clé privée) ne sont lus.
+  Preuve A.8.24 : `Evidence::certificates()`.
+
 ### Changed
 
 - Contrôles de sécurité communs v1.11.3 : l'encadré « Version du plugin » est vérifié comme premier

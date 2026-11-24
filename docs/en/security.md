@@ -193,6 +193,26 @@ current exception do not count. High severity is orange, distinct from the yello
 severity, as in GRC Manager. GRC Manager can read this summary through `Evidence::hardening()` as
 evidence for control A.8.9 (`expiring` field: exceptions expiring soon).
 
+## Volume backups (A.8.13)
+
+**Volumes and backup** tab of each service: named volumes (Docker, Swarm) or persistent volumes
+(Kubernetes) recorded at each import. For each one, **Declare the backup** records what backs it up
+(tool, job or procedure) and, when known, the date of the last check (restore tested, report
+reviewed). A volume without a declaration carries the "**No declared backup**" badge; the
+**Services** list offers the filter of the same name. The plugin neither runs nor checks any backup:
+it is a declaration, with history. Host directories mounted in a container are not recorded.
+Evidence: `Evidence::backups()` (volumes, volumes declared as backed up, services with a volume
+without a declaration).
+
+## TLS certificates of entry routes (A.8.24)
+
+**Assets > Docker Inventory > Exposure**, **TLS certificates** block (and "Encryption" column of the
+services' **Exposure** tab): for each HTTPS route with a host name, the certificate presented on
+port 443, its issuer, expiry date and state (valid, expiring soon, expired, self-signed, not read).
+The alert delay is set in the plugin configuration; the `certificatecheck` action (disabled by
+default) reads the certificates again every day and sends the **TLS certificate expiring soon**
+notification, once per expiry date. The plugin renews nothing. Evidence: `Evidence::certificates()`.
+
 ## What the auditor can check
 
 - **Read only**: the plugin only sends read requests to the sources, with dedicated accounts with
