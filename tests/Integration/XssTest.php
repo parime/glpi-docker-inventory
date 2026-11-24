@@ -40,8 +40,8 @@ use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Tests\HarborFixture;
 use GlpiPlugin\Dockerinventory\Tests\KubernetesFixture;
 use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
-use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\VolumeBackup;
+use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudImporter;
 use PHPUnit\Framework\TestCase;
 

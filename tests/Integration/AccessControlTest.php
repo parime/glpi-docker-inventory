@@ -62,6 +62,7 @@ final class AccessControlTest extends TestCase
         'front/imagescan.form.php',
         'front/imageversion.php',
         'front/lifecycle.php',
+        'front/notificationtargetcertificate.form.php',
         'front/service.form.php',
         'front/service.php',
         'front/source.form.php',
@@ -344,6 +345,20 @@ final class AccessControlTest extends TestCase
         $_SESSION['glpiactiveprofile'][HardeningException::RIGHTNAME] = $exception;
         $_SESSION['glpiactiveprofile'][ImageScan::RIGHTNAME] = $scan;
         $_SESSION['glpiactiveprofile'][VolumeBackup::RIGHTNAME] = $backup;
+        // Notifications du cœur : suivent le droit de configuration (cible de notification, #78).
+        $_SESSION['glpiactiveprofile']['notification'] = $config;
+    }
+
+    /**
+     * Adresse générique de la cible de notification des certificats (#78) : vers les notifications.
+     */
+    public function testCertificateNotificationTargetRedirectsToNotifications(): void
+    {
+        $this->setRights(READ, READ | UPDATE);
+        $this->assertSame(
+            \Notification::getSearchURL(),
+            $this->redirectionOf('front/notificationtargetcertificate.form.php')
+        );
     }
 
     /**
@@ -525,6 +540,7 @@ final class AccessControlTest extends TestCase
         yield 'analyses : import' => ['front/imagescan.form.php', [], ['import_scan' => 1, 'reference' => 'nginx:1']];
         yield 'analyses : suppression' => ['front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => 1]];
         // Sauvegardes déclarées des volumes (#78).
+        yield 'cible de notification des certificats' => ['front/notificationtargetcertificate.form.php', [], []];
         yield 'sauvegardes : page' => ['front/volumebackup.form.php', [], []];
         yield 'sauvegardes : déclaration' => [
             'front/volumebackup.form.php', [], ['add_backup' => 1, 'volume' => 'donnees', 'backed_up_by' => 'x'],
