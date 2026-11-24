@@ -1,0 +1,51 @@
+{#
+ # -------------------------------------------------------------------------
+ # Docker Inventory plugin for GLPI
+ # Copyright (C) 2026 Vincent GUILLOTTE
+ # https://github.com/parime/glpi-docker-inventory
+ # -------------------------------------------------------------------------
+ # LICENSE
+ #
+ # This program is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version. See LICENSE for the full text.
+ # -------------------------------------------------------------------------
+ #}
+
+{% import '@dockerinventory/_tone.html.twig' as tone %}
+
+{# État du certificat TLS d'une route HTTPS (#78). certificate : Certificate::state() ; infos :
+   Exposure::infos() (certificates, certificate_errors). Lecture seule. #}
+{% set info = infos.certificates[certificate.status] %}
+<div class="mt-1">
+    <span class="badge {{ tone.badge(info.color) }}">
+        <i class="{{ info.icon }} me-1" aria-hidden="true"></i>{{ info.label }}
+    </span>
+    {% if certificate.self_signed %}
+        <span class="badge bg-warning-subtle text-warning-emphasis">
+            <i class="ti ti-signature me-1" aria-hidden="true"></i>{{ __('Auto-signé', 'dockerinventory') }}
+        </span>
+    {% endif %}
+</div>
+{% if certificate.not_after %}
+    <div class="small text-muted">
+        {% if certificate.days is not null and certificate.days < 0 %}
+            {{ __('Expiré le %s', 'dockerinventory')|format(certificate.not_after|formatted_date) }}
+        {% else %}
+            {{ __('Expire le %s', 'dockerinventory')|format(certificate.not_after|formatted_date) }}
+            {% if certificate.days is not null %}
+                ({{ _n('%d jour', '%d jours', certificate.days, 'dockerinventory')|format(certificate.days) }})
+            {% endif %}
+        {% endif %}
+    </div>
+    {% if certificate.issuer %}
+        <div class="small text-muted">{{ __('Émetteur : %s', 'dockerinventory')|format(certificate.issuer) }}</div>
+    {% endif %}
+{% endif %}
+{% if certificate.error %}
+    <div class="small text-muted">
+        <i class="ti ti-info-circle me-1" aria-hidden="true"></i>
+        {{- infos.certificate_errors[certificate.error] ?? certificate.error -}}
+    </div>
+{% endif %}

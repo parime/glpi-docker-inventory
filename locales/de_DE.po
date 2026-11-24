@@ -3686,3 +3686,322 @@ msgstr "Auf einem Server ohne Internetzugang deaktivieren."
 
 msgid "Analyses"
 msgstr "Analysen"
+
+#: templates/_backup_filter.html.twig
+#, php-format
+msgid "Volumes déclarés sauvegardés : %1$d sur %2$d"
+msgstr "Als gesichert angegebene Volumes: %1$d von %2$d"
+
+#: templates/_backup_filter.html.twig templates/volume_backups_tab.html.twig
+msgid "Sans sauvegarde déclarée"
+msgstr "Keine angegebene Sicherung"
+
+#: templates/config_certificates.html.twig
+msgid "Être prévenu avant qu’un certificat TLS d’une route d’entrée n’expire."
+msgstr "Gewarnt werden, bevor ein TLS-Zertifikat einer Eingangsroute abläuft."
+
+#: templates/config_certificates.html.twig
+msgid "Choisissez le délai d’alerte ; activez la tâche automatique pour une lecture et un rappel quotidiens."
+msgstr "Wählen Sie die Vorwarnzeit; aktivieren Sie die automatische Aktion für tägliches Lesen und Erinnern."
+
+#: templates/config_certificates.html.twig
+msgid "Certificats et lecture sur clic : Parc > Inventaire Docker > Exposition."
+msgstr "Zertifikate und Lesen per Klick: Assets > Docker-Inventar > Erreichbarkeit."
+
+#: templates/config_certificates.html.twig
+msgid "Utilisation de la cryptographie (ISO 27001, mesure A.8.24)."
+msgstr "Verwendung von Kryptographie (ISO 27001, Maßnahme A.8.24)."
+
+#: templates/config_certificates.html.twig templates/_certificates.html.twig
+#: src/Certificate.php:75
+msgid "Certificats TLS"
+msgstr "TLS-Zertifikate"
+
+#: templates/config_certificates.html.twig
+msgid "Le plugin lit le certificat présenté sur le port 443 par chaque route HTTPS (Traefik, ingress)."
+msgstr "Das Plugin liest das Zertifikat, das jede HTTPS-Route (Traefik, Ingress) auf Port 443 vorlegt."
+
+#: templates/config_certificates.html.twig
+msgid "Seul le certificat public est lu : aucune requête, aucun identifiant, rien n’est renouvelé."
+msgstr "Nur das öffentliche Zertifikat wird gelesen: keine Anfrage, keine Zugangsdaten, nichts wird erneuert."
+
+#: templates/config_certificates.html.twig
+msgid "Alerter avant l’expiration (jours)"
+msgstr "Warnung vor Ablauf (Tage)"
+
+#: templates/config_certificates.html.twig
+msgid "Lecture et rappel quotidiens"
+msgstr "Tägliches Lesen und Erinnern"
+
+#: templates/config_certificates.html.twig
+msgid "Tâche automatique « certificatecheck » active : lecture et rappel une fois par jour."
+msgstr "Automatische Aktion „certificatecheck“ aktiv: Lesen und Erinnern einmal täglich."
+
+#: templates/config_certificates.html.twig
+msgid "Tâche automatique « certificatecheck » désactivée : activez-la pour être prévenu à temps."
+msgstr "Automatische Aktion „certificatecheck“ deaktiviert: aktivieren Sie sie, um rechtzeitig gewarnt zu werden."
+
+#: templates/config_certificates.html.twig
+msgid "Destinataires du rappel : Configuration > Notifications, « Certificat TLS qui expire bientôt »."
+msgstr "Empfänger der Erinnerung: Einstellungen > Benachrichtigungen, „TLS-Zertifikat läuft bald ab“."
+
+#: templates/volume_backups_tab.html.twig src/VolumeBackup.php:132
+msgid "Volumes et sauvegarde"
+msgstr "Volumes und Sicherung"
+
+#: templates/volume_backups_tab.html.twig
+#, php-format
+msgid "%d volume sans sauvegarde déclarée"
+msgid_plural "%d volumes sans sauvegarde déclarée"
+msgstr[0] "%d Volume ohne angegebene Sicherung"
+msgstr[1] "%d Volumes ohne angegebene Sicherung"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Services avec un volume sans sauvegarde"
+msgstr "Dienste mit einem Volume ohne Sicherung"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Les données de ces volumes survivent au conteneur : indiquez ce qui les sauvegarde."
+msgstr "Die Daten dieser Volumes überdauern den Container: geben Sie an, was sie sichert."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Notez la date de la dernière vérification (restauration testée, rapport relu)."
+msgstr "Notieren Sie das Datum der letzten Prüfung (Wiederherstellung getestet, Bericht gelesen)."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Le plugin ne lance ni ne contrôle aucune sauvegarde."
+msgstr "Das Plugin startet und prüft keine Sicherung."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Aucun volume persistant connu pour ce service."
+msgstr "Für diesen Dienst ist kein persistentes Volume bekannt."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Sont relevés les volumes nommés (Docker, Swarm) et les volumes persistants (Kubernetes)."
+msgstr "Erfasst werden benannte Volumes (Docker, Swarm) und persistente Volumes (Kubernetes)."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Les répertoires de l’hôte montés dans le conteneur ne le sont pas."
+msgstr "In den Container eingebundene Host-Verzeichnisse nicht."
+
+#: templates/volume_backups_tab.html.twig
+msgid "Volume"
+msgstr "Volume"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Sauvegarde"
+msgstr "Sicherung"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Sauvegarde déclarée"
+msgstr "Sicherung angegeben"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Jamais vérifiée"
+msgstr "Nie geprüft"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Mettre à jour"
+msgstr "Aktualisieren"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Déclarer la sauvegarde"
+msgstr "Sicherung angeben"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Supprimer la déclaration"
+msgstr "Angabe löschen"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Sauvegardé par (outil, tâche ou procédure)"
+msgstr "Gesichert durch (Werkzeug, Job oder Verfahren)"
+
+#: templates/volume_backups_tab.html.twig
+msgid "Dernière vérification (facultatif)"
+msgstr "Letzte Prüfung (optional)"
+
+#: templates/_certificate_badge.html.twig
+msgid "Auto-signé"
+msgstr "Selbstsigniert"
+
+#: templates/_certificate_badge.html.twig
+#, php-format
+msgid "Expiré le %s"
+msgstr "Abgelaufen am %s"
+
+#: templates/_certificate_badge.html.twig
+#, php-format
+msgid "Expire le %s"
+msgstr "Läuft am %s ab"
+
+#: templates/_certificate_badge.html.twig
+#, php-format
+msgid "%d jour"
+msgid_plural "%d jours"
+msgstr[0] "%d Tag"
+msgstr[1] "%d Tage"
+
+#: templates/_certificate_badge.html.twig
+#, php-format
+msgid "Émetteur : %s"
+msgstr "Aussteller: %s"
+
+#: templates/_certificates.html.twig
+#, php-format
+msgid "%d expiré"
+msgid_plural "%d expirés"
+msgstr[0] "%d abgelaufen"
+msgstr[1] "%d abgelaufen"
+
+#: templates/_certificates.html.twig
+#, php-format
+msgid "%d expire bientôt"
+msgid_plural "%d expirent bientôt"
+msgstr[0] "%d läuft bald ab"
+msgstr[1] "%d laufen bald ab"
+
+#: templates/_certificates.html.twig
+msgid "Lire les certificats maintenant"
+msgstr "Zertifikate jetzt lesen"
+
+#: templates/_certificates.html.twig
+msgid "Certificat présenté sur le port 443 par chaque route HTTPS (Traefik, ingress) avec un nom d’hôte."
+msgstr "Zertifikat, das jede HTTPS-Route (Traefik, Ingress) mit Hostnamen auf Port 443 vorlegt."
+
+#: templates/_certificates.html.twig
+#, php-format
+msgid "Alerte %d jours avant l’expiration (réglage du plugin) ; le plugin ne renouvelle rien."
+msgstr "Warnung %d Tage vor Ablauf (Plugin-Einstellung); das Plugin erneuert nichts."
+
+#: templates/_certificates.html.twig
+msgid "Aucune route HTTPS avec un nom d’hôte."
+msgstr "Keine HTTPS-Route mit Hostnamen."
+
+#: templates/_certificates.html.twig src/NotificationTargetCertificate.php:108
+msgid "Nom d’hôte"
+msgstr "Hostname"
+
+#: templates/_certificates.html.twig
+msgid "Certificat"
+msgstr "Zertifikat"
+
+#: templates/_certificates.html.twig src/NotificationTargetCertificate.php:110
+msgid "Sujet"
+msgstr "Inhaber"
+
+#: front/volumebackup.form.php:37
+msgid "Sauvegarde déclarée."
+msgstr "Sicherung angegeben."
+
+#: front/volumebackup.form.php:48
+msgid "Déclaration supprimée."
+msgstr "Angabe gelöscht."
+
+#: src/Certificate.php:76
+msgid "Certificat TLS"
+msgstr "TLS-Zertifikat"
+
+#: src/Certificate.php:254
+msgid "Aucune route HTTPS avec un nom d’hôte : aucun certificat à lire."
+msgstr "Keine HTTPS-Route mit Hostnamen: kein Zertifikat zu lesen."
+
+#: src/Certificate.php:258
+#, php-format
+msgid "Certificats lus : %1$d sur %2$d (%3$d en erreur)."
+msgstr "Gelesene Zertifikate: %1$d von %2$d (%3$d mit Fehler)."
+
+#: src/Certificate.php:350
+msgid "Certificat expiré"
+msgstr "Zertifikat abgelaufen"
+
+#: src/Certificate.php:360
+msgid "Certificat valide"
+msgstr "Gültiges Zertifikat"
+
+#: src/Certificate.php:365
+msgid "Certificat non lu"
+msgstr "Zertifikat nicht gelesen"
+
+#: src/Certificate.php:370
+msgid "Pas encore lu"
+msgstr "Noch nicht gelesen"
+
+#: src/Certificate.php:385
+msgid "Nom d’hôte non lisible."
+msgstr "Hostname nicht lesbar."
+
+#: src/Certificate.php:387
+msgid "Connexion TLS impossible (hôte injoignable depuis GLPI, port fermé ou délai dépassé)."
+msgstr "TLS-Verbindung nicht möglich (Host von GLPI aus nicht erreichbar, Port geschlossen oder Zeitüberschreitung)."
+
+#: src/Certificate.php:391
+msgid "Le serveur n’a présenté aucun certificat."
+msgstr "Der Server hat kein Zertifikat vorgelegt."
+
+#: src/Certificate.php:394
+msgid "Certificat présenté illisible."
+msgstr "Das vorgelegte Zertifikat ist nicht lesbar."
+
+#: src/Certificate.php:470
+msgid "Certificats TLS des routes d’entrée : lecture et rappel avant l’expiration"
+msgstr "TLS-Zertifikate der Eingangsrouten: Lesen und Erinnerung vor Ablauf"
+
+#: src/NotificationTargetCertificate.php:42
+msgid "Certificat TLS qui expire bientôt"
+msgstr "TLS-Zertifikat läuft bald ab"
+
+#: src/NotificationTargetCertificate.php:99
+msgid "Renouvelez le certificat sur le point d’entrée (Traefik, ingress) : le plugin ne le fait pas."
+msgstr "Erneuern Sie das Zertifikat am Eingangspunkt (Traefik, Ingress): Das Plugin tut es nicht."
+
+#: src/NotificationTargetCertificate.php:109
+msgid "Port"
+msgstr "Port"
+
+#: src/NotificationTargetCertificate.php:111
+msgid "Émetteur"
+msgstr "Aussteller"
+
+#: src/NotificationTargetCertificate.php:112
+msgid "Date d’expiration"
+msgstr "Ablaufdatum"
+
+#: src/Service.php:123
+msgid "Volumes sans sauvegarde déclarée"
+msgstr "Volumes ohne angegebene Sicherung"
+
+#: src/VolumeBackup.php:55
+msgid "Sauvegardes des volumes"
+msgstr "Volume-Sicherungen"
+
+#: src/VolumeBackup.php:56
+msgid "Sauvegarde de volume"
+msgstr "Volume-Sicherung"
+
+#: src/VolumeBackup.php:95
+msgid "Déclarer une sauvegarde"
+msgstr "Eine Sicherung angeben"
+
+#: src/VolumeBackup.php:96
+msgid "Supprimer une déclaration de sauvegarde"
+msgstr "Eine Sicherungsangabe löschen"
+
+#: src/VolumeBackup.php:238
+msgid "Vous n’avez pas le droit de déclarer cette sauvegarde."
+msgstr "Sie dürfen diese Sicherung nicht angeben."
+
+#: src/VolumeBackup.php:241
+msgid "Ce volume n’est pas monté par ce service."
+msgstr "Dieses Volume wird von diesem Dienst nicht eingebunden."
+
+#: src/VolumeBackup.php:245
+msgid "Indiquez ce qui sauvegarde ce volume."
+msgstr "Geben Sie an, was dieses Volume sichert."
+
+#: src/VolumeBackup.php:249
+msgid "La date de vérification doit être une date passée ou aujourd’hui."
+msgstr "Das Prüfdatum muss in der Vergangenheit liegen oder heute sein."
+
+#: src/VolumeBackup.php:268
+msgid "La déclaration n’a pas pu être enregistrée."
+msgstr "Die Angabe konnte nicht gespeichert werden."

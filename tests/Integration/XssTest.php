@@ -20,6 +20,7 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Tests\Integration;
 
 use Appliance;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ExploitSignal;
 use GlpiPlugin\Dockerinventory\Exposure;
@@ -39,6 +40,7 @@ use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Tests\HarborFixture;
 use GlpiPlugin\Dockerinventory\Tests\KubernetesFixture;
 use GlpiPlugin\Dockerinventory\Tests\PortainerFixture;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
 use GlpiPlugin\Dockerinventory\Wud\WudClient;
 use GlpiPlugin\Dockerinventory\Wud\WudImporter;
 use PHPUnit\Framework\TestCase;
@@ -534,6 +536,69 @@ final class XssTest extends TestCase
             $this->capture(static fn () => Service::displayTabContentForItem($appliance)),
             'onglet Services du namespace'
         );
+    }
+
+    /**
+     * Sauvegardes déclarées et certificats TLS (#78) : nom de volume lu sur la plateforme, texte
+     * « sauvegardé par » saisi par une personne, sujet et émetteur lus dans un certificat présenté
+     * par un hôte des routes.
+     */
+    public function testBackupsAndCertificatesAreEscaped(): void
+    {
+        global $DB;
+
+        $suffix = bin2hex(random_bytes(4));
+        $host = 'xss-' . $suffix . '.exemple.test';
+        $serviceId = (int) (new Service())->add([
+            'name'        => 'service-xss-' . $suffix,
+            'service_uid' => 'xss-' . $suffix,
+            'entities_id' => $this->entityId,
+            'image'       => 'nginx',
+            'volumes'     => 'donnees' . self::SCRIPT . ', fichiers',
+            'routes'      => \GlpiPlugin\Dockerinventory\Exposure\ExposureMapper::encode([[
+                'source' => 'traefik', 'host' => $host, 'path' => '/', 'tls' => true, 'port' => 80,
+                'protocol' => 'tcp', 'name' => 'web', 'entrypoints' => 'websecure',
+            ]]),
+        ]);
+        $this->assertGreaterThan(0, $serviceId);
+        try {
+            VolumeBackup::refreshService($serviceId);
+            $_SESSION['glpiactiveprofile'][VolumeBackup::RIGHTNAME] = CREATE | PURGE;
+            $this->assertSame('', VolumeBackup::record($serviceId, 'fichiers', self::IMG, ''));
+            $DB->insert(Certificate::getTable(), [
+                'entities_id'    => $this->entityId,
+                'host'           => $host,
+                'port'           => Certificate::PORT,
+                'subject'        => self::SCRIPT,
+                'issuer'         => self::IMG,
+                'sans'           => self::SCRIPT,
+                'date_not_after' => date('Y-m-d H:i:s', time() + 5 * 86400),
+                'date_check'     => date('Y-m-d H:i:s'),
+            ]);
+            Certificate::resetCache();
+            $item = new Service();
+            $this->assertTrue($item->getFromDB($serviceId));
+            $tab = $this->capture(static fn () => VolumeBackup::displayTabContentForItem($item));
+            $this->assertEscaped($tab, 'onglet Volumes et sauvegarde');
+            $this->assertStringContainsString('&lt;img src=x onerror', $tab);
+            $exposure = $this->open('front/version.php', ['view' => 'exposure']);
+            $this->assertEscaped($exposure, 'exposition : certificats');
+            $this->assertStringContainsString('&lt;img src=x onerror', $exposure);
+            $this->assertEscaped(
+                $this->capture(static fn () => Exposure::displayTabContentForItem($item)),
+                'onglet Exposition du service : certificat'
+            );
+            $this->assertEscaped($this->open('front/service.php'), 'liste des services : sauvegardes', false);
+            $this->assertEscaped(
+                $this->open('front/config.php', ['tab' => 'certificates']),
+                'configuration : certificates',
+                false
+            );
+        } finally {
+            $DB->delete(Certificate::getTable(), ['host' => $host]);
+            (new Service())->delete(['id' => $serviceId], true);
+            Certificate::resetCache();
+        }
     }
 
     public function testTemplatesNeverDisableAutoescape(): void

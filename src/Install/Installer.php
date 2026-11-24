@@ -22,6 +22,7 @@ namespace GlpiPlugin\Dockerinventory\Install;
 use CronTask;
 use DBConnection;
 use DisplayPreference;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ExploitSignal;
@@ -32,6 +33,7 @@ use GlpiPlugin\Dockerinventory\ImageVersion;
 use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
 use Migration;
 use ProfileRight;
 
@@ -63,6 +65,8 @@ final class Installer
         'glpi_plugin_dockerinventory_hardeningexceptions',
         'glpi_plugin_dockerinventory_imagescans',
         'glpi_plugin_dockerinventory_exploitsignals',
+        'glpi_plugin_dockerinventory_volumebackups',
+        'glpi_plugin_dockerinventory_certificates',
     ];
 
     public const CRON_NAME = 'portainerimport';
@@ -108,6 +112,11 @@ final class Installer
             ProfileRight::addProfileRights([ImageScan::RIGHTNAME]);
             $this->grantToAdministrators([ImageScan::RIGHTNAME => CREATE | PURGE]);
         }
+        // 0.17.0 => sauvegardes déclarées des volumes (#78) : même règle.
+        if (countElementsInTable('glpi_profilerights', ['name' => VolumeBackup::RIGHTNAME]) === 0) {
+            ProfileRight::addProfileRights([VolumeBackup::RIGHTNAME]);
+            $this->grantToAdministrators([VolumeBackup::RIGHTNAME => CREATE | PURGE]);
+        }
         $defaults = [ImageVersion::class => self::VERSION_COLUMNS, Connection::class => self::CONNECTION_COLUMNS];
         foreach ($defaults as $itemtype => $columns) {
             if (countElementsInTable(DisplayPreference::getTable(), ['itemtype' => $itemtype]) === 0) {
@@ -141,6 +150,14 @@ final class Installer
             'logs_lifetime' => 30,
         ]);
         ExpiryNotification::install();
+        // Certificats TLS des routes d'entrée (#78) : lecture quotidienne désactivée tant que
+        // l'administrateur ne l'active pas (elle se connecte aux hôtes des routes) ; rappel envoyé
+        // par la même tâche (modèle et notification créés une seule fois).
+        CronTask::register(Certificate::class, Certificate::CRON_NAME, DAY_TIMESTAMP, [
+            'state'         => CronTask::STATE_DISABLE,
+            'logs_lifetime' => 30,
+        ]);
+        CertificateNotification::install();
 
         $migration->executeMigration();
 
@@ -152,9 +169,16 @@ final class Installer
         global $DB;
 
         CronTask::unregister('dockerinventory');
-        ProfileRight::deleteProfileRights([Service::RIGHTNAME, HardeningException::RIGHTNAME, ImageScan::RIGHTNAME]);
+        ProfileRight::deleteProfileRights([
+            Service::RIGHTNAME,
+            HardeningException::RIGHTNAME,
+            ImageScan::RIGHTNAME,
+            VolumeBackup::RIGHTNAME,
+        ]);
         // Avant le nettoyage général : cibles, traductions et liens des notifications avec elles.
         ExpiryNotification::uninstall();
+        CertificateNotification::uninstall();
+        Certificate::uninstallSettings();
         $this->deleteCoreRowsOfPluginItemtypes();
         Settings::delete();
         HarborSettings::delete();
@@ -269,6 +293,7 @@ final class Installer
                 `container_names` text,
                 `routes` text,
                 `hardening` text,
+                `volumes_unbacked` int NOT NULL DEFAULT '0',
                 `is_retired` tinyint NOT NULL DEFAULT '0',
                 `date_retired` timestamp NULL DEFAULT NULL,
                 `last_seen` timestamp NULL DEFAULT NULL,
@@ -561,6 +586,44 @@ final class Installer
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `cve_id` (`cve_id`),
                 KEY `is_kev` (`is_kev`)",
+            // 0.17.0 => sauvegardes déclarées des volumes (#78) : une par service et par volume.
+            'glpi_plugin_dockerinventory_volumebackups' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `plugin_dockerinventory_services_id` int {$sign} NOT NULL DEFAULT '0',
+                `volume` varchar(255) NOT NULL DEFAULT '',
+                `backed_up_by` varchar(255) NOT NULL DEFAULT '',
+                `date_verified` date DEFAULT NULL,
+                `users_id` int {$sign} NOT NULL DEFAULT '0',
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`plugin_dockerinventory_services_id`, `volume`),
+                KEY `entities_id` (`entities_id`),
+                KEY `users_id` (`users_id`)",
+            // 0.17.0 => certificats TLS des routes d'entrée (#78) : un par hôte et par port.
+            'glpi_plugin_dockerinventory_certificates' => "
+                `id` int {$sign} NOT NULL AUTO_INCREMENT,
+                `entities_id` int {$sign} NOT NULL DEFAULT '0',
+                `host` varchar(255) NOT NULL DEFAULT '',
+                `port` int NOT NULL DEFAULT '443',
+                `subject` varchar(255) NOT NULL DEFAULT '',
+                `issuer` varchar(255) NOT NULL DEFAULT '',
+                `sans` text,
+                `serial` varchar(128) NOT NULL DEFAULT '',
+                `date_not_before` timestamp NULL DEFAULT NULL,
+                `date_not_after` timestamp NULL DEFAULT NULL,
+                `is_self_signed` tinyint NOT NULL DEFAULT '0',
+                `error` varchar(32) NOT NULL DEFAULT '',
+                `date_check` timestamp NULL DEFAULT NULL,
+                `date_success` timestamp NULL DEFAULT NULL,
+                `reminded_not_after` timestamp NULL DEFAULT NULL,
+                `date_mod` timestamp NULL DEFAULT NULL,
+                `date_creation` timestamp NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                UNIQUE KEY `unicity` (`host`, `port`),
+                KEY `entities_id` (`entities_id`),
+                KEY `date_not_after` (`date_not_after`)",
         ];
 
         $created = [];
@@ -639,6 +702,17 @@ final class Installer
         $exceptions = HardeningException::getTable();
         $migration->addField($exceptions, 'reminded_date_end', 'date DEFAULT NULL', ['after' => 'date_end']);
         $migration->migrationOneTable($exceptions);
+
+        // 0.17.0 => volumes sans sauvegarde déclarée (#78), calculés pour les services existants.
+        $services = Service::getTable();
+        if (!$DB->fieldExists($services, 'volumes_unbacked', false)) {
+            $migration->addField($services, 'volumes_unbacked', "int NOT NULL DEFAULT '0'", ['after' => 'hardening']);
+            $migration->migrationOneTable($services);
+            $rows = $DB->request(['SELECT' => ['id'], 'FROM' => $services, 'WHERE' => ['NOT' => ['volumes' => null]]]);
+            foreach ($rows as $row) {
+                VolumeBackup::refreshService((int) $row['id']);
+            }
+        }
     }
 
     /**

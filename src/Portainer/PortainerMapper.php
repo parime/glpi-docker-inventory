@@ -28,7 +28,8 @@ use GlpiPlugin\Dockerinventory\Hardening\HardeningMapper;
  *
  * Formes lues (API Docker Engine v1.41+, relayée par /api/endpoints/{id}/docker/...) :
  * - service : ID, Spec.Name, Spec.Labels, Spec.Mode.{Replicated.Replicas|Global},
- *   Spec.TaskTemplate.ContainerSpec.{Image, Secrets[].SecretName}, Spec.TaskTemplate.Networks[].Target,
+ *   Spec.TaskTemplate.ContainerSpec.{Image, Secrets[].SecretName, Mounts[].{Type, Source}},
+ *   Spec.TaskTemplate.Networks[].Target,
  *   Endpoint.Ports[] / Spec.EndpointSpec.Ports[] ;
  * - nœud : ID, Description.{Hostname, Engine.EngineVersion}, Spec.{Role, Availability}, Status.{State, Addr} ;
  * - tâche : ServiceID, NodeID, Status.State ;
@@ -112,8 +113,9 @@ final class PortainerMapper
      * @param array<string, int> $runningByService Identifiant de service => tâches en cours.
      * @return array{service_uid: string, name: string, stack_name: string, image: string, tag: string,
      *     digest: string, mode: string, replicas: int|null, running_replicas: int, ports: string,
-     *     networks: string, secrets: string, routes: string, hardening: string}|null Null si le service
-     *     n'a pas d'identifiant. `routes` : routes Traefik des étiquettes du service (JSON, ExposureMapper) ;
+     *     networks: string, secrets: string, volumes: string, routes: string, hardening: string}|null Null
+     *     si le service n'a pas d'identifiant. `volumes` : volumes nommés montés (#78) ;
+     *     `routes` : routes Traefik des étiquettes du service (JSON, ExposureMapper) ;
      *     `hardening` : configuration à risque (JSON, HardeningMapper, #71).
      */
     public static function mapService(array $service, array $networkNames = [], array $runningByService = []): ?array
@@ -181,6 +183,18 @@ final class PortainerMapper
             }
         }
 
+        // Volumes nommés (#78) : Spec.TaskTemplate.ContainerSpec.Mounts[] de type « volume », dont
+        // Source est le nom du volume (API Docker Engine, ServiceSpec, Mount). Sans nom : volume
+        // anonyme, recréé à chaque tâche, ignoré. Ni les chemins de l'hôte ni les options ne sont lus.
+        $volumeList = [];
+        foreach (self::arr($container['Mounts'] ?? null) as $mount) {
+            $mount = self::arr($mount);
+            $source = self::str($mount['Source'] ?? null);
+            if (strtolower(self::str($mount['Type'] ?? null)) === 'volume' && $source !== '') {
+                $volumeList[] = $source;
+            }
+        }
+
         return [
             'service_uid'      => $uid,
             'name'             => self::str($spec['Name'] ?? null) ?: $uid,
@@ -194,6 +208,7 @@ final class PortainerMapper
             'ports'            => self::join($portList),
             'networks'         => self::join($networkList),
             'secrets'          => self::join($secretList),
+            'volumes'          => self::join($volumeList),
             'routes'           => ExposureMapper::encode(ExposureMapper::traefikRoutes($labels)),
             'hardening'        => HardeningMapper::encode(HardeningMapper::fromSwarmService($service, $networkNames)),
         ];

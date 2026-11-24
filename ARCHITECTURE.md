@@ -49,6 +49,13 @@ dockerinventory/
 │   │   ├── ScanReportParser.php   rapports JSON de Trivy et Grype, SARIF (Docker Scout...) : lecture
 │   │   │                          bornée, gravités, corrigeables (fonctions pures)
 │   │   └── ScanReportException.php codes stables, jamais le contenu du fichier
+│   ├── VolumeBackup.php       sauvegarde déclarée d'un volume (#78) : onglet « Volumes et sauvegarde »
+│   │                          des services, droit propre (CREATE, PURGE), compteur volumes_unbacked
+│   ├── Certificate.php        certificat TLS d'une route HTTPS (#78) : lecture sur clic (Exposition),
+│   │                          tâche certificatecheck (désactivée par défaut), rappel avant l'expiration
+│   ├── Tls/
+│   │   └── CertificateReader.php poignée de main TLS (SNI), certificat public seulement, sans
+│   │                          validation ; transport injectable (tests)
 │   ├── Hardening.php          configuration à risque (#71) : onglet des services, sous-page, synthèse
 │   ├── HardeningException.php exception justifiée et datée sur un écart (droit propre, CREATE et PURGE)
 │   ├── Hardening/
@@ -176,6 +183,8 @@ dockerinventory/
 | `glpi_plugin_dockerinventory_vulntickets` | Ticket de vulnérabilité suivi pour chaque service (un seul) et l'image qu'il décrit : empreinte, nombre de vulnérabilités critiques et hautes |
 | `glpi_plugin_dockerinventory_imagescans` | Analyse d'image importée (#73) : entité, image et clé normalisée, tag, empreinte, outil, date d'analyse, compteurs par gravité, corrigeables, vulnérabilités détaillées (JSON, 500 au plus), nom du fichier, auteur |
 | `glpi_plugin_dockerinventory_exploitsignals` | Exploitation connue (#84) : pour chaque CVE des analyses importées présente dans les fichiers en cache, présence au catalogue CISA KEV (date d'ajout, échéance, rançongiciel, nom) et score EPSS (probabilité, centile) ; refaite depuis le cache |
+| `glpi_plugin_dockerinventory_volumebackups` | Sauvegarde déclarée d'un volume (#78) : service, volume, « sauvegardé par », date de dernière vérification, auteur, entité du service ; une par service et par volume. La colonne `volumes_unbacked` des services (volumes sans déclaration) est recalculée à l'import et à chaque déclaration |
+| `glpi_plugin_dockerinventory_certificates` | Certificat TLS d'une route HTTPS (#78) : hôte, port, sujet, émetteur, noms alternatifs, numéro de série, dates de validité, auto-signé, code d'erreur de la dernière lecture, dates de lecture, date d'expiration déjà rappelée ; un par hôte et par port |
 | `glpi_plugin_dockerinventory_registrytags` | Cache des tags de Docker Hub : dépôt, tags et empreintes (JSON), raison d'un échec durable (introuvable), date de lecture ; valable un jour |
 
 ## Portainer (lot 1)

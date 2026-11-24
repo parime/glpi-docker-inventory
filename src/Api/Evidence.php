@@ -20,6 +20,7 @@ declare(strict_types=1);
 namespace GlpiPlugin\Dockerinventory\Api;
 
 use DbUtils;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\Exposure;
 use GlpiPlugin\Dockerinventory\Exposure\ExposureMapper;
@@ -34,10 +35,11 @@ use GlpiPlugin\Dockerinventory\Service;
 use GlpiPlugin\Dockerinventory\Version\VersionChange;
 use GlpiPlugin\Dockerinventory\Version\VersionComparator;
 use GlpiPlugin\Dockerinventory\Version\VersionLinker;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
 
 /**
  * API de lecture publique et stable (#10), pour les autres plugins (preuves de GRC Manager :
- * A.5.9, A.8.8, A.8.9, A.8.32). Lecture seule : aucune méthode n'écrit.
+ * A.5.9, A.8.8, A.8.9, A.8.13, A.8.24, A.8.32). Lecture seule : aucune méthode n'écrit.
  *
  * Contrat :
  * - chaque méthode renvoie null si l'utilisateur n'a pas le droit de lecture des services du
@@ -441,6 +443,84 @@ final class Evidence
             'services'       => array_slice($rows, 0, max(0, $limit)),
             'services_total' => count($rows),
             'page_url'       => Hardening::getPageURL(),
+        ];
+    }
+
+    /**
+     * Sauvegarde des volumes des services actifs (#78, A.8.13) : volumes nommés ou persistants,
+     * ceux qui ont une sauvegarde déclarée (« sauvegardé par… », date de dernière vérification) et
+     * les services qui ont au moins un volume sans déclaration. Déclarations faites dans le plugin :
+     * il ne lance ni ne contrôle aucune sauvegarde.
+     *
+     * @return array{volumes: int, backed_up: int, rate: int|null, services_with_volumes: int,
+     *     services_unbacked: int, services: list<array{service: string, url: string, stack: string,
+     *     volumes: list<array{name: string, label: string, backed_up_by: string, date_verified: string}>,
+     *     unbacked: int, entities_id: int}>, services_total: int, unbacked_url: string}|null
+     */
+    public static function backups(int $limit = 50): ?array
+    {
+        if (!self::canRead()) {
+            return null;
+        }
+        $data = VolumeBackup::overview();
+        // Services avec un volume sans déclaration d'abord.
+        $services = $data['services'];
+        usort($services, static fn (array $a, array $b): int => $b['unbacked'] <=> $a['unbacked']);
+
+        return [
+            'volumes'               => $data['volumes'],
+            'backed_up'             => $data['backed_up'],
+            'rate'                  => $data['volumes'] > 0
+                ? (int) round(100 * $data['backed_up'] / $data['volumes'])
+                : null,
+            'services_with_volumes' => $data['services_with_volumes'],
+            'services_unbacked'     => $data['services_unbacked'],
+            'services'              => array_slice($services, 0, max(0, $limit)),
+            'services_total'        => count($services),
+            'unbacked_url'          => VolumeBackup::unbackedSearchURL(),
+        ];
+    }
+
+    /**
+     * Certificats TLS des routes HTTPS des services actifs (#78, A.8.24) : émetteur, date
+     * d'expiration et état (valid, expiring, expired, error, unchecked) d'après la dernière lecture,
+     * délai d'alerte réglé, et services qui présentent chaque certificat.
+     *
+     * @return array{certificates: list<array{host: string, port: int, status: string, days: int|null,
+     *     subject: string, issuer: string, not_after: string, self_signed: bool, error: string,
+     *     date_check: string, services: list<string>}>, counts: array{total: int, expiring: int,
+     *     expired: int, errors: int, unchecked: int}, warning_days: int, statuses: array<string,
+     *     array{label: string, color: string, icon: string}>, page_url: string}|null
+     */
+    public static function certificates(int $limit = 50): ?array
+    {
+        if (!self::canRead()) {
+            return null;
+        }
+        $data = Certificate::overview();
+        $rows = [];
+        foreach (array_slice($data['certificates'], 0, max(0, $limit)) as $certificate) {
+            $rows[] = [
+                'host'        => (string) $certificate['host'],
+                'port'        => (int) $certificate['port'],
+                'status'      => (string) $certificate['status'],
+                'days'        => $certificate['days'],
+                'subject'     => (string) $certificate['subject'],
+                'issuer'      => (string) $certificate['issuer'],
+                'not_after'   => (string) $certificate['not_after'],
+                'self_signed' => (bool) $certificate['self_signed'],
+                'error'       => (string) $certificate['error'],
+                'date_check'  => (string) $certificate['date_check'],
+                'services'    => array_column($certificate['services'], 'name'),
+            ];
+        }
+
+        return [
+            'certificates' => $rows,
+            'counts'       => $data['counts'],
+            'warning_days' => $data['warning_days'],
+            'statuses'     => Certificate::statusInfos(),
+            'page_url'     => Exposure::getPageURL(),
         ];
     }
 

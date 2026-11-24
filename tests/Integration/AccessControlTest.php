@@ -36,6 +36,7 @@ use GlpiPlugin\Dockerinventory\Lifecycle\Settings;
 use GlpiPlugin\Dockerinventory\LifecycleProduct;
 use GlpiPlugin\Dockerinventory\Menu;
 use GlpiPlugin\Dockerinventory\Service;
+use GlpiPlugin\Dockerinventory\VolumeBackup;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -61,10 +62,12 @@ final class AccessControlTest extends TestCase
         'front/imagescan.form.php',
         'front/imageversion.php',
         'front/lifecycle.php',
+        'front/notificationtargetcertificate.form.php',
         'front/service.form.php',
         'front/service.php',
         'front/source.form.php',
         'front/version.php',
+        'front/volumebackup.form.php',
     ];
 
     /** Pages réservées aux administrateurs de la configuration (droit config, UPDATE). */
@@ -335,12 +338,113 @@ final class AccessControlTest extends TestCase
         $this->fail($page . ' : pas de redirection');
     }
 
-    private function setRights(int $service, int $config, int $exception = 0, int $scan = 0): void
+    private function setRights(int $service, int $config, int $exception = 0, int $scan = 0, int $backup = 0): void
     {
         $_SESSION['glpiactiveprofile'][Service::RIGHTNAME] = $service;
         $_SESSION['glpiactiveprofile'][Connection::RIGHTNAME] = $config;
         $_SESSION['glpiactiveprofile'][HardeningException::RIGHTNAME] = $exception;
         $_SESSION['glpiactiveprofile'][ImageScan::RIGHTNAME] = $scan;
+        $_SESSION['glpiactiveprofile'][VolumeBackup::RIGHTNAME] = $backup;
+        // Notifications du cœur : suivent le droit de configuration (cible de notification, #78).
+        $_SESSION['glpiactiveprofile']['notification'] = $config;
+    }
+
+    /**
+     * Adresse générique de la cible de notification des certificats (#78) : vers les notifications.
+     */
+    public function testCertificateNotificationTargetRedirectsToNotifications(): void
+    {
+        $this->setRights(READ, READ | UPDATE);
+        $this->assertSame(
+            \Notification::getSearchURL(),
+            $this->redirectionOf('front/notificationtargetcertificate.form.php')
+        );
+    }
+
+    /**
+     * Sauvegarde déclarée d'un volume (#78) : refusée sans le droit et sur un service d'une autre
+     * entité ; enregistrée avec le droit, compteur « sans sauvegarde » recalculé ; supprimée avec le
+     * droit de suppression.
+     */
+    public function testVolumeBackupIsDeclaredThenRemovedWithTheRight(): void
+    {
+        global $DB;
+
+        foreach ([$this->serviceA, $this->serviceB] as $id) {
+            $DB->update(Service::getTable(), ['volumes' => 'base, fichiers'], ['id' => $id]);
+            VolumeBackup::refreshService($id);
+        }
+        $service = new Service();
+        $this->assertTrue($service->getFromDB($this->serviceA));
+        $this->assertSame(2, (int) $service->fields['volumes_unbacked']);
+        $post = [
+            'add_backup'                         => 1,
+            'plugin_dockerinventory_services_id' => $this->serviceA,
+            'volume'                             => 'base',
+            'backed_up_by'                       => 'Tâche restic nocturne',
+            'date_verified'                      => substr((string) $_SESSION['glpi_currenttime'], 0, 10),
+        ];
+
+        // Lecture seule : onglet visible sans formulaire, déclaration refusée.
+        \Session::changeActiveEntities($this->entityA, false);
+        $this->setRights(READ, 0);
+        ob_start();
+        try {
+            $this->assertTrue(VolumeBackup::displayTabContentForItem($service));
+        } finally {
+            $tab = (string) ob_get_clean();
+        }
+        $this->assertStringContainsString('ti-database-export', $tab);
+        $this->assertStringNotContainsString('add_backup', $tab);
+        $this->assertRefused('front/volumebackup.form.php', [], $post);
+        $this->assertSame(0, countElementsInTable(VolumeBackup::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceA,
+        ]));
+
+        // Avec le droit : déclarée, compteur recalculé ; volume inconnu, texte vide, date future refusés.
+        $this->setRights(READ, 0, 0, 0, CREATE);
+        $this->redirectionOf('front/volumebackup.form.php', [], $post);
+        $backup = new VolumeBackup();
+        $this->assertTrue($backup->getFromDBByCrit(['plugin_dockerinventory_services_id' => $this->serviceA]));
+        $this->assertSame($this->entityA, (int) $backup->fields['entities_id']);
+        $this->assertTrue($service->getFromDB($this->serviceA));
+        $this->assertSame(1, (int) $service->fields['volumes_unbacked']);
+        $this->assertNotSame('', VolumeBackup::record($this->serviceA, 'inconnu', 'restic', ''));
+        $this->assertNotSame('', VolumeBackup::record($this->serviceA, 'fichiers', '  ', ''));
+        $this->assertNotSame('', VolumeBackup::record($this->serviceA, 'fichiers', 'restic', '2999-01-01'));
+        $this->assertSame(1, countElementsInTable(VolumeBackup::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceA,
+        ]));
+        $described = VolumeBackup::describe($service->fields);
+        $this->assertSame(1, $described['unbacked']);
+        $this->assertSame(['base', 'fichiers'], array_column($described['volumes'], 'name'));
+        // Filtre de la liste des services : critère sur l'option de recherche du compteur.
+        $this->assertStringContainsString(
+            'field%5D=' . VolumeBackup::SEARCH_OPTION,
+            VolumeBackup::unbackedSearchURL()
+        );
+        $overview = VolumeBackup::overview();
+        $this->assertSame(1, $overview['services_unbacked']);
+        $this->assertSame(['service-a-' . $this->suffix], array_column($overview['services'], 'service'));
+
+        // Autre entité : refusé, rien n'est écrit.
+        $this->assertRefused(
+            'front/volumebackup.form.php',
+            [],
+            ['plugin_dockerinventory_services_id' => $this->serviceB] + $post
+        );
+        $this->assertNotSame('', VolumeBackup::record($this->serviceB, 'base', 'restic', ''));
+        $this->assertSame(0, countElementsInTable(VolumeBackup::getTable(), [
+            'plugin_dockerinventory_services_id' => $this->serviceB,
+        ]));
+
+        // Suppression : refusée sans le droit, faite avec.
+        $this->assertRefused('front/volumebackup.form.php', [], ['purge_backup' => 1, 'id' => $backup->getID()]);
+        $this->setRights(READ, 0, 0, 0, CREATE | PURGE);
+        $this->redirectionOf('front/volumebackup.form.php', [], ['purge_backup' => 1, 'id' => $backup->getID()]);
+        $this->assertFalse($backup->getFromDB($backup->getID()));
+        $this->assertTrue($service->getFromDB($this->serviceA));
+        $this->assertSame(2, (int) $service->fields['volumes_unbacked']);
     }
 
     /**
@@ -377,7 +481,7 @@ final class AccessControlTest extends TestCase
      */
     public static function requests(): iterable
     {
-        foreach (['', 'connections', 'registries', 'lifecycle', 'exploits', 'inconnu'] as $tab) {
+        foreach (['', 'connections', 'registries', 'lifecycle', 'exploits', 'certificates', 'inconnu'] as $tab) {
             yield 'configuration : onglet ' . $tab => ['front/config.php', ['tab' => $tab], []];
         }
         yield 'configuration : registres maîtrisés' => [
@@ -385,7 +489,7 @@ final class AccessControlTest extends TestCase
         ];
         $actions = [
             'save_settings', 'refresh', 'save_mappings', 'save_exploits', 'download_exploits', 'import_exploits',
-            'save_version_check',
+            'save_version_check', 'save_certificates',
         ];
         foreach ($actions as $action) {
             yield 'configuration : ' . $action => ['front/config.php', [], [$action => 1, 'enabled' => 1]];
@@ -401,7 +505,10 @@ final class AccessControlTest extends TestCase
         }
         // Lectures manuelles des écrans d'usage (#118).
         yield 'lecture : page' => ['front/source.form.php', [], []];
-        $reads = ['read', 'harbor_read', 'registry_check', 'eol_refresh', 'download_exploits', 'import_exploits'];
+        $reads = [
+            'read', 'harbor_read', 'registry_check', 'eol_refresh', 'download_exploits', 'import_exploits',
+            'certificate_read',
+        ];
         foreach ($reads as $action) {
             yield 'lecture : ' . $action => ['front/source.form.php', [], [$action => 1, 'id' => 1]];
         }
@@ -432,6 +539,13 @@ final class AccessControlTest extends TestCase
         yield 'analyses : page' => ['front/imagescan.form.php', [], []];
         yield 'analyses : import' => ['front/imagescan.form.php', [], ['import_scan' => 1, 'reference' => 'nginx:1']];
         yield 'analyses : suppression' => ['front/imagescan.form.php', [], ['purge_scan' => 1, 'id' => 1]];
+        // Sauvegardes déclarées des volumes (#78).
+        yield 'cible de notification des certificats' => ['front/notificationtargetcertificate.form.php', [], []];
+        yield 'sauvegardes : page' => ['front/volumebackup.form.php', [], []];
+        yield 'sauvegardes : déclaration' => [
+            'front/volumebackup.form.php', [], ['add_backup' => 1, 'volume' => 'donnees', 'backed_up_by' => 'x'],
+        ];
+        yield 'sauvegardes : suppression' => ['front/volumebackup.form.php', [], ['purge_backup' => 1, 'id' => 1]];
     }
 
     /**

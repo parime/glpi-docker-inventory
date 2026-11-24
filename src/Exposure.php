@@ -111,11 +111,16 @@ class Exposure extends CommonGLPI
      * Libellés, couleurs et icônes des portées et des sources.
      *
      * @return array{scopes: array<string, array{label: string, color: string, icon: string, help: string}>,
-     *     sources: array<string, array{label: string, icon: string}>}
+     *     sources: array<string, array{label: string, icon: string}>,
+     *     certificates: array<string, array{label: string, color: string, icon: string}>,
+     *     certificate_errors: array<string, string>}
      */
     public static function infos(): array
     {
         return [
+            // #78 : états et motifs d'échec de lecture des certificats des routes HTTPS.
+            'certificates'       => Certificate::statusInfos(),
+            'certificate_errors' => Certificate::errorLabels(),
             'scopes'  => [
                 ExposureMapper::SCOPE_INTERNET => [
                     'label' => __('Internet (probable)', 'dockerinventory'),
@@ -204,6 +209,8 @@ class Exposure extends CommonGLPI
         $exposures = [];
         $internet = 0;
         $undocumented = 0;
+        $today = substr((string) ($_SESSION['glpi_currenttime'] ?? date('Y-m-d')), 0, 10);
+        $warningDays = Certificate::warningDays();
         foreach (self::exposuresOf($row) as $exposure) {
             $proposal = ExposureMapper::proposal($exposure, $name, $internetLabel, $internalLabel);
             $documented = null;
@@ -230,6 +237,14 @@ class Exposure extends CommonGLPI
                 'proposal'    => $proposal,
                 'documented'  => $documented,
                 'propose_url' => $proposeUrl,
+                // #78 : certificat présenté par la route HTTPS, d'après la dernière lecture.
+                'certificate' => Certificate::isTarget($exposure)
+                    ? Certificate::state(
+                        Certificate::lookup($exposure['host'], Certificate::PORT),
+                        $today,
+                        $warningDays
+                    )
+                    : null,
             ];
         }
 

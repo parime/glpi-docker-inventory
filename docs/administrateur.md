@@ -311,6 +311,25 @@ Le tableau **Données en cache** donne, pour chaque catalogue, la date, l'origin
 fichier déposé), le nombre de CVE et la dernière erreur ; une panne de la source garde les données
 déjà en cache.
 
+## Certificats TLS des routes d'entrée
+
+Onglet **Certificats TLS** de la page de configuration : délai d'alerte avant l'expiration (30 jours
+par défaut, de 1 à 365). Pour chaque route HTTPS qui a un nom d'hôte (route Traefik avec TLS,
+ingress dont l'hôte figure dans `spec.tls`), le plugin ouvre une connexion TLS sur le port 443 de
+cet hôte, lit le certificat que le serveur présente à tout client, puis ferme : aucune requête HTTP,
+aucun identifiant, rien n'est renouvelé. Le serveur GLPI doit pouvoir joindre ces hôtes.
+
+- Lecture sur clic : **Parc > Inventaire Docker > Exposition**, « **Lire les certificats
+  maintenant** » (droit **Configuration** en modification), services des entités actives.
+- Lecture et rappel quotidiens : action automatique `certificatecheck`, **désactivée à
+  l'installation** (elle se connecte aux hôtes des routes).
+- Rappel : notification **Certificat TLS qui expire bientôt**, créée à l'installation pour les
+  profils qui modifient la configuration de GLPI, réglable dans **Configuration > Notifications** ;
+  un destinataire ne la reçoit que s'il lit les services dans l'entité du certificat.
+
+Ni l'API de Traefik ni les secrets Kubernetes ne sont lus pour cela : l'API de Traefik ne donne pas
+les certificats, et un secret TLS contient la clé privée.
+
 ## Tickets de mise à jour, de fin de support et de vulnérabilité
 
 **Désactivés par défaut.** Ils se règlent sur la connexion **Portainer** ou **Kubernetes** des
@@ -337,6 +356,9 @@ statut, de priorité ou d'affectation. Le détail, côté technicien, est dans l
   écart de configuration avec une raison et une date de fin) et **Supprimer une exception**.
   Accordés à l'installation aux profils qui modifient la configuration de GLPI ; à donner au
   responsable sécurité.
+- Même onglet, ligne **Sauvegardes des volumes** : **Déclarer une sauvegarde** (indiquer ce qui
+  sauvegarde un volume et la date de la dernière vérification) et **Supprimer une déclaration de
+  sauvegarde**. Accordés à l'installation aux profils qui modifient la configuration de GLPI.
 - Les connexions, registres maîtrisés et réglages de fin de support demandent le droit
   **Configuration** de GLPI en modification.
 - Tout est filtré sur les entités actives de l'utilisateur.
@@ -355,6 +377,7 @@ statut, de priorité ou d'affectation. Le détail, côté technicien, est dans l
 | `lifecyclecheck` | une fois par jour | Fin de support (si activée) |
 | `exploitsignals` | une fois par jour | Catalogue CISA KEV et scores EPSS (désactivée par défaut) |
 | `hardeningexpiry` | une fois par jour | Rappel des exceptions de configuration qui expirent dans les 30 jours (notification) |
+| `certificatecheck` | une fois par jour | Certificats TLS des routes HTTPS et rappel avant l'expiration (désactivée par défaut) |
 
 ## Réseaux privés sous GLPI 12, miroirs
 

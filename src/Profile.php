@@ -65,6 +65,12 @@ class Profile extends CommonGLPI
                     'rights'   => (new HardeningException())->getRights(),
                 ],
                 [
+                    'itemtype' => VolumeBackup::class,
+                    'label'    => VolumeBackup::getTypeName(2),
+                    'field'    => VolumeBackup::RIGHTNAME,
+                    'rights'   => (new VolumeBackup())->getRights(),
+                ],
+                [
                     'itemtype' => ImageScan::class,
                     'label'    => ImageScan::getTypeName(2),
                     'field'    => ImageScan::RIGHTNAME,

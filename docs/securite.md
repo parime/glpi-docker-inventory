@@ -195,6 +195,27 @@ une exception en cours ne comptent pas. Gravité haute en orange, distincte du j
 moyenne, comme dans GRC Manager. GRC Manager peut lire cette synthèse par `Evidence::hardening()`
 comme preuve de la mesure A.8.9 (champ `expiring` : exceptions qui expirent bientôt).
 
+## Sauvegarde des volumes (A.8.13)
+
+Onglet **Volumes et sauvegarde** de chaque service : volumes nommés (Docker, Swarm) ou persistants
+(Kubernetes) relevés à chaque import. Pour chacun, **Déclarer la sauvegarde** enregistre ce qui le
+sauvegarde (outil, tâche ou procédure) et, si elle est connue, la date de la dernière vérification
+(restauration testée, rapport relu). Un volume sans déclaration porte le badge « **Sans sauvegarde
+déclarée** » ; la liste des **Services** propose le filtre du même nom. Le plugin ne lance ni ne
+contrôle aucune sauvegarde : c'est une déclaration, avec historique. Les répertoires de l'hôte
+montés dans un conteneur ne sont pas relevés. Preuve : `Evidence::backups()` (volumes, volumes
+déclarés sauvegardés, services avec un volume sans déclaration).
+
+## Certificats TLS des routes d'entrée (A.8.24)
+
+**Parc > Inventaire Docker > Exposition**, bloc **Certificats TLS** (et colonne « Chiffrement » de
+l'onglet **Exposition** des services) : pour chaque route HTTPS qui a un nom d'hôte, le certificat
+présenté sur le port 443, son émetteur, sa date d'expiration et son état (valide, expire bientôt,
+expiré, auto-signé, non lu). Le délai d'alerte se règle dans la configuration du plugin ; la tâche
+`certificatecheck` (désactivée par défaut) relit les certificats chaque jour et envoie la
+notification **Certificat TLS qui expire bientôt**, une fois par date d'expiration. Rien n'est
+renouvelé par le plugin. Preuve : `Evidence::certificates()`.
+
 ## Ce que l'auditeur peut vérifier
 
 - **Lecture seule** : le plugin n'envoie que des requêtes de lecture aux sources, avec des comptes

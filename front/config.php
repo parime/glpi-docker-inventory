@@ -16,6 +16,7 @@
  */
 
 use Glpi\Application\View\TemplateRenderer;
+use GlpiPlugin\Dockerinventory\Certificate;
 use GlpiPlugin\Dockerinventory\ConfigPage;
 use GlpiPlugin\Dockerinventory\Connection;
 use GlpiPlugin\Dockerinventory\ExploitSignal;
@@ -59,6 +60,11 @@ if (($legacy = ManualRead::legacy($_POST, $_FILES)) !== null) {
     );
     Session::addMessageAfterRedirect(htmlescape(__('Réglages enregistrés.', 'dockerinventory')), false, INFO);
     Html::redirect(ConfigPage::url(ConfigPage::TAB_EXPLOITS));
+} elseif (isset($_POST['save_certificates'])) {
+    // Certificats TLS des routes d'entrée (#78) : délai d'alerte avant l'expiration.
+    Certificate::saveWarningDays((int) ($_POST['warning_days'] ?? Certificate::DEFAULT_WARNING_DAYS));
+    Session::addMessageAfterRedirect(htmlescape(__('Réglages enregistrés.', 'dockerinventory')), false, INFO);
+    Html::redirect(ConfigPage::url(ConfigPage::TAB_CERTIFICATES));
 } elseif (isset($_POST['save_settings'])) {
     Settings::save(!empty($_POST['enabled']), (int) ($_POST['warning_days'] ?? Settings::DEFAULT_WARNING_DAYS));
     Session::addMessageAfterRedirect(htmlescape(__('Réglages enregistrés.', 'dockerinventory')), false, INFO);
@@ -135,6 +141,13 @@ if ($tab === ConfigPage::TAB_CONNECTIONS) {
         'settings'  => ExploitSignal::settings(),
         'page_url'  => ConfigPage::url(ConfigPage::TAB_EXPLOITS),
     ] + ExploitSignal::catalogView());
+} elseif ($tab === ConfigPage::TAB_CERTIFICATES) {
+    $renderer->display('@dockerinventory/config_certificates.html.twig', [
+        'tabs'      => $tabs,
+        'nav_title' => $navTitle,
+        'settings'  => ConfigPage::certificateSettings(),
+        'page_url'  => ConfigPage::url(ConfigPage::TAB_CERTIFICATES),
+    ]);
 } else {
     $checker = LifecycleChecker::current();
     $map = $checker->map();

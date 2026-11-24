@@ -302,6 +302,25 @@ tab of the setup page:
 The **Cached data** table gives, for each catalog, the date, the origin (download or uploaded file),
 the number of CVEs and the last error; a source failure keeps the data already cached.
 
+## TLS certificates of entry routes
+
+**TLS certificates** tab of the configuration page: alert delay before expiry (30 days by default,
+from 1 to 365). For each HTTPS route with a host name (Traefik route with TLS, ingress whose host is
+listed in `spec.tls`), the plugin opens a TLS connection on port 443 of that host, reads the
+certificate the server presents to any client, then closes it: no HTTP request, no credentials,
+nothing is renewed. The GLPI server must be able to reach these hosts.
+
+- Read on click: **Assets > Docker Inventory > Exposure**, "**Read certificates now**" (GLPI
+  **Setup** right, update), services of the active entities.
+- Daily reading and reminder: `certificatecheck` automatic action, **disabled at installation** (it
+  connects to the route hosts).
+- Reminder: **TLS certificate expiring soon** notification, created at installation for the profiles
+  that can update the GLPI setup, adjustable in **Setup > Notifications**; a recipient only gets it
+  if they can read the services in the certificate's entity.
+
+Neither the Traefik API nor Kubernetes secrets are read for this: the Traefik API does not expose
+certificates, and a TLS secret holds the private key.
+
 ## Update, end-of-support and vulnerability tickets
 
 **Disabled by default.** They are set on the **Portainer** or **Kubernetes** connection of the
@@ -326,6 +345,9 @@ status, priority or assignment. Details, from the technician's side, are in the
 - Same tab, **Configuration exceptions** row: **Record an exception** (accept a configuration
   finding with a reason and an end date) and **Delete an exception**. Granted at installation to the
   profiles that can update the GLPI setup; give them to the security officer.
+- Same tab, **Volume backups** row: **Declare a backup** (state what backs up a volume and the date
+  of the last check) and **Delete a backup declaration**. Granted at installation to the profiles
+  that can update the GLPI setup.
 - Connections, managed registries and end-of-support settings require the GLPI **Setup** right,
   update.
 - Everything is filtered on the user's active entities.
@@ -344,6 +366,7 @@ status, priority or assignment. Details, from the technician's side, are in the
 | `lifecyclecheck` | once a day | End of support (if enabled) |
 | `exploitsignals` | once a day | CISA KEV catalog and EPSS scores (disabled by default) |
 | `hardeningexpiry` | once a day | Reminder of configuration exceptions expiring within 30 days (notification) |
+| `certificatecheck` | once a day | TLS certificates of HTTPS routes and reminder before expiry (disabled by default) |
 
 ## Private networks under GLPI 12, mirrors
 
