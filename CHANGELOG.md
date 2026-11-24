@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.17.0] - 2026-11-24
+
 ### Added
 
 - Volumes sans sauvegarde connue ([#78](https://github.com/parime/glpi-docker-inventory/issues/78)) :
@@ -26,14 +28,6 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   donne pas les certificats) ni les secrets Kubernetes (qui contiennent la clé privée) ne sont lus.
   Preuve A.8.24 : `Evidence::certificates()`.
 
-### Changed
-
-- Contrôles de sécurité communs v1.11.3 : l'encadré « Version du plugin » est vérifié comme premier
-  bloc de la page de configuration (écart `config-version-premier`, parime/glpi-plugin-template#18) ;
-  il l'était déjà, en tête du premier onglet.
-
-### Added
-
 - Encadré « Version du plugin » ([#121](https://github.com/parime/glpi-docker-inventory/issues/121)),
   composant commun du modèle : en tête de **Configuration > Plugins > Inventaire Docker**, version
   installée, dernière version publiée sur GitHub (« À jour », « Mise à jour disponible », « Dernière
@@ -44,11 +38,13 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ### Changed
 
+- Contrôles de sécurité communs v1.11.3 : l'encadré « Version du plugin » est vérifié comme premier
+  bloc de la page de configuration (écart `config-version-premier`, parime/glpi-plugin-template#18) ;
+  il l'était déjà, en tête du premier onglet.
+
 - CI : contrôles de sécurité communs v1.11.2 ; contrôles lourds sautés pour une PR de documentation
   seule (`heavy-paths`) ; un nouveau commit sur une PR annule l'exécution précédente, jamais un push
   de `main`. Barres d'onglets du plugin avec les rôles ARIA `tablist` et `tab`.
-
-### Changed
 
 - Navigation ([#118](https://github.com/parime/glpi-docker-inventory/issues/118)) : les lectures sur
   clic quittent la page de configuration pour les écrans d'usage de **Parc > Inventaire Docker**, à
@@ -64,18 +60,14 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
   restent acceptés une version : la lecture est faite, puis l'écran d'usage s'ouvre avec un message.
 - CI : contrôles d'ergonomie et parcours de toutes les pages bloquants (fin du mode avertissement).
 
-### Fixed
-
-- Tests : l'en-tête `Link` du faux serveur Harbor n'utilise plus aucune donnée de la requête (alerte CodeQL `py/http-response-splitting` encore présente après le premier correctif).
-- Tests : le faux serveur Harbor encode le chemin repris dans l'en-tête `Link` (alerte CodeQL `py/http-response-splitting` relevée par les contrôles communs v1.10.1).
-
-### Changed
-
 - CI : contrôles de sécurité communs glpi-plugin-security v1.10.1 (secrets, dépendances, CodeQL,
   test de mise à jour depuis la version publiée, tests d'intégration en français, parcours de toutes
   les pages) ; le faux serveur Kubernetes des tests exige TLS 1.2 au moins.
 
 ### Fixed
+
+- Tests : l'en-tête `Link` du faux serveur Harbor n'utilise plus aucune donnée de la requête (alerte CodeQL `py/http-response-splitting` encore présente après le premier correctif).
+- Tests : le faux serveur Harbor encode le chemin repris dans l'en-tête `Link` (alerte CodeQL `py/http-response-splitting` relevée par les contrôles communs v1.10.1).
 
 - Tests de mise à jour du schéma ([#113](https://github.com/parime/glpi-docker-inventory/issues/113)) :
   `InstallerTest` copie les tables du plugin (structure et lignes), ses tâches automatiques et sa
