@@ -197,7 +197,7 @@ class Certificate extends CommonDBTM
      *
      * @return array{checked: int, ok: int, errors: int}
      */
-    public static function check(bool $restrict, ?CertificateReader $reader = null): array
+    public static function readAll(bool $restrict, ?CertificateReader $reader = null): array
     {
         global $DB;
 
@@ -478,7 +478,7 @@ class Certificate extends CommonDBTM
      */
     public static function cronCertificatecheck(CronTask $task): int
     {
-        $report = self::check(false);
+        $report = self::readAll(false);
         $sent = self::remindExpiring((string) ($_SESSION['glpi_currenttime'] ?? date('Y-m-d H:i:s')));
         $task->addVolume($report['checked']);
         $task->log(self::checkMessage($report));

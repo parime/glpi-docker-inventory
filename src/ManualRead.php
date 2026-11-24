@@ -144,7 +144,7 @@ final class ManualRead
      */
     public static function certificates(): array
     {
-        $report = Certificate::check(true);
+        $report = Certificate::readAll(true);
 
         return [Certificate::checkMessage($report), $report['errors'] > 0 ? WARNING : INFO];
     }

@@ -186,7 +186,7 @@ final class CertificateTest extends TestCase
         $serviceId = $this->service('https', $this->host('app'));
         $pem = self::certificate($this->host('app'), 10);
 
-        $report = Certificate::check(false, self::reader([$this->host('app') => $pem]));
+        $report = Certificate::readAll(false, self::reader([$this->host('app') => $pem]));
 
         $this->assertGreaterThanOrEqual(1, $report['ok']);
         $row = $this->row($this->host('app'));
@@ -210,7 +210,7 @@ final class CertificateTest extends TestCase
         $this->assertContains($this->host('app'), $hosts);
 
         // Hôte devenu injoignable : code d'erreur, certificat précédent gardé.
-        Certificate::check(false, self::reader([]));
+        Certificate::readAll(false, self::reader([]));
         $row = $this->row($this->host('app'));
         $this->assertNotNull($row);
         $this->assertSame(CertificateReader::ERROR_CONNECT, $row['error']);
@@ -243,7 +243,7 @@ final class CertificateTest extends TestCase
         $this->service('bientot', $this->host('bientot'));
         $this->service('loin', $this->host('loin'));
         Certificate::saveWarningDays(30);
-        Certificate::check(false, self::reader([
+        Certificate::readAll(false, self::reader([
             $this->host('bientot') => self::certificate($this->host('bientot'), 5),
             $this->host('loin')    => self::certificate($this->host('loin'), 200),
         ]));
@@ -266,7 +266,7 @@ final class CertificateTest extends TestCase
     {
         $this->service('donnees', $this->host('donnees'));
         $pem = self::certificate($this->host('donnees'), 7);
-        Certificate::check(false, self::reader([$this->host('donnees') => $pem]));
+        Certificate::readAll(false, self::reader([$this->host('donnees') => $pem]));
         $certificate = new Certificate();
         $this->assertTrue($certificate->getFromDBByCrit(['host' => $this->host('donnees')]));
 
