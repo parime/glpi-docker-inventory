@@ -258,7 +258,7 @@ final class RegistryClientTest extends TestCase
         $e = new class ('HTTP 401') extends \RuntimeException {
             public function getResponse(): object
             {
-                return new class {
+                return new class () {
                     public function getHeaderLine(string $name): string
                     {
                         return strcasecmp($name, 'WWW-Authenticate') === 0 ? 'Bearer realm="https://h.test/t"' : '';
