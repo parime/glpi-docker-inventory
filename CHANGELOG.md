@@ -7,6 +7,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [0.17.2] - 2026-11-27
 
+- Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).
+
 ### Fixed
 
 - Harbor sans compte robot ([#134](https://github.com/parime/glpi-docker-inventory/issues/134)) : les
