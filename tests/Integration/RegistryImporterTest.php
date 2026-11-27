@@ -472,5 +472,14 @@ final class RegistryImporterTest extends TestCase
         ));
         $this->assertFalse($refused['ok']);
         $this->assertStringNotContainsString(self::PASSWORD, $refused['message']);
+        // Sans compte, un refus invite à renseigner un compte robot (#134).
+        $anonymous = $harbor->testHarborConnection(RegistryClient::harbor(
+            'https://harbor.exemple.test',
+            '',
+            '',
+            static fn (): string => throw new \RuntimeException('HTTP 401 returned')
+        ));
+        $this->assertFalse($anonymous['ok']);
+        $this->assertSame(Connection::errorLabels()[RegistryException::NO_CREDENTIALS], $anonymous['message']);
     }
 }

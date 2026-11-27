@@ -106,6 +106,155 @@ final class RegistryClientTest extends TestCase
     }
 
     /**
+     * Faux Harbor au format de la spécification d'authentification par jeton du registre
+     * (https://distribution.github.io/distribution/spec/auth/token/) : sans jeton Bearer, 401 avec
+     * « WWW-Authenticate: Bearer realm=...,service=...[,scope=...] » ; le « realm » rend
+     * {"token": ..., "access_token": ...} ; avec le jeton, la ressource.
+     *
+     * @param list<array{string, array<string, scalar>, array<string, string>}> $calls
+     */
+    private static function tokenHarbor(
+        array &$calls,
+        string $realm = 'https://harbor.exemple.test/service/token'
+    ): \Closure {
+        return static function (string $url, array $query, array $headers) use (&$calls, $realm): string {
+            $calls[] = [$url, $query, $headers];
+            if ($url === $realm) {
+                return '{"token": "jeton-anonyme", "access_token": "jeton-anonyme", "expires_in": 1800}';
+            }
+            if (($headers['Authorization'] ?? '') !== 'Bearer jeton-anonyme') {
+                $scope = str_ends_with($url, '/v2/') ? '' : ',scope="repository:demo/nginx:pull"';
+                throw self::unauthorized('Bearer realm="' . $realm . '",service="harbor-registry"' . $scope);
+            }
+
+            return str_ends_with($url, '/v2/') ? '{}' : '{"name": "demo/nginx", "tags": ["1.27"]}';
+        };
+    }
+
+    /**
+     * Exception du client HTTP pour un 401, qui porte la réponse et son défi (comme Symfony).
+     */
+    private static function unauthorized(string $challenge): \RuntimeException
+    {
+        return new class ($challenge) extends \RuntimeException {
+            public function __construct(private readonly string $challenge)
+            {
+                parent::__construct('HTTP 401 returned for "https://harbor.exemple.test/v2/"');
+            }
+
+            public function getResponse(): object
+            {
+                return new class ($this->challenge) {
+                    public function __construct(private readonly string $challenge)
+                    {
+                    }
+
+                    /** @return array<string, list<string>> */
+                    public function getHeaders(bool $throw = true): array
+                    {
+                        return ['www-authenticate' => [$this->challenge]];
+                    }
+                };
+            }
+        };
+    }
+
+    public function testHarborPublicProjectWithAnonymousBearerToken(): void
+    {
+        $calls = [];
+        $client = RegistryClient::harbor('https://harbor.exemple.test', '', '', self::tokenHarbor($calls));
+
+        $client->ping();
+        $this->assertSame([['name' => '1.27', 'digest' => '']], $client->tags('demo/nginx'));
+
+        $this->assertCount(6, $calls);
+        // GET /v2/ refusé, jeton sans portée, GET /v2/ rejoué avec le jeton.
+        $this->assertArrayNotHasKey('Authorization', $calls[0][2]);
+        $this->assertSame('https://harbor.exemple.test/service/token', $calls[1][0]);
+        $this->assertSame(['service' => 'harbor-registry'], $calls[1][1]);
+        $this->assertArrayNotHasKey('Authorization', $calls[1][2]);
+        $this->assertSame('Bearer jeton-anonyme', $calls[2][2]['Authorization']);
+        // Tags : jeton demandé pour la portée annoncée par le défi.
+        $this->assertSame(['service' => 'harbor-registry', 'scope' => 'repository:demo/nginx:pull'], $calls[4][1]);
+        $this->assertSame('https://harbor.exemple.test/v2/demo/nginx/tags/list', $calls[5][0]);
+        $this->assertSame('Bearer jeton-anonyme', $calls[5][2]['Authorization']);
+        $this->assertSame(6, $client->requests());
+    }
+
+    public function testRobotAccountIsSentToTheRealmOnlyOnTheSameServer(): void
+    {
+        $basic = 'Basic ' . base64_encode('robot$lecture:' . self::PASSWORD);
+        $calls = [];
+        RegistryClient::harbor('https://harbor.exemple.test', 'robot$lecture', self::PASSWORD, self::tokenHarbor($calls))
+            ->ping();
+        $this->assertSame($basic, $calls[1][2]['Authorization']);
+
+        $calls = [];
+        RegistryClient::harbor(
+            'https://harbor.exemple.test',
+            'robot$lecture',
+            self::PASSWORD,
+            self::tokenHarbor($calls, 'https://jetons.ailleurs.test/token')
+        )->ping();
+        $this->assertSame('https://jetons.ailleurs.test/token', $calls[1][0]);
+        $this->assertArrayNotHasKey('Authorization', $calls[1][2]);
+    }
+
+    public function testRefusedReplayStaysUnauthorized(): void
+    {
+        $count = 0;
+        // Le jeton est rendu, mais le registre refuse encore : une seule nouvelle tentative.
+        $client = RegistryClient::harbor('https://harbor.exemple.test', '', '', static function (
+            string $url
+        ) use (&$count): string {
+            $count++;
+            if (str_ends_with($url, '/service/token')) {
+                return '{"token": "jeton"}';
+            }
+            throw self::unauthorized(
+                'Bearer realm="https://harbor.exemple.test/service/token",service="harbor-registry"'
+            );
+        });
+        try {
+            $client->tags('prive/api');
+            $this->fail('Exception attendue');
+        } catch (RegistryException $e) {
+            $this->assertSame(RegistryException::UNAUTHORIZED, $e->getMessage());
+        }
+        $this->assertSame(3, $count);
+    }
+
+    public function testRealmAnswerWithoutTokenIsUnexpected(): void
+    {
+        $client = RegistryClient::harbor('https://harbor.exemple.test', '', '', static function (string $url): string {
+            if (str_ends_with($url, '/token')) {
+                return '{"expires_in": 60}';
+            }
+            throw self::unauthorized('Bearer realm="https://harbor.exemple.test/token"');
+        });
+        $this->expectException(RegistryException::class);
+        $this->expectExceptionMessage(RegistryException::UNEXPECTED);
+        $client->ping();
+    }
+
+    public function testBearerChallengeParsing(): void
+    {
+        $this->assertSame(
+            ['realm' => 'https://h.test/service/token', 'service' => 'harbor-registry', 'scope' => 'repository:a/b:pull'],
+            RegistryClient::bearerChallenge(
+                'Bearer realm="https://h.test/service/token",service="harbor-registry",scope="repository:a/b:pull"'
+            )
+        );
+        $this->assertSame(
+            ['realm' => 'http://h.test/token', 'service' => '', 'scope' => ''],
+            RegistryClient::bearerChallenge('bearer realm=http://h.test/token')
+        );
+        $this->assertNull(RegistryClient::bearerChallenge('Basic realm="harbor"'));
+        $this->assertNull(RegistryClient::bearerChallenge('Bearer realm="file:///etc/passwd"'));
+        $this->assertNull(RegistryClient::bearerChallenge(''));
+    }
+
+    /**
      * @return iterable<string, array{string, string}>
      */
     public static function failureProvider(): iterable

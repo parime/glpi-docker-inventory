@@ -28,6 +28,13 @@ use GlpiPlugin\Dockerinventory\Compat\Http;
  * - Harbor (API v2 des registres) : GET /v2/<projet>/<dépôt>/tags/list, authentification basique
  *   facultative (compte robot en lecture seule), et GET /v2/ pour « Tester la connexion ».
  *
+ * Authentification par jeton du registre (https://distribution.github.io/distribution/spec/auth/token/) :
+ * sur un 401 portant le défi « WWW-Authenticate: Bearer realm=…,service=…,scope=… », un jeton est
+ * demandé au « realm » (GET avec service et scope, « repository:<dépôt>:pull » si le défi n'en donne
+ * pas), anonymement sans compte (projets publics de Harbor), avec le compte robot sinon, puis la
+ * requête est rejouée une seule fois avec « Authorization: Bearer <jeton> ». Le compte n'est envoyé
+ * au « realm » que s'il est sur le même serveur (schéma, hôte, port) que le registre.
+ *
  * L'adresse de Docker Hub se change par la constante PLUGIN_DOCKERINVENTORY_DOCKER_HUB_URL
  * (config/local_define.php : miroir, tests). Le transport est injectable (tests sans réseau) ; par
  * défaut Compat\Http::get(), qui passe par le client HTTP de GLPI (proxy, réseaux privés refusés en
@@ -47,6 +54,9 @@ final class RegistryClient
     private $transport;
 
     private int $requests = 0;
+
+    /** @var array<string, string> Jetons Bearer obtenus, par « realm », service et portée. */
+    private array $tokens = [];
 
     /**
      * @param (callable(string, array<string, scalar>, array<string, string>): string)|null $transport
@@ -174,7 +184,7 @@ final class RegistryClient
      */
     private function harborTags(string $path): array
     {
-        $data = $this->get('/v2/' . $path . '/tags/list', []);
+        $data = $this->get('/v2/' . $path . '/tags/list', [], $path);
         $list = $data['tags'] ?? null;
         if ($list === null) {
             // Dépôt sans tag : la spécification autorise « tags: null ».
@@ -209,20 +219,32 @@ final class RegistryClient
 
     /**
      * @param array<string, scalar> $query
+     * @param string $repository Dépôt lu (portée du jeton Bearer), vide pour GET /v2/.
      * @return array<mixed>
      * @throws RegistryException
      */
-    private function get(string $path, array $query): array
+    private function get(string $path, array $query, string $repository = ''): array
     {
+        $url = $this->baseUrl . $path;
         $headers = ['Accept' => 'application/json'];
         if ($this->username !== '') {
             $headers['Authorization'] = 'Basic ' . base64_encode($this->username . ':' . $this->password);
         }
-        $this->requests++;
         try {
-            $body = ($this->transport)($this->baseUrl . $path, $query, $headers);
+            $body = $this->send($url, $query, $headers);
         } catch (\Throwable $e) {
-            throw RegistryException::fromThrowable($e);
+            $challenge = $this->kind === self::KIND_HARBOR
+                ? self::bearerChallenge(Http::errorHeader($e, 'WWW-Authenticate'))
+                : null;
+            if ($challenge === null) {
+                throw RegistryException::fromThrowable($e);
+            }
+            $headers['Authorization'] = 'Bearer ' . $this->token($challenge, $repository);
+            try {
+                $body = $this->send($url, $query, $headers);
+            } catch (\Throwable $retry) {
+                throw RegistryException::fromThrowable($retry);
+            }
         }
         if (trim($body) === '' && $path === '/v2/') {
             return [];
@@ -233,5 +255,90 @@ final class RegistryClient
         }
 
         return $data;
+    }
+
+    /**
+     * @param array<string, scalar> $query
+     * @param array<string, string> $headers
+     */
+    private function send(string $url, array $query, array $headers): string
+    {
+        $this->requests++;
+
+        return ($this->transport)($url, $query, $headers);
+    }
+
+    /**
+     * Paramètres d'un défi « Bearer realm="…",service="…",scope="…" » ; null si ce n'est pas un défi
+     * Bearer ou si le « realm » n'est pas une adresse http(s).
+     *
+     * @return array{realm: string, service: string, scope: string}|null
+     */
+    public static function bearerChallenge(string $header): ?array
+    {
+        if (preg_match('/^\s*Bearer\s+(.+)$/is', $header, $m) !== 1) {
+            return null;
+        }
+        preg_match_all('/([A-Za-z_]+)\s*=\s*(?:"([^"]*)"|([^\s,]+))/', $m[1], $pairs, PREG_SET_ORDER);
+        $params = [];
+        foreach ($pairs as $pair) {
+            $params[strtolower($pair[1])] = ($pair[2] ?? '') !== '' ? $pair[2] : ($pair[3] ?? '');
+        }
+        $realm = $params['realm'] ?? '';
+        $scheme = strtolower((string) parse_url($realm, PHP_URL_SCHEME));
+        if (!in_array($scheme, ['http', 'https'], true) || (string) parse_url($realm, PHP_URL_HOST) === '') {
+            return null;
+        }
+
+        return ['realm' => $realm, 'service' => $params['service'] ?? '', 'scope' => $params['scope'] ?? ''];
+    }
+
+    /**
+     * Jeton Bearer demandé au « realm » du défi (réponse JSON « token » ou « access_token »).
+     *
+     * @param array{realm: string, service: string, scope: string} $challenge
+     * @throws RegistryException
+     */
+    private function token(array $challenge, string $repository): string
+    {
+        $scope = $challenge['scope'] !== '' || $repository === ''
+            ? $challenge['scope']
+            : 'repository:' . $repository . ':pull';
+        $key = $challenge['realm'] . "
+" . $challenge['service'] . "
+" . $scope;
+        if (isset($this->tokens[$key])) {
+            return $this->tokens[$key];
+        }
+        $query = array_filter(['service' => $challenge['service'], 'scope' => $scope], static fn (string $v): bool
+            => $v !== '');
+        $headers = ['Accept' => 'application/json'];
+        if ($this->username !== '' && self::sameOrigin($challenge['realm'], $this->baseUrl)) {
+            $headers['Authorization'] = 'Basic ' . base64_encode($this->username . ':' . $this->password);
+        }
+        try {
+            $body = $this->send($challenge['realm'], $query, $headers);
+        } catch (\Throwable $e) {
+            throw RegistryException::fromThrowable($e);
+        }
+        $data = json_decode($body, true);
+        $token = is_array($data) ? ($data['token'] ?? $data['access_token'] ?? null) : null;
+        if (!is_string($token) || $token === '') {
+            throw new RegistryException(RegistryException::UNEXPECTED);
+        }
+
+        return $this->tokens[$key] = $token;
+    }
+
+    private static function sameOrigin(string $a, string $b): bool
+    {
+        $origin = static function (string $url): string {
+            $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+            $port = parse_url($url, PHP_URL_PORT) ?? ($scheme === 'https' ? 443 : 80);
+
+            return $scheme . '://' . strtolower((string) parse_url($url, PHP_URL_HOST)) . ':' . $port;
+        };
+
+        return $origin($a) === $origin($b);
     }
 }

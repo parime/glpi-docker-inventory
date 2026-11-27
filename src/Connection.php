@@ -971,7 +971,7 @@ class Connection extends ConnectionBase
     }
 
     /**
-     * « Tester la connexion » Harbor : GET /v2/ avec le compte robot.
+     * « Tester la connexion » Harbor : GET /v2/ avec le compte robot, ou un jeton anonyme sans compte.
      *
      * @return array{ok: bool, message: string}
      */
@@ -983,7 +983,13 @@ class Connection extends ConnectionBase
         try {
             $client->ping();
         } catch (RegistryException $e) {
-            return ['ok' => false, 'message' => self::errorLabels()[$e->getMessage()] ?? $e->getMessage()];
+            $code = $e->getMessage();
+            // Sans compte, un refus (401) signifie que le registre exige un compte robot (#134).
+            if ($code === RegistryException::UNAUTHORIZED && !$client->hasCredentials()) {
+                $code = RegistryException::NO_CREDENTIALS;
+            }
+
+            return ['ok' => false, 'message' => self::errorLabels()[$code] ?? $code];
         }
         $message = $client->hasCredentials()
             ? __('Connexion réussie : le registre Harbor accepte ce compte.', 'dockerinventory')
