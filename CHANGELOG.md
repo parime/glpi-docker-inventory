@@ -5,6 +5,19 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Fixed
+
+- Vérification des registres sans résultat ([#129](https://github.com/parime/glpi-docker-inventory/issues/129)) :
+  « Registres lus : 0 versions trouvées, 0 non suivables, 0 non vérifiées, 0 requêtes » ne disait
+  pas pourquoi rien n'avait été vérifié. La vérification ne lit que les tags des images des services
+  inventoriés (Portainer, Docker, Kubernetes) qu'aucune connexion WUD ne suit ; une connexion Harbor
+  seule ne crée aucun service. Le message le dit désormais : aucun service avec une image (ajouter
+  et lire une connexion Portainer, Docker ou Kubernetes ; images et vulnérabilités de Harbor avec
+  « Lire Harbor maintenant »), ou tous les services suivis par WUD, avec le nombre de services
+  laissés à WUD. Connexion Harbor qu'aucune image de service n'utilise : son hôte attendu est cité
+  (« Hôte dans les images », entité de la connexion), dans le message et sur la fiche de la
+  connexion.
+
 ## [0.17.0] - 2026-11-24
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

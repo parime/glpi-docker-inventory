@@ -4004,3 +4004,39 @@ msgstr "A data de verificação deve ser uma data passada ou hoje."
 #: src/VolumeBackup.php:268
 msgid "La déclaration n’a pas pu être enregistrée."
 msgstr "Não foi possível salvar a declaração."
+
+msgid "Rien à vérifier : aucun service de l’inventaire n’a d’image."
+msgstr "Nada a verificar: nenhum serviço do inventário tem imagem."
+
+msgid "La vérification lit les tags des images des services inventoriés."
+msgstr "A verificação lê as tags das imagens dos serviços inventariados."
+
+msgid "Ajoutez une connexion Portainer, Docker ou Kubernetes et lisez-la d’abord."
+msgstr "Adicione uma conexão Portainer, Docker ou Kubernetes e leia-a primeiro."
+
+msgid "Images et vulnérabilités de Harbor : « Lire Harbor maintenant »."
+msgstr "Imagens e vulnerabilidades do Harbor: «Ler o Harbor agora»."
+
+#, php-format
+msgid "Rien à vérifier : les %d services avec une image sont suivis par WUD."
+msgstr "Nada a verificar: os %d serviços com imagem são seguidos pelo WUD."
+
+msgid "Leurs versions viennent de What’s Up Docker, pas du registre."
+msgstr "Suas versões vêm do What's Up Docker, não do registro."
+
+#, php-format
+msgid "%d services suivis par WUD laissés à WUD."
+msgstr "%d serviços seguidos pelo WUD deixados ao WUD."
+
+#, php-format
+msgid "Aucun service n’utilise une image de %s/ (Harbor)."
+msgstr "Nenhum serviço usa uma imagem de %s/ (Harbor)."
+
+msgid "Vérifiez « Hôte dans les images » et l’entité de la connexion Harbor."
+msgstr "Verifique «Host nas imagens» e a entidade da conexão Harbor."
+
+msgid "Aucun service de l’inventaire n’utilise une image de ce registre."
+msgstr "Nenhum serviço do inventário usa uma imagem deste registro."
+
+msgid "Seuls les services importés depuis Portainer, Docker ou Kubernetes sont vérifiés."
+msgstr "Só são verificados os serviços importados do Portainer, Docker ou Kubernetes."

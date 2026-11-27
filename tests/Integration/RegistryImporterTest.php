@@ -320,6 +320,14 @@ final class RegistryImporterTest extends TestCase
         $this->assertSame(Connection::STATUS_OK, (int) $harbor->fields['last_import_status']);
         // boutique_api et les 4 services de l'hôte autonome dont l'image est sur ce registre (#25).
         $this->assertSame(5, json_decode((string) $harbor->fields['last_import_report'], true)['services']);
+        // Compte rendu (#129) : services du Harbor et services avec une image, aucune raison d'un vide.
+        $this->assertSame(
+            ['host' => 'registry.exemple.test:5000', 'services' => 5],
+            $report['harbors'][$this->harborId]
+        );
+        $this->assertGreaterThanOrEqual(count($rows), $report['with_image']);
+        $this->assertSame('', $report['reason']);
+        $this->assertSame([], Connection::unusedHarborHosts($report, $this->harborId));
 
         // Idempotence : même nombre de lignes, mêmes identifiants.
         $ids = array_column($rows, 'id');
@@ -412,6 +420,38 @@ final class RegistryImporterTest extends TestCase
         $serviceId = (int) $db['plugin_dockerinventory_services_id'];
         $sources = array_column(ImageVersion::fetch(['v.plugin_dockerinventory_services_id' => $serviceId]), 'source');
         $this->assertSame([ImageVersion::SOURCE_WUD], $sources);
+    }
+
+    /**
+     * #129 : vérification sans aucun service, la raison est donnée au lieu de compteurs à zéro.
+     */
+    public function testEmptyCheckSaysWhyNothingWasChecked(): void
+    {
+        $this->assertSame(RegistryImporter::REASON_NO_SERVICE, RegistryImporter::emptyReason(0, 0, 0));
+        $this->assertSame(RegistryImporter::REASON_ALL_WUD, RegistryImporter::emptyReason(0, 3, 3));
+        $this->assertSame('', RegistryImporter::emptyReason(2, 5, 3));
+
+        $counters = Connection::registryMessage(['status' => Connection::STATUS_OK, 'reason' => '']);
+        foreach ([RegistryImporter::REASON_NO_SERVICE, RegistryImporter::REASON_ALL_WUD] as $reason) {
+            $message = Connection::registryMessage(['status' => Connection::STATUS_OK, 'reason' => $reason]);
+            $this->assertNotSame($counters, $message, $reason);
+        }
+    }
+
+    /**
+     * #129 : Harbor dont l'hôte ne correspond à aucune image de service, signalé par son hôte.
+     */
+    public function testHarborUsedByNoServiceIsNamed(): void
+    {
+        global $DB;
+
+        $DB->update(Connection::getTable(), ['registry_host' => 'autre.exemple.test'], ['id' => $this->harborId]);
+        $report = $this->check();
+        $this->assertSame(['host' => 'autre.exemple.test', 'services' => 0], $report['harbors'][$this->harborId]);
+        $this->assertSame(['autre.exemple.test'], Connection::unusedHarborHosts($report, $this->harborId));
+        $this->assertSame([], Connection::unusedHarborHosts($report, $this->harborId + 1));
+        $message = $this->connection($this->harborId)->importMessage($report);
+        $this->assertStringContainsString('autre.exemple.test/', $message);
     }
 
     public function testHarborTestConnection(): void
