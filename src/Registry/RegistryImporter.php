@@ -44,7 +44,8 @@ use GlpiPlugin\Dockerinventory\Version\VersionComparator;
  * - tickets de mise à jour ensuite, si la connexion Portainer du service les a activés.
  *
  * @phpstan-type RegistryReport array{status: int, services: int, checked: int, not_checked: int,
- *     untrackable: int, cached: int, requests: int, gaps: array<string, int>,
+ *     untrackable: int, cached: int, requests: int, gaps: array<string, int>, with_image: int,
+ *     wud_covered: int, reason: string, harbors: array<int, array{host: string, services: int}>,
  *     errors: list<array{endpoint: string, code: string}>,
  *     tickets: array{created: int, followups: int, unchanged: int, errors: int}}
  */
@@ -54,6 +55,12 @@ final class RegistryImporter
 
     /** Durée de validité du cache de Docker Hub. */
     public const CACHE_TTL = DAY_TIMESTAMP;
+
+    /** Raison d'une vérification sans aucun service (#129) : aucun service inventorié avec une image. */
+    public const REASON_NO_SERVICE = 'no_service';
+
+    /** Raison d'une vérification sans aucun service : tous les services avec une image sont suivis par WUD. */
+    public const REASON_ALL_WUD = 'all_wud';
 
     /** Codes qui n'empêchent pas une vérification réussie (rien à corriger côté appel). */
     private const NOT_ERRORS = [
@@ -75,6 +82,12 @@ final class RegistryImporter
     private array $memo = [];
 
     private bool $hubBlocked = false;
+
+    /** Services actifs avec une image, suivis ou non par WUD. */
+    private int $withImage = 0;
+
+    /** Services actifs avec une image laissés à WUD. */
+    private int $wudCovered = 0;
 
     /** @var array<int, array{services: int, requests: int, errors: list<array{endpoint: string, code: string}>}> */
     private array $harborReports = [];
@@ -108,6 +121,10 @@ final class RegistryImporter
             'gaps'        => array_fill_keys(VersionComparator::GAPS, 0),
             'errors'      => [],
             'tickets'     => UpdateTickets::emptyReport(),
+            'with_image'  => 0,
+            'wud_covered' => 0,
+            'reason'      => '',
+            'harbors'     => [],
         ];
         [$harbors, $targets] = $this->harbors();
         $kept = [];
@@ -151,6 +168,15 @@ final class RegistryImporter
         }
         $report['errors'] = $errors;
         $this->saveHarborReports($harbors);
+        $report['with_image'] = $this->withImage;
+        $report['wud_covered'] = $this->wudCovered;
+        $report['reason'] = self::emptyReason($report['services'], $this->withImage, $this->wudCovered);
+        foreach ($targets as $target) {
+            $report['harbors'][$target['id']] = [
+                'host'     => $target['host'],
+                'services' => $this->harborReports[$target['id']]['services'] ?? 0,
+            ];
+        }
         $report['tickets'] = (new UpdateTickets())->process($checked);
 
         return $report;
@@ -223,8 +249,12 @@ final class RegistryImporter
             'WHERE'  => ['is_retired' => 0, ['NOT' => ['image' => '']]],
             'ORDER'  => 'id',
         ]);
+        $this->withImage = 0;
+        $this->wudCovered = 0;
         foreach ($iterator as $row) {
+            $this->withImage++;
             if (isset($covered[(int) $row['id']])) {
+                $this->wudCovered++;
                 continue;
             }
             $services[] = [
@@ -238,6 +268,21 @@ final class RegistryImporter
         }
 
         return $services;
+    }
+
+    /**
+     * Pourquoi aucun service n'a été vérifié (#129), pour le dire au lieu d'afficher des compteurs à
+     * zéro : aucun service inventorié avec une image (Harbor seul, sans Portainer, Docker ni
+     * Kubernetes), ou tous suivis par What's Up Docker. Vide si au moins un service a été vérifié.
+     */
+    public static function emptyReason(int $services, int $withImage, int $wudCovered): string
+    {
+        return match (true) {
+            $services > 0             => '',
+            $withImage === 0          => self::REASON_NO_SERVICE,
+            $wudCovered >= $withImage => self::REASON_ALL_WUD,
+            default                   => '',
+        };
     }
 
     /**

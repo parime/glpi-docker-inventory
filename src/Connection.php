@@ -725,7 +725,7 @@ class Connection extends ConnectionBase
             return sprintf(__('Échec : %s', 'dockerinventory'), self::errorLabels()[$code] ?? $code);
         }
         if ($this->isHarbor()) {
-            return self::registryMessage($report);
+            return self::registryMessage($report, (int) $this->getID());
         }
         if ($this->isKubernetes()) {
             return self::kubernetesMessage($report);
@@ -898,9 +898,29 @@ class Connection extends ConnectionBase
      *
      * @param array<string, mixed> $report
      */
-    public static function registryMessage(array $report): string
+    public static function registryMessage(array $report, int $harborId = 0): string
     {
-        return sprintf(
+        $tickets = self::ticketsMessage(is_array($report['tickets'] ?? null) ? $report['tickets'] : []);
+        // #129 : aucun service vérifié, dire pourquoi et quoi faire plutôt que des compteurs à zéro.
+        $reason = (string) ($report['reason'] ?? '');
+        if ($reason === RegistryImporter::REASON_NO_SERVICE) {
+            return implode(' ', [
+                __('Rien à vérifier : aucun service de l’inventaire n’a d’image.', 'dockerinventory'),
+                __('La vérification lit les tags des images des services inventoriés.', 'dockerinventory'),
+                __('Ajoutez une connexion Portainer, Docker ou Kubernetes et lisez-la d’abord.', 'dockerinventory'),
+                __('Images et vulnérabilités de Harbor : « Lire Harbor maintenant ».', 'dockerinventory'),
+            ]);
+        }
+        if ($reason === RegistryImporter::REASON_ALL_WUD) {
+            return implode(' ', [
+                sprintf(
+                    __('Rien à vérifier : les %d services avec une image sont suivis par WUD.', 'dockerinventory'),
+                    (int) ($report['wud_covered'] ?? 0)
+                ),
+                __('Leurs versions viennent de What’s Up Docker, pas du registre.', 'dockerinventory'),
+            ]);
+        }
+        $message = sprintf(
             __(
                 'Registres lus (%1$s) : %2$d versions trouvées, %3$d non suivables, %4$d non vérifiées, %5$d requêtes.',
                 'dockerinventory'
@@ -910,7 +930,44 @@ class Connection extends ConnectionBase
             (int) ($report['untrackable'] ?? 0),
             (int) ($report['not_checked'] ?? 0),
             (int) ($report['requests'] ?? 0)
-        ) . self::ticketsMessage(is_array($report['tickets'] ?? null) ? $report['tickets'] : []);
+        );
+        $wud = (int) ($report['wud_covered'] ?? 0);
+        if ($wud > 0) {
+            $message .= ' ' . sprintf(__('%d services suivis par WUD laissés à WUD.', 'dockerinventory'), $wud);
+        }
+        foreach (self::unusedHarborHosts($report, $harborId) as $host) {
+            $message .= ' ' . sprintf(
+                __('Aucun service n’utilise une image de %s/ (Harbor).', 'dockerinventory'),
+                $host
+            ) . ' ' . __(
+                'Vérifiez « Hôte dans les images » et l’entité de la connexion Harbor.',
+                'dockerinventory'
+            );
+        }
+
+        return $message . $tickets;
+    }
+
+    /**
+     * Hôtes des connexions Harbor qu'aucun service n'utilise (#129) : celle-ci seulement si $harborId,
+     * sinon toutes celles du compte rendu.
+     *
+     * @param array<string, mixed> $report
+     * @return list<string>
+     */
+    public static function unusedHarborHosts(array $report, int $harborId = 0): array
+    {
+        $hosts = [];
+        foreach (is_array($report['harbors'] ?? null) ? $report['harbors'] : [] as $id => $harbor) {
+            if (($harborId > 0 && (int) $id !== $harborId) || !is_array($harbor)) {
+                continue;
+            }
+            if ((int) ($harbor['services'] ?? 0) === 0 && (string) ($harbor['host'] ?? '') !== '') {
+                $hosts[] = (string) $harbor['host'];
+            }
+        }
+
+        return array_values(array_unique($hosts));
     }
 
     /**
