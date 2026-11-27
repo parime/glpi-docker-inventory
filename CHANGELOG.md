@@ -5,6 +5,17 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+### Fixed
+
+- Harbor sans compte robot ([#134](https://github.com/parime/glpi-docker-inventory/issues/134)) : les
+  projets publics étaient refusés (401, « non vérifiée »), faute de jeton Bearer anonyme. Sur un 401
+  portant le défi `WWW-Authenticate: Bearer realm=…,service=…,scope=…`, le client du registre demande
+  un jeton au `realm` (anonyme sans compte ; le compte robot n'y est envoyé que sur le même serveur
+  que le registre) puis rejoue la requête une fois, comme le prévoit
+  [l'authentification par jeton du registre](https://distribution.github.io/distribution/spec/auth/token/).
+  « Tester la connexion » sans compte réussit sur un Harbor joignable, et un refus invite à
+  renseigner un compte robot au lieu de « Compte refusé ».
+
 ## [0.17.1] - 2026-11-27
 
 - Publiée dans le catalogue de la marketplace GLPI (`dockerinventory.xml`).

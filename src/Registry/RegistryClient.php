@@ -58,6 +58,9 @@ final class RegistryClient
     /** @var array<string, string> Jetons Bearer obtenus, par « realm », service et portée. */
     private array $tokens = [];
 
+    /** Un défi Bearer valide a été reçu du registre. */
+    private bool $challenged = false;
+
     /**
      * @param (callable(string, array<string, scalar>, array<string, string>): string)|null $transport
      */
@@ -128,7 +131,16 @@ final class RegistryClient
      */
     public function ping(): void
     {
-        $this->get('/v2/', []);
+        try {
+            $this->get('/v2/', []);
+        } catch (RegistryException $e) {
+            // Harbor ne délivre aucun jeton anonyme sans portée de dépôt (401 au « realm ») : sans
+            // compte, son défi Bearer suffit à prouver un registre v2 joignable (projets publics).
+            $anonymous = $this->username === '' && $this->challenged;
+            if (!$anonymous || $e->getMessage() !== RegistryException::UNAUTHORIZED) {
+                throw $e;
+            }
+        }
     }
 
     /**
@@ -239,6 +251,7 @@ final class RegistryClient
             if ($challenge === null) {
                 throw RegistryException::fromThrowable($e);
             }
+            $this->challenged = true;
             $headers['Authorization'] = 'Bearer ' . $this->token($challenge, $repository);
             try {
                 $body = $this->send($url, $query, $headers);
