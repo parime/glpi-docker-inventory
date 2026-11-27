@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.17.2] - 2026-11-27
+
 ### Fixed
 
 - Harbor sans compte robot ([#134](https://github.com/parime/glpi-docker-inventory/issues/134)) : les
