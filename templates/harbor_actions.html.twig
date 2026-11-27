@@ -74,7 +74,10 @@
                 <div class="alert alert-warning">
                     <i class="ti ti-alert-triangle me-2" aria-hidden="true"></i>
                     {{ __('Aucun service de l’inventaire n’utilise une image de ce registre.', 'dockerinventory') }}
-                    {{ __('Seuls les services importés depuis Portainer, Docker ou Kubernetes sont vérifiés.', 'dockerinventory') }}
+                    {{ __(
+                        'Seuls les services importés depuis Portainer, Docker ou Kubernetes sont vérifiés.',
+                        'dockerinventory'
+                    ) }}
                     {{ __('Vérifiez « Hôte dans les images » et l’entité de la connexion Harbor.', 'dockerinventory') }}
                 </div>
             {% endif %}
