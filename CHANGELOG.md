@@ -5,6 +5,8 @@ Format : [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), versions
 
 ## [Unreleased]
 
+## [0.17.1] - 2026-11-27
+
 ### Fixed
 
 - Vérification des registres sans résultat ([#129](https://github.com/parime/glpi-docker-inventory/issues/129)) :
