@@ -73,6 +73,34 @@ final class Http
     }
 
     /**
+     * En-tête d'une réponse en erreur portée par l'exception du client HTTP (Symfony en GLPI 12,
+     * Guzzle en GLPI 11), par exemple le défi « WWW-Authenticate » d'un 401 ; vide sans réponse.
+     */
+    public static function errorHeader(\Throwable $e, string $name): string
+    {
+        try {
+            $response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+            if (!is_object($response)) {
+                return '';
+            }
+            if (method_exists($response, 'getHeaderLine')) {
+                return (string) $response->getHeaderLine($name);
+            }
+            if (method_exists($response, 'getHeaders')) {
+                foreach ($response->getHeaders(false) as $header => $values) {
+                    if (strcasecmp((string) $header, $name) === 0) {
+                        return (string) (is_array($values) ? ($values[0] ?? '') : $values);
+                    }
+                }
+            }
+        } catch (\Throwable) {
+            // Réponse illisible : pas d'en-tête.
+        }
+
+        return '';
+    }
+
+    /**
      * Requête GET sans clé d'API, qui renvoie la réponse entière (composant commun « Version du
      * plugin », PluginVersion, #121). Un code HTTP (2xx à 5xx) est renvoyé tel quel, jamais levé en exception ; un
      * échec réseau (nom inconnu, connexion refusée, délai dépassé) lève une exception.
